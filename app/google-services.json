@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "986636962124",
+    "project_id": "reservation-manager-c74f8",
+    "storage_bucket": "reservation-manager-c74f8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986636962124:android:46f3829e382fabebb2a7e9",
+        "android_client_info": {
+          "package_name": "com.zaed.reservationmanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBafWEWpUhjLJHQvzl_ouaD8x40lb55CL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

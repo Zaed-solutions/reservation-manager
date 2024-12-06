@@ -1,0 +1,25 @@
+package com.zaed.reservationmanager.data.repository
+
+import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSource
+import kotlinx.coroutines.flow.Flow
+
+class CustomerRepositoryImpl(
+    private val remoteSource: CustomerRemoteDataSource
+) : CustomerRepository {
+    override fun createCustomer(customer: Customer): Flow<Result<Unit>> {
+        return remoteSource.createCustomer(customer)
+    }
+
+    override fun updateCustomer(customer: Customer): Flow<Result<Unit>> {
+        return remoteSource.updateCustomer(customer)
+    }
+
+    override fun deleteCustomer(customerId: String): Flow<Result<Unit>> {
+        return remoteSource.deleteCustomer(customerId)
+    }
+
+    override fun getCustomers(): Flow<Result<List<Customer>>> {
+        return remoteSource.getCustomers()
+    }
+}
