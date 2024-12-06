@@ -1,7 +1,36 @@
 package com.zaed.reservationmanager.app.di
 
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.zaed.reservationmanager.data.repository.CompanyRepository
+import com.zaed.reservationmanager.data.repository.CompanyRepositoryImpl
+import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSourceImpl
+import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSourceImpl
+import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSourceImpl
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val appModule = module {
-    includes()
+    includes(repositoryModule, viewModelModule, remoteModule)
+}
+
+val viewModelModule = module{
+
+}
+
+val repositoryModule = module {
+    singleOf(::CompanyRepositoryImpl){ bind<CompanyRepository>()}
+}
+
+val remoteModule = module {
+    singleOf(::CompanyRemoteDataSourceImpl){ bind<CompanyRemoteDataSource>() }
+    singleOf(::CustomerRemoteDataSourceImpl){ bind<CustomerRemoteDataSource>() }
+    singleOf(::EmployeeRemoteDataSourceImpl){ bind<EmployeeRemoteDataSource>() }
+    single<FirebaseFirestore> { Firebase.firestore }
 }
