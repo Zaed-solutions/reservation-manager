@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -41,12 +42,12 @@ fun TitledTextField(
     isOptional: Boolean = true,
     isError: Boolean = false,
     errorMessageRes: Int = 0,
-    keyboardType: KeyboardType = KeyboardType.Unspecified
+    keyboardType: KeyboardType = KeyboardType.Unspecified,
     ) {
     var value by remember { mutableStateOf(initialValue) }
     Column(
         modifier = modifier
-            .fillMaxWidth(),
+            .widthIn(max = 400.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

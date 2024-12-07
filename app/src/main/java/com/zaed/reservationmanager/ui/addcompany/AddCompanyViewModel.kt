@@ -45,6 +45,10 @@ class AddCompanyViewModel(
                     _uiState.update { it.copy(error = AddCompanyUiError.NAME_IS_REQUIRED) }
                     return@launch
                 }
+                if(company.country.isBlank()){
+                    _uiState.update { it.copy(error = AddCompanyUiError.COUNTRY_IS_REQUIRED) }
+                    return@launch
+                }
                 if (company.email.isNotBlank() && !InputValidator.isEmailValid(company.email)){
                     _uiState.update { it.copy(error = AddCompanyUiError.EMAIL_IS_INVALID) }
                     return@launch

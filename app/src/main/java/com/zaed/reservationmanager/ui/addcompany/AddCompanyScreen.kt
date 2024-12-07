@@ -22,12 +22,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -67,6 +70,7 @@ fun AddCompanyScreen(
     }
     AddCompanyScreenContent(
         modifier = modifier,
+        snackbarHostState = snackbarHostState,
         onAction = { action ->
             when (action) {
                 AddCompanyUiAction.OnBackPressed -> onBackPressed()
@@ -90,11 +94,13 @@ private fun AddCompanyScreenContent(
     onAction: (AddCompanyUiAction) -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
+                scrollBehavior = scrollBehavior,
                 title = {
                     Text(
                         text = if (isNew) stringResource(R.string.add_company) else stringResource(R.string.update_company),
@@ -135,12 +141,15 @@ private fun AddCompanyScreenContent(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             //name
             TitledTextField(
+                modifier = Modifier.padding(top = 8.dp),
                 title = stringResource(R.string.name),
                 initialValue = initialCompany.name,
                 onValueChanged = {
@@ -156,7 +165,7 @@ private fun AddCompanyScreenContent(
             //type
             TitledDropDownTextField(
                 title = stringResource(R.string.type),
-                selectedValue = company.type.name,
+                selectedValue = stringResource(id = company.type.displayNameRes),
                 onValueChanged = { index ->
                     onAction(AddCompanyUiAction.OnTypeChanged(index))
                 },
@@ -200,6 +209,7 @@ private fun AddCompanyScreenContent(
             )
             //fax number
             TitledTextField(
+                modifier = Modifier.padding(bottom = 8.dp),
                 title = stringResource(R.string.fax_number),
                 initialValue = initialCompany.faxNumber,
                 onValueChanged = { faxNumber ->

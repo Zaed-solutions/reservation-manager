@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Project Template</string>
+    <string name="app_name">Reservation Manager</string>
     <string name="name">Name</string>
     <string name="name_is_required">Name is required</string>
     <string name="name_is_already_used">A company with this name already exists</string>
