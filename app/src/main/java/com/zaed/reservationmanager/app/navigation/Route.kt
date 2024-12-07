@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 sealed interface Route {
     @Serializable
-    data object DefaultRoute : Route
+    data object AddCompanyRoute: Route
 }

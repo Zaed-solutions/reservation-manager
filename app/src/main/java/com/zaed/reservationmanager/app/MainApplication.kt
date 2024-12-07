@@ -2,6 +2,9 @@ package com.zaed.reservationmanager.app
 
 import android.app.Application
 import com.zaed.reservationmanager.app.di.appModule
+import com.zaed.reservationmanager.app.di.remoteModule
+import com.zaed.reservationmanager.app.di.repositoryModule
+import com.zaed.reservationmanager.app.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -13,7 +16,7 @@ class MainApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MainApplication)
-            modules(appModule)
+            modules(viewModelModule, repositoryModule, remoteModule)
         }
     }
 }

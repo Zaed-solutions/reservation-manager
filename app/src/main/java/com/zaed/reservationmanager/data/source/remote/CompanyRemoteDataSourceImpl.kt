@@ -13,18 +13,18 @@ class CompanyRemoteDataSourceImpl(
         private val TAG = "CompanyRemoteDataSource"
         private val COMPANY_COLLECTION = "companies"
     }
-    override fun createCompany(company: Company): Flow<Result<Unit>> = callbackFlow{
+    override fun createCompany(company: Company): Flow<Result<Boolean>> = callbackFlow{
         try {
             firestore.collection(COMPANY_COLLECTION).whereEqualTo("name", company.name).get().addOnSuccessListener { data ->
                 if(data.isEmpty){
                     val document = firestore.collection(COMPANY_COLLECTION).document()
                     document.set(company.copy(id = document.id)).addOnSuccessListener {
-                        trySend(Result.success(Unit))
+                        trySend(Result.success(true))
                     }.addOnFailureListener { e ->
                         trySend(Result.failure(e))
                     }
                 } else {
-                    trySend(Result.failure(Exception("Company with this name already exists")))
+                    trySend(Result.success(false))
                 }
             }.addOnFailureListener { e ->
                 trySend(Result.failure(e))

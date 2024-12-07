@@ -26,7 +26,7 @@ ktor-client = "2.3.12"
 kotlinx-serialization = "1.6.2"
 kotlinx-datetime = "0.5.0"
 navigationCompose = "2.8.3"
-koinAndroidxCompose = "3.5.6"
+koinAndroidxCompose = "4.0.0"
 androidx-appcompat = "1.7.0"
 firebaseAuthKtx = "23.0.0"
 firebaseFirestoreKtx = "25.1.0"
@@ -47,6 +47,7 @@ dotsindicator = { module = "com.tbuonomo:dotsindicator", version.ref = "dotsindi
 facebook-android-sdk = { module = "com.facebook.android:facebook-android-sdk", version.ref = "facebookAndroidSdk" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
+koin-androidx-startup = { module = "io.insert-koin:koin-androidx-startup", version.ref = "koinAndroidxCompose" }
 koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation", version.ref = "koinAndroidxCompose" }
 kotlin-compose-compiler-plugin = { module = "org.jetbrains.kotlin:kotlin-compose-compiler-plugin", version.ref = "kotlinComposeCompilerPlugin" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor-client" }
