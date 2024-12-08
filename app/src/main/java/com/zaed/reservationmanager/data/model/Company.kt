@@ -2,8 +2,10 @@ package com.zaed.reservationmanager.data.model
 
 import androidx.annotation.StringRes
 import com.zaed.reservationmanager.R
-import java.util.Date
+import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Company(
     val id: String = "",
     val name: String = "",
@@ -11,7 +13,7 @@ data class Company(
     val phoneNumber: String = "",
     val email: String = "",
     val faxNumber: String = "",
-    val createdAt: Date = Date(),
+    val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
     val type: CompanyType = CompanyType.TOURISM,
 )
 

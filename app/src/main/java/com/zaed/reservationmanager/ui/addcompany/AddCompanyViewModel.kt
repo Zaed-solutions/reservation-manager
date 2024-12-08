@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Date
+import kotlinx.datetime.Clock
 
 class AddCompanyViewModel(
     private val companyRepo: CompanyRepository
@@ -88,7 +88,7 @@ class AddCompanyViewModel(
         viewModelScope.launch (Dispatchers.IO){
             companyRepo.createCompany(
                 uiState.value.company.copy(
-                    createdAt = Date()
+                    createdAtEpochSeconds = Clock.System.now().epochSeconds
                 )
             ).collect { result ->
                 result.onSuccess { isCreated ->
