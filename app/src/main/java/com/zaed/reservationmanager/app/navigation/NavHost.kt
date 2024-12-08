@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyScreen
+import com.zaed.reservationmanager.ui.client.NewClientDataEntryScreen
 import java.util.Date
 
 @Composable
@@ -22,7 +23,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.AddCompanyRoute,
+        startDestination = Route.NewCLientRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -38,6 +39,11 @@ fun NavigationHost(
             )
         }
     ) {
+        composable<Route.NewCLientRoute> {
+            NewClientDataEntryScreen(
+                navigateBack = { navController.popBackStack() }
+            )
+        }
         composable<Route.AddCompanyRoute> {
             val company = Company(
                 id = "Nqlxzvb1m4wZ3i5a6aWq",
