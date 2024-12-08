@@ -1,10 +1,13 @@
 package com.zaed.reservationmanager.app.navigation
 
+import com.zaed.reservationmanager.data.model.Company
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
     @Serializable
-    data object AddCompanyRoute: Route
+    data class AddCompanyRoute(val company: Company = Company()): Route
+    @Serializable
+    data object CompaniesScreen: Route
     @Serializable
     data object NewCLientRoute: Route
 }

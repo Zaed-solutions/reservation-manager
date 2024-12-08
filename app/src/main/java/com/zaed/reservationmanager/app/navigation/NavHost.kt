@@ -4,16 +4,20 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyScreen
+import com.zaed.reservationmanager.ui.companies.CompaniesScreen
 import com.zaed.reservationmanager.ui.client.NewClientDataEntryScreen
 import java.util.Date
+import kotlin.reflect.typeOf
 
 @Composable
 fun NavigationHost(
@@ -23,7 +27,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.NewCLientRoute,
+        startDestination = Route.CompaniesScreen,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -39,25 +43,32 @@ fun NavigationHost(
             )
         }
     ) {
-        composable<Route.NewCLientRoute> {
-            NewClientDataEntryScreen(
-                navigateBack = { navController.popBackStack() }
+        composable<Route.AddCompanyRoute> (
+            typeMap = mapOf(
+                typeOf<Company>() to CustomNavType.CompanyType
             )
-        }
-        composable<Route.AddCompanyRoute> {
-            val company = Company(
-                id = "Nqlxzvb1m4wZ3i5a6aWq",
-                name = "Test Company",
-                country = "Egypt",
-                phoneNumber = "+201012345678",
-                email = "mohamed@test.com",
-                faxNumber = "+123456789",
-                createdAt = Date(),
-                type = CompanyType.TOURISM
-            )
+        ){ backStackEntry ->
+            val company = backStackEntry.toRoute<Route.AddCompanyRoute>().company
             AddCompanyScreen (
                 initialCompany = company,
                 onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable<Route.CompaniesScreen> {
+            CompaniesScreen(
+                onShowNavDrawer = { /*TODO*/ },
+                onNavigateToEditCompany = { company ->
+                    navController.navigate(Route.AddCompanyRoute(company))
+                },
+                onNavigateToDetails = { /*TODO*/},
+                onNavigateToAddCompany = {
+                    navController.navigate(Route.AddCompanyRoute())
+                }
+            )
+        }
+        composable<Route.NewCLientRoute> {
+            NewClientDataEntryScreen(
+                navigateBack = { navController.popBackStack() }
             )
         }
     }
