@@ -16,6 +16,7 @@ import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSourceIm
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSourceImpl
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyViewModel
+import com.zaed.reservationmanager.ui.client.CreateCustomerViewModel
 import com.zaed.reservationmanager.ui.companies.CompaniesViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
@@ -29,6 +30,7 @@ val appModule = module {
 val viewModelModule = module {
     viewModelOf(::AddCompanyViewModel)
     viewModelOf(::CompaniesViewModel)
+    viewModelOf(::CreateCustomerViewModel)
 }
 
 val repositoryModule = module {

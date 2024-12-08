@@ -15,6 +15,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyScreen
 import com.zaed.reservationmanager.ui.companies.CompaniesScreen
+import com.zaed.reservationmanager.ui.client.NewClientDataEntryScreen
 import java.util.Date
 import kotlin.reflect.typeOf
 
@@ -63,6 +64,11 @@ fun NavigationHost(
                 onNavigateToAddCompany = {
                     navController.navigate(Route.AddCompanyRoute())
                 }
+            )
+        }
+        composable<Route.NewCLientRoute> {
+            NewClientDataEntryScreen(
+                navigateBack = { navController.popBackStack() }
             )
         }
     }

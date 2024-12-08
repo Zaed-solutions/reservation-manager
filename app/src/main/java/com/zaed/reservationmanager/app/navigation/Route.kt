@@ -8,4 +8,6 @@ sealed interface Route {
     data class AddCompanyRoute(val company: Company = Company()): Route
     @Serializable
     data object CompaniesScreen: Route
+    @Serializable
+    data object NewCLientRoute: Route
 }
