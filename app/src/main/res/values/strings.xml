@@ -20,4 +20,15 @@
     <string name="company_added_successfully">Company added successfully</string>
     <string name="travel">Travel</string>
     <string name="tourism">Tourism</string>
+    <string name="nationality_is_required">Nationality is required</string>
+    <string name="mobile_is_required">Phone Number is Required</string>
+    <string name="email_is_required">Email Address is Required</string>
+    <string name="mobile_number_is_invalid">Mobile Number is Invalid</string>
+    <string name="please_fill_in_all_required_fields">Please fill in all required fields</string>
+    <string name="cancel">Cancel</string>
+    <string name="customer_with_this_phone_number_already_exists">Customer with this phone number already exists</string>
+    <string name="create_new_customer">Create New Customer</string>
+    <string name="client_name">Client Name</string>
+    <string name="nationality">Nationality</string>
+    <string name="country_of_residence">Country of Residence</string>
 </resources>

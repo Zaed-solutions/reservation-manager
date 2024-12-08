@@ -1,7 +1,9 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.ui.client.ClientUIError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,7 +27,7 @@ class CustomerRemoteDataSourceImpl(
                         trySend(Result.failure(e))
                     }
                 } else {
-                    trySend(Result.failure(Exception("Customer with this phone number already exists")))
+                    trySend(Result.failure(Exception(ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS.name)))
                 }
             }.addOnFailureListener { e ->
                 trySend(Result.failure(e))
