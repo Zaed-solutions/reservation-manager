@@ -2,7 +2,7 @@
     <string name="app_name">Reservation Manager</string>
     <string name="name">Name</string>
     <string name="name_is_required">Name is required</string>
-    <string name="name_is_already_used">A company with this name already exists</string>
+    <string name="a_company_with_name_already_exists">A company with this name already exists</string>
     <string name="email">Email</string>
     <string name="email_is_invalid">Invalid email</string>
     <string name="fax_number">Fax Number</string>
@@ -43,4 +43,14 @@
     <string name="client_name">Client Name</string>
     <string name="nationality">Nationality</string>
     <string name="country_of_residence">Country of Residence</string>
+    <string name="atleast_one_phone_number_is_required">Atleast one phone number is required</string>
+    <string name="an_employee_with_name_already_exists">An employee with this name already exists</string>
+    <string name="add_employee">Add New Employee</string>
+    <string name="update_employee">Update Employee</string>
+    <string name="company">Company</string>
+    <string name="employee_updated_successfully">Employee updated successfully</string>
+    <string name="employee_added_successfully">Employee added successfully</string>
+    <string name="position">Position</string>
+    <string name="phone_number_1">Phone Number 1</string>
+    <string name="phone_number_2">Phone Number 2</string>
 </resources>

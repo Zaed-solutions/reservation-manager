@@ -81,11 +81,9 @@ fun TitledDropDownTextField(
             )
 
             ExposedDropdownMenu(
-                modifier = Modifier.fillMaxWidth(),
                 expanded = expanded, onDismissRequest = { expanded = false }) {
                 options.forEachIndexed { index, option: String ->
                     DropdownMenuItem(
-                        modifier = Modifier.fillMaxWidth(),
                         text = { Text(text = option) },
                         onClick = {
                             expanded = false
