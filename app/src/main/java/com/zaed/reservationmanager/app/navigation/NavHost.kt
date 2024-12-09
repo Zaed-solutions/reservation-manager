@@ -13,7 +13,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyScreen
+import com.zaed.reservationmanager.ui.addemployee.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.companies.CompaniesScreen
 import com.zaed.reservationmanager.ui.client.NewClientDataEntryScreen
 import java.util.Date
@@ -27,7 +29,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.CompaniesScreen,
+        startDestination = Route.AddEmployeeRoute(),
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -69,6 +71,17 @@ fun NavigationHost(
         composable<Route.NewCLientRoute> {
             NewClientDataEntryScreen(
                 navigateBack = { navController.popBackStack() }
+            )
+        }
+        composable<Route.AddEmployeeRoute>(
+            typeMap = mapOf(
+                typeOf<Employee>() to CustomNavType.EmployeeType
+            )
+        ){ backStackEntry ->
+            val employee = backStackEntry.toRoute<Route.AddEmployeeRoute>().employee
+            AddEmployeeScreen(
+                initialEmployee = employee,
+                onBackPressed = { navController.popBackStack() }
             )
         }
     }

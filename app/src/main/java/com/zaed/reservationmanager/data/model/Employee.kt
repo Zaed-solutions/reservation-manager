@@ -1,7 +1,10 @@
 package com.zaed.reservationmanager.data.model
 
+import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 import java.util.Date
 
+@Serializable
 data class Employee(
     val id: String = "",
     val name: String = "",
@@ -11,5 +14,5 @@ data class Employee(
     val phoneNumber2: String = "",
     val nationality: String = "",
     val email: String = "",
-    val createdAt: Date = Date(),
+    val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
 )
