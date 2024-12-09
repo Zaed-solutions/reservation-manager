@@ -78,9 +78,10 @@ fun NavigationHost(
                 typeOf<Employee>() to CustomNavType.EmployeeType
             )
         ){ backStackEntry ->
-            val employee = backStackEntry.toRoute<Route.AddEmployeeRoute>().employee
+            val args = backStackEntry.toRoute<Route.AddEmployeeRoute>()
             AddEmployeeScreen(
-                initialEmployee = employee,
+                initialEmployee = args.employee,
+                isDriver = args.isDriver,
                 onBackPressed = { navController.popBackStack() }
             )
         }

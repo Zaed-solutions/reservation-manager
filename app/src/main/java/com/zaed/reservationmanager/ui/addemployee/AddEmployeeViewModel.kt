@@ -22,10 +22,13 @@ class AddEmployeeViewModel(
     private val TAG = "AddEmployeeViewModel"
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(initialEmployee: Employee){
+    fun init(initialEmployee: Employee, isDriver: Boolean){
         viewModelScope.launch {
             if(initialEmployee.id.isNotBlank()){
                 _uiState.update { it.copy(employee = initialEmployee, isNew = false) }
+            }
+            if(isDriver){
+                _uiState.update { oldState -> oldState.copy(isDriver = true, employee = oldState.employee.copy(position = "Driver")) }
             }
             fetchCompanies()
         }
@@ -33,7 +36,7 @@ class AddEmployeeViewModel(
 
     private fun fetchCompanies() {
         viewModelScope.launch (Dispatchers.IO){
-            companyRepo.getCompaniesNames().collect{ result ->
+            companyRepo.getCompaniesNames(uiState.value.isDriver).collect{ result ->
                 result.onSuccess{ data ->
                     _uiState.update { oldState ->
                         oldState.copy(companies = data)
@@ -54,8 +57,17 @@ class AddEmployeeViewModel(
             is AddEmployeeUiAction.OnPhoneNumber2Changed -> updatePhoneNumber2(action.phoneNumber)
             is AddEmployeeUiAction.OnPositionChanged -> updatePosition(action.position)
             is AddEmployeeUiAction.OnEmailChanged -> updateEmail(action.email)
+            is AddEmployeeUiAction.OnUpdateNationality -> updateNationality(action.nationality)
             AddEmployeeUiAction.OnSaveClicked -> onSave()
             else -> Unit
+        }
+    }
+
+    private fun updateNationality(nationality: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(employee = oldState.employee.copy(nationality = nationality))
+            }
         }
     }
 
@@ -76,6 +88,10 @@ class AddEmployeeViewModel(
                 }
                 if (employee.email.isNotBlank() && !InputValidator.isEmailValid(employee.email)){
                     _uiState.update { it.copy(error = AddEmployeeUiError.EMAIL_IS_INVALID) }
+                    return@launch
+                }
+                if(isDriver && employee.nationality.isBlank()){
+                    _uiState.update { it.copy(error = AddEmployeeUiError.NATIONALITY_IS_REQUIRED) }
                     return@launch
                 }
                 if(employee.phoneNumber1.isBlank()){
