@@ -48,30 +48,22 @@ fun AddEmployeeScreen(
     modifier: Modifier = Modifier,
     viewModel: AddEmployeeViewModel = koinViewModel(),
     onBackPressed: () -> Unit,
-    initialEmployee: Employee = Employee()
+    initialEmployee: Employee = Employee(),
+    isDriver: Boolean = false
 ){
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(true){
-        viewModel.init(initialEmployee)
+        viewModel.init(initialEmployee, isDriver)
     }
     val context = LocalContext.current
     LaunchedEffect (state.isFinished){
         if(state.isFinished){
-//            Toast.makeText(
-//                context,
-//                context.getString(
-//                    if (state.isNew)
-//                        R.string.employee_added_successfully
-//                    else
-//                        R.string.employee_updated_successfully
-//                ),
-//                Toast.LENGTH_SHORT
-//            ).show()
             onBackPressed()
         }
     }
     AddEmployeeScreenContent(
         modifier = modifier,
+        isDriver = isDriver,
         initialEmployee = initialEmployee,
         currentEmployee = state.employee,
         error = state.error,
@@ -91,6 +83,7 @@ fun AddEmployeeScreen(
 @Composable
 private fun AddEmployeeScreenContent(
     modifier: Modifier = Modifier,
+    isDriver: Boolean = false,
     initialEmployee: Employee = Employee(),
     currentEmployee: Employee = Employee(),
     onAction: (AddEmployeeUiAction) -> Unit = {},
@@ -101,10 +94,19 @@ private fun AddEmployeeScreenContent(
     Scaffold(
         modifier = modifier.imePadding(),
         topBar = {
+            val title = if(isDriver && isNew){
+                stringResource(id = R.string.add_new_driver)
+            } else if(isDriver){
+                stringResource(id = R.string.update_driver)
+            } else if(isNew){
+                stringResource(id = R.string.add_employee)
+            } else {
+                stringResource(id = R.string.update_employee)
+            }
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = if (isNew) stringResource(R.string.add_employee) else stringResource(R.string.update_employee),
+                        text = title,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -172,29 +174,43 @@ private fun AddEmployeeScreenContent(
                 isOptional = false,
                 options = companies,
             )
-            //position
-            TitledTextField(
-                title = stringResource(R.string.position),
-                initialValue = initialEmployee.position,
-                onValueChanged = { position ->
-                    onAction(AddEmployeeUiAction.OnPositionChanged(position))
-                },
-                isOptional = true,
-                isError = false,
-                errorMessageRes = error.messageRes
-            )
-            //email
-            TitledTextField(
-                title = stringResource(R.string.email),
-                initialValue = initialEmployee.email,
-                onValueChanged = { email ->
-                    onAction(AddEmployeeUiAction.OnEmailChanged(email))
-                },
-                isOptional = true,
-                isError = error == AddEmployeeUiError.EMAIL_IS_INVALID,
-                errorMessageRes = error.messageRes,
-                keyboardType = KeyboardType.Email
-            )
+            if(isDriver){
+                // nationality
+                TitledTextField(
+                    title = stringResource(id = R.string.nationality),
+                    initialValue = initialEmployee.nationality,
+                    onValueChanged = { nationality ->
+                        onAction(AddEmployeeUiAction.OnUpdateNationality(nationality))
+                    },
+                    isOptional = false,
+                    isError = error == AddEmployeeUiError.NATIONALITY_IS_REQUIRED,
+                    errorMessageRes = error.messageRes
+                )
+            } else {
+                //position
+                TitledTextField(
+                    title = stringResource(R.string.position),
+                    initialValue = initialEmployee.position,
+                    onValueChanged = { position ->
+                        onAction(AddEmployeeUiAction.OnPositionChanged(position))
+                    },
+                    isOptional = true,
+                    isError = false,
+                    errorMessageRes = error.messageRes
+                )
+                //email
+                TitledTextField(
+                    title = stringResource(R.string.email),
+                    initialValue = initialEmployee.email,
+                    onValueChanged = { email ->
+                        onAction(AddEmployeeUiAction.OnEmailChanged(email))
+                    },
+                    isOptional = true,
+                    isError = error == AddEmployeeUiError.EMAIL_IS_INVALID,
+                    errorMessageRes = error.messageRes,
+                    keyboardType = KeyboardType.Email
+                )
+            }
             //phone number 1
             TitledTextField(
                 title = stringResource(R.string.phone_number_1),

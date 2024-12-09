@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.data.source.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -29,8 +30,8 @@ class CompanyRemoteDataSourceImpl(
                         trySend(Result.success(false))
                     }
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -43,8 +44,8 @@ class CompanyRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -57,8 +58,8 @@ class CompanyRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -81,14 +82,21 @@ class CompanyRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun getCompaniesNames(): Flow<Result<List<String>>> = callbackFlow {
+    override fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).get().addOnSuccessListener { data ->
-                val companies = data?.toObjects(Company::class.java)?.map { it.name }
-                trySend(Result.success(companies ?: emptyList()))
-            }.addOnFailureListener { error ->
-                trySend(Result.failure(error))
-            }
+            firestore.collection(COMPANY_COLLECTION).whereEqualTo(
+                "type",
+                if (isDriver)
+                    CompanyType.TRAVEL
+                else
+                    CompanyType.TOURISM
+            ).get()
+                .addOnSuccessListener { data ->
+                    val companies = data?.toObjects(Company::class.java)?.map { it.name }
+                    trySend(Result.success(companies ?: emptyList()))
+                }.addOnFailureListener { error ->
+                    trySend(Result.failure(error))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
