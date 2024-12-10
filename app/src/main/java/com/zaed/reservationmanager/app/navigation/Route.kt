@@ -16,4 +16,12 @@ sealed interface Route {
     @Serializable
     data object CustomerListRoute: Route
 
+    @Serializable
+    data object ReservationListRoute: Route
+
+    @Serializable
+    data object EmployeeListRoute: Route
+
+
+
 }

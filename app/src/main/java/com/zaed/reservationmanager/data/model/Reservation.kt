@@ -1,0 +1,25 @@
+package com.zaed.reservationmanager.data.model
+
+data class Reservation(
+    val id: String = "",
+    val date: Long = 0L,
+    val time: Long = 0L,
+    val type: String = "",
+    val car: String = "",
+    val clientName: String = "",
+    val clientPhone: String = "",
+    val driverCompanyPhone: String = "",
+    val clientCountry: String = "",
+    val startLocation: String = "",
+    val endLocation: String = "",
+    val collectionPrice: Double = 0.0,
+    val movementPrice: Double = 0.0,
+    val travelCompany: String = "",
+    val driver: String = "",
+    val tourismCompany: String = "",
+    val tourismEmployee: String = "",
+    val note: String = "",
+    val sentConfirmToCustomer: Boolean = false,
+    val sentDriverInfoToCustomer: Boolean = false,
+    val sentToDriverCompany: Boolean = false,
+)
