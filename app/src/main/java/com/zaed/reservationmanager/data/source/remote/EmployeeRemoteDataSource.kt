@@ -8,4 +8,5 @@ interface EmployeeRemoteDataSource {
     fun updateEmployee(employee: Employee): Flow<Result<Unit>>
     fun deleteEmployee(employeeId: String): Flow<Result<Unit>>
     fun getEmployees(): Flow<Result<List<Employee>>>
+    fun getDrivers(): Flow<Result<List<Employee>>>
 }

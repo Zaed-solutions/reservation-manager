@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.client
+package com.zaed.reservationmanager.ui.client.create
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.ui.client.ClientUIError
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -66,7 +67,8 @@ fun NewClientDataEntryScreen(
         nationalities = state.nationalities,
         countries = state.countries,
         isLoading = state.loading,
-        errorMessage = state.errorMessage
+        errorMessage = state.errorMessage,
+        onBackClicked = navigateBack
     )
 }
 
@@ -84,7 +86,8 @@ fun NewClientDataEntryScreenContent(
     nationalities: List<String> = emptyList(),
     countries: List<String> = emptyList(),
     isLoading: Boolean = false,
-    errorMessage: ClientUIError = ClientUIError.NONE
+    errorMessage: ClientUIError = ClientUIError.NONE,
+    onBackClicked: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -104,7 +107,7 @@ fun NewClientDataEntryScreenContent(
         },
         topBar = {
             CenterAlignedTopBar(
-                action = action,
+                onBackClicked = onBackClicked,
                 title = stringResource(R.string.create_new_customer)
             )
         }
@@ -205,14 +208,14 @@ fun NewClientDataEntryScreenContent(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun CenterAlignedTopBar(
-    action: (CreateCustomerUiAction) -> Unit,
+fun CenterAlignedTopBar(
+    onBackClicked: () -> Unit = {},
     title: String
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
         navigationIcon = {
-            IconButton(onClick = { action(CreateCustomerUiAction.Cancel) }) {
+            IconButton(onClick = onBackClicked) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
         }

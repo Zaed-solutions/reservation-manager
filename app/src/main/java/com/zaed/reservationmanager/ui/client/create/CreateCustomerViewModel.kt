@@ -1,10 +1,11 @@
-package com.zaed.reservationmanager.ui.client
+package com.zaed.reservationmanager.ui.client.create
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.repository.CustomerRepository
+import com.zaed.reservationmanager.ui.client.ClientUIError
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

@@ -1,4 +1,5 @@
-import android.util.Log
+package com.zaed.reservationmanager.ui.employee
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -45,40 +45,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.client.create.CenterAlignedTopBar
-import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
-import com.zaed.reservationmanager.ui.util.exportCustomersToExcel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
 @Composable
-fun CustomerListScreen(
-    viewModel: CustomerListViewModel = koinViewModel(),
+fun EmployeeListScreen(
+    viewModel: EmployeeListViewModel = koinViewModel(),
     navigateBack: () -> Unit,
-    onShowReservationsClicked: (Customer) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    val context = androidx.compose.ui.platform.LocalContext.current
-    CustomerListWithScreenContent(
-        customers = state.customers,
-        onBackClicked = {
-            generateCustomerPdf(customers = state.customers, context = context)
-        }
+    EmployeeListWithScreenContent(
+        employees = state.employees,
+        onBackClicked = navigateBack
     )
 }
 
 @Composable
-fun CustomerListWithScreenContent(
-    customers: List<Customer>,
+fun EmployeeListWithScreenContent(
+    employees: List<Employee>,
     onBackClicked: () -> Unit = {},
-    onShowReservationsClicked: (Customer) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopBar(
-                title = "Customer List",
+                title = "Employee List",
                 onBackClicked = onBackClicked
             )
         }
@@ -90,9 +83,9 @@ fun CustomerListWithScreenContent(
                 .padding(16.dp)
         ) {
             var selected by remember { mutableStateOf("") }
-            val countriesList = customers.map { it.residenceCountry }.distinct()
+            val companiesList = employees.map { it.company }.distinct()
             LazyRow {
-                items(countriesList) { country ->
+                items(companiesList) { country ->
                     FilterChip(
                         modifier = Modifier.padding(end = 8.dp),
                         onClick = {
@@ -120,30 +113,25 @@ fun CustomerListWithScreenContent(
                     )
                 }
             }
-            CustomerListWithTitle(
-                customers =if (selected == "") customers else customers.filter { it.residenceCountry == selected },
-                OnShowReservationsClicked = onShowReservationsClicked
+            EmployeeListWithTitle(
+                employees =if (selected == "") employees else employees.filter { it.company == selected },
             )
         }
     }
 }
 
 @Composable
-fun CustomerListWithTitle(
+fun EmployeeListWithTitle(
     modifier: Modifier = Modifier,
-    customers: List<Customer>,
-    OnShowReservationsClicked: (Customer) -> Unit = {},
+    employees: List<Employee>,
 ) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(customers) { customer ->
-            ExpandableCustomerCard(
-                customer = customer,
-                onShowReservationsClicked = {
-                    OnShowReservationsClicked(customer)
-                },
+        items(employees) { employee ->
+            ExpandableEmployeeCard(
+                employee = employee,
                 onDeleteClicked = {},
                 onEditClicked = {}
             )
@@ -151,11 +139,9 @@ fun CustomerListWithTitle(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpandableCustomerCard(
-    customer: Customer,
-    onShowReservationsClicked: () -> Unit = {},
+fun ExpandableEmployeeCard(
+    employee: Employee,
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {}
 
@@ -180,14 +166,14 @@ fun ExpandableCustomerCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = customer.name.takeIf { it.length <= 15 }
-                        ?: "${customer.name.take(15)}...",
+                    text = employee.name.takeIf { it.length <= 15 }
+                        ?: "${employee.name.take(15)}...",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = customer.phoneNumber.takeIf { it.length <= 15 }
-                        ?: "${customer.phoneNumber.take(15)}...",
+                    text = employee.phoneNumber1.takeIf { it.length <= 15 }
+                        ?: "${employee.phoneNumber1.take(15)}...",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End
@@ -199,31 +185,25 @@ fun ExpandableCustomerCard(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Nationality: ${customer.nationality}",
+                        text = "Nationality: ${employee.nationality}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Residence Country: ${customer.residenceCountry}",
+                        text = "Residence Country: ${employee.phoneNumber2}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Email: ${customer.email}",
+                        text = "Email: ${employee.email}",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Created At: ${customer.createdAt}",
+                        text = "Created At: ${employee.createdAtEpochSeconds}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )
-                    TextButton(
-                        contentPadding = PaddingValues(0.dp),
-                        onClick = onShowReservationsClicked,
-                    ) {
-                        Text(text = "Show Customer Reservations")
-                    }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -277,26 +257,36 @@ fun ExpandableCustomerCard(
 }
 
 
-val mockCustomers = listOf(
-    Customer("1", "Alice", "USA", "Canada", "+123456789", "alice@example.com", Date(2023, 11, 25)),
-    Customer("2", "Bob", "UK", "UK", "+987654321", "bob@example.com", Date(2024, 12, 1)),
-    Customer(
-        "3",
-        "Charlie",
-        "Canada",
-        "USA",
-        "+456789123",
-        "charlie@example.com",
-        Date(2024, 10, 15)
-    )
+val mockEmployees = listOf(
+    Employee(
+        id = "1",
+        name = "John Doe",
+        nationality = "USA",
+        company = "ABC Company",
+        phoneNumber1 = "123-456-7890",
+        phoneNumber2 = "9787559555",
+        email = "william.henry.moody@my-own-personal-domain.com",
+    ),
+    Employee(
+        id = "1",
+        name = "John Doe",
+        nationality = "USA",
+        company = "AB Company",
+        phoneNumber1 = "123-456-7890",
+        phoneNumber2 = "9787559555",
+        email = "william.henry.moody@my-own-personal-domain.com",
+    ),
+
+
 )
+
 
 @Composable
 @Preview
 fun CustomerListScreenPreview() {
     ReservationManagerTheme {
-        CustomerListWithScreenContent(
-            customers = mockCustomers,
+        EmployeeListWithScreenContent(
+            employees = mockEmployees,
             onBackClicked = {}
         )
     }

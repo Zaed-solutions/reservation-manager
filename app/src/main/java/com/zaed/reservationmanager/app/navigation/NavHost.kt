@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.app.navigation
 
+import CustomerListScreen
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -15,10 +16,9 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyScreen
+import com.zaed.reservationmanager.ui.client.create.NewClientDataEntryScreen
 import com.zaed.reservationmanager.ui.addemployee.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.companies.CompaniesScreen
-import com.zaed.reservationmanager.ui.client.NewClientDataEntryScreen
-import java.util.Date
 import kotlin.reflect.typeOf
 
 @Composable
@@ -29,7 +29,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.AddEmployeeRoute(),
+        startDestination = Route.CustomerListRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -45,6 +45,11 @@ fun NavigationHost(
             )
         }
     ) {
+        composable<Route.CustomerListRoute> {
+            CustomerListScreen(
+                navigateBack = { navController.popBackStack() }
+            )
+        }
         composable<Route.AddCompanyRoute> (
             typeMap = mapOf(
                 typeOf<Company>() to CustomNavType.CompanyType
