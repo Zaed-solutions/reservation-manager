@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,16 +17,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
@@ -43,8 +37,11 @@ fun TitledTextField(
     isError: Boolean = false,
     errorMessageRes: Int = 0,
     keyboardType: KeyboardType = KeyboardType.Unspecified,
-    ) {
-    var value by remember { mutableStateOf(initialValue) }
+    imeAction: ImeAction = ImeAction.Default,
+    isEnabled: Boolean = true,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+//    var value by remember { mutableStateOf(initialValue) }
     Column(
         modifier = modifier
             .widthIn(max = 400.dp),
@@ -57,9 +54,10 @@ fun TitledTextField(
         )
         OutlinedTextField(
             singleLine = true,
-            value = value,
+            value = initialValue,
+            enabled = isEnabled,
             onValueChange = {
-                value = it
+//                value = it
                 onValueChanged(it)
             },
             shape = MaterialTheme.shapes.small,
@@ -77,13 +75,17 @@ fun TitledTextField(
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
             ),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = keyboardType
+                keyboardType = keyboardType,
+                imeAction = imeAction
             ),
+            keyboardActions = keyboardActions,
             modifier = Modifier
                 .fillMaxWidth(),
             trailingIcon = {
-                AnimatedVisibility(visible = value.isNotBlank()) {
-                    IconButton(onClick = { value = "" }) {
+                AnimatedVisibility(visible = initialValue.isNotBlank()) {
+                    IconButton(onClick = {
+                        onValueChanged("")
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
                             tint = MaterialTheme.colorScheme.secondary,

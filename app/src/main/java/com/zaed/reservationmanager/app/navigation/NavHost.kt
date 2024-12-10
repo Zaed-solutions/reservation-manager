@@ -20,6 +20,7 @@ import com.zaed.reservationmanager.ui.client.create.NewClientDataEntryScreen
 import com.zaed.reservationmanager.ui.addemployee.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.companies.CompaniesScreen
 import com.zaed.reservationmanager.ui.employee.EmployeeListScreen
+import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
 import kotlin.reflect.typeOf
 
 @Composable
@@ -30,7 +31,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.EmployeeListRoute,
+        startDestination = Route.CreateReservationRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -46,6 +47,11 @@ fun NavigationHost(
             )
         }
     ) {
+        composable<Route.CreateReservationRoute> {
+            CreateReservationScreen(
+                navigateBack = { navController.popBackStack() }
+            )
+        }
         composable<Route.EmployeeListRoute>{
             EmployeeListScreen(
                 navigateBack = { navController.popBackStack() }
