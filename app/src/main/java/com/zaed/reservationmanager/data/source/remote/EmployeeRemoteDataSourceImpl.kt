@@ -15,7 +15,7 @@ class EmployeeRemoteDataSourceImpl(
         private val EMPLOYEE_COLLECTION = "employees"
     }
 
-    override fun createEmployee(employee: Employee): Flow<Result<Unit>> = callbackFlow{
+    override fun createEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow{
         try{
             firestore
                 .collection(EMPLOYEE_COLLECTION)
@@ -26,12 +26,12 @@ class EmployeeRemoteDataSourceImpl(
                     if(data.isEmpty){
                         val document = firestore.collection(EMPLOYEE_COLLECTION).document()
                         document.set(employee.copy(id = document.id)).addOnSuccessListener {
-                            trySend(Result.success(Unit))
+                            trySend(Result.success(true))
                         }.addOnFailureListener { e ->
                             trySend(Result.failure(e))
                         }
                     } else {
-                        trySend(Result.failure(Exception("Employee with this name or phone number already exists")))
+                        trySend(Result.success(false))
                     }
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))

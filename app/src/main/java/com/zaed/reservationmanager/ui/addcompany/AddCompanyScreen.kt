@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -78,6 +79,7 @@ fun AddCompanyScreen(
             }
         },
         error = state.error,
+        isNew = state.isNew,
         initialCompany = initialCompany,
         company = state.company
     )
@@ -99,7 +101,7 @@ private fun AddCompanyScreenContent(
         modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 scrollBehavior = scrollBehavior,
                 title = {
                     Text(
