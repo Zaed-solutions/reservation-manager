@@ -55,4 +55,7 @@
     <string name="phone_number_2">Phone Number 2</string>
     <string name="add_new_driver">Add New Driver</string>
     <string name="update_driver">Update Driver</string>
+    <string name="reservation_details">Reservation Details</string>
+    <string name="from">from:</string>
+    <string name="to">to:</string>
 </resources>

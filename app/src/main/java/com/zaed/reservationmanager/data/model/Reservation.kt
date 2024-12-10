@@ -1,6 +1,6 @@
 package com.zaed.reservationmanager.data.model
 
-data class Reservation(
+data class Reservation (
     val id: String = "",
     val date: Long = 0L,
     val time: Long = 0L,
