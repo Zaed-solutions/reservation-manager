@@ -22,4 +22,8 @@ class EmployeeRepositoryImpl (
     override fun getEmployees(): Flow<Result<List<Employee>>> {
         return remoteSource.getEmployees()
     }
+
+    override fun getDrivers(): Flow<Result<List<Employee>>> {
+        return remoteSource.getDrivers()
+    }
 }

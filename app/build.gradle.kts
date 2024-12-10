@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.zaed.reservationmanager"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -102,4 +102,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     //Lottie
     implementation(libs.lottie.compose)
+    implementation("org.apache.poi:poi-ooxml:5.3.0")
+
+
 }

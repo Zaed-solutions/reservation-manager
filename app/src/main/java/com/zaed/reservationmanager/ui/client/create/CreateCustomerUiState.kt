@@ -1,16 +1,18 @@
-package com.zaed.reservationmanager.ui.client
+package com.zaed.reservationmanager.ui.client.create
+
+import com.zaed.reservationmanager.ui.client.ClientUIError
 
 data class NewClientUiState(
     var clientName: String = "",
     var clientNameError: ClientUIError = ClientUIError.NONE,
     var nationality: String = NationalitiesList.Egyptian.name,
     var countryOfResidence: String = CountriesList.Egypt.name,
-    var countryOfResidenceError : ClientUIError =  ClientUIError.NONE,
+    var countryOfResidenceError : ClientUIError = ClientUIError.NONE,
     var mobile: String = "",
-    var mobileError: ClientUIError =  ClientUIError.NONE,
+    var mobileError: ClientUIError = ClientUIError.NONE,
     var email: String = "",
-    var emailError: ClientUIError =  ClientUIError.NONE,
-    var errorMessage: ClientUIError =  ClientUIError.NONE,
+    var emailError: ClientUIError = ClientUIError.NONE,
+    var errorMessage: ClientUIError = ClientUIError.NONE,
     var nationalities : List<String> = NationalitiesList.entries.map { it.name },
     var countries : List<String> = CountriesList.entries.map { it.name },
     var loading: Boolean = false,

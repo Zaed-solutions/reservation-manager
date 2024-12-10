@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.EmployeeType
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.ui.addcompany.AddCompanyUiError
@@ -28,7 +29,7 @@ class AddEmployeeViewModel(
                 _uiState.update { it.copy(employee = initialEmployee, isNew = false) }
             }
             if(isDriver){
-                _uiState.update { oldState -> oldState.copy(isDriver = true, employee = oldState.employee.copy(position = "Driver")) }
+                _uiState.update { oldState -> oldState.copy(isDriver = true, employee = oldState.employee.copy(position = EmployeeType.DRIVER.name)) }
             }
             fetchCompanies()
         }

@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.data.source.remote
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.EmployeeType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -70,7 +71,7 @@ class EmployeeRemoteDataSourceImpl(
 
     override fun getEmployees(): Flow<Result<List<Employee>>> = callbackFlow {
         try{
-            firestore.collection(EMPLOYEE_COLLECTION).addSnapshotListener { value, error ->
+            firestore.collection(EMPLOYEE_COLLECTION).whereNotEqualTo("position", EmployeeType.DRIVER.name).addSnapshotListener { value, error ->
                 if(error != null){
                     trySend(Result.failure(error))
                 } else {
@@ -83,4 +84,22 @@ class EmployeeRemoteDataSourceImpl(
         }
         awaitClose {  }
     }
+    override fun getDrivers(): Flow<Result<List<Employee>>> = callbackFlow {
+        try {
+            firestore.collection(EMPLOYEE_COLLECTION)
+                .whereEqualTo("position", EmployeeType.DRIVER.name)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val employees = value?.toObjects(Employee::class.java)
+                        trySend(Result.success(employees ?: emptyList()))
+                    }
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.client
+package com.zaed.reservationmanager.ui.client.create
 
 sealed interface CreateCustomerUiAction {
     data class UpdateName(val name: String) : CreateCustomerUiAction
