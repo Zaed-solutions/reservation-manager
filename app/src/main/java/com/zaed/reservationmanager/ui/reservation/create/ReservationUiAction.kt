@@ -21,5 +21,7 @@ sealed class ReservationUiAction {
     data class UpdateCustomerName(val name: String) : ReservationUiAction()
     data class UpdateTravelNumber(val number: String) : ReservationUiAction()
     data object SearchClient  : ReservationUiAction()
+    data object AddMovement  : ReservationUiAction()
+    data object GetMovementsForUser  : ReservationUiAction()
 
 }

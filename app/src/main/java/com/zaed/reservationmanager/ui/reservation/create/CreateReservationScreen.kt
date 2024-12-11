@@ -9,23 +9,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,9 +52,6 @@ import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFie
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun CreateReservationScreen(
@@ -117,7 +113,9 @@ fun CreateReservationScreenContent(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var isMovementListSheetVisible by remember { mutableStateOf(false) }
+    var movementListSheetState = rememberModalBottomSheetState()
     var isAddMovementSheetVisible by remember { mutableStateOf(false) }
+    val addMovementSheetState = rememberModalBottomSheetState(true)
     if (userMessage.isNotBlank()) {
         LaunchedEffect(true) {
             scope.launch {
@@ -188,50 +186,6 @@ fun CreateReservationScreenContent(
                 isOptional = false,
                 keyboardType = KeyboardType.Text
             )
-            TitledTextField(
-                title = "Travel No",
-                initialValue = reservation.travelNumber,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateTravelNumber(
-                            newText
-                        )
-                    )
-                },
-                isOptional = false,
-                keyboardType = KeyboardType.Text,
-            )
-            TitledDropDownTextField(
-                title = "Type",
-                selectedValue = newMovement.type,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateReservationType(
-                            type = types[index]
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.TYPE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                options = types,
-            )
-
-            TitledDropDownTextField(
-                title = "Car",
-                selectedValue = newMovement.car,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateReservationCar(
-                            car = cars[index]
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.CAR_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                options = cars,
-            )
             TitledDropDownTextField(
                 title = "CustomerCountry",
                 selectedValue = customer.residenceCountry,
@@ -245,6 +199,20 @@ fun CreateReservationScreenContent(
                 isOptional = false,
                 options = countries,
             )
+            TitledTextField(
+                title = "Travel No",
+                initialValue = reservation.travelNumber,
+                onValueChanged = { newText ->
+                    action(
+                        ReservationUiAction.UpdateTravelNumber(
+                            newText
+                        )
+                    )
+                },
+                isOptional = false,
+                keyboardType = KeyboardType.Text,
+            )
+
             TitledDropDownTextField(
                 title = "Tourist Company",
                 selectedValue = selectedTourismCompany,
@@ -271,110 +239,22 @@ fun CreateReservationScreenContent(
                 isOptional = true,
                 options = employees,
             )
-            TitledDropDownTextField(
-                title = "Travel Company",
-                selectedValue = selectedTravelCompany,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateSelectedTravelCompany(
-                            company = travelCompanies[index]
-                        )
-                    )
-                },
-                isOptional = true,
-                options = travelCompanies,
-            )
-            TitledDropDownTextField(
-                title = "Drivers",
-                selectedValue = newMovement.driver,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateDriver(
-                            driver = drivers[index]
-                        )
-                    )
-                },
-                isOptional = true,
-                options = drivers,
-            )
-            TitledTextField(
-                title = stringResource(R.string.start_location),
-                initialValue = newMovement.startLocation,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateStartLocation(
-                            location = newText
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                keyboardType = KeyboardType.Phone
-            )
-            TitledTextField(
-                title = stringResource(R.string.end_location),
-                initialValue = newMovement.endLocation,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateEndLocation(
-                            location = newText
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                keyboardType = KeyboardType.Phone
-            )
-            TitledTextField(
-                title = "Buying Price",
-                initialValue = newMovement.buyingPrice.toString(),
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateMovementPrice(
-                            price = newText
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.MOVEMENT_PRICE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                keyboardType = KeyboardType.Decimal
-            )
-            TitledTextField(
-                title = "Collection Price",
-                initialValue = newMovement.collectionPrice.toString(),
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateCollectionPrice(
-                            price = newText
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.COLLECTION_PRICE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                keyboardType = KeyboardType.Decimal
-            )
-            TitledTextField(
-                title = "Note",
-                initialValue = newMovement.note,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateNote(
-                            note = newText
-                        )
-                    )
-                },
-                isOptional = true,
-                keyboardType = KeyboardType.Decimal
-            )
+
+
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { isMovementListSheetVisible = true },
+                onClick = {
+                    isMovementListSheetVisible = true
+                    isAddMovementSheetVisible = false
+                    action(ReservationUiAction.GetMovementsForUser)
+                },
+                enabled = if(
+                    customer.phoneNumber.isNotBlank() &&
+                    selectedTourismCompany.isNotBlank()&&
+                    reservation.tourismEmployee.isNotBlank()
+                    )true else false,
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Add New Movement")
@@ -410,9 +290,20 @@ fun CreateReservationScreenContent(
             ModalBottomSheet(
                 onDismissRequest = { isMovementListSheetVisible = false }
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    movements.forEach { movement ->
-                        Text("Movement: ${movement.type}")
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                ) {
+                    if (movements.isEmpty()) {
+                        Text(text = "No movements yet", modifier = Modifier.padding(32.dp))
+                    } else {
+                        LazyColumn {
+                            items(movements) { movement ->
+                                ListItem(
+                                    headlineContent = { Text(movement.reservationId) },
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -432,9 +323,14 @@ fun CreateReservationScreenContent(
         }
         if (isAddMovementSheetVisible) {
             ModalBottomSheet(
-                onDismissRequest = { isAddMovementSheetVisible = false }
+                onDismissRequest = { isAddMovementSheetVisible = false },
+                sheetState =  addMovementSheetState
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
                     DatePickerFieldToModal(
                         onDateSelected = { newDate ->
                             action(
@@ -445,7 +341,7 @@ fun CreateReservationScreenContent(
                         }
                     )
                     TimePickerFieldToModal(
-                        onTimeSelected = {data->
+                        onTimeSelected = { data ->
                             action(
                                 ReservationUiAction.UpdateReservationTime(
                                     time = data
@@ -453,6 +349,147 @@ fun CreateReservationScreenContent(
                             )
                         }
                     )
+                    TitledDropDownTextField(
+                        title = "Type",
+                        selectedValue = newMovement.type,
+                        onValueChanged = { index ->
+                            action(
+                                ReservationUiAction.UpdateReservationType(
+                                    type = types[index]
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.TYPE_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        options = types,
+                    )
+
+                    TitledDropDownTextField(
+                        title = "Car",
+                        selectedValue = newMovement.car,
+                        onValueChanged = { index ->
+                            action(
+                                ReservationUiAction.UpdateReservationCar(
+                                    car = cars[index]
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.CAR_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        options = cars,
+                    )
+
+                    TitledDropDownTextField(
+                        title = "Drivers",
+                        selectedValue = newMovement.driver,
+                        onValueChanged = { index ->
+                            action(
+                                ReservationUiAction.UpdateDriver(
+                                    driver = drivers[index]
+                                )
+                            )
+                        },
+                        isOptional = true,
+                        options = drivers,
+                    )
+                    TitledTextField(
+                        title = stringResource(R.string.start_location),
+                        initialValue = newMovement.startLocation,
+                        onValueChanged = { newText ->
+                            action(
+                                ReservationUiAction.UpdateStartLocation(
+                                    location = newText
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        keyboardType = KeyboardType.Phone
+                    )
+                    TitledTextField(
+                        title = stringResource(R.string.end_location),
+                        initialValue = newMovement.endLocation,
+                        onValueChanged = { newText ->
+                            action(
+                                ReservationUiAction.UpdateEndLocation(
+                                    location = newText
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        keyboardType = KeyboardType.Phone
+                    )
+                    TitledTextField(
+                        title = "Buying Price",
+                        initialValue = newMovement.buyingPrice.toString(),
+                        onValueChanged = { newText ->
+                            action(
+                                ReservationUiAction.UpdateMovementPrice(
+                                    price = newText
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.MOVEMENT_PRICE_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        keyboardType = KeyboardType.Decimal
+                    )
+                    TitledTextField(
+                        title = "Collection Price",
+                        initialValue = newMovement.collectionPrice.toString(),
+                        onValueChanged = { newText ->
+                            action(
+                                ReservationUiAction.UpdateCollectionPrice(
+                                    price = newText
+                                )
+                            )
+                        },
+                        isOptional = false,
+                        isError = errorMessage == ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                        errorMessageRes = errorMessage.messageRes,
+                        keyboardType = KeyboardType.Decimal
+                    )
+                    TitledTextField(
+                        title = "Note",
+                        initialValue = newMovement.note,
+                        onValueChanged = { newText ->
+                            action(
+                                ReservationUiAction.UpdateNote(
+                                    note = newText
+                                )
+                            )
+                        },
+                        isOptional = true,
+                        keyboardType = KeyboardType.Decimal
+                    )
+                    TitledDropDownTextField(
+                        title = "Travel Company",
+                        selectedValue = selectedTravelCompany,
+                        onValueChanged = { index ->
+                            action(
+                                ReservationUiAction.UpdateSelectedTravelCompany(
+                                    company = travelCompanies[index]
+                                )
+                            )
+                        },
+                        isOptional = true,
+                        options = travelCompanies,
+                    )
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            action(ReservationUiAction.AddMovement)
+                            isAddMovementSheetVisible = false
+                        },
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Save Movement")
+                    }
                 }
             }
 
