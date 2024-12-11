@@ -1,15 +1,18 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
+import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.Employee
+
 sealed class ReservationUiAction {
     data class UpdateCustomerNumber(val number: String) : ReservationUiAction()
-    data class UpdateSelectedTourismCompany(val company: String) : ReservationUiAction()
-    data class UpdateSelectedTravelCompany(val company: String) : ReservationUiAction()
-    data class UpdateTourismEmployee(val employee: String) : ReservationUiAction()
+    data class UpdateSelectedTourismCompany(val company: Company) : ReservationUiAction()
+    data class UpdateSelectedTravelCompany(val company: Company) : ReservationUiAction()
+    data class UpdateTourismEmployee(val employee: Employee) : ReservationUiAction()
     data object AddReservation : ReservationUiAction()
     data object Cancel : ReservationUiAction()
     data class UpdateReservationDate(val date: Long?) : ReservationUiAction()
     data class UpdateReservationTime(val time: Long?) : ReservationUiAction()
-    data class UpdateDriver(val driver: String) : ReservationUiAction()
+    data class UpdateDriver(val driver: Employee) : ReservationUiAction()
     data class UpdateReservationType(val type: String) : ReservationUiAction()
     data class UpdateReservationCar(val car: String) : ReservationUiAction()
     data class UpdateCustomerCountry(val country: String) : ReservationUiAction()
@@ -22,6 +25,5 @@ sealed class ReservationUiAction {
     data class UpdateTravelNumber(val number: String) : ReservationUiAction()
     data object SearchClient  : ReservationUiAction()
     data object AddMovement  : ReservationUiAction()
-    data object GetMovementsForUser  : ReservationUiAction()
 
 }

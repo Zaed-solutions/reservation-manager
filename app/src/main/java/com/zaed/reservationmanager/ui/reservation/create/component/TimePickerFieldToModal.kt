@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 
 
 @SuppressLint("SimpleDateFormat")
@@ -29,7 +30,8 @@ import com.zaed.reservationmanager.R
 @Composable
 fun TimePickerFieldToModal(
     modifier: Modifier = Modifier,
-    onTimeSelected: (Long?) -> Unit = {}
+    onTimeSelected: (Long?) -> Unit = {},
+    errorMessage: ReservationError
 ) {
     var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
     var showModal by remember { mutableStateOf(false) }
@@ -41,6 +43,12 @@ fun TimePickerFieldToModal(
         placeholder = { Text("HH / MM / AM_PM") },
         trailingIcon = {
             Icon(Icons.Default.AccessTime, contentDescription = "Select Time")
+        },
+        isError = errorMessage == ReservationError.TIME_IS_REQUIRED,
+        supportingText = {
+            if (errorMessage == ReservationError.TIME_IS_REQUIRED) {
+                Text(stringResource(errorMessage.messageRes))
+            }
         },
         modifier = modifier
             .fillMaxWidth()

@@ -23,6 +23,10 @@ class CompanyRepositoryImpl (
         return remoteSource.getCompanies()
     }
 
+    override fun getCompanies(isDriver: Boolean): Flow<Result<List<Company>>> {
+        return remoteSource.getCompanies(isDriver)
+    }
+
     override fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>> {
         return remoteSource.getCompaniesNames(isDriver)
     }
