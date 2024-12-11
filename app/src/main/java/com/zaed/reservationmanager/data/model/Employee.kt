@@ -17,7 +17,3 @@ data class Employee(
     val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
 )
 
-enum class EmployeeType(){
-    DRIVER,
-    COMPANY_EMPLOYEE
-}

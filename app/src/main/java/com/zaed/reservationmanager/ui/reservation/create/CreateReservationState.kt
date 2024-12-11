@@ -1,14 +1,14 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.data.model.Movement
+import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.client.create.countriesList
 
 data class CreateReservationState(
     val reservation: Reservation = Reservation(),
-    val movements : List<Movement> = emptyList(),
-    val newMovement: Movement = Movement(),
+    val rides : List<Ride> = emptyList(),
+    val newRide: Ride = Ride(),
     val travelCompanies: List<String> = emptyList(),//
     val tourismCompanies: List<String> = emptyList(), //
     val transactionTypes: List<String> = reservationTypesList,

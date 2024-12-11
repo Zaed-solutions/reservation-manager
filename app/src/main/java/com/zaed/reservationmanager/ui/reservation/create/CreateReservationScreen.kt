@@ -42,7 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.data.model.Movement
+import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
@@ -68,8 +68,8 @@ fun CreateReservationScreen(
         reservation = state.reservation,
         travelCompanies = state.travelCompanies,
         tourismCompanies = state.tourismCompanies,
-        movements = state.movements,
-        newMovement = state.newMovement,
+        rides = state.rides,
+        newRide = state.newRide,
         customer = state.customer,
         types = state.transactionTypes,
         cars = state.carTypes,
@@ -96,8 +96,8 @@ fun CreateReservationScreenContent(
     types: List<String> = emptyList(),
     cars: List<String> = emptyList(),
     drivers: List<String> = emptyList(),
-    movements: List<Movement> = emptyList(),
-    newMovement: Movement = Movement(),
+    rides: List<Ride> = emptyList(),
+    newRide: Ride = Ride(),
     employees: List<String> = emptyList(),
     isFieldsEnabled: Boolean = false,
     countries: List<String> = emptyList(),
@@ -259,7 +259,7 @@ fun CreateReservationScreenContent(
             ) {
                 Text("Add New Movement")
             }
-            if (movements.isNotEmpty()) {
+            if (rides.isNotEmpty()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
@@ -294,11 +294,11 @@ fun CreateReservationScreenContent(
                     modifier = Modifier
                         .padding(16.dp)
                 ) {
-                    if (movements.isEmpty()) {
+                    if (rides.isEmpty()) {
                         Text(text = "No movements yet", modifier = Modifier.padding(32.dp))
                     } else {
                         LazyColumn {
-                            items(movements) { movement ->
+                            items(rides) { movement ->
                                 ListItem(
                                     headlineContent = { Text(movement.reservationId) },
                                 )
@@ -351,7 +351,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledDropDownTextField(
                         title = "Type",
-                        selectedValue = newMovement.type,
+                        selectedValue = newRide.type,
                         onValueChanged = { index ->
                             action(
                                 ReservationUiAction.UpdateReservationType(
@@ -367,7 +367,7 @@ fun CreateReservationScreenContent(
 
                     TitledDropDownTextField(
                         title = "Car",
-                        selectedValue = newMovement.car,
+                        selectedValue = newRide.car,
                         onValueChanged = { index ->
                             action(
                                 ReservationUiAction.UpdateReservationCar(
@@ -383,7 +383,7 @@ fun CreateReservationScreenContent(
 
                     TitledDropDownTextField(
                         title = "Drivers",
-                        selectedValue = newMovement.driver,
+                        selectedValue = newRide.driver,
                         onValueChanged = { index ->
                             action(
                                 ReservationUiAction.UpdateDriver(
@@ -396,7 +396,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = stringResource(R.string.start_location),
-                        initialValue = newMovement.startLocation,
+                        initialValue = newRide.startLocation,
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateStartLocation(
@@ -411,7 +411,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = stringResource(R.string.end_location),
-                        initialValue = newMovement.endLocation,
+                        initialValue = newRide.endLocation,
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateEndLocation(
@@ -426,7 +426,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = "Buying Price",
-                        initialValue = newMovement.buyingPrice.toString(),
+                        initialValue = newRide.buyingPrice.toString(),
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateMovementPrice(
@@ -441,7 +441,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = "Collection Price",
-                        initialValue = newMovement.collectedPrice.toString(),
+                        initialValue = newRide.collectedPrice.toString(),
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateCollectionPrice(
@@ -456,7 +456,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = "Note",
-                        initialValue = newMovement.note,
+                        initialValue = newRide.note,
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateNote(

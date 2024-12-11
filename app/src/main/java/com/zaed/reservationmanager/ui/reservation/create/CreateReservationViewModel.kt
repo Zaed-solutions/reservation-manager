@@ -167,7 +167,7 @@ init {
     private fun updateStartLocation(location: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     startLocation = location
                 )
             )
@@ -222,7 +222,7 @@ init {
     private fun updateReservationType(type: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     type = type
                 )
             )
@@ -232,8 +232,8 @@ init {
     private fun updateReservationTime(time: Long) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
-                    date = it.newMovement.date + time
+                newRide = it.newRide.copy(
+                    date = it.newRide.date + time
                 )
             )
         }
@@ -242,7 +242,7 @@ init {
     private fun updateReservationDate(date: Long?) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     date = date ?: 0L
                 )
             )
@@ -252,7 +252,7 @@ init {
     private fun updateReservationCar(car: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     car = car
                 )
             )
@@ -262,7 +262,7 @@ init {
     private fun updateNote(note: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     note = note
                 )
             )
@@ -271,7 +271,7 @@ init {
     private fun updateMovementPrice(price: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     buyingPrice = price.toDouble()
                 )
             )
@@ -281,7 +281,7 @@ init {
     private fun updateEndLocation(location: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     endLocation = location
                 )
             )
@@ -291,7 +291,7 @@ init {
     private fun updateDriver(driver: String) {
         _state.update {
             it.copy(
-                newMovement = it.newMovement.copy(
+                newRide = it.newRide.copy(
                     driver = driver
                 )
             )
@@ -345,7 +345,7 @@ init {
     private fun updateCollectionPrice(price: String) {
         _state.update { oldState ->
             oldState.copy(
-                newMovement = oldState.newMovement.copy(
+                newRide = oldState.newRide.copy(
                     collectedPrice = price.toDouble()
                 )
             )
