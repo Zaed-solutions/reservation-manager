@@ -7,6 +7,7 @@ import com.zaed.reservationmanager.ui.client.ClientUIError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class CustomerRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
@@ -37,6 +38,24 @@ class CustomerRemoteDataSourceImpl(
         }
         awaitClose {  }
     }
+
+    override suspend fun getCustomerByNumber(number: String): Result<Customer>{
+        return try{
+            val task = firestore
+                .collection(CUSTOMER_COLLECTION)
+                .whereEqualTo("phoneNumber", number)
+                .get().await()
+            if(task.isEmpty){
+                Result.failure(Exception("Customer not found"))
+            } else {
+                val customer = task.toObjects(Customer::class.java).first()
+                Result.success(customer)
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     override fun updateCustomer(customer: Customer): Flow<Result<Unit>> = callbackFlow {
         try{

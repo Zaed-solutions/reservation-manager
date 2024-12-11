@@ -23,6 +23,10 @@ sealed interface Route {
     data object EmployeeListRoute: Route
 
     @Serializable
+    data object CreateReservationRoute: Route
+
+
+    @Serializable
     data class ReservationDetailsRoute(val reservationId: String = ""): Route
 
 }
