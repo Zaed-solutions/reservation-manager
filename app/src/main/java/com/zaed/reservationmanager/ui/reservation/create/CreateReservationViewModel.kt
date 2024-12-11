@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import com.zaed.reservationmanager.data.repository.ReservationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 class CreateReservationViewModel(
     private val companyRepository: CompanyRepository,
     private val customerRepository: CustomerRepository,
-    private val employeeRepository: EmployeeRepository
+    private val employeeRepository: EmployeeRepository,
+    private val reservationRepository: ReservationRepository
 ) : ViewModel() {
     val TAG = "CreateReservationViewModel"
 
@@ -117,7 +119,19 @@ init {
             is ReservationUiAction.UpdateCustomerName -> updateCustomerName(reservationUiAction.name)
             ReservationUiAction.SearchClient -> fetchCustomerByNumber(_state.value.customer.phoneNumber)
             is ReservationUiAction.UpdateTravelNumber -> updateTravelNumber(reservationUiAction.number)
+            ReservationUiAction.AddMovement -> TODO()
+            ReservationUiAction.GetMovementsForUser -> getMovementForCustomerAndCompany(
+                _state.value.customer.phoneNumber,
+                _state.value.selectedTravelCompany
+            )
         }
+    }
+
+    private fun getMovementForCustomerAndCompany(
+        phoneNumber: String,
+        selectedTravelCompany: String
+    ) {
+
     }
 
     private fun updateTravelNumber(number: String) {
@@ -254,7 +268,6 @@ init {
             )
         }
     }
-
     private fun updateMovementPrice(price: String) {
         _state.update {
             it.copy(
