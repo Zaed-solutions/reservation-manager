@@ -1,6 +1,8 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
+import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.client.create.countriesList
@@ -8,17 +10,17 @@ import com.zaed.reservationmanager.ui.client.create.countriesList
 data class CreateReservationState(
     val reservation: Reservation = Reservation(),
     val rides : List<Ride> = emptyList(),
+    val date: Long = 0L,
+    val time : Long = 0L,
+    val customer: Customer = Customer(),
     val newRide: Ride = Ride(),
-    val travelCompanies: List<String> = emptyList(),//
-    val tourismCompanies: List<String> = emptyList(), //
+    val travelCompanies: List<Company> = emptyList(),//
+    val tourismCompanies: List<Company> = emptyList(), //
     val transactionTypes: List<String> = reservationTypesList,
     val carTypes: List<String> = carTypesList,
-    val drivers: List<String> = emptyList(),
+    val drivers: List<Employee> = emptyList(),
     val countries: List<String> = countriesList,
-    val employees: List<String> = emptyList(),
-    val customer: Customer = Customer(),
-    val selectedTravelCompany: String = "",
-    val selectedTourismCompany: String = "",
+    val employees: List<Employee> = emptyList(),
     val isFieldsEnabled: Boolean = false,
     val loading: Boolean = false,
     val successStatus: Boolean = false,

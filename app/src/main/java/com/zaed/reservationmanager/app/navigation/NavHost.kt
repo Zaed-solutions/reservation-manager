@@ -30,7 +30,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.ReservationDetailsRoute(),
+        startDestination = Route.CreateReservationRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(

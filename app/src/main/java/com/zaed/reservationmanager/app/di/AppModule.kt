@@ -9,12 +9,16 @@ import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepositoryImpl
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepositoryImpl
+import com.zaed.reservationmanager.data.repository.ReservationRepository
+import com.zaed.reservationmanager.data.repository.ReservationRepositoryImpl
 import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSourceImpl
+import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSourceImpl
 import com.zaed.reservationmanager.ui.company.add.AddCompanyViewModel
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
@@ -45,11 +49,13 @@ val repositoryModule = module {
     singleOf(::CompanyRepositoryImpl) { bind<CompanyRepository>() }
     singleOf(::CustomerRepositoryImpl) { bind<CustomerRepository>() }
     singleOf(::EmployeeRepositoryImpl) { bind<EmployeeRepository>() }
+    singleOf(::ReservationRepositoryImpl) { bind<ReservationRepository>() }
 }
 
 val remoteModule = module {
     singleOf(::CompanyRemoteDataSourceImpl) { bind<CompanyRemoteDataSource>() }
     singleOf(::CustomerRemoteDataSourceImpl) { bind<CustomerRemoteDataSource>() }
     singleOf(::EmployeeRemoteDataSourceImpl) { bind<EmployeeRemoteDataSource>() }
+    singleOf(::ReservationRemoteDataSourceImpl) { bind<ReservationRemoteDataSource>() }
     single<FirebaseFirestore> { Firebase.firestore }
 }

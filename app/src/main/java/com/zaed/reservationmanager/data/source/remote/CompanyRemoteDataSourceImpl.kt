@@ -82,6 +82,27 @@ class CompanyRemoteDataSourceImpl(
         awaitClose { }
     }
 
+    override fun getCompanies(isDriver: Boolean): Flow<Result<List<Company>>>  = callbackFlow {
+        try {
+            firestore.collection(COMPANY_COLLECTION).whereEqualTo(
+                "type",
+                if (isDriver)
+                    CompanyType.TRAVEL
+                else
+                    CompanyType.TOURISM
+            ).get()
+                .addOnSuccessListener { data ->
+                    val companies = data?.toObjects(Company::class.java)
+                    trySend(Result.success(companies ?: emptyList()))
+                }.addOnFailureListener { error ->
+                    trySend(Result.failure(error))
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
     override fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>> = callbackFlow {
         try {
             firestore.collection(COMPANY_COLLECTION).whereEqualTo(

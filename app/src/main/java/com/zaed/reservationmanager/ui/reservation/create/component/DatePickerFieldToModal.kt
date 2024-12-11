@@ -19,11 +19,13 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 
 @Composable
 fun DatePickerFieldToModal(
     modifier: Modifier = Modifier,
-    onDateSelected: (Long?) -> Unit = {}
+    onDateSelected: (Long?) -> Unit = {},
+    errorMessage: ReservationError
 ) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
@@ -35,6 +37,12 @@ fun DatePickerFieldToModal(
         placeholder = { Text("DD/MM/YYYY") },
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Select date")
+        },
+        isError = errorMessage == ReservationError.DATE_IS_REQUIRED,
+        supportingText = {
+            if (errorMessage == ReservationError.DATE_IS_REQUIRED) {
+                Text(stringResource(errorMessage.messageRes))
+            }
         },
         modifier = modifier
             .fillMaxWidth()
