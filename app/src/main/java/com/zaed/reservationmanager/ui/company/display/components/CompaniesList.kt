@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.company.add.components
+package com.zaed.reservationmanager.ui.company.display.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

@@ -35,8 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.ui.company.add.components.CompaniesList
-import com.zaed.reservationmanager.ui.company.add.components.ConfirmDeleteDialog
+import com.zaed.reservationmanager.ui.company.display.components.CompaniesList
+import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel

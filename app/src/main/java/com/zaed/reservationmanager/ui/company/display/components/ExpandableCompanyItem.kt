@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.company.add.components
+package com.zaed.reservationmanager.ui.company.display.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable

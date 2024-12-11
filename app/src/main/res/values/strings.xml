@@ -90,4 +90,13 @@
     <string name="tourism_employee">Tourism Employee</string>
     <string name="send_confirmation_to_client">Send Confirmation to Client</string>
     <string name="confirmation_sent">Confirmation Sent</string>
+    <string name="rides">Rides</string>
+    <string name="travel_company">Travel Company</string>
+    <string name="car">Car</string>
+    <string name="driver">Driver</string>
+    <string name="notes">Notes</string>
+    <string name="send_info_to_client">Send Driver Information to Client</string>
+    <string name="driver_information_sent">Driver Information Sent</string>
+    <string name="ride_info_sent">Ride Information Sent</string>
+    <string name="send_ride_info_to_travel_company">Send Ride Information to Travel Company</string>
 </resources>
