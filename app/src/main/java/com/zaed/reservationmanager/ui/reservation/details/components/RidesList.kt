@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.reservation.details.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
@@ -38,7 +40,8 @@ fun RidesList(
     onSendInfoToTravelCompany: (ride: Ride) -> Unit = {},
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row (
             modifier = Modifier.fillMaxWidth(),
@@ -46,7 +49,7 @@ fun RidesList(
         ) {
             Text(
                 text = stringResource(R.string.rides),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = { onAddRide() }) {
@@ -56,38 +59,51 @@ fun RidesList(
                 )
             }
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(rides){ ride ->
-                //TODO: implement swipe to delete
-                RideItem(
-                    modifier = Modifier.animateItem(),
-                    ride = ride,
-                    onDeleteRide = {
-                        onDeleteRide(ride.id)
-                    },
-                    onCompanyClicked = {
-                        onCompanyClicked(ride.travelCompanyId)
-                    },
-                    onDriverClicked = {
-                        onDriverClicked(ride.driverId)
-                    },
-                    onCopyPhoneNumber = { number ->
-                        onCopyPhoneNumber(number)
-                    },
-                    onMessagePhoneNumber = { number ->
-                        onMessagePhoneNumber(number)
-                    },
-                    onSendDriverInfoToClient = {
-                        onSendDriverInfoToClient(ride.driver, ride.driverPhoneNumber)
-                    },
-                    onSendInfoToTravelCompany = {
-                        onSendInfoToTravelCompany(ride)
+        AnimatedContent(targetState = rides.isEmpty()) { state ->
+            when{
+                state -> {
+                    Text(
+                        modifier = Modifier.padding(top = 36.dp),
+                        text = stringResource(R.string.no_rides_added),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(rides){ ride ->
+                            //TODO: implement swipe to delete
+                            RideItem(
+                                modifier = Modifier.animateItem(),
+                                ride = ride,
+                                onDeleteRide = {
+                                    onDeleteRide(ride.id)
+                                },
+                                onCompanyClicked = {
+                                    onCompanyClicked(ride.travelCompanyId)
+                                },
+                                onDriverClicked = {
+                                    onDriverClicked(ride.driverId)
+                                },
+                                onCopyPhoneNumber = { number ->
+                                    onCopyPhoneNumber(number)
+                                },
+                                onMessagePhoneNumber = { number ->
+                                    onMessagePhoneNumber(number)
+                                },
+                                onSendDriverInfoToClient = {
+                                    onSendDriverInfoToClient(ride.driver, ride.driverPhoneNumber)
+                                },
+                                onSendInfoToTravelCompany = {
+                                    onSendInfoToTravelCompany(ride)
+                                }
+                            )
+                        }
                     }
-                )
+                }
             }
         }
     }
@@ -137,7 +153,7 @@ private fun Preview() {
         )
         RidesList(
             modifier = Modifier.padding(16.dp),
-            rides = rides
+            rides = emptyList()
         )
     }
 }

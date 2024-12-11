@@ -99,4 +99,6 @@
     <string name="driver_information_sent">Driver Information Sent</string>
     <string name="ride_info_sent">Ride Information Sent</string>
     <string name="send_ride_info_to_travel_company">Send Ride Information to Travel Company</string>
+    <string name="no_rides_added">No Rides Added</string>
+    <string name="phone_number_copied_to_clipboard">Phone number copied to clipboard!</string>
 </resources>
