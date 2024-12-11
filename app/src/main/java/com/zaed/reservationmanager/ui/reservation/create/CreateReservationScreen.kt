@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
@@ -22,10 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,9 +48,6 @@ import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFie
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun CreateReservationScreen(
@@ -190,7 +182,7 @@ fun CreateReservationScreenContent(
             )
             TitledTextField(
                 title = "Travel No",
-                initialValue = reservation.travelNumber,
+                initialValue = reservation.flightNumber,
                 onValueChanged = { newText ->
                     action(
                         ReservationUiAction.UpdateTravelNumber(
@@ -344,7 +336,7 @@ fun CreateReservationScreenContent(
             )
             TitledTextField(
                 title = "Collection Price",
-                initialValue = newMovement.collectionPrice.toString(),
+                initialValue = newMovement.collectedPrice.toString(),
                 onValueChanged = { newText ->
                     action(
                         ReservationUiAction.UpdateCollectionPrice(

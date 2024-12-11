@@ -94,7 +94,7 @@ init {
             )
 
             is ReservationUiAction.UpdateReservationTime -> updateReservationTime(
-                reservationUiAction.time
+                reservationUiAction.time?:0L
             )
 
             is ReservationUiAction.UpdateReservationType -> updateReservationType(
@@ -124,7 +124,7 @@ init {
         _state.update {
             it.copy(
                 reservation = it.reservation.copy(
-                    travelNumber = number
+                    flightNumber = number
                 )
             )
         }
@@ -215,11 +215,11 @@ init {
         }
     }
 
-    private fun updateReservationTime(time: Long?) {
+    private fun updateReservationTime(time: Long) {
         _state.update {
             it.copy(
                 newMovement = it.newMovement.copy(
-                    time = time ?: 0L
+                    date = it.newMovement.date + time
                 )
             )
         }
@@ -333,7 +333,7 @@ init {
         _state.update { oldState ->
             oldState.copy(
                 newMovement = oldState.newMovement.copy(
-                    collectionPrice = price.toDouble()
+                    collectedPrice = price.toDouble()
                 )
             )
         }

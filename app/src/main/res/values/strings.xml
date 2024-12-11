@@ -85,4 +85,9 @@
     <string name="reservation_details">Reservation Details</string>
     <string name="from">from:</string>
     <string name="to">to:</string>
+    <string name="tourism_company">Tourism Company</string>
+    <string name="residence">Residence</string>
+    <string name="tourism_employee">Tourism Employee</string>
+    <string name="send_confirmation_to_client">Send Confirmation to Client</string>
+    <string name="confirmation_sent">Confirmation Sent</string>
 </resources>

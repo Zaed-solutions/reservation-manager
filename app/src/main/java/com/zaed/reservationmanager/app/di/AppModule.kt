@@ -15,13 +15,13 @@ import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSourceImpl
-import com.zaed.reservationmanager.ui.addcompany.AddCompanyViewModel
-import com.zaed.reservationmanager.ui.addemployee.AddEmployeeViewModel
-import com.zaed.reservationmanager.ui.companies.CompaniesViewModel
+import com.zaed.reservationmanager.ui.company.add.AddCompanyViewModel
+import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
+import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationViewModel
-import com.zaed.reservationmanager.ui.reservationdetails.ReservationDetailsViewModel
+import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
