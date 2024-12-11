@@ -201,7 +201,7 @@ fun CreateReservationScreenContent(
             )
             TitledTextField(
                 title = "Travel No",
-                initialValue = reservation.travelNumber,
+                initialValue = reservation.flightNumber,
                 onValueChanged = { newText ->
                     action(
                         ReservationUiAction.UpdateTravelNumber(
@@ -441,7 +441,7 @@ fun CreateReservationScreenContent(
                     )
                     TitledTextField(
                         title = "Collection Price",
-                        initialValue = newMovement.collectionPrice.toString(),
+                        initialValue = newMovement.collectedPrice.toString(),
                         onValueChanged = { newText ->
                             action(
                                 ReservationUiAction.UpdateCollectionPrice(
