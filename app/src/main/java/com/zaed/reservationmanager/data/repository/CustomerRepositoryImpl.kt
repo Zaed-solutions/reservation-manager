@@ -22,4 +22,8 @@ class CustomerRepositoryImpl(
     override fun getCustomers(): Flow<Result<List<Customer>>> {
         return remoteSource.getCustomers()
     }
+
+    override suspend fun getCustomerByNumber(number: String): Result<Customer> {
+        return remoteSource.getCustomerByNumber(number)
+    }
 }

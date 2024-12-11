@@ -8,4 +8,5 @@ interface CustomerRemoteDataSource {
     fun updateCustomer(customer: Customer): Flow<Result<Unit>>
     fun deleteCustomer(customerId: String): Flow<Result<Unit>>
     fun getCustomers(): Flow<Result<List<Customer>>>
+    suspend fun getCustomerByNumber(number: String): Result<Customer>
 }
