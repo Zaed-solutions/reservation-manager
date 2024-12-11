@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -186,8 +187,13 @@ init {
                         customer.name ==reservation.clientName
                         &&customer.phoneNumber == reservation.clientPhone
                         &&customer.residenceCountry == reservation.clientCountry
+
                         ){
-                        createReservation()
+                        if(state.value.reservation.id.isBlank()) {
+                            createReservation()
+                        }else{
+                            createRide()
+                        }
                     }else{
                         //TODO HANDLE IF NEW CUSTOMER
                     }
@@ -208,7 +214,6 @@ init {
                     _state.update {
                         it.copy(
                             reservation = it.reservation.copy(id = data),
-//                            successStatus = true
                         )
                     }
                     createRide()
@@ -231,11 +236,11 @@ init {
                 result.onSuccess { data ->
                     _state.update {
                         it.copy(
-                            newRide = it.newRide.copy(id = data),
+                            newRide = Ride().copy(reservationId = _state.value.reservation.id),
                             successStatus = true
                         )
                     }
-                    fetchRideByReservationId(data)
+                    fetchRideByReservationId(_state.value.reservation.id)
                 }.onFailure {
                     _state.update {
                         it.copy(

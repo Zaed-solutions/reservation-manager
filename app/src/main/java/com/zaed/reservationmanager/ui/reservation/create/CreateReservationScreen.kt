@@ -12,9 +12,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -36,17 +41,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
 import com.zaed.reservationmanager.ui.reservation.create.component.DatePickerFieldToModal
 import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFieldToModal
+import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -227,22 +232,32 @@ fun CreateReservationScreenContent(
                 isOptional = true,
                 options = employees.map { it.name },
             )
-
-
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.rides),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = { isAddMovementSheetVisible = true },
+                    enabled = reservation.clientPhone.isNotBlank() &&
+                            reservation.tourismCompany.isNotBlank() &&
+                            reservation.tourismEmployee.isNotBlank(),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Ride"
+                    )
+                }
+            }
+            rides.forEach {ride->
+                RideItem(ride = ride)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    isAddMovementSheetVisible = true
-                },
-                enabled = reservation.clientPhone.isNotBlank() &&
-                reservation.tourismCompany.isNotBlank()&&
-                reservation.tourismEmployee.isNotBlank(),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Add New Ride")
-            }
             if (rides.isNotEmpty()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -273,7 +288,7 @@ fun CreateReservationScreenContent(
         if (isAddMovementSheetVisible) {
             ModalBottomSheet(
                 onDismissRequest = { isAddMovementSheetVisible = false },
-                sheetState =  addMovementSheetState
+                sheetState = addMovementSheetState
             ) {
                 Column(
                     modifier = Modifier
@@ -342,7 +357,7 @@ fun CreateReservationScreenContent(
                             )
                         },
                         isOptional = true,
-                        options = travelCompanies.map{it.name},
+                        options = travelCompanies.map { it.name },
                     )
                     TitledDropDownTextField(
                         title = "Drivers",
@@ -411,7 +426,7 @@ fun CreateReservationScreenContent(
                         title = "Collection Price",
                         initialValue = if (newRide.collectedPrice == 0.0) "" else newRide.collectedPrice.toString(),
                         onValueChanged = { newText ->
-                            if (newText.isNotBlank() &&newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                            if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                                 action(
                                     ReservationUiAction.UpdateCollectionPrice(
                                         price = newText
