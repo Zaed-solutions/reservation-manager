@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -57,9 +58,8 @@ fun ReservationDetailsHeader(
                 contentDescription = "Reservation Date",
                 modifier = Modifier.size(16.dp)
             )
-            //TODO: format date
             Text(
-                text = reservation.date.toString(),
+                text = reservation.date.formatEpochSecondsToDateTime(),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -8,6 +8,7 @@ interface CompanyRepository {
     fun updateCompany(company: Company): Flow<Result<Unit>>
     fun deleteCompany(companyId: String): Flow<Result<Unit>>
     fun getCompanies(): Flow<Result<List<Company>>>
+    fun getTravelCompanies(): Flow<Result<List<Company>>>
     fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>>
     fun getCompanies(isDriver: Boolean): Flow<Result<List<Company>>>
 }

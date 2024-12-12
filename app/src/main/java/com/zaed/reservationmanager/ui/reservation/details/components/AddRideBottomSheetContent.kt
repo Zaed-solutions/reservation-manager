@@ -12,7 +12,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,6 +30,7 @@ import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.reservation.create.component.DatePickerFieldToModal
 import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFieldToModal
+import com.zaed.reservationmanager.ui.util.InputValidator
 
 @Composable
 fun AddRideBottomSheetContent(
@@ -34,15 +38,16 @@ fun AddRideBottomSheetContent(
     types: List<String> = emptyList(),
     cars: List<String> = emptyList(),
     travelCompanies: List<Company> = emptyList(),
+    onFetchDrivers: (String) -> Unit = {},
     drivers: List<Employee> = emptyList(),
     onAddRide: (Ride) -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
-    var newRide = remember {
-        Ride()
+    var newRide by remember {
+        mutableStateOf(Ride())
     }
-    var rideError = remember {
-        ReservationError.NONE
+    var rideError by remember {
+        mutableStateOf(ReservationError.NONE)
     }
     Column(
         modifier = modifier
@@ -102,6 +107,7 @@ fun AddRideBottomSheetContent(
                     travelCompanyPhone = company.phoneNumber,
                     travelCompanyId = company.id
                 )
+                onFetchDrivers(company.id)
             },
             isOptional = true,
             options = travelCompanies.map { it.name },
@@ -185,7 +191,7 @@ fun AddRideBottomSheetContent(
                 )
             },
             isOptional = true,
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Text
         )
         Row(
             modifier = Modifier
@@ -194,15 +200,26 @@ fun AddRideBottomSheetContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            FilledTonalButton(onClick = { onDismiss() }) {
+            FilledTonalButton(
+                modifier = Modifier.weight(1f),
+                onClick = { onDismiss() },
+                shape = RoundedCornerShape(12.dp)
+            ) {
                 Text(
                     text = stringResource(id = R.string.cancel)
                 )
             }
             Button(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.weight(1f),
                 onClick = {
-                    onAddRide(newRide)
+                    val error = InputValidator.validateRide(newRide)
+                    if(error != null){
+                        rideError = error
+                    } else {
+                        onAddRide(newRide)
+                        newRide = Ride()
+                        rideError = ReservationError.NONE
+                    }
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

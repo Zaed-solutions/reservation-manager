@@ -12,6 +12,10 @@ sealed interface ReservationDetailsUiAction {
     data object OnSendConfirmationMessage: ReservationDetailsUiAction
     data class OnDeleteRide(val rideId: String): ReservationDetailsUiAction
     data class OnAddRide(val ride: Ride): ReservationDetailsUiAction
-    data class OnSendDriverInfoToCustomer(val driverName: String, val driverPhoneNumber: String): ReservationDetailsUiAction
+    data class OnSendDriverInfoToCustomer(val rideId: String, val driverName: String, val driverPhoneNumber: String): ReservationDetailsUiAction
     data class OnSendInfoToTravelCompany(val ride: Ride): ReservationDetailsUiAction
+    data class UpdateDrivers(val companyId: String): ReservationDetailsUiAction
+    data object OnConfirmationMessageSent: ReservationDetailsUiAction
+    data class OnDriverInfoSent(val rideId: String): ReservationDetailsUiAction
+    data class OnInfoSentToTravelCompany(val rideId: String): ReservationDetailsUiAction
 }

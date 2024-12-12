@@ -9,5 +9,5 @@ interface CompanyRemoteDataSource {
     fun deleteCompany(companyId: String): Flow<Result<Unit>>
     fun getCompanies(): Flow<Result<List<Company>>>
     fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>>
-    fun getCompanies(isDriver: Boolean): Flow<Result<List<Company>>>
+    fun getCompanies(isTravel: Boolean): Flow<Result<List<Company>>>
 }

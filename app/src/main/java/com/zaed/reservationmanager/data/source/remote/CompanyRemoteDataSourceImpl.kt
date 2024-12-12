@@ -82,11 +82,11 @@ class CompanyRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun getCompanies(isDriver: Boolean): Flow<Result<List<Company>>>  = callbackFlow {
+    override fun getCompanies(isTravel: Boolean): Flow<Result<List<Company>>>  = callbackFlow {
         try {
             firestore.collection(COMPANY_COLLECTION).whereEqualTo(
                 "type",
-                if (isDriver)
+                if (isTravel)
                     CompanyType.TRAVEL
                 else
                     CompanyType.TOURISM

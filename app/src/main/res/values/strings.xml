@@ -126,4 +126,27 @@
     <string name="fill_all_required_fields_to_add_ride">Fill All Required Fields To Add Ride</string>
     <string name="tourism_employee_is_required">Tourism employee is required</string>
     <string name="whatsapp_is_not_installed">WhatsApp is not installed</string>
+    <string name="collected_price">Collected Price</string>
+    <string name="selling_price">Selling Price</string>
+    <string name="we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival">We have a confirmed travel booking for you. Kindly contact me upon your safe arrival.</string>
+    <string name="it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing">It is our pleasure to serve you. Your driver, %1$s, can be reached at %2$s. Wishing you a safe and pleasant journey, God willing.</string>
+    <string name="transportation_details">
+        Dear %1$s,
+
+        Please find below the transportation details for the guest:
+
+        - Guest Name: %2$s
+        - Guest Phone Number: %3$s
+        - Ride Date: %4$s
+        - Start Location: %5$s
+        - End Location: %6$s
+        - Flight Number: %7$s
+        - Ride Price: %8$s
+        - Payment Collection: %9$s
+
+        Kindly confirm receipt of this information and ensure timely arrangements. Please do not hesitate to contact us if you require further details.
+
+        Best regards,
+        Al-Mosaferoon Company
+    </string>
 </resources>
