@@ -1,33 +1,13 @@
-package com.zaed.reservationmanager.ui.employee.display
-
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -38,60 +18,61 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.ui.client.create.CenterAlignedTopBar
-import com.zaed.reservationmanager.ui.driver.components.EmployeeListWithTitle
+import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.ui.client.display.components.CustomerListWithTitle
+import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import org.koin.androidx.compose.koinViewModel
+import java.util.Date
 
 @Composable
-fun EmployeeListScreen(
-    viewModel: EmployeeListViewModel = koinViewModel(),
+fun CustomerListScreen(
+    viewModel: CustomerListViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
-    onNavigateToAddEmployee: () -> Unit,
-    onNavigateToEmployeeDetails: () -> Unit
+    onNavigateToAddClient: () -> Unit = {},
+    onNavigateToCustomerDetails: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    EmployeeListWithScreenContent(
-        employees = state.employees,
-        onShowNavDrawer = onShowNavDrawer,
-        onNavigateToAddEmployee = onNavigateToAddEmployee,
-        onNavigateToEmployeeDetails = onNavigateToEmployeeDetails
+    CustomerListWithScreenContent(
+        customers = state.customers,
+        onNavigateToAddClient = onNavigateToAddClient,
+        onShowNavDrawer = {
+            onShowNavDrawer()
+        },
+        onViewCustomerDetails = { customerId ->
+            onNavigateToCustomerDetails(customerId)
+        }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmployeeListWithScreenContent(
-    employees: List<Employee>,
+fun CustomerListWithScreenContent(
+    customers: List<Customer>,
     onShowNavDrawer: () -> Unit = {},
-    onNavigateToAddEmployee: () -> Unit = {},
-    onNavigateToEmployeeDetails: () -> Unit = {}
+    onNavigateToAddClient: () -> Unit = {},
+    onViewCustomerDetails: (String) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.employees),
+                        text = stringResource(R.string.customers),
                         style = MaterialTheme.typography.titleLarge
                     )
-                        },
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = { onShowNavDrawer() }
@@ -105,7 +86,7 @@ fun EmployeeListWithScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigateToAddEmployee()} ) {
+            FloatingActionButton(onClick = { onNavigateToAddClient() }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
             }
         }
@@ -117,9 +98,9 @@ fun EmployeeListWithScreenContent(
                 .padding(16.dp)
         ) {
             var selected by remember { mutableStateOf("") }
-            val companiesList = employees.map { it.company }.distinct()
+            val countriesList = customers.map { it.residenceCountry }.distinct()
             LazyRow {
-                items(companiesList) { country ->
+                items(countriesList) { country ->
                     FilterChip(
                         modifier = Modifier.padding(end = 8.dp),
                         onClick = {
@@ -147,47 +128,35 @@ fun EmployeeListWithScreenContent(
                     )
                 }
             }
-            EmployeeListWithTitle(
-                employees = if (selected == "") employees else employees.filter { it.company == selected },
-                onEmployeeDetailsClicked = { employeeId ->
-                    onNavigateToEmployeeDetails()
-                }
+            CustomerListWithTitle(
+                customers =if (selected == "") customers else customers.filter { it.residenceCountry == selected },
+                onViewCustomerDetailsClicked = onViewCustomerDetails
             )
         }
     }
 }
 
 
-val mockEmployees = listOf(
-    Employee(
-        id = "1",
-        name = "John Doe",
-        nationality = "USA",
-        company = "ABC Company",
-        phoneNumber1 = "123-456-7890",
-        phoneNumber2 = "9787559555",
-        email = "william.henry.moody@my-own-personal-domain.com",
-    ),
-    Employee(
-        id = "1",
-        name = "John Doe",
-        nationality = "USA",
-        company = "AB Company",
-        phoneNumber1 = "123-456-7890",
-        phoneNumber2 = "9787559555",
-        email = "william.henry.moody@my-own-personal-domain.com",
-    ),
-
-
+val mockCustomers = listOf(
+    Customer("1", "Alice", "USA", "Canada", "+123456789", "alice@example.com", Date(2023, 11, 25)),
+    Customer("2", "Bob", "UK", "UK", "+987654321", "bob@example.com", Date(2024, 12, 1)),
+    Customer(
+        "3",
+        "Charlie",
+        "Canada",
+        "USA",
+        "+456789123",
+        "charlie@example.com",
+        Date(2024, 10, 15)
+    )
 )
-
 
 @Composable
 @Preview
 fun CustomerListScreenPreview() {
     ReservationManagerTheme {
-        EmployeeListWithScreenContent(
-            employees = mockEmployees,
+        CustomerListWithScreenContent(
+            customers = mockCustomers,
             onShowNavDrawer = {}
         )
     }

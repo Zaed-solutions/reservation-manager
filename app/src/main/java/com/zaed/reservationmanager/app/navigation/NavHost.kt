@@ -6,7 +6,12 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,6 +22,7 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.client.create.NewClientDataEntryScreen
 import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.company.display.CompaniesScreen
+import com.zaed.reservationmanager.ui.driver.DriverListScreen
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListScreen
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
@@ -29,11 +35,12 @@ private const val TAG: String = "NavigationHost"
 fun NavigationHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    onShowNavDrawer: () -> Unit,
 ) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.ReservationDetailsRoute(reservationId = "T6uc2xT8I2SD5dDRcQmJ"),
+        startDestination = Route.ReservationListRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -49,21 +56,6 @@ fun NavigationHost(
             )
         }
     ) {
-        composable<Route.CreateReservationRoute> {
-            CreateReservationScreen(
-                navigateBack = { navController.popBackStack() }
-            )
-        }
-        composable<Route.EmployeeListRoute> {
-            EmployeeListScreen(
-                navigateBack = { navController.popBackStack() }
-            )
-        }
-        composable<Route.CustomerListRoute> {
-            CustomerListScreen(
-                navigateBack = { navController.popBackStack() }
-            )
-        }
         composable<Route.AddCompanyRoute>(
             typeMap = mapOf(
                 typeOf<Company>() to CustomNavType.CompanyType
@@ -75,9 +67,21 @@ fun NavigationHost(
                 onBackPressed = { navController.popBackStack() }
             )
         }
+        composable<Route.AddEmployeeRoute>(
+            typeMap = mapOf(
+                typeOf<Employee>() to CustomNavType.EmployeeType
+            )
+        ) { backStackEntry ->
+            val args = backStackEntry.toRoute<Route.AddEmployeeRoute>()
+            AddEmployeeScreen(
+                initialEmployee = args.employee,
+                isDriver = args.isDriver,
+                onBackPressed = { navController.popBackStack() }
+            )
+        }
         composable<Route.CompaniesScreen> {
             CompaniesScreen(
-                onShowNavDrawer = { /*TODO*/ },
+                onShowNavDrawer = { onShowNavDrawer() },
                 onNavigateToEditCompany = { company ->
                     navController.navigate(Route.AddCompanyRoute(company))
                 },
@@ -92,16 +96,53 @@ fun NavigationHost(
                 navigateBack = { navController.popBackStack() }
             )
         }
-        composable<Route.AddEmployeeRoute>(
-            typeMap = mapOf(
-                typeOf<Employee>() to CustomNavType.EmployeeType
+        composable<Route.CustomerListRoute> {
+            CustomerListScreen(
+                onShowNavDrawer = { onShowNavDrawer() },
+                onNavigateToAddClient = {
+                    navController.navigate(Route.NewCLientRoute)
+                },
+                onNavigateToCustomerDetails = {
+                    /*TODO*/
+                }
             )
-        ) { backStackEntry ->
-            val args = backStackEntry.toRoute<Route.AddEmployeeRoute>()
-            AddEmployeeScreen(
-                initialEmployee = args.employee,
-                isDriver = args.isDriver,
-                onBackPressed = { navController.popBackStack() }
+        }
+        composable<Route.ReservationListRoute> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                Text(
+                    text = "Reservation List Screen",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
+        composable<Route.DriversListRoute> {
+            DriverListScreen (
+                onShowNavDrawer = { onShowNavDrawer() },
+                onNavigateToAddDriver = {
+                    navController.navigate(Route.AddEmployeeRoute(isDriver = true))
+                },
+                onNavigateToEmployeeDetails = {
+                    /*TODO*/
+                }
+            )
+        }
+        composable<Route.EmployeeListRoute> {
+            EmployeeListScreen(
+                onShowNavDrawer = { onShowNavDrawer() },
+                onNavigateToAddEmployee = {
+                    navController.navigate(Route.AddEmployeeRoute(isDriver = false))
+                },
+                onNavigateToEmployeeDetails = {
+                    /*TODO*/
+                }
+            )
+        }
+        composable<Route.CreateReservationRoute> {
+            CreateReservationScreen(
+                navigateBack = { navController.popBackStack() }
             )
         }
         composable<Route.ReservationDetailsRoute> { navBackStackEntry ->
