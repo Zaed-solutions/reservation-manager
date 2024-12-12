@@ -89,15 +89,18 @@ fun ExpandableCompanyItem(
                 ) {
                     DetailRow(
                         label = stringResource(R.string.phone_number),
-                        value = company.phoneNumber
+                        value = company.phoneNumber,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.fax_number),
-                        value = company.faxNumber
+                        value = company.faxNumber,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.email),
-                        value = company.email
+                        value = company.email,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
                         text = stringResource(R.string.view_details),

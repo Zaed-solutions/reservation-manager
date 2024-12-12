@@ -91,25 +91,30 @@ fun ExpandableEmployeeCard(
                     if(isDriver){
                         DetailRow(
                             label = stringResource(R.string.nationality),
-                            value = employee.nationality
+                            value = employee.nationality,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     } else {
                         DetailRow(
                             label = stringResource(R.string.position),
-                            value = employee.position
+                            value = employee.position,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                     DetailRow(
                         label = stringResource(R.string.phone_number_2),
-                        value = employee.phoneNumber2
+                        value = employee.phoneNumber2,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.email),
-                        value = employee.email
+                        value = employee.email,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.created_at),
-                        value = employee.createdAtEpochSeconds.formatEpochSecondsToDateTime()
+                        value = employee.createdAtEpochSeconds.formatEpochSecondsToDateTime(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
                         text = stringResource(R.string.view_details),
@@ -125,6 +130,21 @@ fun ExpandableEmployeeCard(
                     ) {
                         TextButton(
                             contentPadding = PaddingValues(0.dp),
+                            onClick = onEditClicked,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(R.string.edit),
+                                modifier = Modifier.wrapContentWidth()
+                            )
+                        }
+                        TextButton(
+                            contentPadding = PaddingValues(0.dp),
                             onClick = onDeleteClicked,
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.textButtonColors(
@@ -137,24 +157,7 @@ fun ExpandableEmployeeCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Delete",
-                                modifier = Modifier.wrapContentWidth()
-                            )
-                        }
-
-
-                        TextButton(
-                            contentPadding = PaddingValues(0.dp),
-                            onClick = onEditClicked,
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = null,
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Edit",
+                                text = stringResource(R.string.delete),
                                 modifier = Modifier.wrapContentWidth()
                             )
                         }

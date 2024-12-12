@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -19,20 +20,22 @@ fun DetailRow(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.titleMedium,
     onClick: (() -> Unit) = {},
     onLongClick: (() -> Unit) = {}
+
 ) {
     Row(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = "$label:",
-            style = MaterialTheme.typography.titleMedium,
+            style = style,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.titleMedium,
+            style = style,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
                 .padding(start = 8.dp)

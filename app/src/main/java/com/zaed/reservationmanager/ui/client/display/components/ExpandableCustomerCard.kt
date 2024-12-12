@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.ui.client.display.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,26 +88,32 @@ fun ExpandableCustomerCard(
                 ) {
                     DetailRow(
                         label = stringResource(R.string.nationality),
-                        value = customer.nationality
+                        value = customer.nationality,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.residence_country),
-                        value = customer.residenceCountry
+                        value = customer.residenceCountry,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.email),
-                        value = customer.email
+                        value = customer.email,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.created_at),
-                        value = customer.createdAt.toString()
+                        value = customer.createdAt.toString(),
+                        style = MaterialTheme.typography.bodyMedium
                     )
-                    TextButton(
-                        contentPadding = PaddingValues(0.dp),
-                        onClick = onViewDetailsClicked,
-                    ) {
-                        Text(text = stringResource(R.string.view_details))
-                    }
+                    Text(
+                        text = stringResource(R.string.view_details),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable {
+                            onViewDetailsClicked()
+                        }
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
