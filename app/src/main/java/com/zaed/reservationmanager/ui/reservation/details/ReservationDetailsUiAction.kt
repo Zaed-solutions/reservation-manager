@@ -10,6 +10,8 @@ sealed interface ReservationDetailsUiAction {
     data class OnEmployeeClicked(val employeeId: String, val isDriver: Boolean = false): ReservationDetailsUiAction
     data class OnCompanyClicked(val companyId: String, val isTravel: Boolean = false): ReservationDetailsUiAction
     data object OnSendConfirmationMessage: ReservationDetailsUiAction
+    data class OnDeleteRide(val rideId: String): ReservationDetailsUiAction
+    data class OnAddRide(val ride: Ride): ReservationDetailsUiAction
     data class OnSendDriverInfoToCustomer(val driverName: String, val driverPhoneNumber: String): ReservationDetailsUiAction
     data class OnSendInfoToTravelCompany(val ride: Ride): ReservationDetailsUiAction
 }

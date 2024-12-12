@@ -180,6 +180,7 @@ private fun CompaniesScreenContent(
                     sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
+                        label = stringResource(id = R.string.company),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
                             clickedCompanyId = ""
