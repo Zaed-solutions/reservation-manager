@@ -20,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,9 +47,8 @@ import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
+import com.zaed.reservationmanager.ui.reservation.create.component.AddRideBottomSheet
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
-import com.zaed.reservationmanager.ui.reservation.create.component.DatePickerFieldToModal
-import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFieldToModal
 import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
@@ -270,7 +268,7 @@ fun CreateReservationScreenContent(
                         onClick = { action(ReservationUiAction.AddReservation) },
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text(stringResource(R.string.add))
+                        Text(stringResource(R.string.save_reservation))
                     }
                     Button(
                         modifier = Modifier
@@ -286,186 +284,17 @@ fun CreateReservationScreenContent(
 
         }
         if (isAddMovementSheetVisible) {
-            ModalBottomSheet(
-                onDismissRequest = { isAddMovementSheetVisible = false },
-                sheetState = addMovementSheetState
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    DatePickerFieldToModal(
-                        errorMessage = errorMessage,
-                        onDateSelected = { newDate ->
-                            action(
-                                ReservationUiAction.UpdateReservationDate(
-                                    newDate
-                                )
-                            )
-                        }
-                    )
-                    TimePickerFieldToModal(
-                        errorMessage = errorMessage,
-                        onTimeSelected = { data ->
-                            action(
-                                ReservationUiAction.UpdateReservationTime(
-                                    time = data
-                                )
-                            )
-                        }
-                    )
-                    TitledDropDownTextField(
-                        title = "Type",
-                        selectedValue = newRide.type,
-                        onValueChanged = { index ->
-                            action(
-                                ReservationUiAction.UpdateReservationType(
-                                    type = types[index]
-                                )
-                            )
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.TYPE_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        options = types,
-                    )
-
-                    TitledDropDownTextField(
-                        title = "Car",
-                        selectedValue = newRide.car,
-                        onValueChanged = { index ->
-                            action(
-                                ReservationUiAction.UpdateReservationCar(
-                                    car = cars[index]
-                                )
-                            )
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.CAR_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        options = cars,
-                    )
-                    TitledDropDownTextField(
-                        title = "Travel Company",
-                        selectedValue = newRide.travelCompany,
-                        onValueChanged = { index ->
-                            action(
-                                ReservationUiAction.UpdateSelectedTravelCompany(
-                                    company = travelCompanies[index]
-                                )
-                            )
-                        },
-                        isOptional = true,
-                        options = travelCompanies.map { it.name },
-                    )
-                    TitledDropDownTextField(
-                        title = "Drivers",
-                        selectedValue = newRide.driver,
-                        onValueChanged = { index ->
-                            action(
-                                ReservationUiAction.UpdateDriver(
-                                    driver = drivers[index]
-                                )
-                            )
-                        },
-                        isOptional = true,
-                        options = drivers.map { it.name },
-//                        isError = errorMessage == ReservationError.DRIVER_IS_REQUIRED,
-//                        errorMessageRes = errorMessage.messageRes,
-                    )
-                    TitledTextField(
-                        title = stringResource(R.string.start_location),
-                        initialValue = newRide.startLocation,
-                        onValueChanged = { newText ->
-                            action(
-                                ReservationUiAction.UpdateStartLocation(
-                                    location = newText
-                                )
-                            )
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.START_LOCATION_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        keyboardType = KeyboardType.Phone
-                    )
-                    TitledTextField(
-                        title = stringResource(R.string.end_location),
-                        initialValue = newRide.endLocation,
-                        onValueChanged = { newText ->
-                            action(
-                                ReservationUiAction.UpdateEndLocation(
-                                    location = newText
-                                )
-                            )
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.END_LOCATION_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        keyboardType = KeyboardType.Phone
-                    )
-                    TitledTextField(
-                        title = "Buying Price",
-                        initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toString(),
-                        onValueChanged = { newText ->
-                            if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                                action(
-                                    ReservationUiAction.UpdateMovementPrice(
-                                        price = newText
-                                    )
-                                )
-
-                            }
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.BUYING_PRICE_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        keyboardType = KeyboardType.Decimal
-                    )
-                    TitledTextField(
-                        title = "Collection Price",
-                        initialValue = if (newRide.collectedPrice == 0.0) "" else newRide.collectedPrice.toString(),
-                        onValueChanged = { newText ->
-                            if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                                action(
-                                    ReservationUiAction.UpdateCollectionPrice(
-                                        price = newText
-                                    )
-                                )
-                            }
-                        },
-                        isOptional = false,
-                        isError = errorMessage == ReservationError.COLLECTION_PRICE_IS_REQUIRED,
-                        errorMessageRes = errorMessage.messageRes,
-                        keyboardType = KeyboardType.Decimal
-                    )
-                    TitledTextField(
-                        title = "Note",
-                        initialValue = newRide.note,
-                        onValueChanged = { newText ->
-
-                            action(
-                                ReservationUiAction.UpdateNote(
-                                    note = newText
-                                )
-                            )
-                        },
-                        isOptional = true,
-                        keyboardType = KeyboardType.Decimal
-                    )
-
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            action(ReservationUiAction.AddMovement)
-//                            isAddMovementSheetVisible = false
-                        },
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Save Ride")
-                    }
-                }
-            }
+            AddRideBottomSheet(
+                addMovementSheetState,
+                errorMessage,
+                action,
+                newRide,
+                types,
+                cars,
+                travelCompanies,
+                drivers,
+                onDismissRequest = { isAddMovementSheetVisible = false }
+            )
 
         }
     }

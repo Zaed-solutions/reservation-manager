@@ -106,4 +106,10 @@
     <string name="start_location_is_required">Start location is required</string>
     <string name="end_location_is_required">End Location is required</string>
     <string name="buying_price_is_required">Buying price is required</string>
+    <string name="save_reservation">Save Reservation</string>
+    <string name="drivers">Drivers</string>
+    <string name="buying_price">Buying Price</string>
+    <string name="collection_price">Collection Price</string>
+    <string name="note">Note</string>
+    <string name="save_ride">Save Ride</string>
 </resources>
