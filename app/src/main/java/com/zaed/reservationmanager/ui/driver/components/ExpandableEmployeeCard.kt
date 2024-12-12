@@ -120,7 +120,7 @@ fun ExpandableEmployeeCard(
                         text = stringResource(R.string.view_details),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable {
+                        modifier = Modifier.padding(top = 4.dp).clickable {
                             onEmployeeDetailsClicked()
                         }
                     )

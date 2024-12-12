@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.reservation.details.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
@@ -25,25 +26,28 @@ fun DetailRow(
     onLongClick: (() -> Unit) = {}
 
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "$label:",
-            style = style,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-        )
-        Text(
-            text = value,
-            style = style,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .combinedClickable(
-                    onClick = { onClick() },
-                    onLongClick = { onLongClick() }
-                )
-        )
+    AnimatedVisibility(value.isNotBlank()) {
+
+        Row(
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "$label:",
+                style = style,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+            )
+            Text(
+                text = value,
+                style = style,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .combinedClickable(
+                        onClick = { onClick() },
+                        onLongClick = { onLongClick() }
+                    )
+            )
+        }
     }
 }
 

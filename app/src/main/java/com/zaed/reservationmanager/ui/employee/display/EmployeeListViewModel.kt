@@ -1,8 +1,10 @@
 package com.zaed.reservationmanager.ui.employee.display
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -36,6 +38,24 @@ class EmployeeListViewModel (
                             errorMessage = it.errorMessage
                         )
                     }
+                }
+            }
+        }
+    }
+    fun deleteEmployee(employeeId: String){
+        viewModelScope.launch (Dispatchers.IO){
+            employeeRepository.deleteEmployee(employeeId).collect{result->
+                result.onSuccess {
+                    Log.d("EmployeeListViewModel", "Employee deleted successfully")
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            loading = false,
+                            errorMessage = it.errorMessage
+                        )
+                    }
+                    Log.e("EmployeeListViewModel", "Error deleting employee")
+                    it.printStackTrace()
                 }
             }
         }

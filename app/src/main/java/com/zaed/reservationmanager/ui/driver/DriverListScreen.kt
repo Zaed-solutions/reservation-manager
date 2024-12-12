@@ -41,6 +41,7 @@ fun DriverListScreen(
     viewModel: DriverListViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToAddDriver: () -> Unit,
+    onNavigateToEditDriver: (Employee) -> Unit,
     onNavigateToEmployeeDetails: (String) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -48,7 +49,13 @@ fun DriverListScreen(
         drivers = state.drivers,
         onShowNavDrawer = onShowNavDrawer,
         onNavigateToAddDriver = onNavigateToAddDriver,
-        onNavigateToEmployeeDetails = onNavigateToEmployeeDetails
+        onNavigateToEmployeeDetails = onNavigateToEmployeeDetails,
+        onEditEmployee = {
+            onNavigateToEditDriver(it)
+        },
+        onDeleteEmployee = {
+            viewModel.deleteEmployee(it)
+        }
     )
 }
 
@@ -58,7 +65,9 @@ fun DriverListWithScreenContent(
     drivers: List<Employee>,
     onShowNavDrawer: () -> Unit = {},
     onNavigateToAddDriver: () -> Unit = {},
-    onNavigateToEmployeeDetails: (String) -> Unit = {}
+    onNavigateToEmployeeDetails: (String) -> Unit = {},
+    onEditEmployee: (Employee) -> Unit = {},
+    onDeleteEmployee: (String) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -129,7 +138,9 @@ fun DriverListWithScreenContent(
                 isDriver = true,
                 onEmployeeDetailsClicked = { employeeId ->
                     onNavigateToEmployeeDetails(employeeId)
-                }
+                },
+                onDeleteEmployee = onDeleteEmployee,
+                onEditEmployee = onEditEmployee
             )
         }
     }

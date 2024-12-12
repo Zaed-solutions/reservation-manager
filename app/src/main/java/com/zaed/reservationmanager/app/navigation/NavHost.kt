@@ -136,6 +136,9 @@ fun NavigationHost(
                 },
                 onNavigateToEmployeeDetails = {
                     /*TODO*/
+                },
+                onNavigateToEditDriver = { driver ->
+                    navController.navigate(Route.AddEmployeeRoute(driver, isDriver = true))
                 }
             )
         }
@@ -147,6 +150,9 @@ fun NavigationHost(
                 },
                 onNavigateToEmployeeDetails = {
                     /*TODO*/
+                },
+                onNavigateToEditEmployee = { employee ->
+                    navController.navigate(Route.AddEmployeeRoute(employee, isDriver = false))
                 }
             )
         }

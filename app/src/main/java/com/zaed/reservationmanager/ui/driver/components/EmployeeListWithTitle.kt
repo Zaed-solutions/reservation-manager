@@ -13,7 +13,9 @@ fun EmployeeListWithTitle(
     modifier: Modifier = Modifier,
     employees: List<Employee>,
     isDriver: Boolean = false,
-    onEmployeeDetailsClicked: (String) -> Unit
+    onEmployeeDetailsClicked: (String) -> Unit,
+    onDeleteEmployee: (String) -> Unit,
+    onEditEmployee: (Employee) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -23,8 +25,12 @@ fun EmployeeListWithTitle(
             ExpandableEmployeeCard(
                 employee = employee,
                 isDriver = isDriver,
-                onDeleteClicked = {},
-                onEditClicked = {},
+                onDeleteClicked = {
+                    onDeleteEmployee(employee.id)
+                },
+                onEditClicked = {
+                    onEditEmployee(employee)
+                },
                 onEmployeeDetailsClicked = {
                     onEmployeeDetailsClicked(employee.id)
                 }
