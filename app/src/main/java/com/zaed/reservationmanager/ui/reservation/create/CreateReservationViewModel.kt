@@ -3,6 +3,10 @@ package com.zaed.reservationmanager.ui.reservation.create
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -23,14 +27,15 @@ class CreateReservationViewModel(
     private val _state = MutableStateFlow(CreateReservationState())
     val state = _state.asStateFlow()
 
-init {
-    fetchTravelCompanies()
-    fetchTourismCompanies()
-}
+    init {
+        fetchTravelCompanies()
+        fetchTourismCompanies()
+    }
+
     private fun fetchTourismCompanies() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            companyRepository.getCompaniesNames(isDriver = false).collect { result ->
+            companyRepository.getCompanies(isDriver = false).collect { result ->
                 result.onSuccess { companies ->
                     _state.update {
                         it.copy(
@@ -47,13 +52,14 @@ init {
                     }
                 }
             }
-        }    }
+        }
+    }
 
 
     private fun fetchTravelCompanies() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            companyRepository.getCompaniesNames(isDriver = true).collect { result ->
+            companyRepository.getCompanies(isDriver = true).collect { result ->
                 result.onSuccess { companies ->
                     _state.update {
                         it.copy(
@@ -76,7 +82,7 @@ init {
     fun handleAction(reservationUiAction: ReservationUiAction) {
         when (reservationUiAction) {
             ReservationUiAction.AddReservation -> TODO()
-            ReservationUiAction.Cancel -> TODO()
+            ReservationUiAction.Cancel -> cancelReservation()
             is ReservationUiAction.UpdateCollectionPrice -> updateCollectionPrice(
                 reservationUiAction.price
             )
@@ -96,7 +102,7 @@ init {
             )
 
             is ReservationUiAction.UpdateReservationTime -> updateReservationTime(
-                reservationUiAction.time?:0L
+                reservationUiAction.time ?: 0L
             )
 
             is ReservationUiAction.UpdateReservationType -> updateReservationType(
@@ -117,22 +123,194 @@ init {
             )
 
             is ReservationUiAction.UpdateCustomerName -> updateCustomerName(reservationUiAction.name)
-            ReservationUiAction.SearchClient -> fetchCustomerByNumber(_state.value.customer.phoneNumber)
+            ReservationUiAction.SearchClient -> fetchCustomerByNumber(_state.value.reservation.clientPhone)
             is ReservationUiAction.UpdateTravelNumber -> updateTravelNumber(reservationUiAction.number)
-            ReservationUiAction.AddMovement -> TODO()
-            ReservationUiAction.GetMovementsForUser -> getMovementForCustomerAndCompany(
-                _state.value.customer.phoneNumber,
-                _state.value.selectedTravelCompany
-            )
+            ReservationUiAction.AddMovement -> addMovements()
         }
     }
 
-    private fun getMovementForCustomerAndCompany(
-        phoneNumber: String,
-        selectedTravelCompany: String
-    ) {
-
+    private fun cancelReservation() {
+        _state.update {
+            CreateReservationState()
+        }
     }
+
+    private fun addMovements() {
+        viewModelScope.launch {
+            with(_state.value) {
+                if (newRide.date == 0L) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.DATE_IS_REQUIRED,
+                        )
+                    }
+                } else if (time == 0L) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.TIME_IS_REQUIRED,
+                        )
+                    }
+
+                } else if (newRide.type.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.TYPE_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.car.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.CAR_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.startLocation.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.START_LOCATION_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.endLocation.isBlank()) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.END_LOCATION_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.buyingPrice == 0.0) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.BUYING_PRICE_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.collectedPrice == 0.0) {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            errorMessage = ReservationError.NONE
+                        )
+                    }
+                    if (
+                        customer.name == reservation.clientName
+                        && customer.phoneNumber == reservation.clientPhone
+                        && customer.residenceCountry == reservation.clientCountry
+
+                    ) {
+                        if (state.value.reservation.id.isBlank()) {
+                            createReservation()
+                        } else {
+                            createRide()
+                        }
+                    } else {
+                        if(state.value.reservation.id.isBlank()) {
+                            createNewCustomer()
+                        }else{
+                            createRide()
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun createNewCustomer() {
+        viewModelScope.launch {
+            customerRepository.createCustomer(
+                Customer(
+                    name = _state.value.reservation.clientName,
+                    phoneNumber = _state.value.reservation.clientPhone,
+                    residenceCountry = _state.value.reservation.clientCountry,
+                )
+            ).collect{result->
+                result.onSuccess { data->
+                    _state.update {
+                        it.copy(reservation = it.reservation.copy(clientId =data))
+                    }
+                    createReservation()
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to create customer"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createReservation() {
+        viewModelScope.launch {
+            reservationRepository.createReservation(
+                _state.value.reservation.copy(
+                    clientId = state.value.customer.id
+                ),
+            ).collect { result ->
+                result.onSuccess { data ->
+                    _state.update {
+                        it.copy(
+                            reservation = it.reservation.copy(id = data),
+                        )
+                    }
+                    createRide()
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to create reservation"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createRide() {
+        viewModelScope.launch {
+            reservationRepository.createRide(
+                _state.value.newRide.copy(reservationId = _state.value.reservation.id)
+            ).collect { result ->
+                result.onSuccess { data ->
+                    _state.update {
+                        it.copy(
+                            newRide = Ride().copy(reservationId = _state.value.reservation.id),
+                            successStatus = true
+                        )
+                    }
+                    fetchRideByReservationId(_state.value.reservation.id)
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to create ride"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchRideByReservationId(reservationId: String) {
+        viewModelScope.launch {
+            reservationRepository.getRidesByReservationId(reservationId).collect { result ->
+                result.onSuccess { data ->
+                    _state.update {
+                        it.copy(
+                            rides = data
+                        )
+                    }
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to fetch rides"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun updateTravelNumber(number: String) {
         _state.update {
@@ -147,18 +325,20 @@ init {
     private fun updateCustomerName(name: String) {
         _state.update {
             it.copy(
-                customer = it.customer.copy(
-                    name = name
+                reservation = it.reservation.copy(
+                    clientName = name
                 )
             )
         }
     }
 
-    private fun updateTourismEmployee(employee: String) {
+    private fun updateTourismEmployee(employee: Employee) {
         _state.update {
             it.copy(
                 reservation = it.reservation.copy(
-                    tourismEmployee = employee
+                    tourismEmployee = employee.name,
+                    tourismEmployeeId = employee.id,
+                    tourismEmployeePhone = employee.phoneNumber1
                 )
             )
         }
@@ -174,28 +354,33 @@ init {
         }
     }
 
-    private fun updateSelectedTravelCompany(company: String) {
-        _state.update {
-            it.copy(
-                selectedTravelCompany = company
+    private fun updateSelectedTravelCompany(company: Company) {
+        _state.update { oldState ->
+            oldState.copy(
+                newRide = oldState.newRide.copy(
+                    travelCompany = company.name,
+                    travelCompanyId = company.id
+                )
             )
         }
-        fetchCompanyEmployees(company,true)
+        //todo make it by id
+        fetchCompanyEmployees(company.name, true)
     }
 
-    private fun fetchCompanyEmployees(company: String,driver: Boolean = false) {
+    private fun fetchCompanyEmployees(company: String, driver: Boolean = false) {
         viewModelScope.launch {
             employeeRepository.getEmployeesByCompany(company).collect { result ->
-                result.onSuccess { data->
-                    if (driver){
-                    _state.update { oldState ->
-                        oldState.copy(
-                            drivers = data.map { it.name }
-                        )
-                    }}else{
+                result.onSuccess { data ->
+                    if (driver) {
                         _state.update { oldState ->
                             oldState.copy(
-                                employees = data.map { it.name }
+                                drivers = data
+                            )
+                        }
+                    } else {
+                        _state.update { oldState ->
+                            oldState.copy(
+                                employees = data
                             )
                         }
                     }
@@ -210,13 +395,17 @@ init {
         }
     }
 
-    private fun updateSelectedTourismCompany(company: String) {
-        _state.update {
-            it.copy(
-                selectedTourismCompany = company
+    private fun updateSelectedTourismCompany(company: Company) {
+        _state.update { oldState ->
+            oldState.copy(
+                reservation = oldState.reservation.copy(
+                    tourismCompany = company.name,
+                    tourismCompanyId = company.id,
+                    tourismCompanyPhone = company.phoneNumber
+                )
             )
         }
-        fetchCompanyEmployees(company)
+        fetchCompanyEmployees(company.name)
     }
 
     private fun updateReservationType(type: String) {
@@ -233,8 +422,9 @@ init {
         _state.update {
             it.copy(
                 newRide = it.newRide.copy(
-                    date = it.newRide.date + time
-                )
+                    date = it.newRide.date + time,
+                ),
+                time = time
             )
         }
     }
@@ -268,6 +458,7 @@ init {
             )
         }
     }
+
     private fun updateMovementPrice(price: String) {
         _state.update {
             it.copy(
@@ -288,11 +479,12 @@ init {
         }
     }
 
-    private fun updateDriver(driver: String) {
+    private fun updateDriver(driver: Employee) {
         _state.update {
             it.copy(
                 newRide = it.newRide.copy(
-                    driver = driver
+                    driver = driver.name,
+                    driverId = driver.id
                 )
             )
         }
@@ -301,8 +493,8 @@ init {
     private fun updateCustomerNumber(number: String) {
         _state.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(
-                    phoneNumber = number
+                reservation = oldState.reservation.copy(
+                    clientPhone = number
                 )
             )
         }
@@ -316,6 +508,11 @@ init {
                     Log.d(TAG, "fetchCustomerByNumber: $customer")
                     _state.update {
                         it.copy(
+                            reservation = it.reservation.copy(
+                                clientName = customer.name,
+                                clientPhone = customer.phoneNumber,
+                                clientCountry = customer.residenceCountry
+                            ),
                             customer = customer
                         )
                     }
@@ -334,9 +531,9 @@ init {
     private fun updateCustomerCountry(country: String) {
         _state.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(
-                    residenceCountry = country
-                )
+                reservation = oldState.reservation.copy(
+                    clientCountry = country
+                ),
             )
         }
     }

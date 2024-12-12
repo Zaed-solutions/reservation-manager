@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.app.navigation
 
 import CustomerListScreen
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -22,6 +23,8 @@ import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
 import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsScreen
 import kotlin.reflect.typeOf
 
+private const val TAG: String = "NavigationHost"
+
 @Composable
 fun NavigationHost(
     modifier: Modifier = Modifier,
@@ -30,7 +33,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.ReservationDetailsRoute(),
+        startDestination = Route.CreateReservationRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -105,7 +108,19 @@ fun NavigationHost(
             val reservationId = navBackStackEntry.toRoute<Route.ReservationDetailsRoute>().reservationId
             ReservationDetailsScreen(
                 reservationId = reservationId,
-                onBackPressed = { navController.popBackStack() }
+                onBackPressed = { navController.popBackStack() },
+                onNavigateToCompanyDetails = { companyId, isTravel ->
+                    Log.d(TAG, "navigate to company details with: $companyId, $isTravel")
+                                             /*TODO*/
+                },
+                onNavigateToClientDetails = { clientId ->
+                    Log.d(TAG, "NavigationHost: navigate to client details with: $clientId")
+                    /*TODO*/
+                },
+                onNavigateToEmployeeDetails = { employeeId, isDriver ->
+                    Log.d(TAG, "NavigationHost: navigate to employee details with: $employeeId, $isDriver")
+                    /*TODO*/
+                }
             )
         }
     }

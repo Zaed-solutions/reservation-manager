@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class CustomerRepositoryImpl(
     private val remoteSource: CustomerRemoteDataSource
 ) : CustomerRepository {
-    override fun createCustomer(customer: Customer): Flow<Result<Unit>> {
+    override fun createCustomer(customer: Customer): Flow<Result<String>> {
         return remoteSource.createCustomer(customer)
     }
 

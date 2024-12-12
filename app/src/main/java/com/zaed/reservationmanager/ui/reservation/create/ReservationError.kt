@@ -9,7 +9,14 @@ enum class ReservationError(@StringRes val messageRes: Int) {
     TOURISM_COMPANY_IS_REQUIRED(R.string.tourism_company_is_required),
     TYPE_IS_REQUIRED (R.string.type_is_required),
     CAR_IS_REQUIRED(R.string.car_is_required),
-    MOVEMENT_PRICE_IS_REQUIRED(R.string.movement_price_is_required),
+    BUYING_PRICE_IS_REQUIRED(R.string.buying_price_is_required),
     COLLECTION_PRICE_IS_REQUIRED(R.string.collection_price_is_required),
+    DATE_IS_REQUIRED(R.string.date_is_required),
+    TIME_IS_REQUIRED(R.string.time_is_required),
+    DRIVER_IS_REQUIRED(R.string.driver_is_required),
+    START_LOCATION_IS_REQUIRED(R.string.start_location_is_required),
+    END_LOCATION_IS_REQUIRED(R.string.end_location_is_required),
+
+
 
 }

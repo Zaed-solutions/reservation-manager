@@ -20,6 +20,7 @@ import com.zaed.reservationmanager.R
 @Composable
 fun ConfirmDeleteDialog(
     modifier: Modifier = Modifier,
+    label: String,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
@@ -30,7 +31,7 @@ fun ConfirmDeleteDialog(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = stringResource(R.string.are_you_sure_you_want_to_delete_this_company),
+            text = stringResource(R.string.are_you_sure_you_want_to_delete_this, label),
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
