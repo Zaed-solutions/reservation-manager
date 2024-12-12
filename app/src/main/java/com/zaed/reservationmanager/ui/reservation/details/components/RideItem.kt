@@ -53,12 +53,13 @@ fun RideItem(
     modifier: Modifier = Modifier,
     ride: Ride = Ride(),
     onDeleteRide: () -> Unit = {},
-    onCompanyClicked: () -> Unit = {},
+    onCompanyClicked: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
-    onDriverClicked: () -> Unit = {},
+    onDriverClicked: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
     onSendInfoToTravelCompany: () -> Unit = {},
+    isActionsVisible: Boolean = true
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -187,7 +188,7 @@ fun RideItem(
                             label = stringResource(R.string.travel_company),
                             value = ride.travelCompany,
                             onClick = {
-                                onCompanyClicked()
+                                onCompanyClicked(ride.travelCompanyId)
                             }
                         )
                         DetailRow(
@@ -208,7 +209,7 @@ fun RideItem(
                             label = stringResource(id = R.string.driver),
                             value = ride.driver,
                             onClick = {
-                                onDriverClicked()
+                                onDriverClicked(ride.driverId)
                             }
                         )
                         DetailRow(
@@ -237,62 +238,64 @@ fun RideItem(
                             label = stringResource(R.string.notes),
                             value = ride.note
                         )
-                        Column(
-                            modifier = Modifier.padding(top = 8.dp)
-                        ) {
+                        if(isActionsVisible){
+                            Column(
+                                modifier = Modifier.padding(top = 8.dp)
+                            ) {
 
-                            Button(
-                                enabled = !ride.sentDriverInfoToCustomer,
-                                onClick = { onSendDriverInfoToClient() },
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Icon(
-                                    imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
-                                    contentDescription = null,
-                                    tint = if (ride.sentDriverInfoToCustomer)
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    else
-                                        MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    text = stringResource(
-                                        if (ride.sentDriverInfoToCustomer)
-                                            R.string.driver_information_sent
+                                Button(
+                                    enabled = !ride.sentDriverInfoToCustomer,
+                                    onClick = { onSendDriverInfoToClient() },
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        contentDescription = null,
+                                        tint = if (ride.sentDriverInfoToCustomer)
+                                            MaterialTheme.colorScheme.onSurfaceVariant
                                         else
-                                            R.string.send_info_to_client
+                                            MaterialTheme.colorScheme.onPrimary
                                     )
-                                )
-                            }
-                            Button(
-                                enabled = !ride.sentToDriverCompany,
-                                onClick = { onSendInfoToTravelCompany() },
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                    contentDescription = null,
-                                    tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                                )
-                                Text(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    text = stringResource(
-                                        if (ride.sentToDriverCompany)
-                                            R.string.ride_info_sent
-                                        else
-                                            R.string.send_ride_info_to_travel_company
+                                    Text(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        text = stringResource(
+                                            if (ride.sentDriverInfoToCustomer)
+                                                R.string.driver_information_sent
+                                            else
+                                                R.string.send_info_to_client
+                                        )
                                     )
-                                )
+                                }
+                                Button(
+                                    enabled = !ride.sentToDriverCompany,
+                                    onClick = { onSendInfoToTravelCompany() },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        contentDescription = null,
+                                        tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        text = stringResource(
+                                            if (ride.sentToDriverCompany)
+                                                R.string.ride_info_sent
+                                            else
+                                                R.string.send_ride_info_to_travel_company
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -356,8 +359,6 @@ fun RideItem(
                     sentDriverInfoToCustomer = false,
                     sentToDriverCompany = true
                 )
-            ) {
-
-            }
+            )
         }
     }

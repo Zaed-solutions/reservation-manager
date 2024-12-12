@@ -66,6 +66,21 @@ class CompanyRemoteDataSourceImpl(
         awaitClose { }
     }
 
+    override fun getCompanyById(companyId: String): Flow<Result<Company>> = callbackFlow {
+        try {
+            firestore.collection(COMPANY_COLLECTION).document(companyId).get()
+                .addOnSuccessListener { data ->
+                    val company = data.toObject(Company::class.java)
+                    trySend(Result.success(company ?: Company()))
+                }.addOnFailureListener { error ->
+                    trySend(Result.failure(error))
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
     override fun getCompanies(): Flow<Result<List<Company>>> = callbackFlow {
         try {
             firestore.collection(COMPANY_COLLECTION).addSnapshotListener { value, error ->
