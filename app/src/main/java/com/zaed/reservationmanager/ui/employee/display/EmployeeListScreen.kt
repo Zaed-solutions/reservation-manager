@@ -64,6 +64,7 @@ fun EmployeeListScreen(
     viewModel: EmployeeListViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToAddEmployee: () -> Unit,
+    onNavigateToEditEmployee: (Employee) -> Unit,
     onNavigateToEmployeeDetails: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
@@ -71,7 +72,13 @@ fun EmployeeListScreen(
         employees = state.employees,
         onShowNavDrawer = onShowNavDrawer,
         onNavigateToAddEmployee = onNavigateToAddEmployee,
-        onNavigateToEmployeeDetails = onNavigateToEmployeeDetails
+        onNavigateToEmployeeDetails = onNavigateToEmployeeDetails,
+        onEditEmployee = {
+            onNavigateToEditEmployee(it)
+        },
+        onDeleteEmployee = {
+            viewModel.deleteEmployee(it)
+        }
     )
 }
 
@@ -81,7 +88,9 @@ fun EmployeeListWithScreenContent(
     employees: List<Employee>,
     onShowNavDrawer: () -> Unit = {},
     onNavigateToAddEmployee: () -> Unit = {},
-    onNavigateToEmployeeDetails: () -> Unit = {}
+    onNavigateToEmployeeDetails: () -> Unit = {},
+    onEditEmployee: (Employee) -> Unit = {},
+    onDeleteEmployee: (String) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -151,7 +160,9 @@ fun EmployeeListWithScreenContent(
                 employees = if (selected == "") employees else employees.filter { it.company == selected },
                 onEmployeeDetailsClicked = { employeeId ->
                     onNavigateToEmployeeDetails()
-                }
+                },
+                onDeleteEmployee = onDeleteEmployee,
+                onEditEmployee = onEditEmployee,
             )
         }
     }
