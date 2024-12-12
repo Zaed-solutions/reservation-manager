@@ -107,7 +107,7 @@ fun CreateReservationScreenContent(
             }
         }
     }
-    if(reservationError != ReservationError.NONE){
+    if (reservationError != ReservationError.NONE) {
         isAddMovementSheetVisible = false
     }
     Scaffold(
@@ -134,15 +134,27 @@ fun CreateReservationScreenContent(
             if (isLoading) {
                 LinearProgressIndicator()
             }
-            AddNewReservation(reservation, action, reservationError, countries, tourismCompanies, employees)
+            AddNewReservation(
+                reservation,
+                action,
+                reservationError,
+                countries,
+                tourismCompanies,
+                employees
+            )
             EnteredRidesSection(
-                reservation = reservation,
                 rides = rides,
-                onAddMovementClicked = { isAddMovementSheetVisible = true }
+                onAddMovementClicked = {
+                    action(ReservationUiAction.ValidateReservationData)
+                    if (reservationError != ReservationError.NONE) return@EnteredRidesSection
+                    isAddMovementSheetVisible = true
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             AnimatedVisibility(rides.isNotEmpty()) {
-                MainActionButtons(action = action, onNavigateBack =onBackClicked)
+                MainActionButtons(action = action) {
+                    onBackClicked()
+                }
             }
 
         }

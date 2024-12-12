@@ -19,7 +19,6 @@ import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 
 @Composable
 fun EnteredRidesSection(
-    reservation: Reservation,
     rides: List<Ride>,
     onAddMovementClicked: () -> Unit
 ) {
@@ -34,9 +33,6 @@ fun EnteredRidesSection(
         )
         IconButton(
             onClick = onAddMovementClicked,
-            enabled = reservation.clientPhone.isNotBlank() &&
-                    reservation.tourismCompany.isNotBlank() &&
-                    reservation.tourismEmployee.isNotBlank(),
         ) {
             Icon(
                 imageVector = Icons.Default.Add,

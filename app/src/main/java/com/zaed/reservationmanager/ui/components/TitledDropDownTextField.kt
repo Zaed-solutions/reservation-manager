@@ -46,7 +46,7 @@ fun TitledDropDownTextField(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = title + if (isOptional) "" else " *",
+            text = title + if (isOptional) "" else "*",
             style = MaterialTheme.typography.titleMedium,
         )
         ExposedDropdownMenuBox(

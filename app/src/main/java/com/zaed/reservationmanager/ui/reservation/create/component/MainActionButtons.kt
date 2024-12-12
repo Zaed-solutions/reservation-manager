@@ -17,7 +17,7 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
 @Composable
 fun MainActionButtons(
     action: (ReservationUiAction) -> Unit,
-    onNavigateBack: () -> Unit
+    onBackClicked: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -27,7 +27,7 @@ fun MainActionButtons(
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp),
-            onClick =onNavigateBack,
+            onClick = {action(ReservationUiAction.SaveReservation)},
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(stringResource(R.string.save_reservation))
@@ -37,7 +37,10 @@ fun MainActionButtons(
                 .weight(1f)
                 .padding(4.dp),
             shape = RoundedCornerShape(12.dp),
-            onClick = { action(ReservationUiAction.Cancel) }
+            onClick = {
+                action(ReservationUiAction.Cancel)
+                onBackClicked()
+            }
         ) {
             Text(stringResource(R.string.cancel))
         }

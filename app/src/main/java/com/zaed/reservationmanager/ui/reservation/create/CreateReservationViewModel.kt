@@ -125,139 +125,153 @@ class CreateReservationViewModel(
             ReservationUiAction.SearchClient -> fetchCustomerByNumber(_state.value.reservation.clientPhone)
             is ReservationUiAction.UpdateTravelNumber -> updateTravelNumber(reservationUiAction.number)
             ReservationUiAction.AddMovement -> addMovements()
+            ReservationUiAction.SaveReservation -> saveReservationData()
+            ReservationUiAction.ValidateReservationData -> validateReservationData()
+        }
+    }
+
+    private fun validateReservationData(): Boolean {
+        with(_state.value) {
+            if (reservation.clientPhone.isBlank()) {
+                _state.update {
+                    it.copy(
+                        reservationError = ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (reservation.clientPhone.length < 10) {
+                _state.update {
+                    it.copy(
+                        reservationError = ReservationError.CUSTOMER_PHONE_IS_INVALID,
+                    )
+                }
+                return false
+            } else if (reservation.clientName.isBlank()) {
+                _state.update {
+                    it.copy(
+                        reservationError = ReservationError.CUSTOMER_NAME_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (reservation.tourismCompany.isBlank()) {
+                _state.update {
+                    it.copy(
+                        reservationError = ReservationError.TOURISM_COMPANY_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (reservation.tourismEmployee.isBlank()) {
+                _state.update {
+                    it.copy(
+                        reservationError = ReservationError.TOURISM_EMPLOYEE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else {
+                return true
+            }
+        }
+    }
+
+    fun validateRideData(): Boolean {
+        with(_state.value) {
+            if (newRide.date == 0L) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.DATE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (time == 0L) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.TIME_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.type.isBlank()) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.TYPE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.car.isBlank()) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.CAR_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.startLocation.isBlank()) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.START_LOCATION_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.endLocation.isBlank()) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.END_LOCATION_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.buyingPrice == 0.0) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else if (newRide.collectedPrice == 0.0) {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                    )
+                }
+                return false
+            } else {
+                return true
+            }
+        }
+    }
+
+    private fun isOldCustomer(): Boolean {
+        return with(_state.value) {
+            customer.name == reservation.clientName
+                    && customer.phoneNumber == reservation.clientPhone
+                    && customer.residenceCountry == reservation.clientCountry
+        }
+
+    }
+
+    private fun saveReservationData() {
+        if (!validateReservationData()) return
+        if (isOldCustomer()) {
+            createReservation()
+        } else {
+            createNewCustomer()
         }
     }
 
     private fun cancelReservation() {
-        //todo delete reservation
-        viewModelScope.launch {
-            reservationRepository.deleteReservation(state.value.reservation.id).collect{result->
-                result.onSuccess {
-                    _state.update {
-                        CreateReservationState().copy(successStatus = true)
-                    }
-                }.onFailure {
-                    _state.update {
-                        it.copy(
-                            userMessage = "Failed to cancel reservation"
-                        )
-                    }
-                }
-            }
+        _state.update {
+            CreateReservationState()
         }
 
     }
 
     private fun addMovements() {
-        viewModelScope.launch {
-            with(_state.value) {
-                if(reservation.clientPhone.isBlank()){
-                    _state.update {
-                        it.copy(
-                            reservationError = ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
-                        )
-                    }
-                }else if (reservation.clientPhone.length<10){
-                    _state.update {
-                        it.copy(
-                            reservationError = ReservationError.CUSTOMER_PHONE_IS_INVALID,
-                        )
-                    }
-                }else if(reservation.clientName.isBlank()){
-                    _state.update {
-                        it.copy(
-                            reservationError = ReservationError.CUSTOMER_NAME_IS_REQUIRED,
-                        )
-                    }
-                }else if(reservation.tourismCompany.isBlank()){
-                    _state.update {
-                        it.copy(
-                            reservationError = ReservationError.TOURISM_COMPANY_IS_REQUIRED,
-                        )
-                    }
-                }else if(reservation.tourismEmployee.isBlank()){
-                    _state.update {
-                        it.copy(
-                            reservationError = ReservationError.TOURISM_EMPLOYEE_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.date == 0L) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.DATE_IS_REQUIRED,
-                        )
-                    }
-                } else if (time == 0L) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.TIME_IS_REQUIRED,
-                        )
-                    }
-
-                } else if (newRide.type.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.TYPE_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.car.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.CAR_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.startLocation.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.START_LOCATION_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.endLocation.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.END_LOCATION_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.buyingPrice == 0.0) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
-                        )
-                    }
-                } else if (newRide.collectedPrice == 0.0) {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
-                        )
-                    }
-                } else {
-                    _state.update {
-                        it.copy(
-                            rideError = ReservationError.NONE,
-                            reservationError = ReservationError.NONE
-                        )
-                    }
-                    if (
-                        customer.name == reservation.clientName
-                        && customer.phoneNumber == reservation.clientPhone
-                        && customer.residenceCountry == reservation.clientCountry
-
-                    ) {
-                        if (state.value.reservation.id.isBlank()) {
-                            createReservation()
-                        } else {
-                            createRide()
-                        }
-                    } else {
-                        if(state.value.reservation.id.isBlank()) {
-                            createNewCustomer()
-                        }else{
-                            createRide()
-                        }
-                    }
-
-                }
-            }
+        if (!validateRideData()) return
+        val ride = state.value.newRide
+        _state.update {
+            it.copy(
+                rideError = ReservationError.NONE,
+                reservationError = ReservationError.NONE,
+                rides = it.rides + ride,
+                newRide = Ride()
+            )
         }
     }
 
@@ -269,10 +283,10 @@ class CreateReservationViewModel(
                     phoneNumber = _state.value.reservation.clientPhone,
                     residenceCountry = _state.value.reservation.clientCountry,
                 )
-            ).collect{result->
-                result.onSuccess { data->
+            ).collect { result ->
+                result.onSuccess { data ->
                     _state.update {
-                        it.copy(reservation = it.reservation.copy(clientId =data))
+                        it.copy(reservation = it.reservation.copy(clientId = data))
                     }
                     createReservation()
                 }.onFailure {
@@ -299,7 +313,9 @@ class CreateReservationViewModel(
                             reservation = it.reservation.copy(id = data),
                         )
                     }
-                    createRide()
+                    state.value.rides.forEach { ride ->
+                        createRide(ride.copy(reservationId = data))
+                    }
                 }.onFailure {
                     _state.update {
                         it.copy(
@@ -311,19 +327,17 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun createRide() {
+    private fun createRide(ride: Ride) {
         viewModelScope.launch {
             reservationRepository.createRide(
-                _state.value.newRide.copy(reservationId = _state.value.reservation.id)
+                ride
             ).collect { result ->
-                result.onSuccess { data ->
+                result.onSuccess {
                     _state.update {
                         it.copy(
-                            newRide = Ride().copy(reservationId = _state.value.reservation.id),
                             successStatus = true
                         )
                     }
-                    fetchRideByReservationId(_state.value.reservation.id)
                 }.onFailure {
                     _state.update {
                         it.copy(
@@ -334,27 +348,6 @@ class CreateReservationViewModel(
             }
         }
     }
-
-    private fun fetchRideByReservationId(reservationId: String) {
-        viewModelScope.launch {
-            reservationRepository.getRidesByReservationId(reservationId).collect { result ->
-                result.onSuccess { data ->
-                    _state.update {
-                        it.copy(
-                            rides = data
-                        )
-                    }
-                }.onFailure {
-                    _state.update {
-                        it.copy(
-                            userMessage = "Failed to fetch rides"
-                        )
-                    }
-                }
-            }
-        }
-    }
-
 
     private fun updateTravelNumber(number: String) {
         _state.update {
@@ -373,7 +366,8 @@ class CreateReservationViewModel(
                 reservation = it.reservation.copy(
                     clientName = name
                 ),
-                reservationError = ReservationError.NONE            )
+                reservationError = ReservationError.NONE
+            )
         }
     }
 
@@ -385,7 +379,8 @@ class CreateReservationViewModel(
                     tourismEmployeeId = employee.id,
                     tourismEmployeePhone = employee.phoneNumber1
                 ),
-                reservationError = ReservationError.NONE            )
+                reservationError = ReservationError.NONE
+            )
         }
     }
 
@@ -407,7 +402,8 @@ class CreateReservationViewModel(
                     travelCompany = company.name,
                     travelCompanyId = company.id
                 ),
-                rideError = ReservationError.NONE                 )
+                rideError = ReservationError.NONE
+            )
 
         }
         //todo make it by id
