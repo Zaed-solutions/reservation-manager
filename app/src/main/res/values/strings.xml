@@ -28,7 +28,7 @@
     <string name="view_details"><![CDATA[View Details >]]></string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="are_you_sure_you_want_to_delete_this_company">Are you sure you want to delete this company?</string>
+    <string name="are_you_sure_you_want_to_delete_this">Are you sure you want to delete this %1$s?</string>
     <string name="this_action_cannot_be_undone">This action cannot be undone</string>
     <string name="confirm">Confirm</string>
     <string name="companies">Companies</string>
@@ -99,6 +99,9 @@
     <string name="driver_information_sent">Driver Information Sent</string>
     <string name="ride_info_sent">Ride Information Sent</string>
     <string name="send_ride_info_to_travel_company">Send Ride Information to Travel Company</string>
+    <string name="no_rides_added">No Rides Added</string>
+    <string name="phone_number_copied_to_clipboard">Phone number copied to clipboard!</string>
+    <string name="ride">Ride</string>
     <string name="date_is_required">Date is required</string>
     <string name="time_is_required">Time is required</string>
     <string name="date_and_time_is_required">Date and time is required</string>
@@ -122,4 +125,5 @@
     <string name="add_ride">Add Ride</string>
     <string name="fill_all_required_fields_to_add_ride">Fill All Required Fields To Add Ride</string>
     <string name="tourism_employee_is_required">Tourism employee is required</string>
+    <string name="whatsapp_is_not_installed">WhatsApp is not installed</string>
 </resources>

@@ -149,7 +149,7 @@ fun ReservationDetailsHeader(
             enabled = !reservation.sentConfirmToCustomer,
             onClick = { onSendConfirmationMessage() },
             contentPadding = PaddingValues(vertical = 0.dp),
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp).heightIn(max = 36.dp)
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
             Icon(
                 imageVector = if(reservation.sentConfirmToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
