@@ -33,7 +33,7 @@ fun exportCustomersToExcel(context: Context, customers: List<Customer>): File? {
             row.createCell(3).setCellValue(customer.residenceCountry)
             row.createCell(4).setCellValue(customer.phoneNumber)
             row.createCell(5).setCellValue(customer.email)
-            row.createCell(6).setCellValue(customer.createdAt.toString()) // Convert Date to String
+            row.createCell(6).setCellValue(customer.createdAtEpochSeconds.formatEpochSecondsToDate()) // Convert Date to String
         }
 
         // Create a file in the external storage directory

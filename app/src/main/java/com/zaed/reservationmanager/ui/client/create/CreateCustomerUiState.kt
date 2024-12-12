@@ -1,20 +1,15 @@
 package com.zaed.reservationmanager.ui.client.create
 
+import com.zaed.reservationmanager.data.model.Customer
+
 data class NewClientUiState(
-    var clientName: String = "",
-    var clientNameError: ClientUIError = ClientUIError.NONE,
-    var nationality: String = nationalitiesList.first(),
-    var countryOfResidence: String = "",
-    var countryOfResidenceError : ClientUIError = ClientUIError.NONE,
-    var mobile: String = "",
-    var mobileError: ClientUIError = ClientUIError.NONE,
-    var email: String = "",
-    var emailError: ClientUIError = ClientUIError.NONE,
-    var errorMessage: ClientUIError = ClientUIError.NONE,
-    var nationalities : List<String> = nationalitiesList,
-    var countries : List<String> = countriesList,
-    var loading: Boolean = false,
-    var successStatus: Boolean = false
+    val isNew : Boolean = true,
+    val customer: Customer = Customer(),
+    val error: ClientUIError = ClientUIError.NONE,
+    val nationalities : List<String> = nationalitiesList,
+    val countries : List<String> = countriesList,
+    val loading: Boolean = false,
+    val successStatus: Boolean = false
 )
 
 val countriesList = listOf(

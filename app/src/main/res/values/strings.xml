@@ -42,7 +42,7 @@
     <string name="create_new_customer">Create New Customer</string>
     <string name="client_name">Client Name</string>
     <string name="nationality">Nationality</string>
-    <string name="country_of_residence">Country of Residence</string>
+    <string name="country_of_residence">Residence Country</string>
     <string name="atleast_one_phone_number_is_required">Atleast one phone number is required</string>
     <string name="an_employee_with_name_already_exists">An employee with this name already exists</string>
     <string name="add_employee">Add New Employee</string>
@@ -154,4 +154,5 @@
     <string name="reservations">Reservations</string>
     <string name="residence_country">Residence Country</string>
     <string name="created_at">Created at</string>
+    <string name="update_customer">Update Customer</string>
 </resources>

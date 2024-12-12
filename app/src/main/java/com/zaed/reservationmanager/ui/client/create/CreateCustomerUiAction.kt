@@ -7,8 +7,4 @@ sealed interface CreateCustomerUiAction {
     data class UpdateCountry(val country: String) : CreateCustomerUiAction
     data class UpdateEmail(val email: String) : CreateCustomerUiAction
     data object AddClient : CreateCustomerUiAction
-    data object Cancel : CreateCustomerUiAction
-    data object DismissStatusError : CreateCustomerUiAction
-
-
 }

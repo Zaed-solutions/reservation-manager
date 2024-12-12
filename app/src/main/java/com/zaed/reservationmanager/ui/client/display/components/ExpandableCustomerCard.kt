@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.reservation.details.components.DetailRow
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,7 +104,7 @@ fun ExpandableCustomerCard(
                     )
                     DetailRow(
                         label = stringResource(R.string.created_at),
-                        value = customer.createdAt.toString(),
+                        value = customer.createdAtEpochSeconds.formatEpochSecondsToDateTime(),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(

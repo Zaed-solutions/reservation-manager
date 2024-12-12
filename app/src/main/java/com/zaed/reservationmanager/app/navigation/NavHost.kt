@@ -18,8 +18,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.ui.client.create.NewClientDataEntryScreen
+import com.zaed.reservationmanager.ui.client.create.AddCustomerScreen
 import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.company.display.CompaniesScreen
 import com.zaed.reservationmanager.ui.driver.DriverListScreen
@@ -91,16 +92,25 @@ fun NavigationHost(
                 }
             )
         }
-        composable<Route.NewCLientRoute> {
-            NewClientDataEntryScreen(
-                navigateBack = { navController.popBackStack() }
+        composable<Route.AddCustomerRoute> (
+            typeMap = mapOf(
+                typeOf<Customer>() to CustomNavType.CustomerType
+            )
+        ){ backStackEntry ->
+            val args = backStackEntry.toRoute<Route.AddCustomerRoute>()
+            AddCustomerScreen(
+                navigateBack = { navController.popBackStack() },
+                initialCustomer = args.customer
             )
         }
         composable<Route.CustomerListRoute> {
             CustomerListScreen(
                 onShowNavDrawer = { onShowNavDrawer() },
-                onNavigateToAddClient = {
-                    navController.navigate(Route.NewCLientRoute)
+                onNavigateToEditCustomer = { customer ->
+                    navController.navigate(Route.AddCustomerRoute(customer))
+                },
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomerRoute())
                 },
                 onNavigateToCustomerDetails = {
                     /*TODO*/
