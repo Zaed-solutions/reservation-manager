@@ -21,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -37,6 +36,7 @@ fun TitledDropDownTextField(
     isOptional: Boolean = true,
     isError: Boolean = false,
     errorMessageRes: Int = 0,
+    isReadOnly: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column(
@@ -46,13 +46,16 @@ fun TitledDropDownTextField(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = title + if (isOptional) "" else " *",
+            text = title + if (isOptional) "" else "*",
             style = MaterialTheme.typography.titleMedium,
         )
         ExposedDropdownMenuBox(
             modifier = Modifier.fillMaxWidth(),
             expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
+            onExpandedChange = {
+                if (!isReadOnly)
+                    expanded = !expanded
+            },
         ) {
             OutlinedTextField(
                 readOnly = true,

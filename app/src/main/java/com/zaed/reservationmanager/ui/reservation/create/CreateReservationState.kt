@@ -25,7 +25,8 @@ data class CreateReservationState(
     val loading: Boolean = false,
     val successStatus: Boolean = false,
     val userMessage: String = "",
-    val errorMessage: ReservationError = ReservationError.NONE
+    val rideError: ReservationError = ReservationError.NONE,
+    val reservationError: ReservationError = ReservationError.NONE
 )
 val reservationTypesList = listOf(
     "Reception",

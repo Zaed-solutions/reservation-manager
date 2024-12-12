@@ -156,7 +156,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.buying_price),
-                initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toString(),
+                initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
@@ -165,6 +165,12 @@ fun AddRideBottomSheet(
                             )
                         )
 
+                    }else if(newText.isBlank()){
+                        action(
+                            ReservationUiAction.UpdateCollectionPrice(
+                                price = "0"
+                            )
+                        )
                     }
                 },
                 isOptional = false,
@@ -174,12 +180,18 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.collection_price),
-                initialValue = if (newRide.collectedPrice == 0.0) "" else newRide.collectedPrice.toString(),
+                initialValue = if (newRide.collectedPrice == 0.0) "" else newRide.collectedPrice.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
                             ReservationUiAction.UpdateCollectionPrice(
                                 price = newText
+                            )
+                        )
+                    }else if(newText.isBlank()){
+                        action(
+                            ReservationUiAction.UpdateCollectionPrice(
+                                price = "0"
                             )
                         )
                     }
@@ -201,14 +213,12 @@ fun AddRideBottomSheet(
                     )
                 },
                 isOptional = true,
-                keyboardType = KeyboardType.Decimal
             )
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     action(ReservationUiAction.AddMovement)
-                    onDismissRequest()
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

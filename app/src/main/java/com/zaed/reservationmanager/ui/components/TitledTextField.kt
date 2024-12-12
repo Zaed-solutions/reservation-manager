@@ -40,6 +40,7 @@ fun TitledTextField(
     imeAction: ImeAction = ImeAction.Default,
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    isReadOnly: Boolean = false
 ) {
 //    var value by remember { mutableStateOf(initialValue) }
     Column(
@@ -60,6 +61,7 @@ fun TitledTextField(
 //                value = it
                 onValueChanged(it)
             },
+            readOnly = isReadOnly,
             shape = MaterialTheme.shapes.small,
             isError = isError,
             supportingText = {

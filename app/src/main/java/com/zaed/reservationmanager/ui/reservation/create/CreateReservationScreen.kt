@@ -1,29 +1,19 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,8 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
@@ -45,11 +33,11 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
-import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
-import com.zaed.reservationmanager.ui.components.TitledTextField
+import com.zaed.reservationmanager.ui.reservation.create.component.AddNewReservation
 import com.zaed.reservationmanager.ui.reservation.create.component.AddRideBottomSheet
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
-import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
+import com.zaed.reservationmanager.ui.reservation.create.component.EnteredRidesSection
+import com.zaed.reservationmanager.ui.reservation.create.component.MainActionButtons
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -79,7 +67,8 @@ fun CreateReservationScreen(
         employees = state.employees,
         countries = state.countries,
         isLoading = state.loading,
-        errorMessage = state.errorMessage,
+        rideError = state.rideError,
+        reservationError = state.reservationError,
         onBackClicked = navigateBack
     )
 }
@@ -99,7 +88,8 @@ fun CreateReservationScreenContent(
     countries: List<String> = emptyList(),
     action: (ReservationUiAction) -> Unit = {},
     isLoading: Boolean = false,
-    errorMessage: ReservationError = ReservationError.NONE,
+    rideError: ReservationError = ReservationError.NONE,
+    reservationError: ReservationError = ReservationError.NONE,
     userMessage: String = "",
     onBackClicked: () -> Unit = {}
 ) {
@@ -116,6 +106,9 @@ fun CreateReservationScreenContent(
                 )
             }
         }
+    }
+    if (reservationError != ReservationError.NONE) {
+        isAddMovementSheetVisible = false
     }
     Scaffold(
         snackbarHost = {
@@ -141,144 +134,26 @@ fun CreateReservationScreenContent(
             if (isLoading) {
                 LinearProgressIndicator()
             }
-
-
-            TitledTextField(
-                title = stringResource(R.string.client_phone),
-                initialValue = reservation.clientPhone,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateCustomerNumber(
-                            newText
-                        )
-                    )
-                },
-                isOptional = false,
-                isError = errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
-                errorMessageRes = errorMessage.messageRes,
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Search,
-                keyboardActions = KeyboardActions(
-                    onSearch = {
-                        action(ReservationUiAction.SearchClient)
-                    }
-                )
+            AddNewReservation(
+                reservation,
+                action,
+                reservationError,
+                countries,
+                tourismCompanies,
+                employees
             )
-            TitledTextField(
-                title = stringResource(R.string.client_name),
-                initialValue = reservation.clientName,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateCustomerName(
-                            newText
-                        )
-                    )
-                },
-                isOptional = false,
-                keyboardType = KeyboardType.Text
-            )
-            TitledDropDownTextField(
-                title = "CustomerCountry",
-                selectedValue = reservation.clientCountry,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateCustomerCountry(
-                            country = countries[index]
-                        )
-                    )
-                },
-                isOptional = false,
-                options = countries,
-            )
-            TitledTextField(
-                title = "Travel No",
-                initialValue = reservation.flightNumber,
-                onValueChanged = { newText ->
-                    action(
-                        ReservationUiAction.UpdateTravelNumber(
-                            newText
-                        )
-                    )
-                },
-                isOptional = true,
-                keyboardType = KeyboardType.Text,
-            )
-
-            TitledDropDownTextField(
-                title = "Tourist Company",
-                selectedValue = reservation.tourismCompany,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateSelectedTourismCompany(
-                            company = tourismCompanies[index]
-                        )
-                    )
-                },
-                isOptional = true,
-                options = tourismCompanies.map { it.name },
-            )
-            TitledDropDownTextField(
-                title = "Tourism Employee",
-                selectedValue = reservation.tourismEmployee,
-                onValueChanged = { index ->
-                    action(
-                        ReservationUiAction.UpdateTourismEmployee(
-                            employee = employees[index]
-                        )
-                    )
-                },
-                isOptional = true,
-                options = employees.map { it.name },
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.rides),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                IconButton(
-                    onClick = { isAddMovementSheetVisible = true },
-                    enabled = reservation.clientPhone.isNotBlank() &&
-                            reservation.tourismCompany.isNotBlank() &&
-                            reservation.tourismEmployee.isNotBlank(),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Ride"
-                    )
+            EnteredRidesSection(
+                rides = rides,
+                onAddMovementClicked = {
+                    action(ReservationUiAction.ValidateReservationData)
+                    if (reservationError != ReservationError.NONE) return@EnteredRidesSection
+                    isAddMovementSheetVisible = true
                 }
-            }
-            rides.forEach {ride->
-                RideItem(ride = ride)
-            }
-
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            if (rides.isNotEmpty()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp),
-                        onClick = { action(ReservationUiAction.AddReservation) },
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(stringResource(R.string.save_reservation))
-                    }
-                    Button(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        onClick = { action(ReservationUiAction.Cancel) }
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
+            AnimatedVisibility(rides.isNotEmpty()) {
+                MainActionButtons(action = action) {
+                    onBackClicked()
                 }
             }
 
@@ -286,7 +161,7 @@ fun CreateReservationScreenContent(
         if (isAddMovementSheetVisible) {
             AddRideBottomSheet(
                 addMovementSheetState,
-                errorMessage,
+                rideError,
                 action,
                 newRide,
                 types,
@@ -295,16 +170,20 @@ fun CreateReservationScreenContent(
                 drivers,
                 onDismissRequest = { isAddMovementSheetVisible = false }
             )
-
         }
     }
 }
 
 
-@Preview
+@Preview(device = "spec:id=reference_phone,shape=Normal,width=411,height=891,unit=dp,dpi=420")
 @Composable
 fun NewClientDataEntryScreenPreview() {
     ReservationManagerTheme {
-        CreateReservationScreenContent()
+        CreateReservationScreenContent(
+            rides = listOf(
+                Ride(
+                )
+            )
+        )
     }
 }

@@ -115,5 +115,15 @@
     <string name="collection_price">Collection Price</string>
     <string name="note">Note</string>
     <string name="save_ride">Save Ride</string>
+    <string name="customer_phone_is_invalid">Customer phone is invalid</string>
+    <string name="customer_name_is_required">Customer name is required</string>
+    <string name="employee_is_required">Employee is required</string>
+    <string name="customer_country">Customer Country</string>
+    <string name="customer_country_is_required">Customer country is required</string>
+    <string name="travel_no">Travel No</string>
+    <string name="tourist_company">Tourist Company</string>
+    <string name="add_ride">Add Ride</string>
+    <string name="fill_all_required_fields_to_add_ride">Fill All Required Fields To Add Ride</string>
+    <string name="tourism_employee_is_required">Tourism employee is required</string>
     <string name="whatsapp_is_not_installed">WhatsApp is not installed</string>
 </resources>

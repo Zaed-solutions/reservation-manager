@@ -11,7 +11,6 @@ sealed class ReservationUiAction {
     data object Cancel : ReservationUiAction()
     data class UpdateReservationDate(val date: Long?) : ReservationUiAction()
     data class UpdateReservationTime(val time: Long?) : ReservationUiAction()
-    data object AddReservation : ReservationUiAction()
     data class UpdateDriver(val driver: Employee) : ReservationUiAction()
     data class UpdateReservationType(val type: String) : ReservationUiAction()
     data class UpdateReservationCar(val car: String) : ReservationUiAction()
@@ -25,5 +24,7 @@ sealed class ReservationUiAction {
     data object AddMovement  : ReservationUiAction()
     data class UpdateNote(val note: String) : ReservationUiAction()
     data class UpdateCollectionPrice(val price: String) : ReservationUiAction()
+    data object SaveReservation  : ReservationUiAction()
+    data object ValidateReservationData  : ReservationUiAction()
 
 }
