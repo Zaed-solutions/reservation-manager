@@ -8,7 +8,6 @@ sealed class ReservationUiAction {
     data class UpdateSelectedTourismCompany(val company: Company) : ReservationUiAction()
     data class UpdateSelectedTravelCompany(val company: Company) : ReservationUiAction()
     data class UpdateTourismEmployee(val employee: Employee) : ReservationUiAction()
-    data object AddReservation : ReservationUiAction()
     data object Cancel : ReservationUiAction()
     data class UpdateReservationDate(val date: Long?) : ReservationUiAction()
     data class UpdateReservationTime(val time: Long?) : ReservationUiAction()

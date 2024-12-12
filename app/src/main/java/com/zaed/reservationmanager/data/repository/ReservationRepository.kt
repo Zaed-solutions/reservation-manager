@@ -9,4 +9,5 @@ interface ReservationRepository {
     fun getReservationById(id: String): Flow<Result<Reservation>>
     fun createRide(ride: Ride): Flow<Result<String>>
     fun getRidesByReservationId(id: String): Flow<Result<List<Ride>>>
+    fun deleteReservation(id: String): Flow<Result<Boolean>>
 }

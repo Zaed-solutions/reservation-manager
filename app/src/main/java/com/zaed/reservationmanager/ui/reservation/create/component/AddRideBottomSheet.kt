@@ -201,14 +201,12 @@ fun AddRideBottomSheet(
                     )
                 },
                 isOptional = true,
-                keyboardType = KeyboardType.Decimal
             )
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     action(ReservationUiAction.AddMovement)
-                    onDismissRequest()
                 },
                 shape = RoundedCornerShape(12.dp)
             ) {

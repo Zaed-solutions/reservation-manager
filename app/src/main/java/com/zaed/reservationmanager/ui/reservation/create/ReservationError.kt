@@ -16,6 +16,13 @@ enum class ReservationError(@StringRes val messageRes: Int) {
     DRIVER_IS_REQUIRED(R.string.driver_is_required),
     START_LOCATION_IS_REQUIRED(R.string.start_location_is_required),
     END_LOCATION_IS_REQUIRED(R.string.end_location_is_required),
+    CUSTOMER_PHONE_IS_INVALID(R.string.customer_phone_is_invalid),
+    CUSTOMER_NAME_IS_REQUIRED(R.string.customer_name_is_required),
+    EMPLOYEE_IS_REQUIRED(R.string.employee_is_required),
+    CUSTOMER_COUNTRY_IS_REQUIRED(R.string.customer_country_is_required),
+    TOURISM_EMPLOYEE_IS_REQUIRED(R.string.tourism_employee_is_required),
+
+
 
 
 

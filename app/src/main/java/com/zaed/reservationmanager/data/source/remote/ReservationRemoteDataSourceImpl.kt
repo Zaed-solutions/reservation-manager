@@ -40,6 +40,8 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
+
+
     override fun getRidesByReservationId(id: String): Flow<Result<List<Ride>>> = callbackFlow {
         firestore
             .collection(RESERVATION_COLLECTION)
@@ -55,6 +57,14 @@ class ReservationRemoteDataSourceImpl(
             }.addOnFailureListener {
                 trySend(Result.failure(it))
             }
+        awaitClose { }
+    }
+    override fun deleteReservation(id: String): Flow<Result<Boolean>>  = callbackFlow {
+        firestore.collection(RESERVATION_COLLECTION).document(id).delete().addOnSuccessListener {
+            trySend(Result.success(true))
+        }.addOnFailureListener {
+            trySend(Result.failure(it))
+        }
         awaitClose { }
     }
 }

@@ -81,7 +81,6 @@ class CreateReservationViewModel(
 
     fun handleAction(reservationUiAction: ReservationUiAction) {
         when (reservationUiAction) {
-            ReservationUiAction.AddReservation -> TODO()
             ReservationUiAction.Cancel -> cancelReservation()
             is ReservationUiAction.UpdateCollectionPrice -> updateCollectionPrice(
                 reservationUiAction.price
@@ -130,67 +129,112 @@ class CreateReservationViewModel(
     }
 
     private fun cancelReservation() {
-        _state.update {
-            CreateReservationState()
+        //todo delete reservation
+        viewModelScope.launch {
+            reservationRepository.deleteReservation(state.value.reservation.id).collect{result->
+                result.onSuccess {
+                    _state.update {
+                        CreateReservationState().copy(successStatus = true)
+                    }
+                }.onFailure {
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to cancel reservation"
+                        )
+                    }
+                }
+            }
         }
+
     }
 
     private fun addMovements() {
         viewModelScope.launch {
             with(_state.value) {
-                if (newRide.date == 0L) {
+                if(reservation.clientPhone.isBlank()){
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.DATE_IS_REQUIRED,
+                            reservationError = ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
+                        )
+                    }
+                }else if (reservation.clientPhone.length<10){
+                    _state.update {
+                        it.copy(
+                            reservationError = ReservationError.CUSTOMER_PHONE_IS_INVALID,
+                        )
+                    }
+                }else if(reservation.clientName.isBlank()){
+                    _state.update {
+                        it.copy(
+                            reservationError = ReservationError.CUSTOMER_NAME_IS_REQUIRED,
+                        )
+                    }
+                }else if(reservation.tourismCompany.isBlank()){
+                    _state.update {
+                        it.copy(
+                            reservationError = ReservationError.TOURISM_COMPANY_IS_REQUIRED,
+                        )
+                    }
+                }else if(reservation.tourismEmployee.isBlank()){
+                    _state.update {
+                        it.copy(
+                            reservationError = ReservationError.TOURISM_EMPLOYEE_IS_REQUIRED,
+                        )
+                    }
+                } else if (newRide.date == 0L) {
+                    _state.update {
+                        it.copy(
+                            rideError = ReservationError.DATE_IS_REQUIRED,
                         )
                     }
                 } else if (time == 0L) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.TIME_IS_REQUIRED,
+                            rideError = ReservationError.TIME_IS_REQUIRED,
                         )
                     }
 
                 } else if (newRide.type.isBlank()) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.TYPE_IS_REQUIRED,
+                            rideError = ReservationError.TYPE_IS_REQUIRED,
                         )
                     }
                 } else if (newRide.car.isBlank()) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.CAR_IS_REQUIRED,
+                            rideError = ReservationError.CAR_IS_REQUIRED,
                         )
                     }
                 } else if (newRide.startLocation.isBlank()) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.START_LOCATION_IS_REQUIRED,
+                            rideError = ReservationError.START_LOCATION_IS_REQUIRED,
                         )
                     }
                 } else if (newRide.endLocation.isBlank()) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.END_LOCATION_IS_REQUIRED,
+                            rideError = ReservationError.END_LOCATION_IS_REQUIRED,
                         )
                     }
                 } else if (newRide.buyingPrice == 0.0) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.BUYING_PRICE_IS_REQUIRED,
+                            rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
                         )
                     }
                 } else if (newRide.collectedPrice == 0.0) {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                            rideError = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
                         )
                     }
                 } else {
                     _state.update {
                         it.copy(
-                            errorMessage = ReservationError.NONE
+                            rideError = ReservationError.NONE,
+                            reservationError = ReservationError.NONE
                         )
                     }
                     if (
@@ -317,7 +361,8 @@ class CreateReservationViewModel(
             it.copy(
                 reservation = it.reservation.copy(
                     flightNumber = number
-                )
+                ),
+                reservationError = ReservationError.NONE
             )
         }
     }
@@ -327,8 +372,8 @@ class CreateReservationViewModel(
             it.copy(
                 reservation = it.reservation.copy(
                     clientName = name
-                )
-            )
+                ),
+                reservationError = ReservationError.NONE            )
         }
     }
 
@@ -339,8 +384,8 @@ class CreateReservationViewModel(
                     tourismEmployee = employee.name,
                     tourismEmployeeId = employee.id,
                     tourismEmployeePhone = employee.phoneNumber1
-                )
-            )
+                ),
+                reservationError = ReservationError.NONE            )
         }
     }
 
@@ -349,7 +394,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     startLocation = location
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -360,8 +406,9 @@ class CreateReservationViewModel(
                 newRide = oldState.newRide.copy(
                     travelCompany = company.name,
                     travelCompanyId = company.id
-                )
-            )
+                ),
+                rideError = ReservationError.NONE                 )
+
         }
         //todo make it by id
         fetchCompanyEmployees(company.name, true)
@@ -402,7 +449,8 @@ class CreateReservationViewModel(
                     tourismCompany = company.name,
                     tourismCompanyId = company.id,
                     tourismCompanyPhone = company.phoneNumber
-                )
+                ),
+                reservationError = ReservationError.NONE
             )
         }
         fetchCompanyEmployees(company.name)
@@ -413,7 +461,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     type = type
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -424,7 +473,8 @@ class CreateReservationViewModel(
                 newRide = it.newRide.copy(
                     date = it.newRide.date + time,
                 ),
-                time = time
+                time = time,
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -434,7 +484,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     date = date ?: 0L
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -444,7 +495,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     car = car
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -454,7 +506,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     note = note
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -464,7 +517,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     buyingPrice = price.toDouble()
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -474,7 +528,8 @@ class CreateReservationViewModel(
             it.copy(
                 newRide = it.newRide.copy(
                     endLocation = location
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -485,7 +540,8 @@ class CreateReservationViewModel(
                 newRide = it.newRide.copy(
                     driver = driver.name,
                     driverId = driver.id
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
@@ -495,7 +551,8 @@ class CreateReservationViewModel(
             oldState.copy(
                 reservation = oldState.reservation.copy(
                     clientPhone = number
-                )
+                ),
+                reservationError = ReservationError.NONE
             )
         }
 
@@ -534,6 +591,7 @@ class CreateReservationViewModel(
                 reservation = oldState.reservation.copy(
                     clientCountry = country
                 ),
+                reservationError = ReservationError.NONE
             )
         }
     }
@@ -544,7 +602,8 @@ class CreateReservationViewModel(
             oldState.copy(
                 newRide = oldState.newRide.copy(
                     collectedPrice = price.toDouble()
-                )
+                ),
+                rideError = ReservationError.NONE
             )
         }
     }
