@@ -3,10 +3,8 @@ package com.zaed.reservationmanager.ui.client.create
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -43,59 +43,51 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun NewClientDataEntryScreen(
+fun AddCustomerScreen(
     viewModel: CreateCustomerViewModel = koinViewModel(),
+    initialCustomer: Customer,
     navigateBack: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.uiState.collectAsState()
+    LaunchedEffect(true) {
+        viewModel.init(initialCustomer)
+    }
     LaunchedEffect(state.successStatus) {
         if (state.successStatus) {
             navigateBack()
         }
     }
     NewClientDataEntryScreenContent(
-        clientName = state.clientName,
-        clientNameError = state.clientNameError,
-        nationality = state.nationality,
-        countryOfResidence = state.countryOfResidence,
-        mobile = state.mobile,
-        mobileError = state.mobileError,
-        email = state.email,
-        emailError = state.emailError,
+        customer = state.customer,
+        error = state.error,
         action = viewModel::handleAction,
         nationalities = state.nationalities,
         countries = state.countries,
         isLoading = state.loading,
-        errorMessage = state.errorMessage,
+        isNew = state.isNew,
         onBackClicked = navigateBack
     )
 }
 
 @Composable
 fun NewClientDataEntryScreenContent(
-    clientName: String = "",
-    clientNameError: ClientUIError = ClientUIError.NONE,
-    nationality: String = "",
-    countryOfResidence: String = "",
-    mobile: String = "",
-    mobileError: ClientUIError = ClientUIError.NONE,
-    email: String = "",
-    emailError: ClientUIError = ClientUIError.NONE,
+    customer: Customer = Customer(),
+    isNew: Boolean = true,
+    error: ClientUIError = ClientUIError.NONE,
     action: (CreateCustomerUiAction) -> Unit = {},
     nationalities: List<String> = emptyList(),
     countries: List<String> = emptyList(),
     isLoading: Boolean = false,
-    errorMessage: ClientUIError = ClientUIError.NONE,
     onBackClicked: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    if (errorMessage != ClientUIError.NONE) {
-        val errrorString = stringResource(errorMessage.messageRes)
+    if (error != ClientUIError.NONE) {
+        val errorString = stringResource(error.messageRes)
         LaunchedEffect(true) {
             scope.launch {
                 snackbarHostState.showSnackbar(
-                    message = errrorString
+                    message = errorString
                 )
             }
         }
@@ -107,11 +99,36 @@ fun NewClientDataEntryScreenContent(
         topBar = {
             CenterAlignedTopBar(
                 onBackClicked = onBackClicked,
-                title = stringResource(R.string.create_new_customer)
+                title = if(isNew) stringResource(R.string.create_new_customer) else stringResource(R.string.update_customer)
             )
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilledTonalButton(
+                    modifier = Modifier
+                        .weight(1f),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = { onBackClicked() }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                Button(
+                    modifier = Modifier
+                        .weight(1f),
+                    onClick = { action(CreateCustomerUiAction.AddClient) },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(if(isNew) stringResource(R.string.add) else stringResource(R.string.update))
+                }
+            }
         }
     ) {
-
         Column(
             modifier = Modifier
                 .padding(it)
@@ -123,20 +140,22 @@ fun NewClientDataEntryScreenContent(
         ) {
 
             if (isLoading) {
-                LinearProgressIndicator()
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
             TitledTextField(
                 title = stringResource(R.string.client_name),
-                initialValue = clientName,
+                initialValue = customer.name,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateName(newText)) },
                 isOptional = false,
-                isError = clientNameError != ClientUIError.NONE,
-                errorMessageRes = clientNameError.messageRes,
+                isError = error in listOf(
+                    ClientUIError.NAME_IS_REQUIRED
+                ),
+                errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Text
             )
             TitledDropDownTextField(
                 title = stringResource(R.string.nationality),
-                selectedValue = nationality,
+                selectedValue = customer.nationality,
                 onValueChanged = { index ->
                     action(
                         CreateCustomerUiAction.UpdateNationality(
@@ -144,63 +163,41 @@ fun NewClientDataEntryScreenContent(
                         )
                     )
                 },
-                isOptional = false,
-                isError = nationality.isBlank(),
+                isOptional = true,
+                isError = false,
                 errorMessageRes = R.string.nationality_is_required,
                 options = nationalities
             )
             TitledDropDownTextField(
                 title = stringResource(R.string.country_of_residence),
-                selectedValue = countryOfResidence,
+                selectedValue = customer.residenceCountry,
                 onValueChanged = { index -> action(CreateCustomerUiAction.UpdateCountry(countries[index])) },
                 isOptional = false,
                 errorMessageRes = R.string.country_is_required,
                 options = countries
             )
             TitledTextField(
-                title = "Mobile",
-                initialValue = mobile,
+                title = stringResource(R.string.phone_number),
+                initialValue = customer.phoneNumber,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateNumber(newText)) },
                 isOptional = false,
-                isError = mobileError != ClientUIError.NONE,
-                errorMessageRes = mobileError.messageRes,
+                isError = error in listOf(
+                    ClientUIError.PHONE_NUMBER_IS_REQUIRED,
+                    ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
+                    ClientUIError.PHONE_NUMBER_IS_INVALID
+                ),
+                errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )
             TitledTextField(
                 title = stringResource(R.string.email),
-                initialValue = email,
+                initialValue = customer.email,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateEmail(newText)) },
                 isOptional = true,
-                isError = emailError != ClientUIError.NONE,
-                errorMessageRes = emailError.messageRes,
+                isError = error in listOf(ClientUIError.EMAIL_IS_INVALID),
+                errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Email
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(4.dp),
-                    onClick = { action(CreateCustomerUiAction.AddClient) },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.add))
-                }
-                Button(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(4.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    onClick = { action(CreateCustomerUiAction.Cancel) }
-                ) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
         }
     }
 }

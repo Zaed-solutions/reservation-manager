@@ -40,18 +40,25 @@ import java.util.Date
 fun CustomerListScreen(
     viewModel: CustomerListViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
-    onNavigateToAddClient: () -> Unit = {},
+    onNavigateToAddCustomer: () -> Unit = {},
+    onNavigateToEditCustomer:(Customer) -> Unit = {},
     onNavigateToCustomerDetails: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     CustomerListWithScreenContent(
         customers = state.customers,
-        onNavigateToAddClient = onNavigateToAddClient,
+        onNavigateToAddClient = onNavigateToAddCustomer,
         onShowNavDrawer = {
             onShowNavDrawer()
         },
         onViewCustomerDetails = { customerId ->
             onNavigateToCustomerDetails(customerId)
+        },
+        onEditCustomer = { customer ->
+            onNavigateToEditCustomer(customer)
+        },
+        onDeleteCustomer = { customerId ->
+            viewModel.deleteCustomer(customerId)
         }
     )
 }
@@ -62,7 +69,9 @@ fun CustomerListWithScreenContent(
     customers: List<Customer>,
     onShowNavDrawer: () -> Unit = {},
     onNavigateToAddClient: () -> Unit = {},
-    onViewCustomerDetails: (String) -> Unit = {}
+    onViewCustomerDetails: (String) -> Unit = {},
+    onDeleteCustomer: (String) -> Unit = {},
+    onEditCustomer: (Customer) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -130,7 +139,9 @@ fun CustomerListWithScreenContent(
             }
             CustomerListWithTitle(
                 customers =if (selected == "") customers else customers.filter { it.residenceCountry == selected },
-                onViewCustomerDetailsClicked = onViewCustomerDetails
+                onViewCustomerDetailsClicked = onViewCustomerDetails,
+                onDeleteCustomer = onDeleteCustomer,
+                onEditCustomer = onEditCustomer
             )
         }
     }
@@ -138,16 +149,15 @@ fun CustomerListWithScreenContent(
 
 
 val mockCustomers = listOf(
-    Customer("1", "Alice", "USA", "Canada", "+123456789", "alice@example.com", Date(2023, 11, 25)),
-    Customer("2", "Bob", "UK", "UK", "+987654321", "bob@example.com", Date(2024, 12, 1)),
+    Customer("1", "Alice", "USA", "Canada", "+123456789", "alice@example.com"),
+    Customer("2", "Bob", "UK", "UK", "+987654321", "bob@example.com"),
     Customer(
         "3",
         "Charlie",
         "Canada",
         "USA",
         "+456789123",
-        "charlie@example.com",
-        Date(2024, 10, 15)
+        "charlie@example.com"
     )
 )
 

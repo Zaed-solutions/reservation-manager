@@ -13,6 +13,8 @@ fun CustomerListWithTitle(
     modifier: Modifier = Modifier,
     customers: List<Customer>,
     onViewCustomerDetailsClicked: (String) -> Unit = {},
+    onDeleteCustomer: (String) -> Unit = {},
+    onEditCustomer: (Customer) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -24,8 +26,12 @@ fun CustomerListWithTitle(
                 onViewDetailsClicked = {
                     onViewCustomerDetailsClicked(customer.id)
                 },
-                onDeleteClicked = {},
-                onEditClicked = {}
+                onDeleteClicked = {
+                    onDeleteCustomer(customer.id)
+                },
+                onEditClicked = {
+                    onEditCustomer(customer)
+                }
             )
         }
     }

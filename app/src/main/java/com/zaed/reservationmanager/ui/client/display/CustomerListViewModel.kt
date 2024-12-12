@@ -7,6 +7,7 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CustomerListViewModel(
@@ -22,17 +23,19 @@ class CustomerListViewModel(
     private fun fetchCustomers() {
         viewModelScope.launch {
             customerRepository.getCustomers().collect{result->
-                result.onSuccess {
-                    _state.value = _state.value.copy(customers = it.sortedBy { it.createdAt })
+                result.onSuccess { data ->
+                    _state.update { oldState ->
+                        oldState.copy(customers = data.sortedBy { it.createdAtEpochSeconds })
+                    }
                 }.onFailure {
                     _state.value = _state.value.copy(errorMessage = it.message ?: "Unknown error")
                 }
             }
         }
     }
-    private fun deleteCustomer(customer: Customer) {
+    fun deleteCustomer(customerId: String) {
         viewModelScope.launch {
-            customerRepository.deleteCustomer(customer.id).collect{result->
+            customerRepository.deleteCustomer(customerId).collect{result->
                 result.onSuccess {
                     Log.d("CustomerListViewModel", "Customer deleted successfully")
                 }.onFailure {

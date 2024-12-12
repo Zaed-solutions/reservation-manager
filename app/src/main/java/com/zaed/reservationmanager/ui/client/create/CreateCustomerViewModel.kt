@@ -5,160 +5,150 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.repository.CustomerRepository
+import com.zaed.reservationmanager.ui.util.InputValidator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-private val TAG = "CreateCustomerViewModel"
+import kotlinx.datetime.Clock
+
+private const val TAG = "CreateCustomerViewModel"
 class CreateCustomerViewModel(
     private val repository: CustomerRepository
 ) : ViewModel() {
-    val _state = MutableStateFlow(NewClientUiState())
-    val state = _state.asStateFlow()
+    private val _uiState = MutableStateFlow(NewClientUiState())
+    val uiState = _uiState.asStateFlow()
+
+    fun init(initialCustomer: Customer){
+        _uiState.update{
+            it.copy(isNew = initialCustomer.id.isBlank(), customer = initialCustomer)
+        }
+    }
 
     private fun addClient() {
         viewModelScope.launch {
-            _state.update {
+            _uiState.update {
                 it.copy(loading = true)
             }
-            if (validateInput()) {
-                val newCustomer = Customer(
-                    name = _state.value.clientName,
-                    nationality = _state.value.nationality,
-                    residenceCountry = _state.value.countryOfResidence,
-                    phoneNumber = _state.value.mobile,
-                    email = _state.value.email,
-                )
-                repository.createCustomer(newCustomer).collect{result->
-                    result.onSuccess {data->
-                        _state.update {oldState->
-                            oldState.copy(successStatus = true, loading = false)
-                        }
-                        Log.d(TAG, "addClient: SUCCESS")
-                    }.onFailure {error->
-                        _state.update {oldState->
-                            oldState.copy(errorMessage = ClientUIError.valueOf(error.message?:""), loading = false)
-                        }
-                        Log.d(TAG, "addClient: ${error.message}")
-                        error.printStackTrace()
+            with(uiState.value){
+                if(customer.name.isBlank()){
+                    _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED) }
+                    return@launch
+                }
+                if(customer.phoneNumber.isBlank()){
+                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED) }
+                    return@launch
+                }
+                if(!InputValidator.isPhoneNumberValid(customer.phoneNumber)){
+                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_INVALID) }
+                    return@launch
+                }
+                if(customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)){
+                    _uiState.update { it.copy(error = ClientUIError.EMAIL_IS_INVALID) }
+                    return@launch
+                }
+                _uiState.update { it.copy(error = ClientUIError.NONE) }
+                if(isNew){
+                    createClient()
+                } else {
+                    updateClient()
+                }
+            }
+        }
+    }
+
+    private fun updateClient() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateCustomer(uiState.value.customer).collect { result ->
+                result.onSuccess {
+                    _uiState.update { oldState ->
+                        oldState.copy(successStatus = true, loading = false)
                     }
+                    Log.d(TAG, "updateClient: SUCCESS")
+                }.onFailure { error ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            error = ClientUIError.valueOf(error.message ?: ""),
+                            loading = false
+                        )
+                    }
+                    Log.d(TAG, "updateClient: ${error.message}")
+                    error.printStackTrace()
                 }
+            }
+        }
+    }
 
-            } else {
-                _state.update {
-                    it.copy(
-                        errorMessage = ClientUIError.PLEASE_FILL_IN_ALL_REQUIRED_FIELDS,
-                        loading = false
-                    )
+    private fun createClient() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds)).collect { result ->
+                result.onSuccess {
+                    _uiState.update { oldState ->
+                        oldState.copy(successStatus = true, loading = false)
+                    }
+                    Log.d(TAG, "addClient: SUCCESS")
+                }.onFailure { error ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            error = ClientUIError.valueOf(error.message ?: ""),
+                            loading = false
+                        )
+                    }
+                    Log.d(TAG, "addClient: ${error.message}")
+                    error.printStackTrace()
                 }
             }
         }
     }
 
-    fun resetForm() {
-        _state.value = NewClientUiState()
+    private fun resetForm() {
+        _uiState.value = NewClientUiState()
     }
-
-    private fun validateInput(): Boolean {
-        with(_state.value) {
-            if (clientName.isBlank()) {
-                _state.update {
-                    it.copy(
-                        clientNameError = ClientUIError.NAME_IS_REQUIRED
-                    )
-                }
-                return false
-            }else{
-                _state.update {
-                    it.copy(
-                        clientNameError = ClientUIError.NONE
-                    )
-                }
-            }
-            if (mobile.isBlank()) {
-                _state.update {
-                    it.copy(
-                        mobileError = ClientUIError.PHONE_NUMBER_IS_REQUIRED
-                    )
-                }
-                return false
-            }else{
-                _state.update {
-                    it.copy(
-                        mobileError = ClientUIError.NONE
-                    )
-                }
-            }
-            if (!isValidMobile(mobile)) {
-                _state.update {
-                    it.copy(
-                        mobileError = ClientUIError.PHONE_NUMBER_IS_INVALID
-                    )
-                }
-                return false
-            }else{
-                _state.update {
-                    it.copy(
-                        mobileError = ClientUIError.NONE
-                    )
-                }
-            }
-            // Add more validation checks as needed
-            return true
-        }
-    }
-
-    private fun isValidMobile(mobile: String): Boolean {
-        // Implement mobile number format validation
-        return mobile.matches(Regex("^\\+?\\d{12}$")) // Example: Optional '+' followed by 10 digits
-    }
-
-    fun dismissErrorDialog() {
-        _state.update {
+    private fun dismissErrorDialog() {
+        _uiState.update {
             it.copy(
-                errorMessage = ClientUIError.NONE
+                error = ClientUIError.NONE
             )
         }
     }
 
-    fun updateEmail(email: String) {
-        _state.update {
-            it.copy(
-                email = email
+    private fun updateEmail(email: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(email = email)
             )
         }
     }
 
-    fun updateMobile(mobile: String) {
-        _state.update {
-            it.copy(
-                mobile = mobile
-            )
-
-        }
-    }
-
-    fun updateCountryOfResidence(selectionOption: String) {
-        _state.update {
-            it.copy(
-                countryOfResidence = selectionOption
+    private fun updateMobile(mobile: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(phoneNumber = mobile)
             )
         }
     }
 
-    fun updateNationality(selectionOption: String) {
-        _state.update {
-            it.copy(
-                nationality = selectionOption
+    private fun updateCountryOfResidence(residenceCountry: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(residenceCountry = residenceCountry)
             )
-
         }
     }
 
-    fun updateClientName(name: String) {
-        _state.update {
-            it.copy(
-                clientName = name
+    private fun updateNationality(nationality: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(nationality = nationality)
+            )
+        }
+    }
+
+    private fun updateClientName(name: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(name = name)
             )
         }
     }
@@ -166,8 +156,6 @@ class CreateCustomerViewModel(
     fun handleAction(action: CreateCustomerUiAction) {
         when (action) {
             CreateCustomerUiAction.AddClient -> addClient()
-            CreateCustomerUiAction.Cancel -> resetForm()
-            CreateCustomerUiAction.DismissStatusError -> dismissErrorDialog()
             is CreateCustomerUiAction.UpdateCountry -> updateCountryOfResidence(action.country)
             is CreateCustomerUiAction.UpdateEmail -> updateEmail(action.email)
             is CreateCustomerUiAction.UpdateName -> updateClientName(action.name)
