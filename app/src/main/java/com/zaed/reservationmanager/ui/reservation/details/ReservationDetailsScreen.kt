@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.reservation.details
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -48,6 +49,8 @@ import com.zaed.reservationmanager.ui.reservation.details.components.Reservation
 import com.zaed.reservationmanager.ui.reservation.details.components.RidesList
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatMoney
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -98,9 +101,10 @@ fun ReservationDetailsScreen(
                     onNavigateToEmployeeDetails(action.employeeId, action.isDriver)
                 }
                 is ReservationDetailsUiAction.OnMessagePhoneNumber -> {
-                    PhoneUtil.messageNumber(
+                    PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = action.phoneNumber,
+                        message = "",
                         onFailure = {
                             scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
@@ -109,7 +113,9 @@ fun ReservationDetailsScreen(
                     )
                 }
                 ReservationDetailsUiAction.OnSendConfirmationMessage -> {
-                    val messageText = ""
+                    val messageText =
+                        context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
+                    viewModel.handleAction(ReservationDetailsUiAction.OnConfirmationMessageSent)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = state.reservation.clientPhone,
@@ -122,7 +128,12 @@ fun ReservationDetailsScreen(
                     )
                 }
                 is ReservationDetailsUiAction.OnSendDriverInfoToCustomer -> {
-                    val messageText = ""
+                    val messageText = context.getString(
+                        R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
+                        action.driverName,
+                        action.driverPhoneNumber
+                    )
+                    viewModel.handleAction(ReservationDetailsUiAction.OnDriverInfoSent(action.rideId))
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = state.reservation.clientPhone,
@@ -135,7 +146,19 @@ fun ReservationDetailsScreen(
                     )
                 }
                 is ReservationDetailsUiAction.OnSendInfoToTravelCompany -> {
-                    val messageText = ""
+                    val messageText = context.getString(
+                        R.string.transportation_details,
+                        action.ride.travelCompany,
+                        state.reservation.clientName,
+                        state.reservation.clientPhone,
+                        action.ride.date.formatEpochSecondsToDateTime(),
+                        action.ride.startLocation,
+                        action.ride.endLocation,
+                        state.reservation.flightNumber,
+                        action.ride.buyingPrice.formatMoney(),
+                        action.ride.collectedPrice.formatMoney()
+                    )
+                    viewModel.handleAction(ReservationDetailsUiAction.OnInfoSentToTravelCompany(action.ride.id))
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = action.ride.travelCompanyPhone,
@@ -176,7 +199,6 @@ private fun ReservationDetailsScreenContent(
     var isAddRideBottomSheetVisible by remember{
         mutableStateOf(false)
     }
-    var bottomSheetState = rememberModalBottomSheetState()
     var selectedRideId by remember {
         mutableStateOf("")
     }
@@ -248,6 +270,7 @@ private fun ReservationDetailsScreenContent(
                     onAction(ReservationDetailsUiAction.OnMessagePhoneNumber(phoneNumber))
                 },
                 onDeleteRide = { rideId ->
+                    Log.d("ReservationDetails", "ReservationDetailsScreenContent: onDeleteRide: $rideId")
                     selectedRideId = rideId
                     isConfirmDeleteDialogVisible = true
                 },
@@ -257,36 +280,47 @@ private fun ReservationDetailsScreenContent(
                 onSendInfoToTravelCompany = { ride ->
                     onAction(ReservationDetailsUiAction.OnSendInfoToTravelCompany(ride))
                 },
-                onSendDriverInfoToClient = {driverName, driverPhoneNumber ->
-                    onAction(ReservationDetailsUiAction.OnSendDriverInfoToCustomer(driverName, driverPhoneNumber))
+                onSendDriverInfoToClient = {rideId, driverName, driverPhoneNumber ->
+                    onAction(ReservationDetailsUiAction.OnSendDriverInfoToCustomer(rideId, driverName, driverPhoneNumber))
                 },
             )
             AnimatedVisibility(isConfirmDeleteDialogVisible){
-                ConfirmDeleteDialog(
-                    label = stringResource(id = R.string.ride),
-                    onDismiss = {
+                ModalBottomSheet(
+                    onDismissRequest = {
                         isConfirmDeleteDialogVisible = false
                         selectedRideId = ""
                     },
-                    onConfirm = {
-                        isConfirmDeleteDialogVisible = false
-                        selectedRideId = ""
-                        onAction(ReservationDetailsUiAction.OnDeleteRide(selectedRideId))
-                    }
-                )
+                    sheetState = rememberModalBottomSheetState()
+                ) {
+                    ConfirmDeleteDialog(
+                        label = stringResource(id = R.string.ride),
+                        onDismiss = {
+                            isConfirmDeleteDialogVisible = false
+                            selectedRideId = ""
+                        },
+                        onConfirm = {
+                            onAction(ReservationDetailsUiAction.OnDeleteRide(selectedRideId))
+                            isConfirmDeleteDialogVisible = false
+                            selectedRideId = ""
+                        }
+                    )
+                }
             }
             AnimatedVisibility(visible = isAddRideBottomSheetVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
                         isAddRideBottomSheetVisible = false
                     },
-                    sheetState = bottomSheetState
+                    sheetState = rememberModalBottomSheetState()
                 ) {
                     AddRideBottomSheetContent(
                         types=types,
                         cars = cars,
                         drivers = drivers,
                         travelCompanies = travelCompanies,
+                        onFetchDrivers = { companyId ->
+                            onAction(ReservationDetailsUiAction.UpdateDrivers(companyId))
+                        },
                         onAddRide = { ride ->
                             onAction(ReservationDetailsUiAction.OnAddRide(ride))
                             isAddRideBottomSheetVisible = false

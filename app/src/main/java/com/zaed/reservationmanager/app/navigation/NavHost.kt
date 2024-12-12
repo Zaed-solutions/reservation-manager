@@ -14,10 +14,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.client.create.NewClientDataEntryScreen
-import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
+import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.company.display.CompaniesScreen
+import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListScreen
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
 import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsScreen
@@ -33,7 +33,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.CreateReservationRoute,
+        startDestination = Route.ReservationDetailsRoute(reservationId = "T6uc2xT8I2SD5dDRcQmJ"),
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -54,7 +54,7 @@ fun NavigationHost(
                 navigateBack = { navController.popBackStack() }
             )
         }
-        composable<Route.EmployeeListRoute>{
+        composable<Route.EmployeeListRoute> {
             EmployeeListScreen(
                 navigateBack = { navController.popBackStack() }
             )
@@ -64,13 +64,13 @@ fun NavigationHost(
                 navigateBack = { navController.popBackStack() }
             )
         }
-        composable<Route.AddCompanyRoute> (
+        composable<Route.AddCompanyRoute>(
             typeMap = mapOf(
                 typeOf<Company>() to CustomNavType.CompanyType
             )
-        ){ backStackEntry ->
+        ) { backStackEntry ->
             val company = backStackEntry.toRoute<Route.AddCompanyRoute>().company
-            AddCompanyScreen (
+            AddCompanyScreen(
                 initialCompany = company,
                 onBackPressed = { navController.popBackStack() }
             )
@@ -81,7 +81,7 @@ fun NavigationHost(
                 onNavigateToEditCompany = { company ->
                     navController.navigate(Route.AddCompanyRoute(company))
                 },
-                onNavigateToDetails = { /*TODO*/},
+                onNavigateToDetails = { /*TODO*/ },
                 onNavigateToAddCompany = {
                     navController.navigate(Route.AddCompanyRoute())
                 }
@@ -96,7 +96,7 @@ fun NavigationHost(
             typeMap = mapOf(
                 typeOf<Employee>() to CustomNavType.EmployeeType
             )
-        ){ backStackEntry ->
+        ) { backStackEntry ->
             val args = backStackEntry.toRoute<Route.AddEmployeeRoute>()
             AddEmployeeScreen(
                 initialEmployee = args.employee,
@@ -105,20 +105,24 @@ fun NavigationHost(
             )
         }
         composable<Route.ReservationDetailsRoute> { navBackStackEntry ->
-            val reservationId = navBackStackEntry.toRoute<Route.ReservationDetailsRoute>().reservationId
+            val reservationId =
+                navBackStackEntry.toRoute<Route.ReservationDetailsRoute>().reservationId
             ReservationDetailsScreen(
                 reservationId = reservationId,
                 onBackPressed = { navController.popBackStack() },
                 onNavigateToCompanyDetails = { companyId, isTravel ->
                     Log.d(TAG, "navigate to company details with: $companyId, $isTravel")
-                                             /*TODO*/
+                    /*TODO*/
                 },
                 onNavigateToClientDetails = { clientId ->
                     Log.d(TAG, "NavigationHost: navigate to client details with: $clientId")
                     /*TODO*/
                 },
                 onNavigateToEmployeeDetails = { employeeId, isDriver ->
-                    Log.d(TAG, "NavigationHost: navigate to employee details with: $employeeId, $isDriver")
+                    Log.d(
+                        TAG,
+                        "NavigationHost: navigate to employee details with: $employeeId, $isDriver"
+                    )
                     /*TODO*/
                 }
             )

@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.reservation.details.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,7 @@ fun RidesList(
     onDriverClicked: (driverId: String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
-    onSendDriverInfoToClient: (driverName: String, driverPhoneNumber: String) -> Unit = {_, _ ->},
+    onSendDriverInfoToClient: (rideId: String, driverName: String, driverPhoneNumber: String) -> Unit = {_, _, _ ->},
     onSendInfoToTravelCompany: (ride: Ride) -> Unit = {},
 ) {
     Column(
@@ -52,7 +53,9 @@ fun RidesList(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = { onAddRide() }) {
+            IconButton(onClick = {
+                Log.d("AddRide", "RidesList: onAddRide clicked")
+                onAddRide() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add Ride"
@@ -75,7 +78,6 @@ fun RidesList(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(rides){ ride ->
-                            //TODO: implement swipe to delete
                             RideItem(
                                 modifier = Modifier.animateItem(),
                                 ride = ride,
@@ -95,7 +97,7 @@ fun RidesList(
                                     onMessagePhoneNumber(number)
                                 },
                                 onSendDriverInfoToClient = {
-                                    onSendDriverInfoToClient(ride.driver, ride.driverPhoneNumber)
+                                    onSendDriverInfoToClient(ride.id, ride.driver, ride.driverPhoneNumber)
                                 },
                                 onSendInfoToTravelCompany = {
                                     onSendInfoToTravelCompany(ride)

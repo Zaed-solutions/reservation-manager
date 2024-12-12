@@ -3,12 +3,14 @@ package com.zaed.reservationmanager.ui.reservation.details.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
@@ -16,9 +18,13 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DoubleArrow
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,12 +38,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatMoney
 
 @Composable
 fun RideItem(
@@ -52,6 +61,9 @@ fun RideItem(
     onSendInfoToTravelCompany: () -> Unit = {},
 ) {
     var isExpanded by remember {
+        mutableStateOf(false)
+    }
+    var isOptionMenuVisible by remember {
         mutableStateOf(false)
     }
     val anim = remember {
@@ -86,213 +98,266 @@ fun RideItem(
                 Text(
                     text = ride.type,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
                 )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                LocationItem(
-                    location = ride.startLocation
-                )
-                Icon(
-                    imageVector = Icons.Default.DoubleArrow,
-                    contentDescription = "Arrow",
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
-                LocationItem(
-                    location = ride.endLocation
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CalendarMonth,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Ride Date",
-                    modifier = Modifier.size(16.dp)
-                )
-                //TODO: format date
-                Text(
-                    text = ride.date.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            AnimatedVisibility(visible = isExpanded) {
-                Column(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize(Alignment.TopEnd)
                 ) {
-                    DetailRow(
-                        label = stringResource(R.string.travel_company),
-                        value = ride.travelCompany,
-                        onClick = {
-                            onCompanyClicked()
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = ride.travelCompanyPhone,
-                        onClick = {
-                            onMessagePhoneNumber(ride.travelCompanyPhone)
-                        },
-                        onLongClick = {
-                            onCopyPhoneNumber(ride.travelCompanyPhone)
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.car),
-                        value = ride.car
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.driver),
-                        value = ride.driver,
-                        onClick = {
-                            onDriverClicked()
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = ride.travelCompanyPhone,
-                        onClick = {
-                            onMessagePhoneNumber(ride.travelCompanyPhone)
-                        },
-                        onLongClick = {
-                            onCopyPhoneNumber(ride.travelCompanyPhone)
-                        }
-                    )
-                    /*
-                    * TODO: Add Prices Table
-                    */
-                    DetailRow(
-                        label = stringResource(R.string.notes),
-                        value = ride.note
-                    )
-                    Column(
-                        modifier = Modifier.padding(top = 8.dp)
+                    IconButton(
+                        onClick = { isOptionMenuVisible = !isOptionMenuVisible },
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(24.dp)
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null,
+                        )
+                    }
 
-                        Button(
-                            enabled = !ride.sentDriverInfoToCustomer,
-                            onClick = { onSendDriverInfoToClient() },
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
-                                contentDescription = null,
-                                tint = if (ride.sentDriverInfoToCustomer)
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                text = stringResource(
-                                    if (ride.sentDriverInfoToCustomer)
-                                        R.string.driver_information_sent
-                                    else
-                                        R.string.send_info_to_client
+                    DropdownMenu(
+                        expanded = isOptionMenuVisible,
+                        onDismissRequest = { isOptionMenuVisible = false }
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onDeleteRide()
+                                isOptionMenuVisible = false
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.delete),
                                 )
-                            )
-                        }
-                        Button(
-                            enabled = !ride.sentToDriverCompany,
-                            onClick = { onSendInfoToTravelCompany() },
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                contentDescription = null,
-                                tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                text = stringResource(
-                                    if (ride.sentToDriverCompany)
-                                        R.string.ride_info_sent
-                                    else
-                                        R.string.send_ride_info_to_travel_company
-                                )
-                            )
-                        }
+                            },
+                        )
                     }
                 }
             }
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.rotate(anim.value)
-            )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    LocationItem(
+                        location = ride.startLocation
+                    )
+                    Icon(
+                        imageVector = Icons.Default.DoubleArrow,
+                        contentDescription = "Arrow",
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    )
+                    LocationItem(
+                        location = ride.endLocation
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CalendarMonth,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        contentDescription = "Ride Date",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = ride.date.formatEpochSecondsToDateTime(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = (ride.buyingPrice - ride.sellingPrice).formatMoney(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                AnimatedVisibility(visible = isExpanded) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DetailRow(
+                            label = stringResource(R.string.travel_company),
+                            value = ride.travelCompany,
+                            onClick = {
+                                onCompanyClicked()
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.phone_number),
+                            value = ride.travelCompanyPhone,
+                            onClick = {
+                                onMessagePhoneNumber(ride.travelCompanyPhone)
+                            },
+                            onLongClick = {
+                                onCopyPhoneNumber(ride.travelCompanyPhone)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.car),
+                            value = ride.car
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.driver),
+                            value = ride.driver,
+                            onClick = {
+                                onDriverClicked()
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.phone_number),
+                            value = ride.travelCompanyPhone,
+                            onClick = {
+                                onMessagePhoneNumber(ride.travelCompanyPhone)
+                            },
+                            onLongClick = {
+                                onCopyPhoneNumber(ride.travelCompanyPhone)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.buying_price),
+                            value = ride.buyingPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.selling_price),
+                            value = ride.sellingPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.collected_price),
+                            value = ride.collectedPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.notes),
+                            value = ride.note
+                        )
+                        Column(
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+
+                            Button(
+                                enabled = !ride.sentDriverInfoToCustomer,
+                                onClick = { onSendDriverInfoToClient() },
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                    contentDescription = null,
+                                    tint = if (ride.sentDriverInfoToCustomer)
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    else
+                                        MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = stringResource(
+                                        if (ride.sentDriverInfoToCustomer)
+                                            R.string.driver_information_sent
+                                        else
+                                            R.string.send_info_to_client
+                                    )
+                                )
+                            }
+                            Button(
+                                enabled = !ride.sentToDriverCompany,
+                                onClick = { onSendInfoToTravelCompany() },
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
+                                    contentDescription = null,
+                                    tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    text = stringResource(
+                                        if (ride.sentToDriverCompany)
+                                            R.string.ride_info_sent
+                                        else
+                                            R.string.send_ride_info_to_travel_company
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.rotate(anim.value)
+                )
+            }
         }
     }
-}
 
-@Composable
-private fun LocationItem(
-    modifier: Modifier = Modifier,
-    location: String = "",
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    @Composable
+    private fun LocationItem(
+        modifier: Modifier = Modifier,
+        location: String = "",
     ) {
-        Icon(
-            imageVector = Icons.Default.LocationOn,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            contentDescription = "Location",
-            modifier = Modifier.size(24.dp)
-        )
-        Text(
-            text = location,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.titleLarge
-        )
-    }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-private fun Preview() {
-    ReservationManagerTheme {
-        RideItem(
-            modifier = Modifier.padding(16.dp),
-            ride = Ride(
-                id = "tristique",
-                reservationId = "oratio",
-                date = 7041,
-                type = "Mazarat El Madina",
-                car = "Camaro",
-                travelCompanyPhone = "(398) 742-4872",
-                driver = "Ahmed Mohsen",
-                travelCompany = "Gawhara Travel Company",
-                startLocation = "Gadda",
-                endLocation = "Riyadh",
-                buyingPrice = 0.1,
-                sellingPrice = 2.3,
-                collectedPrice = 4.5,
-                note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
-                sentDriverInfoToCustomer = false,
-                sentToDriverCompany = true
-            )
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                contentDescription = "Location",
+                modifier = Modifier.size(24.dp)
+            )
+            Text(
+                text = location,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleLarge
+            )
         }
     }
-}
+
+    @Preview(showSystemUi = false, showBackground = true)
+    @Composable
+    private fun Preview() {
+        ReservationManagerTheme {
+            RideItem(
+                modifier = Modifier.padding(16.dp),
+                ride = Ride(
+                    id = "tristique",
+                    reservationId = "oratio",
+                    date = 7041,
+                    type = "Mazarat El Madina",
+                    car = "Camaro",
+                    travelCompanyPhone = "(398) 742-4872",
+                    driver = "Ahmed Mohsen",
+                    travelCompany = "Gawhara Travel Company",
+                    startLocation = "Gadda",
+                    endLocation = "Riyadh",
+                    buyingPrice = 0.1,
+                    sellingPrice = 2.3,
+                    collectedPrice = 4.5,
+                    note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
+                    sentDriverInfoToCustomer = false,
+                    sentToDriverCompany = true
+                )
+            ) {
+
+            }
+        }
+    }
