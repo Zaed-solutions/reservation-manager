@@ -35,7 +35,6 @@ fun AddNewReservation(
                 )
             )
         },
-        isReadOnly = reservation.id.isNotBlank(),
         isOptional = false,
         isError = (errorMessage == ReservationError.CUSTOMER_PHONE_IS_REQUIRED||errorMessage == ReservationError.CUSTOMER_PHONE_IS_INVALID),
         errorMessageRes = errorMessage.messageRes,
@@ -57,7 +56,6 @@ fun AddNewReservation(
                 )
             )
         },
-        isReadOnly = reservation.id.isNotBlank(),
         isOptional = false,
         keyboardType = KeyboardType.Text,
         imeAction = ImeAction.Next,
@@ -74,7 +72,6 @@ fun AddNewReservation(
                 )
             )
         },
-        isReadOnly = reservation.id.isNotBlank(),
         isOptional = false,
         options = countries,
         isError = (errorMessage == ReservationError.CUSTOMER_COUNTRY_IS_REQUIRED),
@@ -83,7 +80,6 @@ fun AddNewReservation(
     TitledTextField(
         title = stringResource(R.string.travel_no),
         initialValue = reservation.flightNumber,
-        isReadOnly = reservation.id.isNotBlank(),
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateTravelNumber(
@@ -99,7 +95,6 @@ fun AddNewReservation(
     TitledDropDownTextField(
         title = stringResource(R.string.tourist_company),
         selectedValue = reservation.tourismCompany,
-        isReadOnly = reservation.id.isNotBlank(),
         onValueChanged = { index ->
             action(
                 ReservationUiAction.UpdateSelectedTourismCompany(
@@ -115,7 +110,6 @@ fun AddNewReservation(
     TitledDropDownTextField(
         title = stringResource(R.string.tourism_employee),
         selectedValue = reservation.tourismEmployee,
-        isReadOnly = reservation.id.isNotBlank(),
         onValueChanged = { index ->
             action(
                 ReservationUiAction.UpdateTourismEmployee(

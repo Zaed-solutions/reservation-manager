@@ -22,7 +22,7 @@ class CreateReservationViewModel(
     private val employeeRepository: EmployeeRepository,
     private val reservationRepository: ReservationRepository
 ) : ViewModel() {
-    val TAG = "CreateReservationViewModel"
+    private val TAG = "CreateReservationViewModel"
 
     private val _state = MutableStateFlow(CreateReservationState())
     val state = _state.asStateFlow()
@@ -173,7 +173,7 @@ class CreateReservationViewModel(
         }
     }
 
-    fun validateRideData(): Boolean {
+    private fun validateRideData(): Boolean {
         with(_state.value) {
             if (newRide.date == 0L) {
                 _state.update {
@@ -569,13 +569,13 @@ class CreateReservationViewModel(
                             customer = customer
                         )
                     }
-                }.onFailure {
+                }.onFailure {error->
                     _state.update {
                         it.copy(
                             userMessage = "User not found"
                         )
                     }
-                    Log.d(TAG, "fetchCustomerByNumber: ${it.message}")
+                    Log.d(TAG, "fetchCustomerByNumber: ${error.message}")
                 }
 
         }
