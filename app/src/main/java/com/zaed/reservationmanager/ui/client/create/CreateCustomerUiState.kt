@@ -1,11 +1,9 @@
 package com.zaed.reservationmanager.ui.client.create
 
-import com.zaed.reservationmanager.ui.client.ClientUIError
-
 data class NewClientUiState(
     var clientName: String = "",
     var clientNameError: ClientUIError = ClientUIError.NONE,
-    var nationality: String = "",
+    var nationality: String = nationalitiesList.first(),
     var countryOfResidence: String = "",
     var countryOfResidenceError : ClientUIError = ClientUIError.NONE,
     var mobile: String = "",

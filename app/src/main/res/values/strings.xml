@@ -149,4 +149,9 @@
         Best regards,
         Al-Mosaferoon Company
     </string>
+    <string name="employees">Employees</string>
+    <string name="customers">Customers</string>
+    <string name="reservations">Reservations</string>
+    <string name="residence_country">Residence Country</string>
+    <string name="created_at">Created at</string>
 </resources>

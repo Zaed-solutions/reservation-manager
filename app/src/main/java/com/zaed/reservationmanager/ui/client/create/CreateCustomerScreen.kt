@@ -36,7 +36,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.ui.client.ClientUIError
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme

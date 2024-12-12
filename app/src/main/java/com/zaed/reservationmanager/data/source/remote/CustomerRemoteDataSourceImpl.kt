@@ -1,9 +1,8 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.ui.client.ClientUIError
+import com.zaed.reservationmanager.ui.client.create.ClientUIError
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.client
+package com.zaed.reservationmanager.ui.client.create
 
 import androidx.annotation.StringRes
 import com.zaed.reservationmanager.R

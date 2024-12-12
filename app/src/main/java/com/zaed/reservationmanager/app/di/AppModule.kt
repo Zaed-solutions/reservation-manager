@@ -24,6 +24,8 @@ import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
+import com.zaed.reservationmanager.ui.driver.DriverListViewModel
+import com.zaed.reservationmanager.ui.employee.display.EmployeeListViewModel
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationViewModel
 import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -41,6 +43,8 @@ val viewModelModule = module {
     viewModelOf(::CreateCustomerViewModel)
     viewModelOf(::CustomerListViewModel)
     viewModelOf(::AddEmployeeViewModel)
+    viewModelOf(::EmployeeListViewModel)
+    viewModelOf(::DriverListViewModel)
     viewModelOf(::CreateReservationViewModel)
     viewModelOf(::ReservationDetailsViewModel)
 }

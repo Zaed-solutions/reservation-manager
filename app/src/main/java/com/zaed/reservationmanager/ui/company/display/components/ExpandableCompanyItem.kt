@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.ui.reservation.details.components.DetailRow
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
 @Composable
@@ -63,7 +64,7 @@ fun ExpandableCompanyItem(
         tonalElevation = 2.dp
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -86,21 +87,21 @@ fun ExpandableCompanyItem(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start,
                 ) {
-                    Text(
-                        text = stringResource(R.string.phone_template, company.phoneNumber),
-                        style = MaterialTheme.typography.bodyMedium
+                    DetailRow(
+                        label = stringResource(R.string.phone_number),
+                        value = company.phoneNumber
                     )
-                    Text(
-                        text = stringResource(R.string.fax_template, company.faxNumber),
-                        style = MaterialTheme.typography.bodyMedium
+                    DetailRow(
+                        label = stringResource(R.string.fax_number),
+                        value = company.faxNumber
                     )
-                    Text(
-                        text = stringResource(R.string.email_template, company.email),
-                        style = MaterialTheme.typography.bodyMedium
+                    DetailRow(
+                        label = stringResource(R.string.email),
+                        value = company.email
                     )
                     Text(
                         text = stringResource(R.string.view_details),
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable {
                             onCompanyDetailsClicked()
