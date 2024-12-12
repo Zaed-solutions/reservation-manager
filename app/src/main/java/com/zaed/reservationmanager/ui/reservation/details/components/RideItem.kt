@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
@@ -259,6 +260,8 @@ private fun LocationItem(
         )
         Text(
             text = location,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleLarge
         )
     }
