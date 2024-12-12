@@ -17,13 +17,13 @@ class CustomerRemoteDataSourceImpl(
         private val CUSTOMER_COLLECTION = "customers"
     }
 
-    override fun createCustomer(customer: Customer): Flow<Result<Unit>> = callbackFlow{
+    override fun createCustomer(customer: Customer): Flow<Result<String>> = callbackFlow{
         try {
             firestore.collection(CUSTOMER_COLLECTION).whereEqualTo("phoneNumber", customer.phoneNumber).get().addOnSuccessListener { data ->
                 if(data.isEmpty){
                     val document = firestore.collection(CUSTOMER_COLLECTION).document()
                     document.set(customer.copy(id = document.id)).addOnSuccessListener {
-                        trySend(Result.success(Unit))
+                        trySend(Result.success(document.id))
                     }.addOnFailureListener { e ->
                         trySend(Result.failure(e))
                     }
