@@ -53,13 +53,14 @@ fun RideItem(
     modifier: Modifier = Modifier,
     ride: Ride = Ride(),
     onDeleteRide: () -> Unit = {},
-    onCompanyClicked: () -> Unit = {},
+    onCompanyClicked: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
-    onDriverClicked: () -> Unit = {},
+    onDriverClicked: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
     onSendInfoToTravelCompany: () -> Unit = {},
-    onReservationClicked: () -> Unit = {}
+    onReservationClicked: () -> Unit = {},
+    isActionsVisible: Boolean = true
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -186,151 +187,150 @@ fun RideItem(
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
-            AnimatedVisibility(visible = isExpanded) {
-                Column(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    DetailRow(
-                        label = stringResource(R.string.reservation_number),
-                        value = "#${ride.reservationNumber}",
-                        onClick = {
-                            onReservationClicked()
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.travel_company),
-                        value = ride.travelCompany,
-                        onClick = {
-                            onCompanyClicked()
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = ride.travelCompanyPhone,
-                        onClick = {
-                            onMessagePhoneNumber(ride.travelCompanyPhone)
-                        },
-                        onLongClick = {
-                            onCopyPhoneNumber(ride.travelCompanyPhone)
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.car),
-                        value = ride.car
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.driver),
-                        value = ride.driver,
-                        onClick = {
-                            onDriverClicked()
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = ride.travelCompanyPhone,
-                        onClick = {
-                            onMessagePhoneNumber(ride.travelCompanyPhone)
-                        },
-                        onLongClick = {
-                            onCopyPhoneNumber(ride.travelCompanyPhone)
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.buying_price),
-                        value = ride.buyingPrice.formatMoney(),
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.selling_price),
-                        value = ride.sellingPrice.formatMoney(),
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.collected_price),
-                        value = ride.collectedPrice.formatMoney(),
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.notes),
-                        value = ride.note
-                    )
+                AnimatedVisibility(visible = isExpanded) {
                     Column(
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        DetailRow(
+                            label = stringResource(R.string.reservation_number),
+                            value = "#${ride.reservationNumber}",
+                            onClick = {
+                                onReservationClicked()
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.travel_company),
+                            value = ride.travelCompany,
+                            onClick = {
+                                onCompanyClicked(ride.travelCompanyId)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.phone_number),
+                            value = ride.travelCompanyPhone,
+                            onClick = {
+                                onMessagePhoneNumber(ride.travelCompanyPhone)
+                            },
+                            onLongClick = {
+                                onCopyPhoneNumber(ride.travelCompanyPhone)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.car),
+                            value = ride.car
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.driver),
+                            value = ride.driver,
+                            onClick = {
+                                onDriverClicked(ride.driverId)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(id = R.string.phone_number),
+                            value = ride.travelCompanyPhone,
+                            onClick = {
+                                onMessagePhoneNumber(ride.travelCompanyPhone)
+                            },
+                            onLongClick = {
+                                onCopyPhoneNumber(ride.travelCompanyPhone)
+                            }
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.buying_price),
+                            value = ride.buyingPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.selling_price),
+                            value = ride.sellingPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.collected_price),
+                            value = ride.collectedPrice.formatMoney(),
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.notes),
+                            value = ride.note
+                        )
+                        if (isActionsVisible) {
+                            Column(
+                                modifier = Modifier.padding(top = 8.dp)
+                            ) {
 
-                        Button(
-                            enabled = !ride.sentDriverInfoToCustomer,
-                            onClick = { onSendDriverInfoToClient() },
-                            contentPadding = PaddingValues(
-                                horizontal = 16.dp,
-                                vertical = 8.dp
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Icon(
-                                imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
-                                contentDescription = null,
-                                tint = if (ride.sentDriverInfoToCustomer)
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                else
-                                    MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                style = MaterialTheme.typography.bodyMedium,
-                                text = stringResource(
-                                    if (ride.sentDriverInfoToCustomer)
-                                        R.string.driver_information_sent
-                                    else
-                                        R.string.send_info_to_client
-                                )
-                            )
-                        }
-                        Button(
-                            enabled = !ride.sentToDriverCompany,
-                            onClick = { onSendInfoToTravelCompany() },
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentPadding = PaddingValues(
-                                horizontal = 16.dp,
-                                vertical = 8.dp
-                            )
-                        ) {
-                            Icon(
-                                imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                contentDescription = null,
-                                tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                            )
-                            Text(
-                                modifier = Modifier.padding(start = 8.dp),
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                text = stringResource(
-                                    if (ride.sentToDriverCompany)
-                                        R.string.ride_info_sent
-                                    else
-                                        R.string.send_ride_info_to_travel_company
-                                )
-                            )
+                                Button(
+                                    enabled = !ride.sentDriverInfoToCustomer,
+                                    onClick = { onSendDriverInfoToClient() },
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = if (ride.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        contentDescription = null,
+                                        tint = if (ride.sentDriverInfoToCustomer)
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        else
+                                            MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        text = stringResource(
+                                            if (ride.sentDriverInfoToCustomer)
+                                                R.string.driver_information_sent
+                                            else
+                                                R.string.send_info_to_client
+                                        )
+                                    )
+                                }
+                                Button(
+                                    enabled = !ride.sentToDriverCompany,
+                                    onClick = { onSendInfoToTravelCompany() },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        contentDescription = null,
+                                        tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        text = stringResource(
+                                            if (ride.sentToDriverCompany)
+                                                R.string.ride_info_sent
+                                            else
+                                                R.string.send_ride_info_to_travel_company
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.rotate(anim.value)
+                )
             }
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.rotate(anim.value)
-            )
-
-
         }
     }
 }
-
 
 @Composable
 private fun LocationItem(
@@ -381,8 +381,6 @@ private fun Preview() {
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
             )
-        ) {
-
-        }
+        )
     }
 }

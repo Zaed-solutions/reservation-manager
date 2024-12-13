@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.repository
 
+import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
@@ -49,5 +50,20 @@ class ReservationRepositoryImpl(
 
     override fun getRides(): Flow<Result<List<Ride>>> {
         return  remoteDataSource.getRides()
+    }
+
+    override fun getCompanyBalance(
+        companyId: String,
+        isTravel: Boolean
+    ): Flow<Result<CompanyBalance>> {
+        return remoteDataSource.getCompanyBalance(companyId, isTravel)
+    }
+
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> {
+        return remoteDataSource.getReservationsByCompanyId(companyId)
+    }
+
+    override fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>> {
+        return remoteDataSource.getRidesByCompanyId(companyId)
     }
 }

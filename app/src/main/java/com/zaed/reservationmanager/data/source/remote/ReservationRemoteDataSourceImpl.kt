@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import kotlinx.coroutines.channels.awaitClose
@@ -181,18 +182,117 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> =
-        callbackFlow {
-            try {
-                firestore.collection(RIDE_COLLECTION).document(rideId).update(updates)
-                    .addOnSuccessListener {
-                        trySend(Result.success(true))
-                    }.addOnFailureListener {
-                        trySend(Result.failure(it))
+    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).document(rideId).update(updates).addOnSuccessListener {
+                trySend(Result.success(true))
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override fun getCompanyBalance(
+        companyId: String,
+        isTravel: Boolean
+    ): Flow<Result<CompanyBalance>> = if(isTravel) getTravelCompanyBalance(companyId) else getTourismCompanyBalance(companyId)
+
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> = callbackFlow {
+        try {
+            firestore.collection(RESERVATION_COLLECTION).whereEqualTo("tourismCompanyId", companyId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(emptyList()))
+                } else {
+                    val reservations = data.toObjects(Reservation::class.java)
+                    trySend(Result.success(reservations))
+                }
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(emptyList()))
+                } else {
+                    val rides = data.toObjects(Ride::class.java)
+                    trySend(Result.success(rides))
+                }
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    private fun getTravelCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("companyId", companyId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(CompanyBalance()))
+                } else {
+                    val rides = data.toObjects(Ride::class.java)
+                    var totalBuying: Double = 0.0
+                    var totalSelling: Double = 0.0
+                    var totalCollected: Double = 0.0
+                    rides.forEach {
+                        totalBuying += it.buyingPrice
+                        totalSelling += it.sellingPrice
+                        totalCollected += it.collectedPrice
                     }
-            } catch (e: Exception) {
+                    trySend(Result.success(CompanyBalance(totalBuying = totalBuying, totalSelling = totalSelling, totalCollected = totalCollected)))
+                }
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+    private fun getTourismCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
+        try {
+            var totalBuying = 0.0
+            var totalSelling = 0.0
+            var totalCollected = 0.0
+            firestore.collection(RESERVATION_COLLECTION).whereEqualTo("tourismCompanyId", companyId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(CompanyBalance()))
+                } else {
+                    val reservations = data.toObjects(Reservation::class.java)
+                    reservations.forEach {
+                        firestore.collection(RIDE_COLLECTION).whereEqualTo("reservationId", it.id).get().addOnSuccessListener { ridesData ->
+                            if (!ridesData.isEmpty) {
+                                val rides = ridesData.toObjects(Ride::class.java)
+                                rides.forEach { ride ->
+                                    totalBuying += ride.buyingPrice
+                                    totalSelling += ride.sellingPrice
+                                    totalCollected += ride.collectedPrice
+                                }
+                            }
+                        }.addOnFailureListener { e ->
+                            trySend(Result.failure(e))
+                        }
+                    }
+                    trySend(Result.success(CompanyBalance(totalBuying = totalBuying, totalSelling = totalSelling, totalCollected = totalCollected)))
+                }
+            }.addOnFailureListener { e ->
                 trySend(Result.failure(e))
             }
-            awaitClose { }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
         }
+        awaitClose { }
+    }
 }
