@@ -34,7 +34,7 @@ class ReservationRemoteDataSourceImpl(
                             reservationNumber = reservationNumber + 1
                         )
                     ).addOnSuccessListener {
-                        trySend(Result.success(reservationRef.id to reservationNumber))
+                        trySend(Result.success(reservationRef.id to (reservationNumber+1)))
                     }.addOnFailureListener {
                         trySend(Result.failure(it))
                     }
