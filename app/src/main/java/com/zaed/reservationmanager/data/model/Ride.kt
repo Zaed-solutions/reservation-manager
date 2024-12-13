@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.data.model
 data class Ride(
     val id: String = "",
     val reservationId: String = "",
+    val reservationNumber: Long = 0L,
     val date: Long = 0L,
     val type: String = "",
     val startLocation: String = "",

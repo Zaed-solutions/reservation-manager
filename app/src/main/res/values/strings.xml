@@ -161,4 +161,5 @@
     <string name="collected">Collected</string>
     <string name="total_earnings">Total Earnings</string>
     <string name="total_balance">Total Balance:</string>
+    <string name="reservation_number">Reservation Number</string>
 </resources>

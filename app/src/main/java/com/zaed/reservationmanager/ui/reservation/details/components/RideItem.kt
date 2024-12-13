@@ -59,6 +59,7 @@ fun RideItem(
     onDriverClicked: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
     onSendInfoToTravelCompany: () -> Unit = {},
+    onReservationClicked: () -> Unit = {}
     isActionsVisible: Boolean = true
 ) {
     var isExpanded by remember {
@@ -136,25 +137,32 @@ fun RideItem(
                     }
                 }
             }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    LocationItem(
-                        location = ride.startLocation
-                    )
-                    Icon(
-                        imageVector = Icons.Default.DoubleArrow,
-                        contentDescription = "Arrow",
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    )
-                    LocationItem(
-                        location = ride.endLocation
-                    )
-                }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                LocationItem(
+                    modifier = Modifier.weight(1f),
+                    location = ride.startLocation
+                )
+                Icon(
+                    imageVector = Icons.Default.DoubleArrow,
+                    contentDescription = "Arrow",
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                LocationItem(
+                    modifier = Modifier.weight(1f),
+                    location = ride.endLocation
+                )
+            }
+
+
+            Column(
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -184,6 +192,13 @@ fun RideItem(
                         modifier = Modifier.padding(vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
+                        DetailRow(
+                            label = stringResource(R.string.reservation_number),
+                            value = "#${ride.reservationNumber}",
+                            onClick = {
+                                onReservationClicked()
+                            }
+                        )
                         DetailRow(
                             label = stringResource(R.string.travel_company),
                             value = ride.travelCompany,
@@ -310,55 +325,57 @@ fun RideItem(
         }
     }
 
-    @Composable
-    private fun LocationItem(
-        modifier: Modifier = Modifier,
-        location: String = "",
+@Composable
+private fun LocationItem(
+    modifier: Modifier = Modifier,
+    location: String = "",
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                contentDescription = "Location",
-                modifier = Modifier.size(24.dp)
-            )
-            Text(
-                text = location,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.LocationOn,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            contentDescription = "Location",
+            modifier = Modifier.size(20.dp)
+        )
+        Text(
+            text = location,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium
+        )
     }
+}
 
-    @Preview(showSystemUi = false, showBackground = true)
-    @Composable
-    private fun Preview() {
-        ReservationManagerTheme {
-            RideItem(
-                modifier = Modifier.padding(16.dp),
-                ride = Ride(
-                    id = "tristique",
-                    reservationId = "oratio",
-                    date = 7041,
-                    type = "Mazarat El Madina",
-                    car = "Camaro",
-                    travelCompanyPhone = "(398) 742-4872",
-                    driver = "Ahmed Mohsen",
-                    travelCompany = "Gawhara Travel Company",
-                    startLocation = "Gadda",
-                    endLocation = "Riyadh",
-                    buyingPrice = 0.1,
-                    sellingPrice = 2.3,
-                    collectedPrice = 4.5,
-                    note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
-                    sentDriverInfoToCustomer = false,
-                    sentToDriverCompany = true
-                )
+@Preview(showSystemUi = false, showBackground = true)
+@Composable
+private fun Preview() {
+    ReservationManagerTheme {
+        RideItem(
+            modifier = Modifier.padding(16.dp),
+            ride = Ride(
+                id = "tristique",
+                reservationId = "oratio",
+                date = 7041,
+                type = "Mazarat El Madina",
+                car = "Camaro",
+                travelCompanyPhone = "(398) 742-4872",
+                driver = "Ahmed Mohsen",
+                travelCompany = "Gawhara Travel Company",
+                startLocation = "Gadda",
+                endLocation = "Riyadh",
+                buyingPrice = 0.1,
+                sellingPrice = 2.3,
+                collectedPrice = 4.5,
+                note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
+                sentDriverInfoToCustomer = false,
+                sentToDriverCompany = true
             )
+        ) {
+
         }
     }
+}
