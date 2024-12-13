@@ -39,7 +39,7 @@ fun BalanceSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .padding(bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
@@ -69,18 +69,18 @@ fun BalanceSection(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 IncomeExpenseCardSection(
                     title = stringResource(R.string.buying),
                     amount = balance.totalBuying
                 )
-                FadedVerticalDivider(modifier = Modifier.padding(horizontal = 20.dp))
+                FadedVerticalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                 IncomeExpenseCardSection(
                     title = stringResource(R.string.selling),
                     amount = balance.totalSelling
                 )
-                FadedVerticalDivider(modifier = Modifier.padding(horizontal = 20.dp))
+                FadedVerticalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                 IncomeExpenseCardSection(
                     title = stringResource(R.string.collected),
                     amount = balance.totalCollected
@@ -106,7 +106,7 @@ fun IncomeExpenseCardSection(
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 14.sp,
             lineHeight = 19.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
         )
         Text(
             text = amount.formatMoney(),

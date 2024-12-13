@@ -59,7 +59,7 @@ fun RideItem(
     onDriverClicked: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
     onSendInfoToTravelCompany: () -> Unit = {},
-    onReservationClicked: () -> Unit = {}
+    onReservationClicked: () -> Unit = {},
     isActionsVisible: Boolean = true
 ) {
     var isExpanded by remember {
@@ -253,7 +253,7 @@ fun RideItem(
                             label = stringResource(R.string.notes),
                             value = ride.note
                         )
-                        if(isActionsVisible){
+                        if (isActionsVisible) {
                             Column(
                                 modifier = Modifier.padding(top = 8.dp)
                             ) {
@@ -261,7 +261,10 @@ fun RideItem(
                                 Button(
                                     enabled = !ride.sentDriverInfoToCustomer,
                                     onClick = { onSendDriverInfoToClient() },
-                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    ),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
@@ -291,7 +294,10 @@ fun RideItem(
                                     onClick = { onSendInfoToTravelCompany() },
                                     modifier = Modifier
                                         .fillMaxWidth(),
-                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    )
                                 ) {
                                     Icon(
                                         imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
@@ -324,6 +330,7 @@ fun RideItem(
             }
         }
     }
+}
 
 @Composable
 private fun LocationItem(
@@ -374,8 +381,6 @@ private fun Preview() {
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
             )
-        ) {
-
-        }
+        )
     }
 }

@@ -263,7 +263,33 @@ class ReservationRemoteDataSourceImpl(
     }
     private fun getTourismCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
         try {
-            TODO("Not yet implemented")
+            var totalBuying = 0.0
+            var totalSelling = 0.0
+            var totalCollected = 0.0
+            firestore.collection(RESERVATION_COLLECTION).whereEqualTo("tourismCompanyId", companyId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(CompanyBalance()))
+                } else {
+                    val reservations = data.toObjects(Reservation::class.java)
+                    reservations.forEach {
+                        firestore.collection(RIDE_COLLECTION).whereEqualTo("reservationId", it.id).get().addOnSuccessListener { ridesData ->
+                            if (!ridesData.isEmpty) {
+                                val rides = ridesData.toObjects(Ride::class.java)
+                                rides.forEach { ride ->
+                                    totalBuying += ride.buyingPrice
+                                    totalSelling += ride.sellingPrice
+                                    totalCollected += ride.collectedPrice
+                                }
+                            }
+                        }.addOnFailureListener { e ->
+                            trySend(Result.failure(e))
+                        }
+                    }
+                    trySend(Result.success(CompanyBalance(totalBuying = totalBuying, totalSelling = totalSelling, totalCollected = totalCollected)))
+                }
+            }.addOnFailureListener { e ->
+                trySend(Result.failure(e))
+            }
         } catch (e: Exception){
             trySend(Result.failure(e))
         }

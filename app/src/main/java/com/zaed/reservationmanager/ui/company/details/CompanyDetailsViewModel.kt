@@ -34,6 +34,7 @@ class CompanyDetailsViewModel(
         viewModelScope.launch (Dispatchers.IO) {
             reservationRepo.getReservationsByCompanyId(companyId).collect { result ->
                 result.onSuccess {
+                    Log.d(TAG, "fetchReservations: success ${it.size}")
                     _uiState.update { oldState ->
                         oldState.copy(reservations = it)
                     }
@@ -93,6 +94,7 @@ class CompanyDetailsViewModel(
     fun handleAction(action: CompanyDetailsUiAction){
         when(action){
             is CompanyDetailsUiAction.OnDeleteRide -> deleteRide(action.rideId)
+            is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
             else -> Unit
         }
     }
@@ -107,6 +109,22 @@ class CompanyDetailsViewModel(
                     }
                 }.onFailure { e ->
                     Log.e(TAG, "deleteRide: failed to delete: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+    private fun deleteReservation(reservationId: String){
+        Log.d(TAG, "deleteReservation: $reservationId")
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.deleteReservation(reservationId).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "deleteReservation: success")
+                    _uiState.update { oldState ->
+                        oldState.copy(reservations = oldState.reservations.filter { it.id != reservationId })
+                    }
+                }.onFailure { e ->
+                    Log.e(TAG, "deleteReservation: failed to delete: ${e.message}")
                     e.printStackTrace()
                 }
             }
