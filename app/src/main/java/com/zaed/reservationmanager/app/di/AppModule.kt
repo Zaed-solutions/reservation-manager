@@ -23,6 +23,7 @@ import com.zaed.reservationmanager.ui.company.add.AddCompanyViewModel
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
+import com.zaed.reservationmanager.ui.client.details.CustomerDetailsViewModel
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel
 import com.zaed.reservationmanager.ui.driver.DriverListViewModel
@@ -51,6 +52,7 @@ val viewModelModule = module {
     viewModelOf(::ReservationDetailsViewModel)
     viewModelOf(::DisplayReservationViewModel)
     viewModelOf(::CompanyDetailsViewModel)
+    viewModelOf(::CustomerDetailsViewModel)
 }
 
 val repositoryModule = module {

@@ -4,6 +4,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import kotlinx.serialization.Serializable
+import java.io.Serial
 
 sealed interface Route {
     @Serializable
@@ -41,4 +42,8 @@ sealed interface Route {
 
     @Serializable
     data class CompanyDetailsRoute(val companyId: String = "", val isTravel: Boolean): Route
+
+    @Serializable
+    data class CustomerDetailsRoute(val customerId: String = ""): Route
+
 }

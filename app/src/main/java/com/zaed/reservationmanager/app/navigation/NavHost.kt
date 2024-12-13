@@ -21,6 +21,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.client.create.AddCustomerScreen
+import com.zaed.reservationmanager.ui.client.details.CustomerDetailScreen
 import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsScreen
 import com.zaed.reservationmanager.ui.company.display.CompaniesScreen
@@ -125,7 +126,7 @@ fun NavigationHost(
                     navController.navigate(Route.AddCustomerRoute())
                 },
                 onNavigateToCustomerDetails = {
-                    /*TODO*/
+                    navController.navigate(Route.CustomerDetailsRoute(it))
                 }
             )
         }
@@ -173,8 +174,7 @@ fun NavigationHost(
                     navController.navigate(Route.CompanyDetailsRoute(companyId, isTravel))
                 },
                 onNavigateToClientDetails = { clientId ->
-                    Log.d(TAG, "NavigationHost: navigate to client details with: $clientId")
-                    /*TODO*/
+                    navController.navigate(Route.CustomerDetailsRoute(clientId))
                 },
                 onNavigateToEmployeeDetails = { employeeId, isDriver ->
                     Log.d(
@@ -199,6 +199,20 @@ fun NavigationHost(
                     navController.navigate(Route.CompanyDetailsRoute(companyId, true))
                 },
                 onNavigateToEditReservation = {/*TODO*/},
+            )
+        }
+        composable<Route.CustomerDetailsRoute> { backStackEntry ->
+            val customerId = backStackEntry.toRoute<Route.CustomerDetailsRoute>().customerId
+            Log.d(TAG, "NavigationHost: navigate to customer details with: $customerId")
+            CustomerDetailScreen(
+                customerId = customerId,
+                onBackPressed = { navController.popBackStack() },
+                onNavigateToReservationDetails = { reservationId ->
+                    navController.navigate(Route.ReservationDetailsRoute(reservationId))
+                },
+                onNavigateToCompanyDetails = { companyId, isTravel ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, isTravel))
+                }
             )
         }
     }

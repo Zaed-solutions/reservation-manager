@@ -66,4 +66,8 @@ class ReservationRepositoryImpl(
     override fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>> {
         return remoteDataSource.getRidesByCompanyId(companyId)
     }
+
+    override fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>> {
+        return remoteDataSource.getRidesByCustomerId(customerId)
+    }
 }

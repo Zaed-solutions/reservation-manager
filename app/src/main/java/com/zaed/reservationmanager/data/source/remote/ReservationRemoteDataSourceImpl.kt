@@ -236,6 +236,24 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
+    override fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("customerId", customerId).get().addOnSuccessListener { data ->
+                if (data.isEmpty) {
+                    trySend(Result.success(emptyList()))
+                } else {
+                    val rides = data.toObjects(Ride::class.java)
+                    trySend(Result.success(rides))
+                }
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception){
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
     private fun getTravelCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
         try {
             firestore.collection(RIDE_COLLECTION).whereEqualTo("companyId", companyId).get().addOnSuccessListener { data ->

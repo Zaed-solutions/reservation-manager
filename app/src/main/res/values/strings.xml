@@ -163,4 +163,6 @@
     <string name="total_balance">Total Balance:</string>
     <string name="reservation_number">Reservation Number</string>
     <string name="reservation">Reservation</string>
+    <string name="customer_details">Customer Details</string>
+    <string name="phonenumber_is_blank">Phone number is blank</string>
 </resources>
