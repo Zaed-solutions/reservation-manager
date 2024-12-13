@@ -26,4 +26,8 @@ class CustomerRepositoryImpl(
     override suspend fun getCustomerByNumber(number: String): Result<Customer> {
         return remoteSource.getCustomerByNumber(number)
     }
+
+    override suspend fun getCustomerById(id: String): Result<Customer> {
+        return remoteSource.getCustomerById(id)
+    }
 }
