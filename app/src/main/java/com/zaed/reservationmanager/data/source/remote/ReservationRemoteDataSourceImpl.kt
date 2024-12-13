@@ -12,7 +12,7 @@ class ReservationRemoteDataSourceImpl(
 ) : ReservationRemoteDataSource {
     val RESERVATION_COLLECTION = "reservations"
     val RIDE_COLLECTION = "rides"
-    override fun createReservation(reservation: Reservation): Flow<Result<String>> = callbackFlow {
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> = callbackFlow {
         try {
             firestore.collection(RESERVATION_COLLECTION)
                 .orderBy(
@@ -34,7 +34,7 @@ class ReservationRemoteDataSourceImpl(
                             reservationNumber = reservationNumber + 1
                         )
                     ).addOnSuccessListener {
-                        trySend(Result.success(reservationRef.id))
+                        trySend(Result.success(reservationRef.id to reservationNumber))
                     }.addOnFailureListener {
                         trySend(Result.failure(it))
                     }

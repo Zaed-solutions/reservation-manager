@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class ReservationRepositoryImpl(
     private val remoteDataSource: ReservationRemoteDataSource
 ) : ReservationRepository {
-    override fun createReservation(reservation: Reservation): Flow<Result<String>> {
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> {
         return remoteDataSource.createReservation(reservation)
     }
 

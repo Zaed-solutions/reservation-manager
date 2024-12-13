@@ -5,7 +5,7 @@ import com.zaed.reservationmanager.data.model.Ride
 import kotlinx.coroutines.flow.Flow
 
 interface ReservationRemoteDataSource {
-    fun createReservation(reservation: Reservation): Flow<Result<String>>
+    fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>>
     fun getReservationById(id: String): Flow<Result<Reservation>>
     fun createRide(ride: Ride): Flow<Result<String>>
     fun getRidesByReservationId(id: String):Flow<Result<List<Ride>>>
