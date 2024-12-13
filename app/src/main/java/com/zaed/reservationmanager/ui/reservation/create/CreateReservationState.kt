@@ -5,7 +5,6 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.ui.client.create.countriesList
 
 data class CreateReservationState(
     val reservation: Reservation = Reservation(),
@@ -16,10 +15,10 @@ data class CreateReservationState(
     val newRide: Ride = Ride(),
     val travelCompanies: List<Company> = emptyList(),//
     val tourismCompanies: List<Company> = emptyList(), //
-    val transactionTypes: List<String> = reservationTypesList,
-    val carTypes: List<String> = carTypesList,
+    val transactionTypes: List<String> = emptyList(),
+    val carTypes: List<String> = emptyList(),
     val drivers: List<Employee> = emptyList(),
-    val countries: List<String> = countriesList,
+    val countries: List<String> = emptyList(),
     val employees: List<Employee> = emptyList(),
     val isFieldsEnabled: Boolean = false,
     val loading: Boolean = false,
@@ -27,23 +26,4 @@ data class CreateReservationState(
     val userMessage: String = "",
     val rideError: ReservationError = ReservationError.NONE,
     val reservationError: ReservationError = ReservationError.NONE
-)
-val reservationTypesList = listOf(
-    "Reception",
-    "Departure",
-    "Mecca Attractions",
-    "Medina Attractions",
-    "Taif Tour",
-    "Stationed"
-)
-val carTypesList = listOf(
-    "Small",
-    "Carnival",
-    "Family",
-    "H1",
-    "Staria",
-    "GMC",
-    "Hiace",
-    "Coaster",
-    "Bus"
 )

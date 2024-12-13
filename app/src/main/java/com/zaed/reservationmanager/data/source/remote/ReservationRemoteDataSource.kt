@@ -14,5 +14,7 @@ interface ReservationRemoteDataSource {
     fun getRides(): Flow<Result<List<Ride>>>
     fun deleteRide(id: String): Flow<Result<Boolean>>
     fun updateReservation(reservationId: String, updates: Map<String, Any>): Flow<Result<Boolean>>
+    fun updateReservation(reservation: Reservation): Flow<Result<Boolean>>
     fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>>
+    fun updateRide(ride: Ride): Flow<Result<Boolean>>
 }

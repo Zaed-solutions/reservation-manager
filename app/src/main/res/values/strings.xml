@@ -156,4 +156,8 @@
     <string name="created_at">Created at</string>
     <string name="update_customer">Update Customer</string>
     <string name="reservation_number">Reservation Number</string>
+    <string name="selling_price_is_required">Selling price is required</string>
+    <string name="travel_company_phone_number_is_not_set">Travel company phone number is not set</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="drop_down_lists"> Update Drop Down Lists</string>
 </resources>

@@ -18,6 +18,7 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
 
 @Composable
 fun AddNewReservation(
+    initialReservation: Reservation,
     reservation: Reservation,
     action: (ReservationUiAction) -> Unit,
     errorMessage: ReservationError,
@@ -27,7 +28,7 @@ fun AddNewReservation(
 ) {
     TitledTextField(
         title = stringResource(R.string.client_phone),
-        initialValue = reservation.clientPhone,
+        initialValue = initialReservation.clientPhone,
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateCustomerNumber(
@@ -48,7 +49,7 @@ fun AddNewReservation(
     )
     TitledTextField(
         title = stringResource(R.string.client_name),
-        initialValue = reservation.clientName,
+        initialValue = initialReservation.clientName,
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateCustomerName(
@@ -79,7 +80,7 @@ fun AddNewReservation(
     )
     TitledTextField(
         title = stringResource(R.string.travel_no),
-        initialValue = reservation.flightNumber,
+        initialValue = initialReservation.flightNumber,
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateTravelNumber(

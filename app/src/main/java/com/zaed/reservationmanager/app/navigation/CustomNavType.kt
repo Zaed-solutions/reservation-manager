@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Reservation
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -63,6 +64,25 @@ object CustomNavType {
             return Uri.encode(Json.encodeToString(value))
         }
         override fun put(bundle: Bundle, key: String, value: Customer) {
+            bundle.putString(key, Json.encodeToString(value))
+        }
+
+    }
+    val ReservationType = object: NavType<Reservation>(
+        isNullableAllowed = false,
+    ){
+        override fun get(bundle: Bundle, key: String): Reservation? {
+            return Json.decodeFromString(bundle.getString(key) ?: return null)
+        }
+
+        override fun parseValue(value: String): Reservation {
+            return Json.decodeFromString(Uri.decode(value))
+        }
+
+        override fun serializeAsValue(value: Reservation): String {
+            return Uri.encode(Json.encodeToString(value))
+        }
+        override fun put(bundle: Bundle, key: String, value: Reservation) {
             bundle.putString(key, Json.encodeToString(value))
         }
 

@@ -7,12 +7,13 @@ import com.zaed.reservationmanager.R
 import kotlinx.coroutines.launch
 
 object PhoneUtil {
-    fun sendWhatsappMessage(context: Context, phoneNumber: String, message: String, onFailure: () -> Unit){
+    fun sendWhatsappMessage(context: Context, phoneNumber: String, message: String,onSuccess:()->Unit = {}, onFailure: () -> Unit){
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse("https://wa.me/${phoneNumber}?text=${Uri.encode(message)}")
         }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
+            onSuccess()
         } else {
             onFailure()
         }

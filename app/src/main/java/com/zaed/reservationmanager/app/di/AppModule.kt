@@ -1,5 +1,7 @@
 package com.zaed.reservationmanager.app.di
 
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -25,6 +27,7 @@ import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.driver.DriverListViewModel
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStoreImpl
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListViewModel
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationViewModel
 import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsViewModel
@@ -49,6 +52,7 @@ val viewModelModule = module {
     viewModelOf(::CreateReservationViewModel)
     viewModelOf(::ReservationDetailsViewModel)
     viewModelOf(::DisplayReservationViewModel)
+    viewModelOf(::UpdateDropDownListsViewModel)
 }
 
 val repositoryModule = module {
@@ -63,5 +67,6 @@ val remoteModule = module {
     singleOf(::CustomerRemoteDataSourceImpl) { bind<CustomerRemoteDataSource>() }
     singleOf(::EmployeeRemoteDataSourceImpl) { bind<EmployeeRemoteDataSource>() }
     singleOf(::ReservationRemoteDataSourceImpl) { bind<ReservationRemoteDataSource>() }
+    singleOf(::MenuDataStoreImpl) { bind<MenuDataStore>() }
     single<FirebaseFirestore> { Firebase.firestore }
 }

@@ -12,39 +12,40 @@ class ReservationRemoteDataSourceImpl(
 ) : ReservationRemoteDataSource {
     val RESERVATION_COLLECTION = "reservations"
     val RIDE_COLLECTION = "rides"
-    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> = callbackFlow {
-        try {
-            firestore.collection(RESERVATION_COLLECTION)
-                .orderBy(
-                    "reservationNumber",
-                    com.google.firebase.firestore.Query.Direction.DESCENDING
-                )
-                .limit(1)
-                .get()
-                .addOnSuccessListener { doc ->
-                    val reservationNumber = if (!doc.isEmpty) {
-                        doc.documents[0].get("reservationNumber") as Long ?: 0
-                    } else {
-                        0
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
+        callbackFlow {
+            try {
+                firestore.collection(RESERVATION_COLLECTION)
+                    .orderBy(
+                        "reservationNumber",
+                        com.google.firebase.firestore.Query.Direction.DESCENDING
+                    )
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        val reservationNumber = if (!doc.isEmpty) {
+                            doc.documents[0].get("reservationNumber") as Long ?: 0
+                        } else {
+                            0
+                        }
+                        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
+                        reservationRef.set(
+                            reservation.copy(
+                                id = reservationRef.id,
+                                reservationNumber = reservationNumber + 1
+                            )
+                        ).addOnSuccessListener {
+                            trySend(Result.success(reservationRef.id to (reservationNumber + 1)))
+                        }.addOnFailureListener {
+                            trySend(Result.failure(it))
+                        }
                     }
-                    val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
-                    reservationRef.set(
-                        reservation.copy(
-                            id = reservationRef.id,
-                            reservationNumber = reservationNumber + 1
-                        )
-                    ).addOnSuccessListener {
-                        trySend(Result.success(reservationRef.id to (reservationNumber+1)))
-                    }.addOnFailureListener {
-                        trySend(Result.failure(it))
-                    }
-                }
 
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     override fun getReservationById(id: String): Flow<Result<Reservation>> = callbackFlow {
         try {
@@ -109,7 +110,7 @@ class ReservationRemoteDataSourceImpl(
                         trySend(Result.success(rides ?: emptyList()))
                     }
                 }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -141,6 +142,14 @@ class ReservationRemoteDataSourceImpl(
         try {
             firestore.collection(RESERVATION_COLLECTION).document(id).delete()
                 .addOnSuccessListener {
+                    firestore.collection(RIDE_COLLECTION).whereEqualTo("reservationId", id).get()
+                        .addOnSuccessListener {
+                            it.documents.forEach { doc ->
+                                doc.reference.delete()
+                            }
+                        }.addOnFailureListener {
+                            trySend(Result.failure(it))
+                        }
                     trySend(Result.success(true))
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
@@ -181,6 +190,22 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
+    override fun updateReservation(
+        reservation: Reservation
+    ): Flow<Result<Boolean>> = callbackFlow {
+        try {
+            firestore.collection(RESERVATION_COLLECTION).document(reservation.id).set(reservation)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
     override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> =
         callbackFlow {
             try {
@@ -195,4 +220,19 @@ class ReservationRemoteDataSourceImpl(
             }
             awaitClose { }
         }
+
+    override fun updateRide(ride: Ride): Flow<Result<Boolean>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).document(ride.id).set(ride)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+
+        }
+        awaitClose { }
+    }
 }

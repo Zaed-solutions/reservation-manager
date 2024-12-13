@@ -17,6 +17,7 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
 @Composable
 fun MainActionButtons(
     action: (ReservationUiAction) -> Unit,
+    isEditMode: Boolean = false,
     onBackClicked: () -> Unit = {}
 ) {
     Row(
@@ -30,7 +31,10 @@ fun MainActionButtons(
             onClick = {action(ReservationUiAction.SaveReservation)},
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text(stringResource(R.string.save_reservation))
+            Text(
+                text = if (isEditMode) stringResource(R.string.save_changes)
+                    else stringResource(R.string.save_reservation)
+            )
         }
         Button(
             modifier = Modifier

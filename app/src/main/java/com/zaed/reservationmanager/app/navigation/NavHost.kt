@@ -1,17 +1,13 @@
 package com.zaed.reservationmanager.app.navigation
 
 import CustomerListScreen
+import UpdateDropDownListsScreen
 import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -20,6 +16,7 @@ import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.client.create.AddCustomerScreen
 import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
 import com.zaed.reservationmanager.ui.company.display.CompaniesScreen
@@ -69,6 +66,11 @@ fun NavigationHost(
                 onBackPressed = { navController.popBackStack() }
             )
         }
+        composable<Route.DropDownMenuLists>(){
+            UpdateDropDownListsScreen(
+                onNavDrawerClicked = { onShowNavDrawer() }
+            )
+        }
         composable<Route.AddEmployeeRoute>(
             typeMap = mapOf(
                 typeOf<Employee>() to CustomNavType.EmployeeType
@@ -107,9 +109,18 @@ fun NavigationHost(
         composable<Route.DisplayReservationRoute> {
             DisplayReservationScreen (
                 navigateToAddReservation = {
-                    navController.navigate(Route.CreateReservationRoute)
+                    navController.navigate(Route.CreateReservationRoute())
                 },
-                onShowNavDrawer = { onShowNavDrawer() }
+                onShowNavDrawer = { onShowNavDrawer() },
+                navigateToReservationDetails = { reservationId ->
+                    navController.navigate(Route.ReservationDetailsRoute(reservationId))
+                },
+                onNavigateToEmployeeDetails = { employeeId, isDriver ->
+                    // TODO: navigate to employee details
+                },
+                navigateToEditReservation = { reservation ->
+                    navController.navigate(Route.CreateReservationRoute(reservation))
+                }
             )
         }
         composable<Route.CustomerListRoute> {
@@ -155,8 +166,13 @@ fun NavigationHost(
                 }
             )
         }
-        composable<Route.CreateReservationRoute> {
+        composable<Route.CreateReservationRoute> (
+            typeMap = mapOf(
+                typeOf<Reservation>() to CustomNavType.ReservationType
+            )
+        ){
             CreateReservationScreen(
+                reservation = it.toRoute<Route.CreateReservationRoute>().reservation,
                 navigateBack = { navController.popBackStack() }
             )
         }
@@ -185,3 +201,4 @@ fun NavigationHost(
         }
     }
 }
+

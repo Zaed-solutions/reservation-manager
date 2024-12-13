@@ -104,6 +104,8 @@ dependencies {
     //Lottie
     implementation(libs.lottie.compose)
     implementation("org.apache.poi:poi-ooxml:5.3.0")
+    implementation ("androidx.datastore:datastore-preferences:1.1.1")
+
 
 
 }

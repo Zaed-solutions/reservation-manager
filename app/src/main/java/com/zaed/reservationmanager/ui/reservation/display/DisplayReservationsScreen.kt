@@ -38,6 +38,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -47,21 +49,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 import com.zaed.reservationmanager.ui.reservation.display.component.DateRangePickerModal
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatMoney
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -72,14 +83,111 @@ import java.time.ZoneId
 fun DisplayReservationScreen(
     viewModel: DisplayReservationViewModel = koinViewModel(),
     navigateToAddReservation: () -> Unit = {},
-    onShowNavDrawer: () -> Unit = {}
+    onShowNavDrawer: () -> Unit = {},
+    navigateToReservationDetails: (String) -> Unit = {},
+    onNavigateToEmployeeDetails: (String, Boolean) -> Unit = { _, _ -> },
+    navigateToEditReservation: (Reservation) -> Unit = {}
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val state by viewModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
     DisplayReservationScreenContent(
         rides = state.rides.sortedBy { it.date },
         reservations = state.reservations,
+        onNavigateToEditReservation={
+            navigateToEditReservation(it)
+        },
+        onSendInfoToTravelCompany = { ride, reservation ->
+            val messageText = context.getString(
+                R.string.transportation_details,
+                ride.travelCompany,
+                reservation.clientName,
+                reservation.clientPhone,
+                ride.date.formatEpochSecondsToDateTime(),
+                ride.startLocation,
+                ride.endLocation,
+                reservation.flightNumber,
+                ride.buyingPrice.formatMoney(),
+                ride.collectedPrice.formatMoney()
+            )
+            if(ride.travelCompanyPhone.isBlank()){
+                scope.launch {
+                    snackbarHostState.showSnackbar(context.getString(R.string.travel_company_phone_number_is_not_set))
+                }
+            }else {
+                PhoneUtil.sendWhatsappMessage(
+                    context = context,
+                    phoneNumber = ride.travelCompanyPhone,
+                    message = messageText,
+                    onSuccess = {
+                        viewModel.handleAction(
+                            DisplayReservationUIAction.OnInfoSentToTravelCompany(
+                                ride.id
+                            )
+                        )
+                    },
+                    onFailure = {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                        }
+                    }
+                )
+            }
+        },
+        onDeleteReservation = {
+            viewModel.handleAction(DisplayReservationUIAction.OnDeleteReservation(it))
+        },
+        navigateToReservationDetails = navigateToReservationDetails,
         onNavigateToAddReservation = navigateToAddReservation,
-        onShowNavDrawer = onShowNavDrawer
+        onShowNavDrawer = onShowNavDrawer,
+        snackbarHostState = snackbarHostState,
+        action = viewModel::handleAction,
+        OnSendDriverInfoToCustomer = { rideId, clientPhone, driverName, driverPhoneNumber ->
+            val messageText = context.getString(
+                R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
+                driverName,
+                driverPhoneNumber
+            )
+            PhoneUtil.sendWhatsappMessage(
+                context = context,
+                phoneNumber = clientPhone,
+                message = messageText,
+                onSuccess = {
+                    viewModel.handleAction(DisplayReservationUIAction.OnDriverInfoSent(rideId))
+                },
+                onFailure = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                    }
+                }
+            )
+        },
+        onDriverClicked = {
+            onNavigateToEmployeeDetails(it, true)
+        },
+        onCopyPhoneNumber = {
+            clipboardManager.setText(AnnotatedString(it))
+            scope.launch {
+                snackbarHostState.showSnackbar(
+                    message = context.getString(R.string.phone_number_copied_to_clipboard),
+                    withDismissAction = true
+                )
+            }
+        },
+        onMessagePhoneNumber = {
+            PhoneUtil.sendWhatsappMessage(
+                context = context,
+                phoneNumber = it,
+                message = "",
+                onFailure = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                    }
+                }
+            )
+        }
     )
 }
 
@@ -89,9 +197,20 @@ fun DisplayReservationScreenContent(
     rides: List<Ride> = emptyList(),
     reservations: List<Reservation> = emptyList(),
     onNavigateToAddReservation: () -> Unit = {},
-    onShowNavDrawer: () -> Unit = {}
+    OnSendDriverInfoToCustomer: (rideId: String, clientPhone: String, driverName: String, driverPhoneNumber: String) -> Unit = { _, _, _, _ -> },
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onShowNavDrawer: () -> Unit = {},
+    action: (DisplayReservationUIAction) -> Unit = {},
+    onMessagePhoneNumber: (String) -> Unit = {},
+    navigateToReservationDetails: (String) -> Unit = {},
+    onCopyPhoneNumber: (String) -> Unit = {},
+    onDriverClicked: (driverId: String) -> Unit = {},
+    onSendInfoToTravelCompany: (ride: Ride, reservation: Reservation) -> Unit = { _, _ -> },
+    onDeleteReservation: (String) -> Unit = {},
+    onNavigateToEditReservation:(Reservation) -> Unit = {}
 ) {
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -294,13 +413,50 @@ fun DisplayReservationScreenContent(
                     )
                 }
             }
-            if (state == 0) ReservationList(reservations = filteredReservations2)
+            if (state == 0) ReservationList(
+                reservations = filteredReservations2.sortedBy { it.date },
+                onNavigateToReservationDetails = navigateToReservationDetails,
+                onDeleteReservation = onDeleteReservation,
+                onNavigateToEditReservation = onNavigateToEditReservation
+            )
             else {
                 LazyColumn(
                     contentPadding = PaddingValues(vertical = 16.dp),
                 ) {
                     items(filteredRides2) { ride ->
-                        RideItem(ride = ride)
+                        RideItem(
+                            ride = ride,
+                            onDeleteRide = {
+                                action(DisplayReservationUIAction.OnDeleteRide(ride.id))
+                            },
+                            onReservationClicked = {
+                                navigateToReservationDetails(ride.reservationId)
+                            },
+                            onCompanyClicked = {
+                                // TODO: Handle company click
+                            },
+                            onMessagePhoneNumber = onMessagePhoneNumber,
+                            onCopyPhoneNumber = onCopyPhoneNumber,
+                            onDriverClicked = {
+                                onDriverClicked(ride.driverId)
+                            },
+                            onSendDriverInfoToClient = {
+                                OnSendDriverInfoToCustomer(
+                                    ride.id,
+                                    reservations.find { it.id == ride.reservationId }?.clientPhone
+                                        ?: "",
+                                    ride.driver,
+                                    ride.driverPhoneNumber
+                                )
+                            },
+                            onSendInfoToTravelCompany = {
+                                onSendInfoToTravelCompany(
+                                    ride,
+                                    reservations.find { it.id == ride.reservationId }
+                                        ?: Reservation()
+                                )
+                            },
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
@@ -327,7 +483,9 @@ fun DisplayReservationScreenContent(
 fun ReservationList(
     modifier: Modifier = Modifier,
     reservations: List<Reservation>,
-    onNavigateToReservationDetails: (String) -> Unit = {}
+    onNavigateToReservationDetails: (String) -> Unit = {},
+    onDeleteReservation: (String) -> Unit = {},
+    onNavigateToEditReservation: (Reservation) -> Unit = {}
 ) {
     LazyColumn(
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -337,11 +495,10 @@ fun ReservationList(
         items(reservations) { reservation ->
             ExpandableReservationCard(
                 reservation = reservation,
-                onDeleteClicked = {},
-                onEditClicked = {},
-                onNavigateToReservationDetails = {
-                    onNavigateToReservationDetails(reservation.id)
-                }
+                onDeleteClicked = {onDeleteReservation(reservation.id)},
+                onNavigateToEditReservation = onNavigateToEditReservation,
+                onNavigateToReservationDetails = onNavigateToReservationDetails,
+
             )
         }
     }
@@ -352,8 +509,8 @@ fun ReservationList(
 fun ExpandableReservationCard(
     reservation: Reservation,
     onDeleteClicked: () -> Unit = {},
-    onEditClicked: () -> Unit = {},
-    onNavigateToReservationDetails: () -> Unit = {}
+    onNavigateToEditReservation: (Reservation) -> Unit = {},
+    onNavigateToReservationDetails: (reservationId: String) -> Unit = {}
 
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -540,7 +697,7 @@ fun ExpandableReservationCard(
 
                     TextButton(
                         contentPadding = PaddingValues(0.dp),
-                        onClick = onNavigateToReservationDetails,
+                        onClick = {onNavigateToReservationDetails(reservation.id)},
                     ) {
                         Text(text = "Show Reservation Rides")
                     }
@@ -570,7 +727,7 @@ fun ExpandableReservationCard(
 
                         TextButton(
                             contentPadding = PaddingValues(0.dp),
-                            onClick = onEditClicked,
+                            onClick = {onNavigateToEditReservation(reservation)},
                             modifier = Modifier.weight(1f),
                         ) {
                             Icon(

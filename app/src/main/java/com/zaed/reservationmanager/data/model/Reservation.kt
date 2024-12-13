@@ -1,7 +1,9 @@
 package com.zaed.reservationmanager.data.model
 
 import kotlinx.datetime.Clock
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Reservation (
     val id: String = "",
     val reservationNumber: Long = 0,
