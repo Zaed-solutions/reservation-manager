@@ -42,4 +42,12 @@ class ReservationRepositoryImpl(
     override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> {
         return remoteDataSource.updateRide(rideId, updates)
     }
+
+    override fun getReservations(): Flow<Result<List<Reservation>>> {
+        return remoteDataSource.getReservations()
+    }
+
+    override fun getRides(): Flow<Result<List<Ride>>> {
+        return  remoteDataSource.getRides()
+    }
 }

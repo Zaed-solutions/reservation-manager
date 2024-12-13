@@ -39,6 +39,7 @@ class AddCompanyViewModel(
     }
 
     private fun onSave() {
+        Log.d(TAG, "onSave: ${uiState.value.company}")
         viewModelScope.launch {
             with(uiState.value){
                 if (company.name.isBlank()){
@@ -85,6 +86,7 @@ class AddCompanyViewModel(
     }
 
     private suspend fun createCompany() {
+        Log.d(TAG, "createCompany: ${uiState.value.company}")
         viewModelScope.launch (Dispatchers.IO){
             companyRepo.createCompany(
                 uiState.value.company.copy(

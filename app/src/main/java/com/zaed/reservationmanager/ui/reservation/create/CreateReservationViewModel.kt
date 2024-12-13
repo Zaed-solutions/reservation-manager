@@ -464,6 +464,7 @@ class CreateReservationViewModel(
     }
 
     private fun updateReservationTime(time: Long) {
+        Log.d(TAG, "updateReservationTime: $time")
         _state.update {
             it.copy(
                 newRide = it.newRide.copy(
@@ -476,6 +477,7 @@ class CreateReservationViewModel(
     }
 
     private fun updateReservationDate(date: Long?) {
+        Log.d(TAG, "updateReservationDate: $date")
         _state.update {
             it.copy(
                 newRide = it.newRide.copy(

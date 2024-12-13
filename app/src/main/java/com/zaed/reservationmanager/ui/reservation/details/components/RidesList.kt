@@ -39,6 +39,7 @@ fun RidesList(
     onMessagePhoneNumber: (String) -> Unit = {},
     onSendDriverInfoToClient: (rideId: String, driverName: String, driverPhoneNumber: String) -> Unit = {_, _, _ ->},
     onSendInfoToTravelCompany: (ride: Ride) -> Unit = {},
+    onReservationClicked: (reservationId: String) -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -101,6 +102,9 @@ fun RidesList(
                                 },
                                 onSendInfoToTravelCompany = {
                                     onSendInfoToTravelCompany(ride)
+                                },
+                                onReservationClicked = {
+                                    onReservationClicked(ride.reservationId)
                                 }
                             )
                         }

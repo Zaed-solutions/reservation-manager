@@ -13,21 +13,41 @@ class ReservationRemoteDataSourceImpl(
     val RESERVATION_COLLECTION = "reservations"
     val RIDE_COLLECTION = "rides"
     override fun createReservation(reservation: Reservation): Flow<Result<String>> = callbackFlow {
-        try{
-            val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
-            reservationRef.set(reservation.copy(id = reservationRef.id)).addOnSuccessListener {
-                trySend(Result.success(reservationRef.id))
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+        try {
+            firestore.collection(RESERVATION_COLLECTION)
+                .orderBy(
+                    "reservationNumber",
+                    com.google.firebase.firestore.Query.Direction.DESCENDING
+                )
+                .limit(1)
+                .get()
+                .addOnSuccessListener { doc ->
+                    val reservationNumber = if (!doc.isEmpty) {
+                        doc.documents[0].get("reservationNumber") as Long ?: 0
+                    } else {
+                        0
+                    }
+                    val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
+                    reservationRef.set(
+                        reservation.copy(
+                            id = reservationRef.id,
+                            reservationNumber = reservationNumber + 1
+                        )
+                    ).addOnSuccessListener {
+                        trySend(Result.success(reservationRef.id))
+                    }.addOnFailureListener {
+                        trySend(Result.failure(it))
+                    }
+                }
+
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
 
     override fun getReservationById(id: String): Flow<Result<Reservation>> = callbackFlow {
-        try{
+        try {
             firestore
                 .collection(RESERVATION_COLLECTION)
                 .document(id)
@@ -35,18 +55,18 @@ class ReservationRemoteDataSourceImpl(
                     val reservation = it.toObject(Reservation::class.java)
                     reservation?.let {
                         trySend(Result.success(reservation))
-                    }?: trySend(Result.failure(Exception("Reservation not found")))
+                    } ?: trySend(Result.failure(Exception("Reservation not found")))
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
                 }
-        } catch(e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose {}
     }
 
     override fun createRide(ride: Ride): Flow<Result<String>> = callbackFlow {
-        try{
+        try {
             val rideRef = firestore
                 .collection(RIDE_COLLECTION)
                 .document()
@@ -55,12 +75,45 @@ class ReservationRemoteDataSourceImpl(
             }.addOnFailureListener {
                 trySend(Result.failure(it))
             }
-        } catch(e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
 
+    override fun getReservations(): Flow<Result<List<Reservation>>> = callbackFlow {
+        try {
+            firestore.collection(RESERVATION_COLLECTION)
+                .addSnapshotListener { task, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val reservations = task?.toObjects(Reservation::class.java)
+                        trySend(Result.success(reservations ?: emptyList()))
+                    }
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override fun getRides(): Flow<Result<List<Ride>>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION)
+                .addSnapshotListener { tasks, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val rides = tasks?.toObjects(Ride::class.java)
+                        trySend(Result.success(rides ?: emptyList()))
+                    }
+                }
+        }catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
 
 
     override fun getRidesByReservationId(id: String): Flow<Result<List<Ride>>> = callbackFlow {
@@ -78,19 +131,21 @@ class ReservationRemoteDataSourceImpl(
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
                 }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
-    override fun deleteReservation(id: String): Flow<Result<Boolean>>  = callbackFlow {
+
+    override fun deleteReservation(id: String): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(RESERVATION_COLLECTION).document(id).delete().addOnSuccessListener {
-                trySend(Result.success(true))
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+            firestore.collection(RESERVATION_COLLECTION).document(id).delete()
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -103,7 +158,7 @@ class ReservationRemoteDataSourceImpl(
             }.addOnFailureListener {
                 trySend(Result.failure(it))
             }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -114,27 +169,30 @@ class ReservationRemoteDataSourceImpl(
         updates: Map<String, Any>
     ): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(RESERVATION_COLLECTION).document(reservationId).update(updates).addOnSuccessListener {
-                trySend(Result.success(true))
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+            firestore.collection(RESERVATION_COLLECTION).document(reservationId).update(updates)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
 
-    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> = callbackFlow {
-        try {
-            firestore.collection(RIDE_COLLECTION).document(rideId).update(updates).addOnSuccessListener {
-                trySend(Result.success(true))
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
+    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> =
+        callbackFlow {
+            try {
+                firestore.collection(RIDE_COLLECTION).document(rideId).update(updates)
+                    .addOnSuccessListener {
+                        trySend(Result.success(true))
+                    }.addOnFailureListener {
+                        trySend(Result.failure(it))
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
             }
-        } catch (e: Exception){
-            trySend(Result.failure(e))
+            awaitClose { }
         }
-        awaitClose { }
-    }
 }

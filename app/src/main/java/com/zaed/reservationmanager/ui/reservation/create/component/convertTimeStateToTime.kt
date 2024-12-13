@@ -18,12 +18,4 @@ fun convertTimeStateToTime(selectedTime: TimePickerState): String {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun TimePickerState.toMillis(): Long {
-    val cal = Calendar.getInstance()
-    cal.set(Calendar.HOUR_OF_DAY, hour)
-    cal.set(Calendar.MINUTE, minute)
-    cal.isLenient = false
-    Log.d("datessss", cal.timeInMillis.toString())
-    return hour * 3600000L + minute * 60000L
-//    return cal.timeInMillis
-}
+fun TimePickerState.toMillis() = (hour * 60L + minute)*60L
