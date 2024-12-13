@@ -28,6 +28,7 @@ import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListScreen
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
 import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsScreen
+import com.zaed.reservationmanager.ui.reservation.display.DisplayReservationScreen
 import kotlin.reflect.typeOf
 
 private const val TAG: String = "NavigationHost"
@@ -41,7 +42,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.ReservationListRoute,
+        startDestination = Route.DisplayReservationRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -103,6 +104,14 @@ fun NavigationHost(
                 initialCustomer = args.customer
             )
         }
+        composable<Route.DisplayReservationRoute> {
+            DisplayReservationScreen (
+                navigateToAddReservation = {
+                    navController.navigate(Route.CreateReservationRoute)
+                },
+                onShowNavDrawer = { onShowNavDrawer() }
+            )
+        }
         composable<Route.CustomerListRoute> {
             CustomerListScreen(
                 onShowNavDrawer = { onShowNavDrawer() },
@@ -117,17 +126,7 @@ fun NavigationHost(
                 }
             )
         }
-        composable<Route.ReservationListRoute> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                Text(
-                    text = "Reservation List Screen",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-        }
+
         composable<Route.DriversListRoute> {
             DriverListScreen (
                 onShowNavDrawer = { onShowNavDrawer() },

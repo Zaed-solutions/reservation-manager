@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class ReservationRepositoryImpl(
     private val remoteDataSource: ReservationRemoteDataSource
 ) : ReservationRepository {
-    override fun createReservation(reservation: Reservation): Flow<Result<String>> {
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> {
         return remoteDataSource.createReservation(reservation)
     }
 
@@ -41,5 +41,13 @@ class ReservationRepositoryImpl(
 
     override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> {
         return remoteDataSource.updateRide(rideId, updates)
+    }
+
+    override fun getReservations(): Flow<Result<List<Reservation>>> {
+        return remoteDataSource.getReservations()
+    }
+
+    override fun getRides(): Flow<Result<List<Ride>>> {
+        return  remoteDataSource.getRides()
     }
 }

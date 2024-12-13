@@ -155,4 +155,5 @@
     <string name="residence_country">Residence Country</string>
     <string name="created_at">Created at</string>
     <string name="update_customer">Update Customer</string>
+    <string name="reservation_number">Reservation Number</string>
 </resources>

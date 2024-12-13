@@ -1,10 +1,10 @@
 package com.zaed.reservationmanager.data.model
 
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDate
 
 data class Reservation (
     val id: String = "",
+    val reservationNumber: Long = 0,
     val flightNumber : String = "",
     val clientId: String = "",
     val clientName: String = "",
