@@ -7,6 +7,9 @@ import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
+import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +20,7 @@ class ReservationDetailsViewModel(
     private val reservationRepo: ReservationRepository,
     private val companyRepo: CompanyRepository,
     private val employeeRepo: EmployeeRepository,
+    private val menuDataStore: MenuDataStore
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ReservationDetailsUiState())
     val uiState = _uiState.asStateFlow()
@@ -25,6 +29,8 @@ class ReservationDetailsViewModel(
         fetchReservation(reservationId)
         fetchRides(reservationId)
         fetchTravelCompanies()
+        fetchTransactionTypes()
+        fetchCarTypes()
     }
 
     private fun fetchTravelCompanies() {
@@ -42,7 +48,29 @@ class ReservationDetailsViewModel(
             }
         }
     }
+    private fun fetchCarTypes() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        cars = data.toList()
+                    )
+                }
+            }
+        }
+    }
 
+    private fun fetchTransactionTypes() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        types = data.toList()
+                    )
+                }
+            }
+        }
+    }
     private fun fetchReservation(reservationId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservationById(reservationId).collect { result ->
@@ -186,7 +214,11 @@ class ReservationDetailsViewModel(
 
     private fun addRide(ride: Ride) {
         viewModelScope.launch(Dispatchers.IO) {
-            reservationRepo.createRide(ride.copy(reservationId = uiState.value.reservation.id))
+            reservationRepo.createRide(ride.copy(
+                reservationId = uiState.value.reservation.id,
+                customerId = uiState.value.reservation.clientId,
+                reservationNumber = uiState.value.reservation.reservationNumber
+            ))
                 .collect { result ->
                     result.onSuccess { rideId ->
                         Log.d(TAG, "addRide: success")

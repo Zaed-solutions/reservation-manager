@@ -88,7 +88,77 @@ fun TitledTextField(
             modifier = Modifier
                 .fillMaxWidth(),
             trailingIcon = {
-                AnimatedVisibility(visible = initialValue.isNotBlank()) {
+                AnimatedVisibility(visible = value.isNotBlank()) {
+                    IconButton(onClick = {
+                        onValueChanged("")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+        )
+    }
+}
+@Composable
+fun TitledTextField2(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    value: String = "",
+    onValueChanged: (String) -> Unit = {},
+    isOptional: Boolean = true,
+    isError: Boolean = false,
+    errorMessageRes: Int = 0,
+    keyboardType: KeyboardType = KeyboardType.Unspecified,
+    imeAction: ImeAction = ImeAction.Default,
+    isEnabled: Boolean = true,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    isReadOnly: Boolean = false
+) {
+    Column(
+        modifier = modifier
+            .widthIn(max = 400.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = title + if (isOptional) "" else " *",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        OutlinedTextField(
+            singleLine = true,
+            value = value,
+            enabled = isEnabled,
+            onValueChange = {
+                onValueChanged(it)
+            },
+            readOnly = isReadOnly,
+            shape = MaterialTheme.shapes.small,
+            isError = isError,
+            supportingText = {
+                if (isError) {
+                    Text(
+                        text = stringResource(id = errorMessageRes),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+            ),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = keyboardActions,
+            modifier = Modifier
+                .fillMaxWidth(),
+            trailingIcon = {
+                AnimatedVisibility(visible = value.isNotBlank()) {
                     IconButton(onClick = {
                         onValueChanged("")
                     }) {

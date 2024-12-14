@@ -162,7 +162,12 @@
     <string name="total_earnings">Total Earnings</string>
     <string name="total_balance">Total Balance:</string>
     <string name="reservation_number">Reservation Number</string>
+    <string name="selling_price_is_required">Selling price is required</string>
+    <string name="travel_company_phone_number_is_not_set">Travel company phone number is not set</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="drop_down_lists"> Update Drop Down Lists</string>
     <string name="reservation">Reservation</string>
     <string name="customer_details">Customer Details</string>
     <string name="phonenumber_is_blank">Phone number is blank</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

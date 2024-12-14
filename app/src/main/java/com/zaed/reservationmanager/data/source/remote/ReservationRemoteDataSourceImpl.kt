@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
@@ -7,45 +8,47 @@ import com.zaed.reservationmanager.data.model.Ride
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class ReservationRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : ReservationRemoteDataSource {
     val RESERVATION_COLLECTION = "reservations"
     val RIDE_COLLECTION = "rides"
-    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> = callbackFlow {
-        try {
-            firestore.collection(RESERVATION_COLLECTION)
-                .orderBy(
-                    "reservationNumber",
-                    com.google.firebase.firestore.Query.Direction.DESCENDING
-                )
-                .limit(1)
-                .get()
-                .addOnSuccessListener { doc ->
-                    val reservationNumber = if (!doc.isEmpty) {
-                        doc.documents[0].get("reservationNumber") as Long ?: 0
-                    } else {
-                        0
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
+        callbackFlow {
+            try {
+                firestore.collection(RESERVATION_COLLECTION)
+                    .orderBy(
+                        "reservationNumber",
+                        com.google.firebase.firestore.Query.Direction.DESCENDING
+                    )
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        val reservationNumber = if (!doc.isEmpty) {
+                            doc.documents[0].get("reservationNumber") as Long ?: 0
+                        } else {
+                            0
+                        }
+                        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
+                        reservationRef.set(
+                            reservation.copy(
+                                id = reservationRef.id,
+                                reservationNumber = reservationNumber + 1
+                            )
+                        ).addOnSuccessListener {
+                            trySend(Result.success(reservationRef.id to (reservationNumber + 1)))
+                        }.addOnFailureListener {
+                            trySend(Result.failure(it))
+                        }
                     }
-                    val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
-                    reservationRef.set(
-                        reservation.copy(
-                            id = reservationRef.id,
-                            reservationNumber = reservationNumber + 1
-                        )
-                    ).addOnSuccessListener {
-                        trySend(Result.success(reservationRef.id to reservationNumber))
-                    }.addOnFailureListener {
-                        trySend(Result.failure(it))
-                    }
-                }
 
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     override fun getReservationById(id: String): Flow<Result<Reservation>> = callbackFlow {
         try {
@@ -110,7 +113,7 @@ class ReservationRemoteDataSourceImpl(
                         trySend(Result.success(rides ?: emptyList()))
                     }
                 }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -142,6 +145,14 @@ class ReservationRemoteDataSourceImpl(
         try {
             firestore.collection(RESERVATION_COLLECTION).document(id).delete()
                 .addOnSuccessListener {
+                    firestore.collection(RIDE_COLLECTION).whereEqualTo("reservationId", id).get()
+                        .addOnSuccessListener {
+                            it.documents.forEach { doc ->
+                                doc.reference.delete()
+                            }
+                        }.addOnFailureListener {
+                            trySend(Result.failure(it))
+                        }
                     trySend(Result.success(true))
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
@@ -182,55 +193,94 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> = callbackFlow {
+    override fun updateReservation(
+        reservation: Reservation
+    ): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(RIDE_COLLECTION).document(rideId).update(updates).addOnSuccessListener {
-                trySend(Result.success(true))
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+            firestore.collection(RESERVATION_COLLECTION).document(reservation.id).set(reservation)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
+
+
+    override fun updateRide(ride: Ride): Flow<Result<Boolean>> = callbackFlow {
+        try {
+            firestore.collection(RIDE_COLLECTION).document(ride.id).set(ride)
+                .addOnSuccessListener {
+                    trySend(Result.success(true))
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+
+        }
+        awaitClose { }
+    }
+
+    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> =
+        callbackFlow {
+            try {
+                firestore.collection(RIDE_COLLECTION).document(rideId).update(updates)
+                    .addOnSuccessListener {
+                        trySend(Result.success(true))
+                    }.addOnFailureListener {
+                        trySend(Result.failure(it))
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
 
     override fun getCompanyBalance(
         companyId: String,
         isTravel: Boolean
-    ): Flow<Result<CompanyBalance>> = if(isTravel) getTravelCompanyBalance(companyId) else getTourismCompanyBalance(companyId)
+    ): Flow<Result<CompanyBalance>> =
+        if (isTravel) getTravelCompanyBalance(companyId) else getTourismCompanyBalance(companyId)
 
-    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> = callbackFlow {
-        try {
-            firestore.collection(RESERVATION_COLLECTION).whereEqualTo("tourismCompanyId", companyId).get().addOnSuccessListener { data ->
-                if (data.isEmpty) {
-                    trySend(Result.success(emptyList()))
-                } else {
-                    val reservations = data.toObjects(Reservation::class.java)
-                    trySend(Result.success(reservations))
-                }
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> =
+        callbackFlow {
+            try {
+                firestore.collection(RESERVATION_COLLECTION)
+                    .whereEqualTo("tourismCompanyId", companyId).get()
+                    .addOnSuccessListener { data ->
+                        if (data.isEmpty) {
+                            trySend(Result.success(emptyList()))
+                        } else {
+                            val reservations = data.toObjects(Reservation::class.java)
+                            trySend(Result.success(reservations))
+                        }
+                    }.addOnFailureListener {
+                        trySend(Result.failure(it))
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
             }
-        } catch (e: Exception){
-            trySend(Result.failure(e))
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     override fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>> = callbackFlow {
         try {
-            firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId).get().addOnSuccessListener { data ->
-                if (data.isEmpty) {
-                    trySend(Result.success(emptyList()))
-                } else {
-                    val rides = data.toObjects(Ride::class.java)
-                    trySend(Result.success(rides))
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId).get()
+                .addOnSuccessListener { data ->
+                    if (data.isEmpty) {
+                        trySend(Result.success(emptyList()))
+                    } else {
+                        val rides = data.toObjects(Ride::class.java)
+                        trySend(Result.success(rides))
+                    }
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
                 }
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -238,79 +288,100 @@ class ReservationRemoteDataSourceImpl(
 
     override fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>> = callbackFlow {
         try {
-            firestore.collection(RIDE_COLLECTION).whereEqualTo("customerId", customerId).get().addOnSuccessListener { data ->
-                if (data.isEmpty) {
-                    trySend(Result.success(emptyList()))
-                } else {
-                    val rides = data.toObjects(Ride::class.java)
-                    trySend(Result.success(rides))
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("customerId", customerId).get()
+                .addOnSuccessListener { data ->
+                    if (data.isEmpty) {
+                        trySend(Result.success(emptyList()))
+                    } else {
+                        val rides = data.toObjects(Ride::class.java)
+                        trySend(Result.success(rides))
+                    }
+                }.addOnFailureListener {
+                    trySend(Result.failure(it))
                 }
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
+        } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
 
-    private fun getTravelCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
-        try {
-            firestore.collection(RIDE_COLLECTION).whereEqualTo("companyId", companyId).get().addOnSuccessListener { data ->
-                if (data.isEmpty) {
-                    trySend(Result.success(CompanyBalance()))
-                } else {
-                    val rides = data.toObjects(Ride::class.java)
-                    var totalBuying: Double = 0.0
-                    var totalSelling: Double = 0.0
-                    var totalCollected: Double = 0.0
-                    rides.forEach {
-                        totalBuying += it.buyingPrice
-                        totalSelling += it.sellingPrice
-                        totalCollected += it.collectedPrice
-                    }
-                    trySend(Result.success(CompanyBalance(totalBuying = totalBuying, totalSelling = totalSelling, totalCollected = totalCollected)))
-                }
-            }.addOnFailureListener {
-                trySend(Result.failure(it))
-            }
-        } catch (e: Exception){
-            trySend(Result.failure(e))
-        }
-        awaitClose { }
-    }
-    private fun getTourismCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> = callbackFlow {
-        try {
-            var totalBuying = 0.0
-            var totalSelling = 0.0
-            var totalCollected = 0.0
-            firestore.collection(RESERVATION_COLLECTION).whereEqualTo("tourismCompanyId", companyId).get().addOnSuccessListener { data ->
-                if (data.isEmpty) {
-                    trySend(Result.success(CompanyBalance()))
-                } else {
-                    val reservations = data.toObjects(Reservation::class.java)
-                    reservations.forEach {
-                        firestore.collection(RIDE_COLLECTION).whereEqualTo("reservationId", it.id).get().addOnSuccessListener { ridesData ->
-                            if (!ridesData.isEmpty) {
-                                val rides = ridesData.toObjects(Ride::class.java)
-                                rides.forEach { ride ->
-                                    totalBuying += ride.buyingPrice
-                                    totalSelling += ride.sellingPrice
-                                    totalCollected += ride.collectedPrice
-                                }
+    private fun getTravelCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> =
+        callbackFlow {
+            try {
+                firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId)
+                    .get().addOnSuccessListener { data ->
+                        if (data.isEmpty) {
+                            trySend(Result.success(CompanyBalance()))
+                        } else {
+                            val rides = data.toObjects(Ride::class.java)
+                            var totalBuying: Double = 0.0
+                            var totalSelling: Double = 0.0
+                            var totalCollected: Double = 0.0
+                            rides.forEach {
+                                totalBuying += it.buyingPrice
+                                totalSelling += it.sellingPrice
+                                totalCollected += it.collectedPrice
                             }
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
+                            trySend(
+                                Result.success(
+                                    CompanyBalance(
+                                        totalBuying = totalBuying,
+                                        totalSelling = totalSelling,
+                                        totalCollected = totalCollected
+                                    )
+                                )
+                            )
                         }
+                    }.addOnFailureListener {
+                        it.printStackTrace()
+                        trySend(Result.failure(it))
                     }
-                    trySend(Result.success(CompanyBalance(totalBuying = totalBuying, totalSelling = totalSelling, totalCollected = totalCollected)))
-                }
-            }.addOnFailureListener { e ->
+            } catch (e: Exception) {
+                e.printStackTrace()
+
                 trySend(Result.failure(e))
             }
-        } catch (e: Exception){
-            trySend(Result.failure(e))
+            awaitClose { }
         }
-        awaitClose { }
-    }
+
+    private fun getTourismCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> =
+        callbackFlow {
+            try {
+                var totalBuying = 0.0
+                var totalSelling = 0.0
+                var totalCollected = 0.0
+                val reservationResult = firestore.collection(RESERVATION_COLLECTION)
+                    .whereEqualTo("tourismCompanyId", companyId).get().await()
+                val reservations = reservationResult.toObjects(Reservation::class.java)
+                reservations.forEach { reservation ->
+                    val ridesResult = firestore.collection(RIDE_COLLECTION)
+                        .whereEqualTo("reservationId", reservation.id).get().await()
+                    if (!ridesResult.isEmpty) {
+                        val rides = ridesResult.toObjects(Ride::class.java)
+                        Log.d("TOGOBN", "getCompanyBalance: $rides")
+                        rides.forEach { ride ->
+                            totalBuying += ride.buyingPrice
+                            totalSelling += ride.sellingPrice
+                            totalCollected += ride.collectedPrice
+                        }
+                    }
+                }
+                Log.d(
+                    "TOGOBN",
+                    "getTourismCompanyBalance:$totalBuying $totalSelling $totalCollected "
+                )
+                trySend(
+                    Result.success(
+                        CompanyBalance(
+                            totalBuying = totalBuying,
+                            totalSelling = totalSelling,
+                            totalCollected = totalCollected
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose {}
+        }
 }

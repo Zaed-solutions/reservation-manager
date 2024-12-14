@@ -21,6 +21,7 @@ enum class ReservationError(@StringRes val messageRes: Int) {
     EMPLOYEE_IS_REQUIRED(R.string.employee_is_required),
     CUSTOMER_COUNTRY_IS_REQUIRED(R.string.customer_country_is_required),
     TOURISM_EMPLOYEE_IS_REQUIRED(R.string.tourism_employee_is_required),
+    SELLING_PRICE_IS_REQUIRED (R.string.selling_price_is_required),
 
 
 

@@ -160,21 +160,44 @@ fun AddRideBottomSheet(
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
-                            ReservationUiAction.UpdateMovementPrice(
+                            ReservationUiAction.UpdateBuyingPrice(
                                 price = newText
                             )
                         )
 
                     }else if(newText.isBlank()){
                         action(
-                            ReservationUiAction.UpdateCollectionPrice(
+                            ReservationUiAction.UpdateBuyingPrice(
+                                price = "0"
+                            )
+                        )
+                    }
+                },
+                isOptional = true,
+
+                keyboardType = KeyboardType.Decimal
+            )
+            TitledTextField(
+                title = "Selling Price",
+                initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toInt().toString(),
+                onValueChanged = { newText ->
+                    if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                        action(
+                            ReservationUiAction.UpdateSellingPrice(
+                                price = newText
+                            )
+                        )
+
+                    }else if(newText.isBlank()){
+                        action(
+                            ReservationUiAction.UpdateSellingPrice(
                                 price = "0"
                             )
                         )
                     }
                 },
                 isOptional = false,
-                isError = errorMessage == ReservationError.BUYING_PRICE_IS_REQUIRED,
+                isError = errorMessage == ReservationError.SELLING_PRICE_IS_REQUIRED,
                 errorMessageRes = errorMessage.messageRes,
                 keyboardType = KeyboardType.Decimal
             )

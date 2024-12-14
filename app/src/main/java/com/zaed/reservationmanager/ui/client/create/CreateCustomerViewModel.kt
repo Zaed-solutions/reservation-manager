@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.repository.CustomerRepository
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
 import com.zaed.reservationmanager.ui.util.InputValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import kotlinx.datetime.Clock
 
 private const val TAG = "CreateCustomerViewModel"
 class CreateCustomerViewModel(
-    private val repository: CustomerRepository
+    private val repository: CustomerRepository,
+    private val menuDataStore: MenuDataStore
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(NewClientUiState())
     val uiState = _uiState.asStateFlow()
@@ -23,6 +26,20 @@ class CreateCustomerViewModel(
     fun init(initialCustomer: Customer){
         _uiState.update{
             it.copy(isNew = initialCustomer.id.isBlank(), customer = initialCustomer)
+        }
+        fetchCountries()
+    }
+
+    private fun fetchCountries() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(COUNTRIES_KEY).collect { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        countries = data.toList(),
+                        nationalities = data.toList()
+                    )
+                }
+            }
         }
     }
 
