@@ -124,6 +124,9 @@ fun NavigationHost(
                 },
                 navigateToEditReservation = { reservation ->
                     navController.navigate(Route.CreateReservationRoute(reservation))
+                },
+                navigateToCompanyDetails = { companyId ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, true))
                 }
             )
         }

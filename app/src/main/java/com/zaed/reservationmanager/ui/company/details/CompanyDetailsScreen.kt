@@ -221,7 +221,7 @@ fun CompanyDetailsScreenContent(
                                 selectedItemId = reservation.id
                                 isConfirmDeleteDialogVisible = true
                             },
-                            onEditClicked = {
+                            onNavigateToEditReservation = {
                                 onAction(
                                     CompanyDetailsUiAction.OnEditReservation(
                                         reservation

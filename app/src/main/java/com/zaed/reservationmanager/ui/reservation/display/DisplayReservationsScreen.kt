@@ -86,7 +86,8 @@ fun DisplayReservationScreen(
     onShowNavDrawer: () -> Unit = {},
     navigateToReservationDetails: (String) -> Unit = {},
     onNavigateToEmployeeDetails: (String, Boolean) -> Unit = { _, _ -> },
-    navigateToEditReservation: (Reservation) -> Unit = {}
+    navigateToEditReservation: (Reservation) -> Unit = {},
+    navigateToCompanyDetails: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
@@ -171,7 +172,7 @@ fun DisplayReservationScreen(
             clipboardManager.setText(AnnotatedString(it))
             scope.launch {
                 snackbarHostState.showSnackbar(
-                    message = context.getString(R.string.phone_number_copied_to_clipboard),
+                    message = context.getString(R.string.copied_to_clipboard),
                     withDismissAction = true
                 )
             }
@@ -187,7 +188,8 @@ fun DisplayReservationScreen(
                     }
                 }
             )
-        }
+        },
+        navigateToCompanyDetails = navigateToCompanyDetails
     )
 }
 
@@ -207,7 +209,8 @@ fun DisplayReservationScreenContent(
     onDriverClicked: (driverId: String) -> Unit = {},
     onSendInfoToTravelCompany: (ride: Ride, reservation: Reservation) -> Unit = { _, _ -> },
     onDeleteReservation: (String) -> Unit = {},
-    onNavigateToEditReservation:(Reservation) -> Unit = {}
+    onNavigateToEditReservation:(Reservation) -> Unit = {},
+    navigateToCompanyDetails: (String) -> Unit = {}
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -432,9 +435,7 @@ fun DisplayReservationScreenContent(
                             onReservationClicked = {
                                 navigateToReservationDetails(ride.reservationId)
                             },
-                            onCompanyClicked = {
-                                // TODO: Handle company click
-                            },
+                            onCompanyClicked = navigateToCompanyDetails,
                             onMessagePhoneNumber = onMessagePhoneNumber,
                             onCopyPhoneNumber = onCopyPhoneNumber,
                             onDriverClicked = {

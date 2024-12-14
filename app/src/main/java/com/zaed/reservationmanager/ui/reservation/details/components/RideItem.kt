@@ -304,37 +304,37 @@ fun RideItem(
                                         )
                                     )
                                 }
-                                if(ride.driver.isNotBlank()) {
+                                if (ride.driver.isNotBlank()) {
                                     Button(
-                                    enabled = !ride.sentToDriverCompany,
-                                    onClick = { onSendInfoToTravelCompany() },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    contentPadding = PaddingValues(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    )
-                                ) {
-                                    Icon(
-                                        imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                        contentDescription = null,
-                                        tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                                    )
-                                    Text(
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        text = stringResource(
-                                            if (ride.sentToDriverCompany)
-                                                R.string.ride_info_sent
-                                            else
-                                                R.string.send_ride_info_to_travel_company
+                                        enabled = !ride.sentToDriverCompany,
+                                        onClick = { onSendInfoToTravelCompany() },
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        contentPadding = PaddingValues(
+                                            horizontal = 16.dp,
+                                            vertical = 8.dp
                                         )
-                                    )
+                                    ) {
+                                        Icon(
+                                            imageVector = if (ride.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
+                                            contentDescription = null,
+                                            tint = if (ride.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                                        )
+                                        Text(
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            text = stringResource(
+                                                if (ride.sentToDriverCompany)
+                                                    R.string.ride_info_sent
+                                                else
+                                                    R.string.send_ride_info_to_travel_company
+                                            )
+                                        )
+                                    }
                                 }
                             }
-                                }
                         }
                     }
                 }

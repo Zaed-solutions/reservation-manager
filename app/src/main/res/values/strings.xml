@@ -169,4 +169,5 @@
     <string name="reservation">Reservation</string>
     <string name="customer_details">Customer Details</string>
     <string name="phonenumber_is_blank">Phone number is blank</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
 </resources>

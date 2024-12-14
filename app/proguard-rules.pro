@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Preserve iText Bouncy Castle classes
+# Prevent R8 from stripping certain classes
+-keep class com.itextpdf.** { *; }
+-keep class javax.xml.stream.** { *; }
+-keep class org.osgi.** { *; }
+-keepattributes Signature
+-dontwarn com.itextpdf.**
+-dontwarn javax.xml.stream.**
+-dontwarn org.osgi.**

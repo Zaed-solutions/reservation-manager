@@ -68,6 +68,7 @@ class CompanyDetailsViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(balance = it)
                     }
+                    Log.d(TAG, "fetchBalance: $it")
                 }.onFailure { e ->
                     Log.e(TAG, "fetchBalance: failed to fetch balance: ${e.message}")
                     e.printStackTrace()

@@ -13,6 +13,7 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
+import com.zaed.reservationmanager.ui.components.TitledTextField2
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
 
@@ -47,9 +48,9 @@ fun AddNewReservation(
             }
         ),
     )
-    TitledTextField(
+    TitledTextField2(
         title = stringResource(R.string.client_name),
-        initialValue = initialReservation.clientName,
+        value = reservation.clientName,
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateCustomerName(

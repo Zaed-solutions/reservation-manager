@@ -382,6 +382,7 @@ class CreateReservationViewModel(
     }
 
     private fun addMovements() {
+        Log.d(TAG, "addMovements: ")
         if (!validateRideData()) return
         val ride = state.value.newRide
         _state.update {
@@ -444,7 +445,7 @@ class CreateReservationViewModel(
                                 reservationId = data.first,
                                 reservationNumber = data.second,
                                 customerId = state.value.customer.id,
-                                , clientName = state.value.reservation.clientName
+                                clientName = state.value.reservation.clientName
                             )
                         )
                     }
