@@ -228,9 +228,6 @@ fun CustomerListWithScreenContent(
                     ) {
                         IconButton(
                             onClick = { isOptionsMenuVisible = !isOptionsMenuVisible },
-                            modifier = Modifier
-                                .padding(start = 8.dp)
-                                .size(24.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -252,17 +249,17 @@ fun CustomerListWithScreenContent(
                                     )
                                 },
                             )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onExportCustomersAsPDF()
-                                    isOptionsMenuVisible = false
-                                },
-                                text = {
-                                    Text(
-                                        text = stringResource(R.string.export_as_pdf),
-                                    )
-                                },
-                            )
+//                            DropdownMenuItem(
+//                                onClick = {
+//                                    onExportCustomersAsPDF()
+//                                    isOptionsMenuVisible = false
+//                                },
+//                                text = {
+//                                    Text(
+//                                        text = stringResource(R.string.export_as_pdf),
+//                                    )
+//                                },
+//                            )
                         }
                     }
                 }

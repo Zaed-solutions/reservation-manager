@@ -181,4 +181,14 @@
     <string name="no_pdf_viewer_found">لم يتم العثور على عارض PDF!</string>
     <string name="no_csv_viewer_found">لم يتم العثور على عارض CSV!</string>
     <string name="error_exporting_csv">حدث خطأ أثناء تصدير الـ CSV!</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">الأمس</string>
+    <string name="tomorrow">الغد</string>
+    <string name="from_today_onwards">بداية من اليوم</string>
+    <string name="selected_range">فترة محددة</string>
+    <string name="selected_range_place">الفترة المحددة\" %1$s - %2$s</string>
+    <string name="customer_name">اسم الضيف</string>
+    <string name="company_phone">جوال الشركة</string>
+    <string name="reservation_details_arrow"><![CDATA[تفاصيل الحجز >]]></string>
+    <string name="search_by_anything">بحث ذكي</string>
 </resources>

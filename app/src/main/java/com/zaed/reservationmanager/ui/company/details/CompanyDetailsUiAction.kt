@@ -11,5 +11,6 @@ sealed interface CompanyDetailsUiAction {
     data class OnEditReservation(val reservation: Reservation): CompanyDetailsUiAction
     data class OnReservationClicked(val reservationId: String): CompanyDetailsUiAction
     data class OnDriverClicked(val driverId: String): CompanyDetailsUiAction
+    data object ExportRidesAsCSV : CompanyDetailsUiAction
     data class OnCompanyClicked(val companyId: String): CompanyDetailsUiAction
 }

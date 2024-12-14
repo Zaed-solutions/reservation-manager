@@ -5,9 +5,6 @@ import android.os.Environment
 import android.util.Log
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Ride
-import io.github.voytech.tabulate.api.builder.dsl.header
-import io.github.voytech.tabulate.model.attributes.column.columnWidth
-import io.github.voytech.tabulate.template.tabulate
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
@@ -66,49 +63,81 @@ object SheetUtil {
         return null // Return null if an error occurred
     }
 
-    fun List<Ride>.exportCsv(headers: Array<String>): String {
-        val fileName = "rides_${Date()}.csv"
-        val totalSelling = this.sumOf { it.sellingPrice }
-        val totalCollected = this.sumOf { it.collectedPrice }
-        this.tabulate(fileName) {
-            name = "Rides List"
-            attributes {
-                columnWidth { auto = true }
-            }
-            columns {
-                column("dateCol")
-                column("timeCol")
-                column("typeCol")
-                column("carCol")
-                column("customerNameCol")
-                column("sellingPriceCol")
-                column("collectedPriceCol")
-                column("balanceCol")
-            }
-            rows {
-                header(*headers)
-                this@exportCsv.forEach { ride ->
-                    newRow {
-                        cell("date") { value = ride.date.formatEpochSecondsToDate() }
-                        cell("time") { value = ride.date.formatEpochSecondsToDate() }
-                        cell("type") { value = ride.type }
-                        cell("car") { value = ride.car }
-                        cell("customerName") { value = "Placeholder Customer Name" }
-                        cell("sellingPrice") { value = ride.sellingPrice }
-                        cell("collectedPrice") { value = ride.collectedPrice }
-                        cell("balance") { value = ride.sellingPrice - ride.collectedPrice }
-                    }
+    fun List<Ride>.exportRidesAsCsv(
+        context: Context,
+        headers: List<String>,
+        isAllRides: Boolean = false,
+        isTourismCompany: Boolean = false,
+        isTravelCompany: Boolean = false
+    ): File? {
+        try {
+            val fileName = "Rides_${Date()}.csv"
+            val totalSelling = this.sumOf { it.sellingPrice }
+            val totalBuying = this.sumOf { it.buyingPrice }
+            val totalCollected = this.sumOf { it.collectedPrice }
+            val totalBalance = this.sumOf {
+                when {
+                    isAllRides -> it.sellingPrice - it.buyingPrice
+                    isTourismCompany -> it.sellingPrice - it.collectedPrice
+                    isTravelCompany -> it.buyingPrice - it.collectedPrice
+                    else -> 0.0
                 }
+            }
+            val workbook = XSSFWorkbook()
+            val sheet = workbook.createSheet("Rides")
 
-                newRow {
-                    cell("Total") { value = "Total Selling: " }
-                    repeat(headers.size - 4) { cell("placeholder$it") { value = "" } }
-                    cell("totalSellingPrice") { value = totalSelling }
-                    cell("totalCollectedPrice") { value = totalCollected }
-                    cell("totalBalance") { value = totalSelling - totalCollected }
-                }
+            val headerRow = sheet.createRow(0)
+            headers.forEachIndexed { index, header ->
+                val cell = headerRow.createCell(index)
+                cell.setCellValue(header)
             }
+            this.forEachIndexed { index, ride ->
+                val row: Row = sheet.createRow(index + 1)
+                var columnIndex = 0
+                row.createCell(columnIndex++).setCellValue(ride.date.formatEpochSecondsToDateTime())
+                row.createCell(columnIndex++).setCellValue(ride.type)
+                row.createCell(columnIndex++).setCellValue(ride.car)
+                row.createCell(columnIndex++).setCellValue(ride.clientName)
+                if (!isTravelCompany) {
+                    row.createCell(columnIndex++).setCellValue(ride.sellingPrice)
+                }
+                if (!isTourismCompany) {
+                    row.createCell(columnIndex++).setCellValue(ride.buyingPrice)
+                }
+                row.createCell(columnIndex++).setCellValue(ride.collectedPrice)
+                row.createCell(columnIndex).setCellValue(
+                    when {
+                        isAllRides -> ride.sellingPrice - ride.buyingPrice
+                        isTourismCompany -> ride.sellingPrice - ride.collectedPrice
+                        isTravelCompany -> ride.buyingPrice - ride.collectedPrice
+                        else -> 0.0
+                    }
+                )
+            }
+            val row = sheet.createRow(this.size + 1)
+            var columnIndex = 0
+            row.createCell(columnIndex++).setCellValue("Total")
+            repeat(3) {
+                row.createCell(columnIndex++).setCellValue("")
+            }
+            if (!isTravelCompany) {
+                row.createCell(columnIndex++).setCellValue(totalSelling)
+            }
+            if (!isTourismCompany) {
+                row.createCell(columnIndex++).setCellValue(totalBuying)
+            }
+            row.createCell(columnIndex++).setCellValue(totalCollected)
+            row.createCell(columnIndex).setCellValue(totalBalance)
+            val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+            FileOutputStream(file).use { outputStream ->
+                workbook.write(outputStream)
+            }
+            workbook.close()
+            return file
+        } catch (e: Exception) {
+            Log.e("SheetUtil", "exportRidesAsCsv: ${e.message}")
+            e.printStackTrace()
+            return null
         }
-        return fileName
     }
 }

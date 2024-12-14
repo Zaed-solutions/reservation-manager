@@ -1,13 +1,19 @@
 package com.zaed.reservationmanager.ui.company.details
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,6 +22,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -25,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -32,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
@@ -44,6 +53,8 @@ import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDi
 import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 import com.zaed.reservationmanager.ui.reservation.display.ExpandableReservationCard
 import com.zaed.reservationmanager.ui.util.PhoneUtil
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportRidesAsCsv
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -72,6 +83,50 @@ fun CompanyDetailsScreen(
         onAction = { action ->
             when (action) {
                 CompanyDetailsUiAction.OnBackPressed -> onNavigateBack()
+                is CompanyDetailsUiAction.ExportRidesAsCSV -> {
+                    val file = state.rides.exportRidesAsCsv(
+                        context = context,
+                        headers = listOf(
+                            context.getString(R.string.date),
+                            context.getString(R.string.type),
+                            context.getString(R.string.car),
+                            context.getString(R.string.phone_number),
+                            context.getString(R.string.email),
+                        )
+                    )
+                    scope.launch {
+                        if (file != null) {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.pdf_saved_at, file.path),
+                                actionLabel = context.getString(R.string.open)
+                            ).let { result ->
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    try {
+                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
+                                            val fileUri: Uri = FileProvider.getUriForFile(
+                                                context,
+                                                "${context.packageName}.fileprovider",
+                                                file
+                                            )
+                                            setDataAndType(fileUri, "text/csv")
+                                            flags =
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        }
+                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
+                                            context.startActivity(openFileIntent)
+                                        } else {
+                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                        } else {
+                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_csv))
+                        }
+                    }
+                }
                 is CompanyDetailsUiAction.OnCompanyClicked -> {
                     onNavigateToCompanyDetails(action.companyId)
                 }
@@ -138,6 +193,9 @@ fun CompanyDetailsScreenContent(
     var selectedItemId by remember {
         mutableStateOf("")
     }
+    var isOptionsMenuVisible by remember {
+        mutableStateOf(false)
+    }
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -159,6 +217,48 @@ fun CompanyDetailsScreenContent(
                         )
                     }
                 },
+                actions = {
+                        Box(
+                            modifier = Modifier
+                                .wrapContentSize(Alignment.TopEnd)
+                        ) {
+                            IconButton(
+                                onClick = { isOptionsMenuVisible = !isOptionsMenuVisible },
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = null,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = isOptionsMenuVisible,
+                                onDismissRequest = { isOptionsMenuVisible = false }
+                            ) {
+                                DropdownMenuItem(
+                                    onClick = {
+                                        onAction(CompanyDetailsUiAction.ExportRidesAsCSV)
+                                        isOptionsMenuVisible = false
+                                    },
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.export_as_csv),
+                                        )
+                                    },
+                                )
+//                            DropdownMenuItem(
+//                                onClick = {
+//                                    onExportCustomersAsPDF()
+//                                    isOptionsMenuVisible = false
+//                                },
+//                                text = {
+//                                    Text(
+//                                        text = stringResource(R.string.export_as_pdf),
+//                                    )
+//                                },
+//                            )
+                            }
+                        }
+                }
             )
         },
     ) { innerPadding ->

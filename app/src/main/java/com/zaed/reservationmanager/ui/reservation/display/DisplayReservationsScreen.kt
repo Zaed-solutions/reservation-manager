@@ -56,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -217,7 +218,7 @@ fun DisplayReservationScreenContent(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text("Reservation List")
+                    Text(stringResource(R.string.reservations))
                 },
                 navigationIcon = {
                     IconButton(onClick = onShowNavDrawer) {
@@ -255,11 +256,11 @@ fun DisplayReservationScreenContent(
             val endOfYesterday = startOfToday - 1
             var searchQuery by remember { mutableStateOf("") }
             var state by remember { mutableStateOf(0) }
-            val titles = listOf("Reservation", "Ride")
+            val titles = listOf(stringResource(R.string.reservations), stringResource(R.string.rides))
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Search by anything") },
+                placeholder = { Text(stringResource(R.string.search_by_anything)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -302,15 +303,15 @@ fun DisplayReservationScreenContent(
                     field.contains(searchQuery, ignoreCase = true)
                 }
             }
-
+            val items = listOf(
+                stringResource(R.string.today),
+                stringResource(R.string.yesterday),
+                stringResource(R.string.tomorrow),
+                stringResource(R.string.from_today_onwards)
+            )
             LazyRow {
                 items(
-                    listOf(
-                        "Today",
-                        "Yesterday",
-                        "Tomorrow",
-                        "From today onwards"
-                    )
+                    items = items
                 ) { date ->
                     FilterChip(
                         modifier = Modifier.padding(end = 8.dp),
@@ -344,7 +345,7 @@ fun DisplayReservationScreenContent(
                                 showDateRangePicker = true
                             }
                         },
-                        label = { Text("Selected Range") },
+                        label = { Text(stringResource(R.string.selected_range)) },
                         selected = dateRangeStart != null && dateRangeEnd != null,
                         leadingIcon = if (dateRangeStart != null && dateRangeEnd != null) {
                             {
@@ -362,18 +363,22 @@ fun DisplayReservationScreenContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
             if (dateRangeStart != null && dateRangeEnd != null) {
-                Text(text = "Selected Range: ${dateRangeStart!!.formatEpochSecondsToDate()} - ${dateRangeEnd!!.formatEpochSecondsToDate()}")
+                Text(text = stringResource(
+                    R.string.selected_range_place,
+                    dateRangeStart!!.formatEpochSecondsToDate(),
+                    dateRangeEnd!!.formatEpochSecondsToDate()
+                ))
             }
 
             val filteredRides2 = if (selectedDate.isNotBlank()) {
-                if (selectedDate == "Yesterday") {
+                if (selectedDate == items[1]) {
                     filteredRides1.filter { it.date in startOfYesterday..endOfYesterday }
-                } else if (selectedDate == "Tomorrow") {
+                } else if (selectedDate == items[2]) {
                     filteredRides1.filter { it.date in startOfTomorrow..endOfTomorrow }
-                } else if (selectedDate == "Today") {
+                } else if (selectedDate == items[0]) {
                     filteredRides1.filter { it.date in startOfToday..endOfToday }
 
-                } else if (selectedDate == "From today onwards") {
+                } else if (selectedDate == items[3]) {
                     filteredRides1.filter { it.date >= startOfToday }
                 } else {
                     filteredRides1
@@ -384,14 +389,14 @@ fun DisplayReservationScreenContent(
                 filteredRides1
             }
             val filteredReservations2 = if (selectedDate.isNotBlank()) {
-                if (selectedDate == "Yesterday") {
+                if (selectedDate == items[1]) {
                     filteredReservation1.filter { it.date in startOfYesterday..endOfYesterday }
-                } else if (selectedDate == "Tomorrow") {
+                } else if (selectedDate == items[2]) {
                     filteredReservation1.filter { it.date in startOfTomorrow..endOfTomorrow }
-                } else if (selectedDate == "Today") {
+                } else if (selectedDate == items[0]) {
                     filteredReservation1.filter { it.date in startOfToday..endOfToday }
 
-                } else if (selectedDate == "From today onwards") {
+                } else if (selectedDate == items[3]) {
                     filteredReservation1.filter { it.date >= startOfToday }
                 } else {
                     filteredReservation1
@@ -534,7 +539,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Reservation Number",
+                            text = stringResource(R.string.reservation_number),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -554,7 +559,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Customer Name",
+                            text = stringResource(R.string.customer_name),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -579,7 +584,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Name",
+                            text = stringResource(R.string.name),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -599,7 +604,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Phone Number",
+                            text = stringResource(R.string.phone_number),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -619,7 +624,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Country",
+                            text = stringResource(R.string.country),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -639,7 +644,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Tourism Company",
+                            text = stringResource(R.string.tourism_company),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -659,7 +664,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Tourism Employee",
+                            text = stringResource(R.string.tourism_employee),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -679,7 +684,7 @@ fun ExpandableReservationCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Company Phone",
+                            text = stringResource(R.string.company_phone),
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -700,7 +705,7 @@ fun ExpandableReservationCard(
                         contentPadding = PaddingValues(0.dp),
                         onClick = {onNavigateToReservationDetails(reservation.id)},
                     ) {
-                        Text(text = "Show Reservation Rides")
+                        Text(text = stringResource(R.string.reservation_details_arrow))
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -720,7 +725,7 @@ fun ExpandableReservationCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Delete",
+                                text = stringResource(R.string.delete),
                                 modifier = Modifier.wrapContentWidth()
                             )
                         }
@@ -737,7 +742,7 @@ fun ExpandableReservationCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Edit",
+                                text = stringResource(R.string.edit),
                                 modifier = Modifier.wrapContentWidth()
                             )
                         }
