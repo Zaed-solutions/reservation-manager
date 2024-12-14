@@ -105,5 +105,11 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation("org.apache.poi:poi-ooxml:5.3.0")
 
+    //tabulate
+    implementation(platform("io.github.voytech:tabulate-bom:0.1.2"))
+    implementation("io.github.voytech","tabulate-core")
+    implementation("io.github.voytech","tabulate-excel")
+    implementation("com.itextpdf:itext-core:9.0.0")
+
 
 }
