@@ -314,7 +314,7 @@ class CreateReservationViewModel(
                         )
                     }
                     state.value.rides.forEach { ride ->
-                        createRide(ride.copy(reservationId = data.first, reservationNumber = data.second))
+                        createRide(ride.copy(reservationId = data.first, reservationNumber = data.second, clientName = state.value.reservation.clientName))
                     }
                 }.onFailure {
                     _state.update {

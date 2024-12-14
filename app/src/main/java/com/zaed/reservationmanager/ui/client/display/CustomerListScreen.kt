@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,9 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.client.display.components.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.PdfUtil
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportCsv
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
@@ -45,6 +50,7 @@ fun CustomerListScreen(
     onNavigateToCustomerDetails: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
     CustomerListWithScreenContent(
         customers = state.customers,
         onNavigateToAddClient = onNavigateToAddCustomer,
@@ -59,6 +65,23 @@ fun CustomerListScreen(
         },
         onDeleteCustomer = { customerId ->
             viewModel.deleteCustomer(customerId)
+        },
+        onExportCustomersAsCSV = {
+            val csvFile = state.customers.exportCustomersToExcel(
+                context = context,
+//                headers = arrayOf(
+//                    context.getString(R.string.name),
+//                    context.getString(R.string.nationality),
+//                    context.getString(R.string.residence_country),
+//                    context.getString(R.string.phone_number),
+//                    context.getString(R.string.email),
+//                )
+            )
+            PdfUtil.convertCsvToPdf(
+                context = context,
+                csvFileName = csvFile?.name ?: "",
+                pdfFileName = "Customers_${System.currentTimeMillis()}.pdf"
+            )
         }
     )
 }
@@ -71,7 +94,8 @@ fun CustomerListWithScreenContent(
     onNavigateToAddClient: () -> Unit = {},
     onViewCustomerDetails: (String) -> Unit = {},
     onDeleteCustomer: (String) -> Unit = {},
-    onEditCustomer: (Customer) -> Unit = {}
+    onEditCustomer: (Customer) -> Unit = {},
+    onExportCustomersAsCSV: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -88,6 +112,14 @@ fun CustomerListWithScreenContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Menu,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {onExportCustomersAsCSV()}) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
                             contentDescription = null
                         )
                     }
