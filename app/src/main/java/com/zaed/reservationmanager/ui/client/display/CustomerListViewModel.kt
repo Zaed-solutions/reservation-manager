@@ -24,8 +24,9 @@ class CustomerListViewModel(
         viewModelScope.launch {
             customerRepository.getCustomers().collect{result->
                 result.onSuccess { data ->
+                    val sortedCustomers = data.sortedBy { it.createdAtEpochSeconds }
                     _state.update { oldState ->
-                        oldState.copy(customers = data.sortedBy { it.createdAtEpochSeconds })
+                        oldState.copy(customers = sortedCustomers, displayedCustomers = sortedCustomers, countries = sortedCustomers.map { it.residenceCountry }.distinct())
                     }
                 }.onFailure {
                     _state.value = _state.value.copy(errorMessage = it.message ?: "Unknown error")
@@ -33,6 +34,15 @@ class CustomerListViewModel(
             }
         }
     }
+
+    fun filterByCountry(country: String) {
+        viewModelScope.launch {
+            _state.update { oldState ->
+                oldState.copy(selectedCountry = country, displayedCustomers = if(country.isNotBlank()) oldState.customers.filter { it.residenceCountry == country } else oldState.customers)
+            }
+        }
+    }
+
     fun deleteCustomer(customerId: String) {
         viewModelScope.launch {
             customerRepository.deleteCustomer(customerId).collect{result->

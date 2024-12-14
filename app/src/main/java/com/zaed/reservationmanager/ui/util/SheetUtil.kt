@@ -42,13 +42,11 @@ object SheetUtil {
             // Populate rows with customer data
             for ((rowIndex, customer) in this.withIndex()) {
                 val row: Row = sheet.createRow(rowIndex + 1)
-                row.createCell(0).setCellValue(customer.id)
-                row.createCell(1).setCellValue(customer.name)
-                row.createCell(2).setCellValue(customer.nationality)
-                row.createCell(3).setCellValue(customer.residenceCountry)
-                row.createCell(4).setCellValue(customer.phoneNumber)
-                row.createCell(5).setCellValue(customer.email)
-                row.createCell(6).setCellValue(customer.createdAtEpochSeconds.formatEpochSecondsToDate()) // Convert Date to String
+                row.createCell(0).setCellValue(customer.name)
+                row.createCell(1).setCellValue(customer.nationality)
+                row.createCell(2).setCellValue(customer.residenceCountry)
+                row.createCell(3).setCellValue(customer.phoneNumber)
+                row.createCell(4).setCellValue(customer.email)
             }
 
             // Create a file in the external storage directory
