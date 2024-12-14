@@ -190,4 +190,6 @@
     <string name="company_phone">Company Phone</string>
     <string name="reservation_details_arrow"><![CDATA[Reservation Details >]]></string>
     <string name="search_by_anything">Search by anything</string>
+    <string name="balance">Balance</string>
+    <string name="csv_saved_at">CSV saved at: %1$s</string>
 </resources>

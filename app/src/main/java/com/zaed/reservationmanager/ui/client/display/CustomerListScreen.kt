@@ -99,7 +99,7 @@ fun CustomerListScreen(
             scope.launch {
                 if (file != null) {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.pdf_saved_at, file.path),
+                        message = context.getString(R.string.csv_saved_at, file.path),
                         actionLabel = context.getString(R.string.open)
                     ).let { result ->
                         if (result == SnackbarResult.ActionPerformed) {

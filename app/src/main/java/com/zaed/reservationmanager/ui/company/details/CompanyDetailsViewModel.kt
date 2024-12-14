@@ -23,11 +23,10 @@ class CompanyDetailsViewModel(
     fun init(companyId: String, isTravel: Boolean){
         fetchCompany(companyId)
         fetchBalance(companyId, isTravel)
-        if(isTravel){
-            fetchRides(companyId)
-        } else {
+        if(!isTravel){
             fetchReservations(companyId)
         }
+        fetchRides(companyId, isTravel)
     }
 
     private fun fetchReservations(companyId: String) {
@@ -46,9 +45,9 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchRides(companyId: String) {
+    private fun fetchRides(companyId: String, isTravel: Boolean) {
         viewModelScope.launch (Dispatchers.IO) {
-            reservationRepo.getRidesByCompanyId(companyId).collect { result ->
+            reservationRepo.getRidesByCompanyId(companyId, isTravel).collect { result ->
                 result.onSuccess {
                     _uiState.update { oldState ->
                         oldState.copy(rides = it)

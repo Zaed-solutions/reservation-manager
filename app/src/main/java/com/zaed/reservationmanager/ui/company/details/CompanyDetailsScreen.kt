@@ -84,20 +84,37 @@ fun CompanyDetailsScreen(
             when (action) {
                 CompanyDetailsUiAction.OnBackPressed -> onNavigateBack()
                 is CompanyDetailsUiAction.ExportRidesAsCSV -> {
-                    val file = state.rides.exportRidesAsCsv(
-                        context = context,
-                        headers = listOf(
+                    val headers  = if(isTravel){
+                        listOf(
                             context.getString(R.string.date),
                             context.getString(R.string.type),
                             context.getString(R.string.car),
-                            context.getString(R.string.phone_number),
-                            context.getString(R.string.email),
+                            context.getString(R.string.client_name),
+                            context.getString(R.string.buying_price),
+                            context.getString(R.string.collected_price),
+                            context.getString(R.string.balance),
                         )
+                    } else {
+                        listOf(
+                            context.getString(R.string.date),
+                            context.getString(R.string.type),
+                            context.getString(R.string.car),
+                            context.getString(R.string.client_name),
+                            context.getString(R.string.selling_price),
+                            context.getString(R.string.collected_price),
+                            context.getString(R.string.balance),
+                        )
+                    }
+                    val file = state.rides.exportRidesAsCsv(
+                        context = context,
+                        headers = headers,
+                        isTravelCompany = isTravel,
+                        isTourismCompany = !isTravel
                     )
                     scope.launch {
                         if (file != null) {
                             snackbarHostState.showSnackbar(
-                                message = context.getString(R.string.pdf_saved_at, file.path),
+                                message = context.getString(R.string.csv_saved_at, file.path),
                                 actionLabel = context.getString(R.string.open)
                             ).let { result ->
                                 if (result == SnackbarResult.ActionPerformed) {
