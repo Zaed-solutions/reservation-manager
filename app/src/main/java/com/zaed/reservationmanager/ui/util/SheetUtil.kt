@@ -1,23 +1,15 @@
 package com.zaed.reservationmanager.ui.util
 
-import android.content.ContentValues
 import android.content.Context
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import io.github.voytech.tabulate.api.builder.dsl.header
 import io.github.voytech.tabulate.model.attributes.column.columnWidth
 import io.github.voytech.tabulate.template.tabulate
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.jetbrains.annotations.Contract
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
@@ -25,8 +17,14 @@ import java.util.Date
 object SheetUtil {
     fun List<Customer>.exportCustomersToExcel(
         context: Context,
-        headers: List<String> = listOf("ID", "Name", "Nationality", "Residence Country", "Phone Number", "Email", "Created At")
-                                              ): File? {
+        headers: List<String> = listOf(
+            "Name",
+            "Nationality",
+            "Residence Country",
+            "Phone Number",
+            "Email"
+        )
+    ): File? {
         try {
             // Create a new workbook and sheet
             val workbook = XSSFWorkbook()
@@ -62,16 +60,16 @@ object SheetUtil {
             Log.d("SheetUtil", "exportCustomersToExcel: $fileName, ${file.path}")
             return file // Return the generated file
         } catch (e: Exception) {
-            Log.e("SheetUtil", "exportCustomersToExcel: ${e.message}" )
+            Log.e("SheetUtil", "exportCustomersToExcel: ${e.message}")
             e.printStackTrace()
         }
         return null // Return null if an error occurred
     }
 
-    fun List<Ride>.exportCsv(headers: Array<String>): String{
+    fun List<Ride>.exportCsv(headers: Array<String>): String {
         val fileName = "rides_${Date()}.csv"
-        val totalSelling = this.sumByDouble { it.sellingPrice }
-        val totalCollected = this.sumByDouble { it.collectedPrice }
+        val totalSelling = this.sumOf { it.sellingPrice }
+        val totalCollected = this.sumOf { it.collectedPrice }
         this.tabulate(fileName) {
             name = "Rides List"
             attributes {
@@ -103,11 +101,11 @@ object SheetUtil {
                 }
 
                 newRow {
-                    cell("Total"){value = "Total Selling: "}
-                    repeat(headers.size - 4) { cell("placeholder$it"){value = ""} }
-                    cell("totalSellingPrice"){ value = totalSelling}
-                    cell("totalCollectedPrice"){ value = totalCollected}
-                    cell("totalBalance"){ value = totalSelling - totalCollected}
+                    cell("Total") { value = "Total Selling: " }
+                    repeat(headers.size - 4) { cell("placeholder$it") { value = "" } }
+                    cell("totalSellingPrice") { value = totalSelling }
+                    cell("totalCollectedPrice") { value = totalCollected }
+                    cell("totalBalance") { value = totalSelling - totalCollected }
                 }
             }
         }

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">المسافرون</string>
+    <string name="name">الاسم</string>
+    <string name="name_is_required">الاسم مطلوب</string>
+    <string name="a_company_with_name_already_exists">شركة بهذا الاسم موجودة بالفعل</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="email_is_invalid">البريد الإلكتروني غير صالح</string>
+    <string name="fax_number">رقم الفاكس</string>
+    <string name="invalid_fax_number">رقم الفاكس غير صالح</string>
+    <string name="phone_number">رقم الجوال</string>
+    <string name="invalid_phone_number">رقم الجوال غير صالح</string>
+    <string name="type">النوع</string>
+    <string name="country">البلد</string>
+    <string name="country_is_required">البلد مطلوب</string>
+    <string name="add">إضافة</string>
+    <string name="update">تحديث</string>
+    <string name="update_company">تحديث الشركة</string>
+    <string name="add_company">إضافة شركة جديدة</string>
+    <string name="company_updated_successfully">تم تحديث الشركة بنجاح</string>
+    <string name="company_added_successfully">تم إضافة الشركة بنجاح</string>
+    <string name="travel">نقل</string>
+    <string name="tourism">سياحة</string>
+    <string name="tourism_companies">شركات السياحة</string>
+    <string name="travel_companies">شركات النقل</string>
+    <string name="phone_template">الجوال: %1$s</string>
+    <string name="fax_template">الفاكس: %1$s</string>
+    <string name="email_template">البريد الإلكتروني: %1$s</string>
+    <string name="view_details"><![CDATA[عرض التفاصيل >]]></string>
+    <string name="edit">تعديل</string>
+    <string name="delete">حذف</string>
+    <string name="are_you_sure_you_want_to_delete_this">هل أنت متأكد أنك تريد حذف ال%1$s؟</string>
+    <string name="this_action_cannot_be_undone">لا يمكن التراجع عن هذا الإجراء</string>
+    <string name="confirm">تأكيد</string>
+    <string name="companies">الشركات</string>
+    <string name="nationality_is_required">الجنسية مطلوبة</string>
+    <string name="mobile_is_required">رقم الجوال مطلوب</string>
+    <string name="email_is_required">البريد الإلكتروني مطلوب</string>
+    <string name="mobile_number_is_invalid">رقم الجوال غير صالح</string>
+    <string name="please_fill_in_all_required_fields">يرجى تعبئة جميع الحقول المطلوبة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="customer_with_this_phone_number_already_exists">ضيف بهذا الرقم موجود بالفعل</string>
+    <string name="create_new_customer">إضافة ضيف جديد</string>
+    <string name="client_name">اسم الضيف</string>
+    <string name="nationality">الجنسية</string>
+    <string name="country_of_residence">بلد الإقامة</string>
+    <string name="atleast_one_phone_number_is_required">يجب إضافة رقم جوال واحد على الأقل</string>
+    <string name="an_employee_with_name_already_exists">موظف بهذا الاسم موجود بالفعل</string>
+    <string name="add_employee">إضافة موظف جديد</string>
+    <string name="update_employee">تحديث الموظف</string>
+    <string name="company">الشركة</string>
+    <string name="employee_updated_successfully">تم تحديث الموظف بنجاح</string>
+    <string name="employee_added_successfully">تم إضافة الموظف بنجاح</string>
+    <string name="position">الوظيفة</string>
+    <string name="phone_number_1">رقم الجوال 1</string>
+    <string name="phone_number_2">رقم الجوال 2</string>
+    <string name="add_new_driver">إضافة سائق جديد</string>
+    <string name="update_driver">تحديث السائق</string>
+    <string name="create_new_reservation">إنشاء حجز جديد</string>
+    <string name="phone_is_required">رقم الجوال للضيف فارغ</string>
+    <string name="tourism_company_is_required">شركة السياحة مطلوبة</string>
+    <string name="client_phone">جوال الضيف</string>
+    <string name="date">التاريخ</string>
+    <string name="type_is_required">النوع مطلوب</string>
+    <string name="time">الوقت</string>
+    <string name="car_is_required">السيارة مطلوبة</string>
+    <string name="start_location">بداية الحركة</string>
+    <string name="end_location">نهاية الحركة</string>
+    <string name="movement_price_is_required">سعر الحركة مطلوب</string>
+    <string name="collection_price_is_required">التحصيل مطلوب</string>
+    <string name="reception">استقبال</string>
+    <string name="departure">مغادرة</string>
+    <string name="meca_attractions">معالم مكة</string>
+    <string name="medina_attractions">معالم المدينة</string>
+    <string name="taif_tour">جولة الطائف</string>
+    <string name="stationed">متمركز</string>
+    <string name="small">صغير</string>
+    <string name="carnival">كرنفال</string>
+    <string name="family">عائلة</string>
+    <string name="h1">H1</string>
+    <string name="staria">ستاريا</string>
+    <string name="gmc">جي إم سي</string>
+    <string name="hiace">هاي إيس</string>
+    <string name="coaster">كوستر</string>
+    <string name="bus">حافلة</string>
+    <string name="reservation_details">تفاصيل الحجز</string>
+    <string name="from">من:</string>
+    <string name="to">إلى:</string>
+    <string name="tourism_company">شركة السياحة</string>
+    <string name="residence">الإقامة</string>
+    <string name="tourism_employee">موظف السياحة</string>
+    <string name="send_confirmation_to_client">إرسال تأكيد للضيف</string>
+    <string name="confirmation_sent">تم إرسال التأكيد</string>
+    <string name="rides">الرحلات</string>
+    <string name="travel_company">شركة النقل</string>
+    <string name="car">سيارة</string>
+    <string name="driver">السائق</string>
+    <string name="notes">ملاحظات</string>
+    <string name="send_info_to_client">إرسال معلومات السائق للضيف</string>
+    <string name="driver_information_sent">تم إرسال معلومات السائق</string>
+    <string name="ride_info_sent">تم إرسال معلومات الرحلة</string>
+    <string name="send_ride_info_to_travel_company">إرسال معلومات الرحلة لشركة النقل</string>
+    <string name="no_rides_added">لم تتم إضافة أي رحلات</string>
+    <string name="number_copied_to_clipboard">تم نسخ الرقم!</string>
+    <string name="ride">الرحلة</string>
+    <string name="date_is_required">التاريخ مطلوب</string>
+    <string name="time_is_required">الوقت مطلوب</string>
+    <string name="date_and_time_is_required">التاريخ والوقت مطلوبين</string>
+    <string name="driver_is_required">السائق مطلوب</string>
+    <string name="start_location_is_required">بداية الحركة مطلوبة</string>
+    <string name="end_location_is_required">نهاية الحركة مطلوبة</string>
+    <string name="buying_price_is_required">سعر الشراء مطلوب</string>
+    <string name="save_reservation">حفظ الحجز</string>
+    <string name="drivers">السائقين</string>
+    <string name="buying_price">سعر الشراء</string>
+    <string name="collection_price">سعر التحصيل</string>
+    <string name="note">ملاحظة</string>
+    <string name="save_ride">حفظ الحركة</string>
+    <string name="customer_phone_is_invalid">جوال الضيف غير صالح</string>
+    <string name="customer_name_is_required">اسم الضيف مطلوب</string>
+    <string name="employee_is_required">الموظف مطلوب</string>
+    <string name="customer_country">بلد الضيف</string>
+    <string name="customer_country_is_required">بلد الضيف مطلوب</string>
+    <string name="travel_no">رقم الرحلة</string>
+    <string name="tourist_company">شركة سياحة</string>
+    <string name="add_ride">إضافة حركة</string>
+    <string name="fill_all_required_fields_to_add_ride">يرجى تعبئة جميع الحقول المطلوبة لإضافة حركة</string>
+    <string name="tourism_employee_is_required">موظف السياحة مطلوب</string>
+    <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
+    <string name="collected_price">سعر التحصيل</string>
+    <string name="selling_price">سعر البيع</string>
+    <string name="we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival">لدينا حجز مؤكد لك. يرجى الاتصال بنا عند وصولك بأمان.</string>
+    <string name="it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing">يسعدنا خدمتك. يمكن الوصول إلى سائقك، %1$s، على الرقم %2$s. نتمنى لك رحلة آمنة وممتعة إن شاء الله.</string>
+    <string name="transportation_details">
+        عزيزي %1$s،
+
+        يرجى العثور أدناه على تفاصيل النقل للضيف:
+
+        - اسم الضيف: %2$s
+        - رقم الجوال: %3$s
+        - تاريخ الرحلة: %4$s
+        - الموقع الابتدائي: %5$s
+        - الموقع النهائي: %6$s
+        - رقم الرحلة: %7$s
+        - سعر الرحلة: %8$s
+        - التحصيل: %9$s
+
+        يرجى تأكيد استلام هذه المعلومات وضمان الترتيبات في الوقت المحدد. لا تتردد في الاتصال بنا إذا كنت بحاجة إلى مزيد من التفاصيل.
+
+        مع أطيب التحيات،
+        شركة المسافرون
+    </string>
+    <string name="employees">الموظفون</string>
+    <string name="customers">الضيوف</string>
+    <string name="reservations">الحجوزات</string>
+    <string name="residence_country">بلد الإقامة</string>
+    <string name="created_at">أنشئ في</string>
+    <string name="update_customer">تحديث الضيف</string>
+    <string name="company_details">تفاصيل الشركة</string>
+    <string name="buying">الشراء</string>
+    <string name="selling">البيع</string>
+    <string name="collected">التحصيل</string>
+    <string name="total_earnings">إجمالي الأرباح</string>
+    <string name="total_balance">إجمالي الرصيد:</string>
+    <string name="reservation_number">رقم الحجز</string>
+    <string name="selling_price_is_required">سعر البيع مطلوب</string>
+    <string name="travel_company_phone_number_is_not_set">رقم جوال شركة النقل غير مسجل</string>
+    <string name="save_changes">حفظ التغييرات</string>
+    <string name="drop_down_lists">تحديث القوائم المنسدلة</string>
+    <string name="reservation">الحجز</string>
+    <string name="customer_details">تفاصيل الضيف</string>
+    <string name="phonenumber_is_blank">رقم الجوال فارغ</string>
+    <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
+    <string name="export_as_csv">تصدير كـ CSV</string>
+    <string name="export_as_pdf">تصدير كـ PDF</string>
+    <string name="customers_list">قائمة الضيوف</string>
+    <string name="customers_list_for_country">قائمة الضيوف لدولة: %1$s</string>
+    <string name="pdf_saved_at">تم حفظ الـ PDF في %1$s</string>
+    <string name="error_exporting_pdf">حدث خطأ أثناء تصدير الـ PDF!</string>
+    <string name="open">فتح</string>
+    <string name="no_pdf_viewer_found">لم يتم العثور على عارض PDF!</string>
+    <string name="no_csv_viewer_found">لم يتم العثور على عارض CSV!</string>
+    <string name="error_exporting_csv">حدث خطأ أثناء تصدير الـ CSV!</string>
+</resources>

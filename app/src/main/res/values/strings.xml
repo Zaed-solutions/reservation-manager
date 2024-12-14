@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reservation Manager</string>
+    <string name="app_name">Al-Mosaferoon</string>
     <string name="name">Name</string>
     <string name="name_is_required">Name is required</string>
     <string name="a_company_with_name_already_exists">A company with this name already exists</string>
