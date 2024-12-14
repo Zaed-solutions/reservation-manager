@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.app.navigation
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Reservation
 import kotlinx.serialization.Serializable
 import java.io.Serial
 
@@ -32,13 +33,16 @@ sealed interface Route {
     data object EmployeeListRoute: Route
 
     @Serializable
-    data object CreateReservationRoute: Route
+    data class CreateReservationRoute(val reservation: Reservation= Reservation()): Route
 
     @Serializable
     data class ReservationDetailsRoute(val reservationId: String = ""): Route
 
     @Serializable
     data object DisplayReservationRoute: Route
+
+    @Serializable
+    data object DropDownMenuLists: Route
 
     @Serializable
     data class CompanyDetailsRoute(val companyId: String = "", val isTravel: Boolean): Route

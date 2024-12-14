@@ -45,10 +45,17 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateReservationScreen(
+    reservation: Reservation = Reservation(),
     viewModel: CreateReservationViewModel = koinViewModel(),
     navigateBack: () -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect (true){
+        if(reservation.id.isNotBlank()) {
+            viewModel.loadReservation(reservation)
+        }
+    }
+
+    val state by viewModel.state.collectAsState()
     LaunchedEffect(state.successStatus) {
         if (state.successStatus) {
             navigateBack()
@@ -56,10 +63,12 @@ fun CreateReservationScreen(
     }
     CreateReservationScreenContent(
         reservation = state.reservation,
+        initialReservation = reservation,
         travelCompanies = state.travelCompanies,
         tourismCompanies = state.tourismCompanies,
         rides = state.rides,
         newRide = state.newRide,
+        isEditMode = reservation.id.isNotBlank(),
         types = state.transactionTypes,
         cars = state.carTypes,
         drivers = state.drivers,
@@ -82,9 +91,11 @@ fun CreateReservationScreenContent(
     tourismCompanies: List<Company> = emptyList(),
     types: List<String> = emptyList(),
     cars: List<String> = emptyList(),
+    isEditMode: Boolean = false,
     drivers: List<Employee> = emptyList(),
     rides: List<Ride> = emptyList(),
     newRide: Ride = Ride(),
+    initialReservation: Reservation = Reservation(),
     employees: List<Employee> = emptyList(),
     countries: List<String> = emptyList(),
     action: (ReservationUiAction) -> Unit = {},
@@ -136,6 +147,7 @@ fun CreateReservationScreenContent(
                 LinearProgressIndicator()
             }
             AddNewReservation(
+                initialReservation = initialReservation,
                 reservation,
                 action,
                 reservationError,
@@ -144,16 +156,23 @@ fun CreateReservationScreenContent(
                 employees
             )
             EnteredRidesSection(
+                isEditMode = isEditMode,
                 rides = rides,
                 onAddMovementClicked = {
                     action(ReservationUiAction.ValidateReservationData)
                     if (reservationError != ReservationError.NONE) return@EnteredRidesSection
                     isAddMovementSheetVisible = true
+                },
+                onEditRide = {ride->
+                    action(ReservationUiAction.EditRide(ride))
+                    isAddMovementSheetVisible = true
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
             AnimatedVisibility(rides.isNotEmpty()) {
-                MainActionButtons(action = action) {
+                MainActionButtons(
+                    isEditMode = isEditMode,
+                    action = action) {
                     onBackClicked()
                 }
             }

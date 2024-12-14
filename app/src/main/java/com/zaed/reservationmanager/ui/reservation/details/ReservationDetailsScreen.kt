@@ -110,11 +110,13 @@ fun ReservationDetailsScreen(
                 ReservationDetailsUiAction.OnSendConfirmationMessage -> {
                     val messageText =
                         context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
-                    viewModel.handleAction(ReservationDetailsUiAction.OnConfirmationMessageSent)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = state.reservation.clientPhone,
                         message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ReservationDetailsUiAction.OnConfirmationMessageSent)
+                        },
                         onFailure = {
                             scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
@@ -128,11 +130,13 @@ fun ReservationDetailsScreen(
                         action.driverName,
                         action.driverPhoneNumber
                     )
-                    viewModel.handleAction(ReservationDetailsUiAction.OnDriverInfoSent(action.rideId))
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = state.reservation.clientPhone,
                         message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ReservationDetailsUiAction.OnDriverInfoSent(action.rideId))
+                        },
                         onFailure = {
                             scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
@@ -153,11 +157,13 @@ fun ReservationDetailsScreen(
                         action.ride.buyingPrice.formatMoney(),
                         action.ride.collectedPrice.formatMoney()
                     )
-                    viewModel.handleAction(ReservationDetailsUiAction.OnInfoSentToTravelCompany(action.ride.id))
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = action.ride.travelCompanyPhone,
                         message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ReservationDetailsUiAction.OnInfoSentToTravelCompany(action.ride.id))
+                        },
                         onFailure = {
                             scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))

@@ -19,8 +19,10 @@ import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 
 @Composable
 fun EnteredRidesSection(
+    isEditMode: Boolean,
     rides: List<Ride>,
-    onAddMovementClicked: () -> Unit
+    onAddMovementClicked: () -> Unit,
+    onEditRide: (Ride) -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -31,6 +33,7 @@ fun EnteredRidesSection(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f)
         )
+        if (isEditMode) return@Row
         IconButton(
             onClick = onAddMovementClicked,
         ) {
@@ -41,6 +44,11 @@ fun EnteredRidesSection(
         }
     }
     rides.forEach { ride ->
-        RideItem(ride = ride, isActionsVisible = false)
+        RideItem(
+            ride = ride,
+            isEditMode = isEditMode,
+            onEditRide = { onEditRide(ride) },
+            isActionsVisible = false
+        )
     }
 }

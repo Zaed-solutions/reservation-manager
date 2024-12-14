@@ -6,11 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
+import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
+import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,8 +25,10 @@ class CreateReservationViewModel(
     private val companyRepository: CompanyRepository,
     private val customerRepository: CustomerRepository,
     private val employeeRepository: EmployeeRepository,
-    private val reservationRepository: ReservationRepository
+    private val reservationRepository: ReservationRepository,
+    private val menuDataStore: MenuDataStore
 ) : ViewModel() {
+    private var isEditMode = false
     private val TAG = "CreateReservationViewModel"
 
     private val _state = MutableStateFlow(CreateReservationState())
@@ -30,6 +37,45 @@ class CreateReservationViewModel(
     init {
         fetchTravelCompanies()
         fetchTourismCompanies()
+        fetchTransactionTypes()
+        fetchCarTypes()
+        fetchCountries()
+    }
+
+    private fun fetchCountries() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(COUNTRIES_KEY).collect { data ->
+                _state.update { oldState ->
+                    oldState.copy(
+                        countries = data.toList()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun fetchCarTypes() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
+                _state.update { oldState ->
+                    oldState.copy(
+                        carTypes = data.toList()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun fetchTransactionTypes() {
+        viewModelScope.launch {
+            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect {data->
+                _state.update { oldState ->
+                    oldState.copy(
+                        transactionTypes = data.toList()
+                    )
+                }
+            }
+        }
     }
 
     private fun fetchTourismCompanies() {
@@ -93,7 +139,6 @@ class CreateReservationViewModel(
             is ReservationUiAction.UpdateCustomerNumber -> updateCustomerNumber(reservationUiAction.number)
             is ReservationUiAction.UpdateDriver -> updateDriver(reservationUiAction.driver)
             is ReservationUiAction.UpdateEndLocation -> updateEndLocation(reservationUiAction.location)
-            is ReservationUiAction.UpdateMovementPrice -> updateMovementPrice(reservationUiAction.price)
             is ReservationUiAction.UpdateNote -> updateNote(reservationUiAction.note)
             is ReservationUiAction.UpdateReservationCar -> updateReservationCar(reservationUiAction.car)
             is ReservationUiAction.UpdateReservationDate -> updateReservationDate(
@@ -127,6 +172,35 @@ class CreateReservationViewModel(
             ReservationUiAction.AddMovement -> addMovements()
             ReservationUiAction.SaveReservation -> saveReservationData()
             ReservationUiAction.ValidateReservationData -> validateReservationData()
+            is ReservationUiAction.UpdateBuyingPrice -> updateBuyingPrice(reservationUiAction.price)
+            is ReservationUiAction.UpdateSellingPrice -> updateSellingPrice(reservationUiAction.price)
+            is ReservationUiAction.EditRide -> editSelectedRide(reservationUiAction.ride)
+        }
+    }
+
+    private fun editSelectedRide(ride: Ride) {
+        _state.update {
+            it.copy(
+                newRide = ride
+            )
+        }
+    }
+
+    private fun updateSellingPrice(price: String) {
+        _state.update {
+            it.copy(
+                newRide = it.newRide.copy(sellingPrice = price.toDouble()),
+                rideError = ReservationError.NONE
+            )
+        }
+    }
+
+    private fun updateBuyingPrice(price: String) {
+        _state.update {
+            it.copy(
+                newRide = it.newRide.copy(buyingPrice = price.toDouble()),
+                rideError = ReservationError.NONE
+            )
         }
     }
 
@@ -182,7 +256,7 @@ class CreateReservationViewModel(
                     )
                 }
                 return false
-            } else if (time == 0L) {
+            } else if (time == 0L && !isEditMode) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.TIME_IS_REQUIRED,
@@ -217,10 +291,10 @@ class CreateReservationViewModel(
                     )
                 }
                 return false
-            } else if (newRide.buyingPrice == 0.0) {
+            } else if (newRide.sellingPrice == 0.0) {
                 _state.update {
                     it.copy(
-                        rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
+                        rideError = ReservationError.SELLING_PRICE_IS_REQUIRED,
                     )
                 }
                 return false
@@ -248,10 +322,55 @@ class CreateReservationViewModel(
 
     private fun saveReservationData() {
         if (!validateReservationData()) return
-        if (isOldCustomer()) {
-            createReservation()
-        } else {
-            createNewCustomer()
+        if(!isEditMode) {
+            if (isOldCustomer()) {
+                createReservation()
+            } else {
+                createNewCustomer()
+            }
+        }else{
+            if(isOldCustomer()) {
+                updateReservation()
+            }else{
+                createNewCustomer()
+            }
+
+        }
+    }
+
+    private fun updateReservation() {
+        viewModelScope.launch {
+            reservationRepository.updateReservation(state.value.reservation).collect { result ->
+                result.onSuccess {
+                    state.value.rides.forEach{
+                        updateRide(it)
+                    }
+                }.onFailure {
+                    Log.d(TAG, "updateReservation: failed to update")
+                    _state.update {
+                        it.copy(
+                            userMessage = "Failed to update reservation"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateRide(ride: Ride) {
+        viewModelScope.launch {
+            reservationRepository.updateRide(ride).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "updateRide: ride updated")
+                    _state.update {
+                        it.copy(
+                            successStatus = true
+                        )
+                    }
+                }.onFailure {
+                    Log.d(TAG, "updateRide: failed to update ride")
+                }
+            }
         }
     }
 
@@ -263,13 +382,14 @@ class CreateReservationViewModel(
     }
 
     private fun addMovements() {
+        Log.d(TAG, "addMovements: ")
         if (!validateRideData()) return
         val ride = state.value.newRide
         _state.update {
             it.copy(
                 rideError = ReservationError.NONE,
                 reservationError = ReservationError.NONE,
-                rides = it.rides + ride,
+                rides = if(!isEditMode) it.rides + ride else it.rides.map { r -> if(r.id == ride.id) ride else r },
                 newRide = Ride()
             )
         }
@@ -279,6 +399,7 @@ class CreateReservationViewModel(
         viewModelScope.launch {
             customerRepository.createCustomer(
                 Customer(
+                    id = _state.value.reservation.clientId,
                     name = _state.value.reservation.clientName,
                     phoneNumber = _state.value.reservation.clientPhone,
                     residenceCountry = _state.value.reservation.clientCountry,
@@ -288,8 +409,13 @@ class CreateReservationViewModel(
                     _state.update {
                         it.copy(reservation = it.reservation.copy(clientId = data))
                     }
-                    createReservation()
+                    if(!isEditMode) {
+                        createReservation()
+                    }else{
+                        updateReservation()
+                    }
                 }.onFailure {
+                    Log.d(TAG, "createNewCustomer: failed to create customer${it.message}")
                     _state.update {
                         it.copy(
                             userMessage = "Failed to create customer"
@@ -314,7 +440,14 @@ class CreateReservationViewModel(
                         )
                     }
                     state.value.rides.forEach { ride ->
-                        createRide(ride.copy(reservationId = data.first, reservationNumber = data.second, clientName = state.value.reservation.clientName))
+                        createRide(
+                            ride.copy(
+                                reservationId = data.first,
+                                reservationNumber = data.second,
+                                customerId = state.value.customer.id,
+                                clientName = state.value.reservation.clientName
+                            )
+                        )
                     }
                 }.onFailure {
                     _state.update {
@@ -400,7 +533,8 @@ class CreateReservationViewModel(
             oldState.copy(
                 newRide = oldState.newRide.copy(
                     travelCompany = company.name,
-                    travelCompanyId = company.id
+                    travelCompanyId = company.id,
+                    travelCompanyPhone = company.phoneNumber
                 ),
                 rideError = ReservationError.NONE
             )
@@ -510,17 +644,6 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun updateMovementPrice(price: String) {
-        _state.update {
-            it.copy(
-                newRide = it.newRide.copy(
-                    buyingPrice = price.toDouble()
-                ),
-                rideError = ReservationError.NONE
-            )
-        }
-    }
-
     private fun updateEndLocation(location: String) {
         _state.update {
             it.copy(
@@ -571,7 +694,7 @@ class CreateReservationViewModel(
                             customer = customer
                         )
                     }
-                }.onFailure {error->
+                }.onFailure { error ->
                     _state.update {
                         it.copy(
                             userMessage = "User not found"
@@ -603,6 +726,38 @@ class CreateReservationViewModel(
                 ),
                 rideError = ReservationError.NONE
             )
+        }
+    }
+
+    fun loadReservation(reservation: Reservation) {
+        isEditMode = true
+        _state.update {
+            it.copy(
+                reservation = reservation,
+                customer = Customer(
+                    id = reservation.clientId,
+                    name = reservation.clientName,
+                    phoneNumber = reservation.clientPhone,
+                    residenceCountry = reservation.clientCountry
+                )
+            )
+        }
+        fetchRides(reservation.id)
+    }
+
+    private fun fetchRides(reservationId: String) {
+        viewModelScope.launch {
+            reservationRepository.getRidesByReservationId(reservationId).collect { result ->
+                result.onSuccess { rides ->
+                    _state.update {
+                        it.copy(
+                            rides = rides
+                        )
+                    }
+                }.onFailure {
+                    Log.d(TAG, "fetchRides: ${it.message}")
+                }
+            }
         }
     }
 }
