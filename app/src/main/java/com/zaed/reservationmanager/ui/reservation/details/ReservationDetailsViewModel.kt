@@ -106,7 +106,7 @@ class ReservationDetailsViewModel(
     fun handleAction(action: ReservationDetailsUiAction) {
         when (action) {
             is ReservationDetailsUiAction.OnDeleteRide -> deleteRide(action.rideId)
-            is ReservationDetailsUiAction.OnAddRide -> addRide(action.ride)
+            is ReservationDetailsUiAction.OnAddRide -> addRide(action.ride.copy(clientName = uiState.value.reservation.clientName))
             is ReservationDetailsUiAction.UpdateDrivers -> fetchDrivers(action.companyId)
             ReservationDetailsUiAction.OnConfirmationMessageSent -> updateSentConfirmationMessage()
             is ReservationDetailsUiAction.OnDriverInfoSent -> updateSentDriverInfo(action.rideId)

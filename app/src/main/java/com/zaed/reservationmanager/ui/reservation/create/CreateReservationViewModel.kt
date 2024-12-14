@@ -443,7 +443,8 @@ class CreateReservationViewModel(
                             ride.copy(
                                 reservationId = data.first,
                                 reservationNumber = data.second,
-                                customerId = state.value.customer.id
+                                customerId = state.value.customer.id,
+                                , clientName = state.value.reservation.clientName
                             )
                         )
                     }

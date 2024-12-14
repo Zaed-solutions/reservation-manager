@@ -107,5 +107,11 @@ dependencies {
     implementation ("androidx.datastore:datastore-preferences:1.1.1")
 
 
+    //tabulate
+    implementation(platform("io.github.voytech:tabulate-bom:0.1.2"))
+    implementation("io.github.voytech","tabulate-core")
+    implementation("io.github.voytech","tabulate-excel")
+    implementation("com.itextpdf:itext-core:9.0.0")
+
 
 }
