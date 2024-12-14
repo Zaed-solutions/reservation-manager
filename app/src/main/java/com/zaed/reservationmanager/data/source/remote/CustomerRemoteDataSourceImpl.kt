@@ -62,6 +62,23 @@ class CustomerRemoteDataSourceImpl(
         }
     }
 
+    override suspend fun getCustomerById(id: String): Result<Customer> {
+        return try{
+            val task = firestore
+                .collection(CUSTOMER_COLLECTION)
+                .whereEqualTo("id", id)
+                .get().await()
+            if(task.isEmpty){
+                Result.failure(Exception("Customer not found"))
+            } else {
+                val customer = task.documents.first().toObject(Customer::class.java)?: throw Exception("Customer could not be parsed")
+                Result.success(customer)
+            }
+        }catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     override fun updateCustomer(customer: Customer): Flow<Result<Unit>> = callbackFlow {
         try {

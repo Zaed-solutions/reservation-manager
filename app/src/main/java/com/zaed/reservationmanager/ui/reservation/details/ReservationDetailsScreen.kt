@@ -1,7 +1,5 @@
 package com.zaed.reservationmanager.ui.reservation.details
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -41,9 +39,6 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
-import com.zaed.reservationmanager.ui.reservation.create.ReservationError
-import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
-import com.zaed.reservationmanager.ui.reservation.create.component.AddRideBottomSheet
 import com.zaed.reservationmanager.ui.reservation.details.components.AddRideBottomSheetContent
 import com.zaed.reservationmanager.ui.reservation.details.components.ReservationDetailsHeader
 import com.zaed.reservationmanager.ui.reservation.details.components.RidesList
@@ -92,7 +87,7 @@ fun ReservationDetailsScreen(
                     clipboardManager.setText(AnnotatedString(action.phoneNumber))
                     scope.launch {
                         snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.phone_number_copied_to_clipboard),
+                            message = context.getString(R.string.number_copied_to_clipboard),
                             withDismissAction = true
                         )
                     }

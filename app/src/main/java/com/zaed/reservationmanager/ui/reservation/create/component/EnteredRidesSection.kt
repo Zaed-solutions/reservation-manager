@@ -44,6 +44,7 @@ fun EnteredRidesSection(
         }
     }
     rides.forEach { ride ->
+        RideItem(ride = ride, isActionsVisible = false)
         RideItem(
             ride = ride,
             isEditMode = isEditMode,

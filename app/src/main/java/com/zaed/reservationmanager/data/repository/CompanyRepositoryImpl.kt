@@ -19,6 +19,10 @@ class CompanyRepositoryImpl (
         return remoteSource.deleteCompany(companyId)
     }
 
+    override fun getCompanyById(companyId: String): Flow<Result<Company>> {
+        return remoteSource.getCompanyById(companyId)
+    }
+
     override fun getCompanies(): Flow<Result<List<Company>>> {
         return remoteSource.getCompanies()
     }

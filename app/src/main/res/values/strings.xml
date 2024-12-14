@@ -100,7 +100,7 @@
     <string name="ride_info_sent">Ride Information Sent</string>
     <string name="send_ride_info_to_travel_company">Send Ride Information to Travel Company</string>
     <string name="no_rides_added">No Rides Added</string>
-    <string name="phone_number_copied_to_clipboard">Phone number copied to clipboard!</string>
+    <string name="number_copied_to_clipboard">Number copied to clipboard!</string>
     <string name="ride">Ride</string>
     <string name="date_is_required">Date is required</string>
     <string name="time_is_required">Time is required</string>
@@ -155,9 +155,18 @@
     <string name="residence_country">Residence Country</string>
     <string name="created_at">Created at</string>
     <string name="update_customer">Update Customer</string>
+    <string name="company_details">Company Details</string>
+    <string name="buying">Buying</string>
+    <string name="selling">Selling</string>
+    <string name="collected">Collected</string>
+    <string name="total_earnings">Total Earnings</string>
+    <string name="total_balance">Total Balance:</string>
     <string name="reservation_number">Reservation Number</string>
     <string name="selling_price_is_required">Selling price is required</string>
     <string name="travel_company_phone_number_is_not_set">Travel company phone number is not set</string>
     <string name="save_changes">Save Changes</string>
     <string name="drop_down_lists"> Update Drop Down Lists</string>
+    <string name="reservation">Reservation</string>
+    <string name="customer_details">Customer Details</string>
+    <string name="phonenumber_is_blank">Phone number is blank</string>
 </resources>

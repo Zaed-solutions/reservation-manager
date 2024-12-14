@@ -32,6 +32,8 @@ fun RidesList(
     modifier: Modifier = Modifier,
     rides: List<Ride> = emptyList(),
     onAddRide: () -> Unit = {},
+    isAddEnabled: Boolean = true,
+    isSendActionsVisible: Boolean = true,
     onDeleteRide: (rideId: String) -> Unit = {},
     onCompanyClicked:(companyId: String) -> Unit = {},
     onDriverClicked: (driverId: String) -> Unit = {},
@@ -54,13 +56,13 @@ fun RidesList(
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = {
-                Log.d("AddRide", "RidesList: onAddRide clicked")
-                onAddRide() }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add Ride"
-                )
+            if(isAddEnabled){
+                IconButton(onClick = { onAddRide() }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Ride"
+                    )
+                }
             }
         }
         AnimatedContent(targetState = rides.isEmpty()) { state ->
@@ -82,6 +84,7 @@ fun RidesList(
                             RideItem(
                                 modifier = Modifier.animateItem(),
                                 ride = ride,
+                                isActionsVisible = isSendActionsVisible,
                                 onDeleteRide = {
                                     onDeleteRide(ride.id)
                                 },

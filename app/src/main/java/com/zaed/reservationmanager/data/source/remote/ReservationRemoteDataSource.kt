@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,8 @@ interface ReservationRemoteDataSource {
     fun updateReservation(reservation: Reservation): Flow<Result<Boolean>>
     fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>>
     fun updateRide(ride: Ride): Flow<Result<Boolean>>
+    fun getCompanyBalance(companyId: String, isTravel: Boolean): Flow<Result<CompanyBalance>>
+    fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>>
+    fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>>
+    fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>>
 }

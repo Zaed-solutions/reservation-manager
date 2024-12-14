@@ -47,7 +47,7 @@ fun CompaniesScreen(
     viewModel: CompaniesViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToEditCompany: (company: Company) -> Unit,
-    onNavigateToDetails: (companyId: String) -> Unit,
+    onNavigateToDetails: (companyId: String, isTravel: Boolean) -> Unit,
     onNavigateToAddCompany: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,7 +56,7 @@ fun CompaniesScreen(
         onAction = { action ->
             when (action) {
                 CompaniesUiAction.OnShowNavDrawer -> onShowNavDrawer()
-                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(action.companyId)
+                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(action.companyId, action.isTravel)
                 is CompaniesUiAction.OnEditCompanyClicked -> onNavigateToEditCompany(action.company)
                 CompaniesUiAction.OnAddCompanyClicked -> onNavigateToAddCompany()
                 else -> viewModel.handleAction(action)
@@ -142,7 +142,7 @@ private fun CompaniesScreenContent(
                         CompaniesList(
                             companies = tourismCompanies,
                             onNavigateToCompanyDetails = { companyId ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId))
+                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, false))
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId
@@ -158,7 +158,7 @@ private fun CompaniesScreenContent(
                         CompaniesList(
                             companies = travelCompanies,
                             onNavigateToCompanyDetails = { companyId ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId))
+                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, true))
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId
