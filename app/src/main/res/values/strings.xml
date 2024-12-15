@@ -192,4 +192,14 @@
     <string name="search_by_anything">Search by anything</string>
     <string name="balance">Balance</string>
     <string name="csv_saved_at">CSV saved at: %1$s</string>
+    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="select_date_range">Select date range</string>
+    <string name="manage_menus">Manage Menus</string>
+    <string name="select_a_menu_to_manage">Select a Menu to Manage:</string>
+    <string name="reservation_types">Reservation Types:</string>
+    <string name="car_types">Car Types:</string>
+    <string name="countries">Countries:</string>
+    <string name="enter_a_new_item">Enter a new item:</string>
+    <string name="new_item">New Item</string>
 </resources>

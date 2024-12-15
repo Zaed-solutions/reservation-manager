@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
@@ -136,7 +139,7 @@ fun RideItem(
                                 )
                             },
                         )
-                        if(isEditMode) {
+                        if (isEditMode) {
                             DropdownMenuItem(
                                 onClick = {
                                     onEditRide()
@@ -164,7 +167,7 @@ fun RideItem(
                     location = ride.startLocation
                 )
                 Icon(
-                    imageVector = Icons.Default.DoubleArrow,
+                    imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
                     contentDescription = "Arrow",
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
@@ -338,13 +341,13 @@ fun RideItem(
                         }
                     }
                 }
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.rotate(anim.value)
-                )
             }
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.rotate(anim.value)
+            )
         }
     }
 }

@@ -173,12 +173,12 @@ fun AddRideBottomSheet(
                         )
                     }
                 },
-                isOptional = true,
+                isOptional = false,
 
                 keyboardType = KeyboardType.Decimal
             )
             TitledTextField(
-                title = "Selling Price",
+                title = stringResource(R.string.selling_price),
                 initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point

@@ -390,6 +390,7 @@ class CreateReservationViewModel(
                 rideError = ReservationError.NONE,
                 reservationError = ReservationError.NONE,
                 rides = if(!isEditMode) it.rides + ride else it.rides.map { r -> if(r.id == ride.id) ride else r },
+                successStatus = true,
                 newRide = Ride()
             )
         }
@@ -758,6 +759,14 @@ class CreateReservationViewModel(
                     Log.d(TAG, "fetchRides: ${it.message}")
                 }
             }
+        }
+    }
+
+    fun resetSuccessStatus() {
+        _state.update {
+            it.copy(
+                successStatus = false
+            )
         }
     }
 }

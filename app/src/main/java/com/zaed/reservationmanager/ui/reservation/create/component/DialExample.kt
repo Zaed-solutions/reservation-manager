@@ -19,8 +19,10 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.zaed.reservationmanager.R
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +46,9 @@ fun DialExample(
             content = {
                 Card() {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         TimePicker(
@@ -58,7 +62,7 @@ fun DialExample(
                                 shape = RoundedCornerShape(12.dp),
                                 onClick = onDismiss
                             ) {
-                                Text("Dismiss")
+                                Text(stringResource(R.string.dismiss))
                             }
                             Button(
                                 modifier = Modifier
@@ -70,7 +74,7 @@ fun DialExample(
                                     onDismiss()
                                 }
                             ) {
-                                Text("Confirm")
+                                Text(stringResource(R.string.confirm))
                             }
                         }
 
