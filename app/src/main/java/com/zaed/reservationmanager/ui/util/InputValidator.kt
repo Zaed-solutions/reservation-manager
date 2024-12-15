@@ -32,10 +32,10 @@ object InputValidator {
             return ReservationError.START_LOCATION_IS_REQUIRED
         } else if (ride.endLocation.isBlank()) {
             return ReservationError.END_LOCATION_IS_REQUIRED
+        } else if (ride.sellingPrice == 0.0) {
+            return ReservationError.SELLING_PRICE_IS_REQUIRED
         } else if (ride.buyingPrice == 0.0) {
             return ReservationError.BUYING_PRICE_IS_REQUIRED
-        } else if (ride.collectedPrice == 0.0) {
-            return ReservationError.COLLECTION_PRICE_IS_REQUIRED
         } else {
             return null
         }
