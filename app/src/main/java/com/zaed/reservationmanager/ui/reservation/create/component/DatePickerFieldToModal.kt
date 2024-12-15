@@ -34,7 +34,7 @@ fun DatePickerFieldToModal(
         value = selectedDate?.let { convertMillisToDate(it) } ?: "",
         onValueChange = { },
         label = { Text(stringResource(R.string.date)) },
-        placeholder = { Text("DD/MM/YYYY") },
+        placeholder = { Text(stringResource(R.string.dd_mm_yyyy)) },
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Select date")
         },

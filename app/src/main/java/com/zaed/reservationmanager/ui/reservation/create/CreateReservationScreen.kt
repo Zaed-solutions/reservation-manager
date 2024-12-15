@@ -56,13 +56,10 @@ fun CreateReservationScreen(
     }
 
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(state.successStatus) {
-        if (state.successStatus) {
-            navigateBack()
-        }
-    }
+
     CreateReservationScreenContent(
         reservation = state.reservation,
+        successStatus = state.successStatus,
         initialReservation = reservation,
         travelCompanies = state.travelCompanies,
         tourismCompanies = state.tourismCompanies,
@@ -79,7 +76,10 @@ fun CreateReservationScreen(
         isLoading = state.loading,
         rideError = state.rideError,
         reservationError = state.reservationError,
-        onBackClicked = navigateBack
+        onBackClicked = navigateBack,
+        resetSuccessStatus = {
+            viewModel.resetSuccessStatus()
+        }
     )
 }
 
@@ -91,6 +91,7 @@ fun CreateReservationScreenContent(
     tourismCompanies: List<Company> = emptyList(),
     types: List<String> = emptyList(),
     cars: List<String> = emptyList(),
+    successStatus: Boolean = false,
     isEditMode: Boolean = false,
     drivers: List<Employee> = emptyList(),
     rides: List<Ride> = emptyList(),
@@ -103,7 +104,8 @@ fun CreateReservationScreenContent(
     rideError: ReservationError = ReservationError.NONE,
     reservationError: ReservationError = ReservationError.NONE,
     userMessage: String = "",
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit = {},
+    resetSuccessStatus: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -116,6 +118,16 @@ fun CreateReservationScreenContent(
                 snackbarHostState.showSnackbar(
                     message = userMessage
                 )
+            }
+        }
+    }
+    LaunchedEffect(successStatus) {
+        if (successStatus) {
+            if(isAddMovementSheetVisible){
+                isAddMovementSheetVisible = false
+                resetSuccessStatus()
+            }else {
+                onBackClicked()
             }
         }
     }

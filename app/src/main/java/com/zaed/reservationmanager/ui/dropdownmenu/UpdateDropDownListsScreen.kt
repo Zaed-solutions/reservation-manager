@@ -34,8 +34,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
+import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
@@ -73,7 +75,7 @@ fun UpdateDropDownListsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Manage Menus") },
+                title = { Text(stringResource(R.string.manage_menus)) },
                 navigationIcon = {
                     IconButton(onClick = onNavDrawerClicked) {
                         Icon(imageVector = Icons.Default.Menu, contentDescription = "Menu")
@@ -88,7 +90,7 @@ fun UpdateDropDownListsScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text("Select a Menu to Manage:", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.select_a_menu_to_manage), style = MaterialTheme.typography.titleMedium)
             TextButton({
                 if (selectedMenuKey == RESERVATION_TYPES_KEY) {
                     selectedMenuKey = null
@@ -96,7 +98,7 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = RESERVATION_TYPES_KEY
                 }
             }) {
-                Text("Reservation Types:", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.reservation_types), style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
@@ -119,7 +121,7 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = CAR_TYPES_KEY
                 }
             }) {
-                Text("Car Types:", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.car_types), style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
@@ -140,7 +142,7 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = COUNTRIES_KEY
                 }
             }) {
-                Text("Countries:", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.countries), style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
@@ -164,10 +166,10 @@ fun UpdateDropDownListsScreen(
                 content = {
                     Surface {
                         Column(Modifier.padding(16.dp)) {
-                            Text("Enter a new item:")
+                            Text(stringResource(R.string.enter_a_new_item))
                             OutlinedTextField(
                                 value = text,
-                                label = { Text("New Item") },
+                                label = { Text(stringResource(R.string.new_item)) },
                                 onValueChange = { text = it },
                                 modifier = Modifier.fillMaxWidth()
                             )
@@ -199,12 +201,12 @@ fun UpdateDropDownListsScreen(
                                         }
                                     isEditing = false
                                 }) {
-                                    Text("Save")
+                                    Text(stringResource(R.string.confirm))
                                 }
                                 TextButton(onClick = {
                                     isEditing = false
                                 }) {
-                                    Text("Cancel")
+                                    Text(stringResource(R.string.cancel))
                                 }
                             }
                         }

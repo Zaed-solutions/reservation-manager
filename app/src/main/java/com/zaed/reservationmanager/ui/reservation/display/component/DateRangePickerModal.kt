@@ -11,7 +11,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.zaed.reservationmanager.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,12 +37,12 @@ fun DateRangePickerModal(
                     onDismiss()
                 }
             ) {
-                Text("OK")
+                Text(stringResource(R.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text(stringResource(R.string.cancel))
             }
         }
     ) {
@@ -48,7 +50,7 @@ fun DateRangePickerModal(
             state = dateRangePickerState,
             title = {
                 Text(
-                    text = "Select date range"
+                    text = stringResource(R.string.select_date_range)
                 )
             },
             showModeToggle = false,

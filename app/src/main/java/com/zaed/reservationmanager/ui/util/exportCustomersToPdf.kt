@@ -33,8 +33,8 @@ fun generateCustomerPdf(context: Context, customers: List<Customer>) {
     }
 
     val margin = 20f
-    val columnWidths = listOf(80f, 120f, 80f, 80f, 100f, 120f) // Adjusted widths
-    val columnHeaders = listOf("ID", "Name", "Nationality", "Country", "Phone", "Email")
+    val columnWidths = listOf(100f, 120f, 100f, 100f, 100f, 120f) // Adjusted widths
+    val columnHeaders = listOf("Name", "Nationality", "Country", "Phone", "Email")
 
     var page = pdfDocument.startPage(PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create())
     var canvas = page.canvas
@@ -58,7 +58,6 @@ fun generateCustomerPdf(context: Context, customers: List<Customer>) {
     for ((index, customer) in customers.withIndex()) {
         xPosition = margin
         val rowData = listOf(
-            customer.id,
             customer.name,
             customer.nationality,
             customer.residenceCountry,

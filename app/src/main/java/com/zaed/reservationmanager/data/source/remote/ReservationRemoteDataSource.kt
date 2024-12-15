@@ -20,6 +20,6 @@ interface ReservationRemoteDataSource {
     fun updateRide(ride: Ride): Flow<Result<Boolean>>
     fun getCompanyBalance(companyId: String, isTravel: Boolean): Flow<Result<CompanyBalance>>
     fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>>
-    fun getRidesByCompanyId(companyId: String): Flow<Result<List<Ride>>>
+    fun getRidesByCompanyId(companyId: String, isTravel: Boolean): Flow<Result<List<Ride>>>
     fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>>
 }
