@@ -2,36 +2,26 @@ package com.zaed.reservationmanager.ui.reservation.display
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,20 +29,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -74,10 +62,12 @@ import androidx.core.content.FileProvider
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
 import com.zaed.reservationmanager.ui.reservation.display.component.DateFixedPickerModal
 import com.zaed.reservationmanager.ui.reservation.display.component.DateRangePickerModal
+import com.zaed.reservationmanager.ui.reservation.display.component.ReservationList
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportRidesAsCsv
@@ -104,6 +94,7 @@ fun DisplayReservationScreen(
     val scope = rememberCoroutineScope()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
+
     DisplayReservationScreenContent(
         rides = state.rides.sortedBy { it.date },
         reservations = state.reservations,
@@ -272,6 +263,15 @@ fun DisplayReservationScreenContent(
     exportRidesAsCsv: () -> Unit = {}
 ) {
     var isOptionsMenuVisible by remember {
+        mutableStateOf(false)
+    }
+    var isConfirmDeleteDialogVisible by remember {
+        mutableStateOf(false)
+    }
+    var selectedItemId by remember {
+        mutableStateOf("")
+    }
+    var isRide by remember {
         mutableStateOf(false)
     }
     Scaffold(
@@ -569,7 +569,11 @@ fun DisplayReservationScreenContent(
             if (state == 0) ReservationList(
                 reservations = filteredReservations2.sortedBy { it.date },
                 onNavigateToReservationDetails = navigateToReservationDetails,
-                onDeleteReservation = onDeleteReservation,
+                onDeleteReservation = {reservationId ->
+                    isConfirmDeleteDialogVisible = true
+                    selectedItemId = reservationId
+                    isRide = false
+                },
                 onNavigateToEditReservation = onNavigateToEditReservation
             )
             else {
@@ -580,7 +584,9 @@ fun DisplayReservationScreenContent(
                         RideItem(
                             ride = ride,
                             onDeleteRide = {
-                                action(DisplayReservationUIAction.OnDeleteRide(ride.id))
+                                isConfirmDeleteDialogVisible = true
+                                selectedItemId = ride.id
+                                isRide = true
                             },
                             onReservationClicked = {
                                 navigateToReservationDetails(ride.reservationId)
@@ -633,284 +639,40 @@ fun DisplayReservationScreenContent(
                     onDismiss = { showFixedDatePicker = false }
                 )
             }
-        }
-
-    }
-
-}
-
-@Composable
-fun ReservationList(
-    modifier: Modifier = Modifier,
-    reservations: List<Reservation>,
-    onNavigateToReservationDetails: (String) -> Unit = {},
-    onDeleteReservation: (String) -> Unit = {},
-    onNavigateToEditReservation: (Reservation) -> Unit = {}
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 16.dp),
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(reservations) { reservation ->
-            ExpandableReservationCard(
-                reservation = reservation,
-                onDeleteClicked = { onDeleteReservation(reservation.id) },
-                onNavigateToEditReservation = onNavigateToEditReservation,
-                onNavigateToReservationDetails = onNavigateToReservationDetails,
-
-                )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ExpandableReservationCard(
-    reservation: Reservation,
-    onDeleteClicked: () -> Unit = {},
-    onNavigateToEditReservation: (Reservation) -> Unit = {},
-    onNavigateToReservationDetails: (reservationId: String) -> Unit = {}
-
-) {
-    var expanded by remember { mutableStateOf(false) }
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        onClick = { expanded = !expanded },
-        tonalElevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, end = 16.dp, start = 16.dp, bottom = 0.dp)
-        ) {
-            AnimatedVisibility(!expanded) {
-                Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.reservation_number),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = "#${reservation.reservationNumber}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.customer_name),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.clientName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
+            AnimatedVisibility(isConfirmDeleteDialogVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isConfirmDeleteDialogVisible = false
+                        selectedItemId = ""
+                    },
+                    sheetState = rememberModalBottomSheetState()
+                ) {
+                    ConfirmDeleteDialog(
+                        label = if (isRide) stringResource(id = R.string.ride) else stringResource(
+                            id = R.string.reservation
+                        ),
+                        onDismiss = {
+                            isConfirmDeleteDialogVisible = false
+                            selectedItemId = ""
+                        },
+                        onConfirm = {
+                            action(
+                                if (isRide)
+                                    DisplayReservationUIAction.OnDeleteRide(selectedItemId)
+                                else
+                                    DisplayReservationUIAction.OnDeleteReservation(selectedItemId)
+                            )
+                            isConfirmDeleteDialogVisible = false
+                            selectedItemId = ""
+                        }
+                    )
                 }
             }
 
-            AnimatedVisibility(expanded) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.name),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.clientName,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.phone_number),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.clientPhone,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.country),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.clientCountry,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.tourism_company),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.tourismCompany,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.tourism_employee),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.tourismEmployee,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = stringResource(R.string.company_phone),
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                        Text(
-                            text = reservation.tourismCompanyPhone,
-                            style = MaterialTheme.typography.bodyLarge,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))
-
-
-
-                    TextButton(
-                        contentPadding = PaddingValues(0.dp),
-                        onClick = { onNavigateToReservationDetails(reservation.id) },
-                    ) {
-                        Text(text = stringResource(R.string.reservation_details_arrow))
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TextButton(
-                            contentPadding = PaddingValues(0.dp),
-                            onClick = onDeleteClicked,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = null,
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.delete),
-                                modifier = Modifier.wrapContentWidth()
-                            )
-                        }
-
-
-                        TextButton(
-                            contentPadding = PaddingValues(0.dp),
-                            onClick = { onNavigateToEditReservation(reservation) },
-                            modifier = Modifier.weight(1f),
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = null,
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.edit),
-                                modifier = Modifier.wrapContentWidth()
-                            )
-                        }
-                    }
-                }
-            }
-            Icon(
-                imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
         }
+
     }
+
 }
 
 @Composable

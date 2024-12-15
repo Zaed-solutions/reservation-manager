@@ -29,7 +29,7 @@
     <string name="view_details"><![CDATA[عرض التفاصيل >]]></string>
     <string name="edit">تعديل</string>
     <string name="delete">حذف</string>
-    <string name="are_you_sure_you_want_to_delete_this">هل أنت متأكد أنك تريد حذف ال%1$s؟</string>
+    <string name="are_you_sure_you_want_to_delete_this">هل أنت متأكد أنك تريد حذف %1$s؟</string>
     <string name="this_action_cannot_be_undone">لا يمكن التراجع عن هذا الإجراء</string>
     <string name="confirm">تأكيد</string>
     <string name="companies">الشركات</string>
