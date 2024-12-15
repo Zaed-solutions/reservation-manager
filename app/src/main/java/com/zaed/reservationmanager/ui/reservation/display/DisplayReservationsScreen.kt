@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.reservation.display
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,13 +71,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
-import com.zaed.reservationmanager.ui.company.details.CompanyDetailsUiAction
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
+import com.zaed.reservationmanager.ui.reservation.display.component.DateFixedPickerModal
 import com.zaed.reservationmanager.ui.reservation.display.component.DateRangePickerModal
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
@@ -84,11 +84,9 @@ import com.zaed.reservationmanager.ui.util.SheetUtil.exportRidesAsCsv
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import com.zaed.reservationmanager.ui.util.getStartAndEndOfDay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 
 @Composable
@@ -109,7 +107,7 @@ fun DisplayReservationScreen(
     DisplayReservationScreenContent(
         rides = state.rides.sortedBy { it.date },
         reservations = state.reservations,
-        onNavigateToEditReservation={
+        onNavigateToEditReservation = {
             navigateToEditReservation(it)
         },
         onSendInfoToTravelCompany = { ride, reservation ->
@@ -125,11 +123,11 @@ fun DisplayReservationScreen(
                 ride.buyingPrice.formatMoney(),
                 ride.collectedPrice.formatMoney()
             )
-            if(ride.travelCompanyPhone.isBlank()){
+            if (ride.travelCompanyPhone.isBlank()) {
                 scope.launch {
                     snackbarHostState.showSnackbar(context.getString(R.string.travel_company_phone_number_is_not_set))
                 }
-            }else {
+            } else {
                 PhoneUtil.sendWhatsappMessage(
                     context = context,
                     phoneNumber = ride.travelCompanyPhone,
@@ -269,7 +267,7 @@ fun DisplayReservationScreenContent(
     onDriverClicked: (driverId: String) -> Unit = {},
     onSendInfoToTravelCompany: (ride: Ride, reservation: Reservation) -> Unit = { _, _ -> },
     onDeleteReservation: (String) -> Unit = {},
-    onNavigateToEditReservation:(Reservation) -> Unit = {},
+    onNavigateToEditReservation: (Reservation) -> Unit = {},
     navigateToCompanyDetails: (String) -> Unit = {},
     exportRidesAsCsv: () -> Unit = {}
 ) {
@@ -348,21 +346,28 @@ fun DisplayReservationScreenContent(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            var selectedDate by remember { mutableStateOf("") }
+            val items = listOf(
+                stringResource(R.string.yesterday),
+                stringResource(R.string.today),
+                stringResource(R.string.tomorrow),
+                stringResource(R.string.from_today_onwards),
+            )
+            var selectedDate by remember { mutableStateOf(items[1]) }
+            var selectedFixedDate by remember { mutableStateOf<Long?>(null) }
             var dateRangeStart by remember { mutableStateOf<Long?>(null) }
             var dateRangeEnd by remember { mutableStateOf<Long?>(null) }
             var showDateRangePicker by remember { mutableStateOf(false) }
-            val localDate = LocalDate.now()
-            val startOfDay: LocalDateTime = localDate.atStartOfDay()
-            val startOfToday = startOfDay.atZone(ZoneId.systemDefault()).toInstant().epochSecond
-            val endOfToday = startOfToday + 86400
+            var showFixedDatePicker by remember { mutableStateOf(false) }
+            val currentEpochSecond = System.currentTimeMillis() / 1000
+            val (startOfToday, endOfToday) = getStartAndEndOfDay(currentEpochSecond)
             val startOfTomorrow = endOfToday + 1
             val endOfTomorrow = startOfTomorrow + 86400
             val startOfYesterday = startOfToday - 86400
             val endOfYesterday = startOfToday - 1
             var searchQuery by remember { mutableStateOf("") }
             var state by remember { mutableStateOf(0) }
-            val titles = listOf(stringResource(R.string.reservations), stringResource(R.string.rides))
+            val titles =
+                listOf(stringResource(R.string.reservations), stringResource(R.string.rides))
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -409,12 +414,7 @@ fun DisplayReservationScreenContent(
                     field.contains(searchQuery, ignoreCase = true)
                 }
             }
-            val items = listOf(
-                stringResource(R.string.today),
-                stringResource(R.string.yesterday),
-                stringResource(R.string.tomorrow),
-                stringResource(R.string.from_today_onwards)
-            )
+
             LazyRow {
                 items(
                     items = items
@@ -466,22 +466,50 @@ fun DisplayReservationScreenContent(
                         },
                     )
                 }
+                item {
+                    FilterChip(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = {
+                            if (selectedFixedDate != null) {
+                                selectedFixedDate = null
+                            } else {
+                                selectedDate = ""
+                                showFixedDatePicker = true
+                            }
+                        },
+                        label = { Text(stringResource(R.string.selected_date)) },
+                        selected = selectedFixedDate != null,
+                        leadingIcon = if (selectedFixedDate != null) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             if (dateRangeStart != null && dateRangeEnd != null) {
-                Text(text = stringResource(
-                    R.string.selected_range_place,
-                    dateRangeStart!!.formatEpochSecondsToDate(),
-                    dateRangeEnd!!.formatEpochSecondsToDate()
-                ))
+                Text(
+                    text = stringResource(
+                        R.string.selected_range_place,
+                        dateRangeStart!!.formatEpochSecondsToDate(),
+                        dateRangeEnd!!.formatEpochSecondsToDate()
+                    )
+                )
             }
 
             val filteredRides2 = if (selectedDate.isNotBlank()) {
-                if (selectedDate == items[1]) {
+                if (selectedDate == items[0]) {
                     filteredRides1.filter { it.date in startOfYesterday..endOfYesterday }
                 } else if (selectedDate == items[2]) {
                     filteredRides1.filter { it.date in startOfTomorrow..endOfTomorrow }
-                } else if (selectedDate == items[0]) {
+                } else if (selectedDate == items[1]) {
                     filteredRides1.filter { it.date in startOfToday..endOfToday }
 
                 } else if (selectedDate == items[3]) {
@@ -490,25 +518,36 @@ fun DisplayReservationScreenContent(
                     filteredRides1
                 }
             } else if (dateRangeStart != null && dateRangeEnd != null) {
-                filteredRides1.filter { it.date in dateRangeStart!!..dateRangeEnd!! }
+
+                filteredRides1.filter {
+                    it.date in getStartAndEndOfDay(dateRangeStart!!).first..getStartAndEndOfDay(
+                        dateRangeEnd!!
+                    ).second
+                }
+            } else if (selectedFixedDate != null) {
+                val (start, end) = getStartAndEndOfDay(selectedFixedDate!!)
+                filteredRides1.filter { it.date in start..end }
             } else {
                 filteredRides1
             }
             val filteredReservations2 = if (selectedDate.isNotBlank()) {
-                if (selectedDate == items[1]) {
+                if (selectedDate == items[0]) {
                     filteredReservation1.filter { it.date in startOfYesterday..endOfYesterday }
                 } else if (selectedDate == items[2]) {
                     filteredReservation1.filter { it.date in startOfTomorrow..endOfTomorrow }
-                } else if (selectedDate == items[0]) {
+                } else if (selectedDate == items[1]) {
                     filteredReservation1.filter { it.date in startOfToday..endOfToday }
 
                 } else if (selectedDate == items[3]) {
                     filteredReservation1.filter { it.date >= startOfToday }
-                } else {
+                }  else {
                     filteredReservation1
                 }
             } else if (dateRangeStart != null && dateRangeEnd != null) {
                 filteredReservation1.filter { it.date in dateRangeStart!!..dateRangeEnd!! }
+            }else if (selectedFixedDate != null) {
+                val (start, end) = getStartAndEndOfDay(selectedFixedDate!!)
+                filteredReservation1.filter { it.date in start..end }
             } else {
                 filteredReservation1
             }
@@ -585,6 +624,15 @@ fun DisplayReservationScreenContent(
                     onDismiss = { showDateRangePicker = false }
                 )
             }
+            if (showFixedDatePicker) {
+                DateFixedPickerModal(
+                    onDateSelected = {
+                        selectedFixedDate = it
+                        selectedDate = ""
+                    },
+                    onDismiss = { showFixedDatePicker = false }
+                )
+            }
         }
 
     }
@@ -607,11 +655,11 @@ fun ReservationList(
         items(reservations) { reservation ->
             ExpandableReservationCard(
                 reservation = reservation,
-                onDeleteClicked = {onDeleteReservation(reservation.id)},
+                onDeleteClicked = { onDeleteReservation(reservation.id) },
                 onNavigateToEditReservation = onNavigateToEditReservation,
                 onNavigateToReservationDetails = onNavigateToReservationDetails,
 
-            )
+                )
         }
     }
 }
@@ -809,7 +857,7 @@ fun ExpandableReservationCard(
 
                     TextButton(
                         contentPadding = PaddingValues(0.dp),
-                        onClick = {onNavigateToReservationDetails(reservation.id)},
+                        onClick = { onNavigateToReservationDetails(reservation.id) },
                     ) {
                         Text(text = stringResource(R.string.reservation_details_arrow))
                     }
@@ -839,7 +887,7 @@ fun ExpandableReservationCard(
 
                         TextButton(
                             contentPadding = PaddingValues(0.dp),
-                            onClick = {onNavigateToEditReservation(reservation)},
+                            onClick = { onNavigateToEditReservation(reservation) },
                             modifier = Modifier.weight(1f),
                         ) {
                             Icon(
