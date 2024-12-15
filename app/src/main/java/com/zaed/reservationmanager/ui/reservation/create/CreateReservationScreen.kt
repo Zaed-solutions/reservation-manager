@@ -143,6 +143,14 @@ fun CreateReservationScreenContent(
                 onBackClicked = onBackClicked,
                 title = stringResource(R.string.create_new_reservation)
             )
+        },
+        bottomBar = {
+            MainActionButtons(
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                isEditMode = isEditMode,
+                action = action) {
+                onBackClicked()
+            }
         }
     ) {
         Column(
@@ -178,16 +186,11 @@ fun CreateReservationScreenContent(
                 onEditRide = {ride->
                     action(ReservationUiAction.EditRide(ride))
                     isAddMovementSheetVisible = true
+                },
+                onDeleteRide = {
+                    action(ReservationUiAction.DeleteRide(it))
                 }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            AnimatedVisibility(rides.isNotEmpty()) {
-                MainActionButtons(
-                    isEditMode = isEditMode,
-                    action = action) {
-                    onBackClicked()
-                }
-            }
 
         }
         if (isAddMovementSheetVisible) {

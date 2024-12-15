@@ -116,7 +116,6 @@ fun RideItem(
                         onClick = { isOptionMenuVisible = !isOptionMenuVisible },
                         modifier = Modifier
                             .padding(start = 8.dp)
-                            .size(24.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,

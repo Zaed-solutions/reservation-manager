@@ -16,6 +16,7 @@ import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -127,6 +128,13 @@ class CreateReservationViewModel(
 
     fun handleAction(reservationUiAction: ReservationUiAction) {
         when (reservationUiAction) {
+            is ReservationUiAction.DeleteRide -> {
+                if(isEditMode) {
+                    deleteRemoteRide(reservationUiAction.rideId)
+                } else {
+                    deleteLocalRide(reservationUiAction.rideId)
+                }
+            }
             ReservationUiAction.Cancel -> cancelReservation()
             is ReservationUiAction.UpdateCollectionPrice -> updateCollectionPrice(
                 reservationUiAction.price
@@ -175,6 +183,29 @@ class CreateReservationViewModel(
             is ReservationUiAction.UpdateBuyingPrice -> updateBuyingPrice(reservationUiAction.price)
             is ReservationUiAction.UpdateSellingPrice -> updateSellingPrice(reservationUiAction.price)
             is ReservationUiAction.EditRide -> editSelectedRide(reservationUiAction.ride)
+        }
+    }
+
+    private fun deleteLocalRide(rideId: String) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    rides = it.rides.filter { ride -> ride.id != rideId }
+                )
+            }
+        }
+    }
+
+    private fun deleteRemoteRide(rideId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            reservationRepository.deleteRide(rideId).collect{ result ->
+                result.onSuccess {
+                    deleteLocalRide(rideId)
+                }.onFailure {
+                    Log.e(TAG, "deleteRemoteRide: failed to delete ride")
+                    it.printStackTrace()
+                }
+            }
         }
     }
 
@@ -255,6 +286,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.DATE_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid date", )
                 return false
             } else if (time == 0L && !isEditMode) {
                 _state.update {
@@ -262,6 +294,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.TIME_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid time", )
                 return false
             } else if (newRide.type.isBlank()) {
                 _state.update {
@@ -269,6 +302,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.TYPE_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid type", )
                 return false
             } else if (newRide.car.isBlank()) {
                 _state.update {
@@ -276,6 +310,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.CAR_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid car", )
                 return false
             } else if (newRide.startLocation.isBlank()) {
                 _state.update {
@@ -283,6 +318,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.START_LOCATION_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid start location", )
                 return false
             } else if (newRide.endLocation.isBlank()) {
                 _state.update {
@@ -290,6 +326,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.END_LOCATION_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid end location", )
                 return false
             } else if (newRide.sellingPrice == 0.0) {
                 _state.update {
@@ -297,6 +334,7 @@ class CreateReservationViewModel(
                         rideError = ReservationError.SELLING_PRICE_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid selling price", )
                 return false
             } else if (newRide.buyingPrice == 0.0) {
                 _state.update {
@@ -304,8 +342,14 @@ class CreateReservationViewModel(
                         rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
                     )
                 }
+                Log.e(TAG, "validateRideData: invalid buying price", )
                 return false
             } else {
+                _state.update {
+                    it.copy(
+                        rideError = ReservationError.NONE
+                    )
+                }
                 return true
             }
         }
@@ -342,8 +386,28 @@ class CreateReservationViewModel(
         viewModelScope.launch {
             reservationRepository.updateReservation(state.value.reservation).collect { result ->
                 result.onSuccess {
-                    state.value.rides.forEach{
-                        updateRide(it)
+                    if(state.value.rides.isEmpty()){
+                        _state.update {
+                            it.copy(
+                                successStatus = true
+                            )
+                        }
+                    }else {
+                        state.value.rides.forEach{ ride ->
+                            if(ride.id.isBlank()){
+                                createRide(
+                                    ride.copy(
+                                        reservationId = state.value.reservation.id,
+                                        reservationNumber = state.value.reservation.reservationNumber,
+                                        tourismCompanyId = state.value.reservation.tourismCompanyId,
+                                        customerId = state.value.customer.id,
+                                        clientName = state.value.reservation.clientName
+                                    )
+                                )
+                            } else {
+                                updateRide(ride)
+                            }
+                        }
                     }
                 }.onFailure {
                     Log.d(TAG, "updateReservation: failed to update")
@@ -387,9 +451,8 @@ class CreateReservationViewModel(
         val ride = state.value.newRide
         _state.update {
             it.copy(
-                rideError = ReservationError.NONE,
                 reservationError = ReservationError.NONE,
-                rides = if(!isEditMode) it.rides + ride else it.rides.map { r -> if(r.id == ride.id) ride else r },
+                rides = if(!isEditMode || ride.id.isBlank()) it.rides + ride else it.rides.map { r -> if(r.id == ride.id) ride else r },
                 successStatus = true,
                 newRide = Ride()
             )
@@ -440,16 +503,24 @@ class CreateReservationViewModel(
                             reservation = it.reservation.copy(id = data.first),
                         )
                     }
-                    state.value.rides.forEach { ride ->
-                        createRide(
-                            ride.copy(
-                                reservationId = data.first,
-                                reservationNumber = data.second,
-                                tourismCompanyId = state.value.reservation.tourismCompanyId,
-                                customerId = state.value.customer.id,
-                                clientName = state.value.reservation.clientName
+                    if(state.value.rides.isEmpty()){
+                        _state.update {
+                            it.copy(
+                                successStatus = true
                             )
-                        )
+                        }
+                    }else {
+                        state.value.rides.forEach { ride ->
+                            createRide(
+                                ride.copy(
+                                    reservationId = data.first,
+                                    reservationNumber = data.second,
+                                    tourismCompanyId = state.value.reservation.tourismCompanyId,
+                                    customerId = state.value.customer.id,
+                                    clientName = state.value.reservation.clientName
+                                )
+                            )
+                        }
                     }
                 }.onFailure {
                     _state.update {

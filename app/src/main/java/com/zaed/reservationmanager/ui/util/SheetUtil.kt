@@ -60,7 +60,7 @@ object SheetUtil {
             Log.e("SheetUtil", "exportCustomersToExcel: ${e.message}")
             e.printStackTrace()
         }
-        return null // Return null if an error occurred
+        return null
     }
 
     fun List<Ride>.exportRidesAsCsv(

@@ -16,12 +16,13 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationUiAction
 
 @Composable
 fun MainActionButtons(
+    modifier: Modifier = Modifier,
     action: (ReservationUiAction) -> Unit,
     isEditMode: Boolean = false,
     onBackClicked: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         Button(

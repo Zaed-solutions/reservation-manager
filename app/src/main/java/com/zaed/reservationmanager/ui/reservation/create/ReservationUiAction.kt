@@ -6,6 +6,7 @@ import com.zaed.reservationmanager.data.model.Ride
 
 sealed class ReservationUiAction {
     data class UpdateCustomerNumber(val number: String) : ReservationUiAction()
+    data class DeleteRide(val rideId: String) : ReservationUiAction()
     data class UpdateSelectedTourismCompany(val company: Company) : ReservationUiAction()
     data class UpdateSelectedTravelCompany(val company: Company) : ReservationUiAction()
     data class UpdateTourismEmployee(val employee: Employee) : ReservationUiAction()

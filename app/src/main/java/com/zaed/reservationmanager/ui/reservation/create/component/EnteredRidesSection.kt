@@ -22,7 +22,8 @@ fun EnteredRidesSection(
     isEditMode: Boolean,
     rides: List<Ride>,
     onAddMovementClicked: () -> Unit,
-    onEditRide: (Ride) -> Unit
+    onEditRide: (Ride) -> Unit,
+    onDeleteRide: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -33,7 +34,6 @@ fun EnteredRidesSection(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.weight(1f)
         )
-        if (isEditMode) return@Row
         IconButton(
             onClick = onAddMovementClicked,
         ) {
@@ -47,6 +47,7 @@ fun EnteredRidesSection(
         RideItem(
             ride = ride,
             isEditMode = isEditMode,
+            onDeleteRide = { onDeleteRide(ride.id) },
             onEditRide = { onEditRide(ride) },
             isActionsVisible = false
         )
