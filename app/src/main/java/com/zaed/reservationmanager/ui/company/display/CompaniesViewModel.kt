@@ -25,12 +25,11 @@ class CompaniesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.getCompanies().collect { result ->
                 result.onSuccess { data ->
-                    val groupedCompanies = data.groupBy { it.type }
                     _uiState.update { oldState ->
                         oldState.copy(
                             isLoading = false,
-                            tourismCompanies = groupedCompanies.getOrDefault(CompanyType.TOURISM, emptyList()),
-                            travelCompanies = groupedCompanies.getOrDefault(CompanyType.TRAVEL, emptyList()),
+                            tourismCompanies = data.filter { it.type != CompanyType.TRAVEL },
+                            travelCompanies = data.filter { it.type != CompanyType.TOURISM },
                         )
                     }
                 }.onFailure { error ->

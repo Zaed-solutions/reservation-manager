@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
@@ -56,7 +57,7 @@ fun ReservationDetailsScreen(
     onBackPressed: () -> Unit = {},
     reservationId: String = "",
     onNavigateToClientDetails: (String) -> Unit = {},
-    onNavigateToCompanyDetails: (String, Boolean) -> Unit = {_,_ ->},
+    onNavigateToCompanyDetails: (String, CompanyType) -> Unit = { _, _ ->},
     onNavigateToEmployeeDetails: (String, Boolean) -> Unit = {_,_ ->},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,7 +82,7 @@ fun ReservationDetailsScreen(
                     onNavigateToClientDetails(action.clientId)
                 }
                 is ReservationDetailsUiAction.OnCompanyClicked -> {
-                    onNavigateToCompanyDetails(action.companyId, action.isTravel)
+                    onNavigateToCompanyDetails(action.companyId, action.companyType)
                 }
                 is ReservationDetailsUiAction.OnCopyPhoneNumber -> {
                     clipboardManager.setText(AnnotatedString(action.phoneNumber))
@@ -249,7 +250,7 @@ private fun ReservationDetailsScreenContent(
                     onAction(ReservationDetailsUiAction.OnEmployeeClicked(reservation.tourismEmployeeId))
                 },
                 onTourismCompanyClicked = {
-                    onAction(ReservationDetailsUiAction.OnCompanyClicked(reservation.tourismCompanyId))
+                    onAction(ReservationDetailsUiAction.OnCompanyClicked(reservation.tourismCompanyId, CompanyType.TOURISM))
                 },
                 onSendConfirmationMessage = {
                     onAction(ReservationDetailsUiAction.OnSendConfirmationMessage)
@@ -276,7 +277,7 @@ private fun ReservationDetailsScreenContent(
                     isConfirmDeleteDialogVisible = true
                 },
                 onCompanyClicked = { companyId ->
-                    onAction(ReservationDetailsUiAction.OnCompanyClicked(companyId, true))
+                    onAction(ReservationDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL))
                 },
                 onSendInfoToTravelCompany = { ride ->
                     onAction(ReservationDetailsUiAction.OnSendInfoToTravelCompany(ride))

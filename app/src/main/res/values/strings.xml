@@ -202,6 +202,8 @@
     <string name="countries">Countries:</string>
     <string name="enter_a_new_item">Enter a new item:</string>
     <string name="new_item">New Item</string>
+    <string name="travel_and_tourism">Travel and Tourism</string>
     <string name="selected_date">Selected Date</string>
     <string name="select_a_date">Select a date</string>
+    <string name="no_reservations_added">No reservations added</string>
 </resources>

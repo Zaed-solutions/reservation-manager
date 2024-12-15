@@ -203,6 +203,8 @@
     <string name="countries">"الدول "</string>
     <string name="enter_a_new_item">"ادخل عنصر جديد "</string>
     <string name="new_item">"عنصر جديد "</string>
+    <string name="travel_and_tourism">نقل وسياحة</string>
     <string name="selected_date">تاريخ محدد</string>
     <string name="select_a_date">اختار تاريخ</string>
+    <string name="no_reservations_added">لم تتم اضافة أي حجوزات</string>
 </resources>

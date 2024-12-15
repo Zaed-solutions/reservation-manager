@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import android.util.Log
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
@@ -27,7 +28,7 @@ class ReservationRemoteDataSourceImpl(
                     .get()
                     .addOnSuccessListener { doc ->
                         val reservationNumber = if (!doc.isEmpty) {
-                            doc.documents[0].get("reservationNumber") as Long ?: 0
+                            doc.documents[0].get("reservationNumber") as Long
                         } else {
                             0
                         }
@@ -240,12 +241,6 @@ class ReservationRemoteDataSourceImpl(
             awaitClose { }
         }
 
-    override fun getCompanyBalance(
-        companyId: String,
-        isTravel: Boolean
-    ): Flow<Result<CompanyBalance>> =
-        if (isTravel) getTravelCompanyBalance(companyId) else getTourismCompanyBalance(companyId)
-
     override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> =
         callbackFlow {
             try {
@@ -267,11 +262,16 @@ class ReservationRemoteDataSourceImpl(
             awaitClose { }
         }
 
-    override fun getRidesByCompanyId(companyId: String, isTravel: Boolean): Flow<Result<List<Ride>>> = if(isTravel) getTravelCompanyRides(companyId) else getTourismCompanyRides(companyId)
-
-    private fun getTravelCompanyRides(companyId: String): Flow<Result<List<Ride>>> = callbackFlow {
+    override fun getRidesByCompanyId(
+        companyId: String
+    ): Flow<Result<List<Ride>>> = callbackFlow {
         try {
-            firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId).get()
+            firestore.collection(RIDE_COLLECTION).where(
+                Filter.or(
+                    Filter.equalTo("travelCompanyId", companyId),
+                    Filter.equalTo("tourismCompanyId", companyId)
+                )
+            ).get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
                         trySend(Result.success(emptyList()))
@@ -282,27 +282,6 @@ class ReservationRemoteDataSourceImpl(
                 }.addOnFailureListener {
                     trySend(Result.failure(it))
                 }
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
-        }
-        awaitClose { }
-    }
-
-    private fun getTourismCompanyRides(companyId: String): Flow<Result<List<Ride>>> = callbackFlow {
-        try {
-            val rides = mutableListOf<Ride>()
-            val reservationResult = firestore.collection(RESERVATION_COLLECTION)
-                .whereEqualTo("tourismCompanyId", companyId).get().await()
-            val reservations = reservationResult.toObjects(Reservation::class.java)
-            reservations.forEach { reservation ->
-                val ridesResult = firestore.collection(RIDE_COLLECTION)
-                    .whereEqualTo("reservationId", reservation.id).get().await()
-                if (!ridesResult.isEmpty) {
-                    rides.addAll(ridesResult.toObjects(Ride::class.java))
-                    Log.d("TOGOBN", "getCompanyBalance: $rides")
-                }
-            }
-            trySend(Result.success(rides))
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -328,11 +307,18 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    private fun getTravelCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> =
+
+    override fun getCompanyBalance(
+        companyId: String
+    ): Flow<Result<CompanyBalance>> =
         callbackFlow {
             try {
-                firestore.collection(RIDE_COLLECTION).whereEqualTo("travelCompanyId", companyId)
-                    .get().addOnSuccessListener { data ->
+                firestore.collection(RIDE_COLLECTION).where(
+                    Filter.or(
+                        Filter.equalTo("tourismCompanyId", companyId),
+                        Filter.equalTo("travelCompanyId", companyId)
+                    )
+                ).get().addOnSuccessListener { data ->
                         if (data.isEmpty) {
                             trySend(Result.success(CompanyBalance()))
                         } else {
@@ -365,46 +351,5 @@ class ReservationRemoteDataSourceImpl(
                 trySend(Result.failure(e))
             }
             awaitClose { }
-        }
-
-    private fun getTourismCompanyBalance(companyId: String): Flow<Result<CompanyBalance>> =
-        callbackFlow {
-            try {
-                var totalBuying = 0.0
-                var totalSelling = 0.0
-                var totalCollected = 0.0
-                val reservationResult = firestore.collection(RESERVATION_COLLECTION)
-                    .whereEqualTo("tourismCompanyId", companyId).get().await()
-                val reservations = reservationResult.toObjects(Reservation::class.java)
-                reservations.forEach { reservation ->
-                    val ridesResult = firestore.collection(RIDE_COLLECTION)
-                        .whereEqualTo("reservationId", reservation.id).get().await()
-                    if (!ridesResult.isEmpty) {
-                        val rides = ridesResult.toObjects(Ride::class.java)
-                        Log.d("TOGOBN", "getCompanyBalance: $rides")
-                        rides.forEach { ride ->
-                            totalBuying += ride.buyingPrice
-                            totalSelling += ride.sellingPrice
-                            totalCollected += ride.collectedPrice
-                        }
-                    }
-                }
-                Log.d(
-                    "TOGOBN",
-                    "getTourismCompanyBalance:$totalBuying $totalSelling $totalCollected "
-                )
-                trySend(
-                    Result.success(
-                        CompanyBalance(
-                            totalBuying = totalBuying,
-                            totalSelling = totalSelling,
-                            totalCollected = totalCollected
-                        )
-                    )
-                )
-            } catch (e: Exception) {
-                trySend(Result.failure(e))
-            }
-            awaitClose {}
         }
 }

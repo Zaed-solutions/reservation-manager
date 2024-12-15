@@ -99,12 +99,12 @@ class CompanyRemoteDataSourceImpl(
 
     override fun getCompanies(isTravel: Boolean): Flow<Result<List<Company>>>  = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).whereEqualTo(
+            firestore.collection(COMPANY_COLLECTION).whereIn(
                 "type",
                 if (isTravel)
-                    CompanyType.TRAVEL
+                    listOf( CompanyType.TRAVEL, CompanyType.TRAVEL_AND_TOURISM)
                 else
-                    CompanyType.TOURISM
+                    listOf(CompanyType.TOURISM, CompanyType.TRAVEL_AND_TOURISM)
             ).get()
                 .addOnSuccessListener { data ->
                     val companies = data?.toObjects(Company::class.java)
@@ -120,12 +120,12 @@ class CompanyRemoteDataSourceImpl(
 
     override fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).whereEqualTo(
+            firestore.collection(COMPANY_COLLECTION).whereIn(
                 "type",
                 if (isDriver)
-                    CompanyType.TRAVEL
+                    listOf(CompanyType.TRAVEL, CompanyType.TRAVEL_AND_TOURISM)
                 else
-                    CompanyType.TOURISM
+                    listOf(CompanyType.TOURISM, CompanyType.TRAVEL_AND_TOURISM)
             ).get()
                 .addOnSuccessListener { data ->
                     val companies = data?.toObjects(Company::class.java)?.map { it.name }

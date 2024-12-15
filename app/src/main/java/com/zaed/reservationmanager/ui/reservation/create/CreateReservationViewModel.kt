@@ -298,10 +298,10 @@ class CreateReservationViewModel(
                     )
                 }
                 return false
-            } else if (newRide.collectedPrice == 0.0) {
+            } else if (newRide.buyingPrice == 0.0) {
                 _state.update {
                     it.copy(
-                        rideError = ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                        rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
                     )
                 }
                 return false
@@ -445,6 +445,7 @@ class CreateReservationViewModel(
                             ride.copy(
                                 reservationId = data.first,
                                 reservationNumber = data.second,
+                                tourismCompanyId = state.value.reservation.tourismCompanyId,
                                 customerId = state.value.customer.id,
                                 clientName = state.value.reservation.clientName
                             )

@@ -10,13 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
 @Composable
 fun CompaniesList(
     modifier: Modifier = Modifier,
     companies: List<Company> = emptyList(),
-    onNavigateToCompanyDetails: (companyId: String) -> Unit = {},
+    onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _->},
     onDeleteCompany: (companyId: String) -> Unit = {},
     onEditCompany: (company: Company) -> Unit = {}
 ) {
@@ -33,7 +34,7 @@ fun CompaniesList(
                 modifier = Modifier.animateItem(),
                 company = company,
                 onCompanyDetailsClicked = {
-                    onNavigateToCompanyDetails(company.id)
+                    onNavigateToCompanyDetails(company.id, company.type)
                 },
                 onDeleteCompany = {
                     onDeleteCompany(company.id)

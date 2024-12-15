@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.company.details
 
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 
 sealed interface CompanyDetailsUiAction {
@@ -12,5 +13,5 @@ sealed interface CompanyDetailsUiAction {
     data class OnReservationClicked(val reservationId: String): CompanyDetailsUiAction
     data class OnDriverClicked(val driverId: String): CompanyDetailsUiAction
     data object ExportRidesAsCSV : CompanyDetailsUiAction
-    data class OnCompanyClicked(val companyId: String): CompanyDetailsUiAction
+    data class OnCompanyClicked(val companyId: String, val type: CompanyType): CompanyDetailsUiAction
 }

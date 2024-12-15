@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.company.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import kotlinx.coroutines.Dispatchers
@@ -20,13 +21,13 @@ class CompanyDetailsViewModel(
     companion object {
         private const val TAG = "CompanyDetailsViewModel"
     }
-    fun init(companyId: String, isTravel: Boolean){
+    fun init(companyId: String, companyType: CompanyType){
         fetchCompany(companyId)
-        fetchBalance(companyId, isTravel)
-        if(!isTravel){
+        fetchBalance(companyId, companyType)
+        if(companyType != CompanyType.TRAVEL){
             fetchReservations(companyId)
         }
-        fetchRides(companyId, isTravel)
+        fetchRides(companyId, companyType)
     }
 
     private fun fetchReservations(companyId: String) {
@@ -45,9 +46,9 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchRides(companyId: String, isTravel: Boolean) {
+    private fun fetchRides(companyId: String, companyType: CompanyType) {
         viewModelScope.launch (Dispatchers.IO) {
-            reservationRepo.getRidesByCompanyId(companyId, isTravel).collect { result ->
+            reservationRepo.getRidesByCompanyId(companyId, companyType).collect { result ->
                 result.onSuccess {
                     _uiState.update { oldState ->
                         oldState.copy(rides = it)
@@ -60,9 +61,9 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchBalance(companyId: String, isTravel: Boolean) {
+    private fun fetchBalance(companyId: String, companyType: CompanyType) {
         viewModelScope.launch (Dispatchers.IO) {
-            reservationRepo.getCompanyBalance(companyId, isTravel).collect { result ->
+            reservationRepo.getCompanyBalance(companyId, companyType).collect { result ->
                 result.onSuccess {
                     _uiState.update { oldState ->
                         oldState.copy(balance = it)

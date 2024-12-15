@@ -1,6 +1,5 @@
 package com.zaed.reservationmanager.ui.reservation.details.components
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
@@ -32,14 +30,15 @@ fun RidesList(
     modifier: Modifier = Modifier,
     rides: List<Ride> = emptyList(),
     onAddRide: () -> Unit = {},
+    isHeaderVisible: Boolean = true,
     isAddEnabled: Boolean = true,
     isSendActionsVisible: Boolean = true,
     onDeleteRide: (rideId: String) -> Unit = {},
-    onCompanyClicked:(companyId: String) -> Unit = {},
+    onCompanyClicked: (companyId: String) -> Unit = {},
     onDriverClicked: (driverId: String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
-    onSendDriverInfoToClient: (rideId: String, driverName: String, driverPhoneNumber: String) -> Unit = {_, _, _ ->},
+    onSendDriverInfoToClient: (rideId: String, driverName: String, driverPhoneNumber: String) -> Unit = { _, _, _ -> },
     onSendInfoToTravelCompany: (ride: Ride) -> Unit = {},
     onReservationClicked: (reservationId: String) -> Unit = {}
 ) {
@@ -47,40 +46,44 @@ fun RidesList(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.rides),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.weight(1f)
-            )
-            if(isAddEnabled){
-                IconButton(onClick = { onAddRide() }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Ride"
-                    )
+        if (isHeaderVisible) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.rides),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isAddEnabled) {
+                    IconButton(onClick = { onAddRide() }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add Ride"
+                        )
+                    }
                 }
             }
         }
+
         AnimatedContent(targetState = rides.isEmpty()) { state ->
-            when{
+            when {
                 state -> {
                     Text(
                         modifier = Modifier.padding(top = 36.dp),
                         text = stringResource(R.string.no_rides_added),
-                        style = MaterialTheme.typography.headlineMedium
+                        style = MaterialTheme.typography.titleLarge
                     )
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
                         contentPadding = PaddingValues(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        items(rides){ ride ->
+                        items(rides) { ride ->
                             RideItem(
                                 modifier = Modifier.animateItem(),
                                 ride = ride,
@@ -101,7 +104,11 @@ fun RidesList(
                                     onMessagePhoneNumber(number)
                                 },
                                 onSendDriverInfoToClient = {
-                                    onSendDriverInfoToClient(ride.id, ride.driver, ride.driverPhoneNumber)
+                                    onSendDriverInfoToClient(
+                                        ride.id,
+                                        ride.driver,
+                                        ride.driverPhoneNumber
+                                    )
                                 },
                                 onSendInfoToTravelCompany = {
                                     onSendInfoToTravelCompany(ride)

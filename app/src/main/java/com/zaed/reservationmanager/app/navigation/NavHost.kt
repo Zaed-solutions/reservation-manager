@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
@@ -126,7 +127,7 @@ fun NavigationHost(
                     navController.navigate(Route.CreateReservationRoute(reservation))
                 },
                 navigateToCompanyDetails = { companyId ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, true))
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, CompanyType.TRAVEL))
                 }
             )
         }
@@ -189,8 +190,8 @@ fun NavigationHost(
             ReservationDetailsScreen(
                 reservationId = reservationId,
                 onBackPressed = { navController.popBackStack() },
-                onNavigateToCompanyDetails = { companyId, isTravel ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, isTravel))
+                onNavigateToCompanyDetails = { companyId, companyType ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 },
                 onNavigateToClientDetails = { clientId ->
                     navController.navigate(Route.CustomerDetailsRoute(clientId))
@@ -208,14 +209,14 @@ fun NavigationHost(
             val args = backStackEntry.toRoute<Route.CompanyDetailsRoute>()
             CompanyDetailsScreen(
                 companyId = args.companyId,
-                isTravel = args.isTravel,
+                companyType = args.companyType,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToReservationDetails = { reservationId ->
                     navController.navigate(Route.ReservationDetailsRoute(reservationId))
                 },
                 onNavigateToDriverDetails = {/*TODO*/},
-                onNavigateToCompanyDetails = { companyId ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, true))
+                onNavigateToCompanyDetails = { companyId, companyType ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 },
                 onNavigateToEditReservation = {/*TODO*/},
             )
@@ -229,8 +230,8 @@ fun NavigationHost(
                 onNavigateToReservationDetails = { reservationId ->
                     navController.navigate(Route.ReservationDetailsRoute(reservationId))
                 },
-                onNavigateToCompanyDetails = { companyId, isTravel ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, isTravel))
+                onNavigateToCompanyDetails = { companyId, companyType ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 }
             )
         }

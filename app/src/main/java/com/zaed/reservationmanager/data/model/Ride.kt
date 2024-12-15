@@ -10,6 +10,7 @@ data class Ride(
     val customerId : String = "",
     val startLocation: String = "",
     val endLocation: String = "",
+    val tourismCompanyId: String = "",
     val travelCompanyId: String = "",
     val travelCompany: String = "",
     val travelCompanyPhone: String = "",

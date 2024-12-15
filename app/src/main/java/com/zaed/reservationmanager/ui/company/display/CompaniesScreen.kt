@@ -47,7 +47,7 @@ fun CompaniesScreen(
     viewModel: CompaniesViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
     onNavigateToEditCompany: (company: Company) -> Unit,
-    onNavigateToDetails: (companyId: String, isTravel: Boolean) -> Unit,
+    onNavigateToDetails: (companyId: String, companyType: CompanyType) -> Unit,
     onNavigateToAddCompany: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,7 +56,7 @@ fun CompaniesScreen(
         onAction = { action ->
             when (action) {
                 CompaniesUiAction.OnShowNavDrawer -> onShowNavDrawer()
-                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(action.companyId, action.isTravel)
+                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(action.companyId, action.companyType)
                 is CompaniesUiAction.OnEditCompanyClicked -> onNavigateToEditCompany(action.company)
                 CompaniesUiAction.OnAddCompanyClicked -> onNavigateToAddCompany()
                 else -> viewModel.handleAction(action)
@@ -117,7 +117,7 @@ private fun CompaniesScreenContent(
                 .padding(horizontal = 16.dp)
         ) {
             TabRow(selectedTabIndex = pagerState.currentPage) {
-                CompanyType.entries.forEach { companyType ->
+                CompanyType.entries.take(2).forEach { companyType ->
                     Tab(
                         selected = pagerState.currentPage == companyType.ordinal,
                         onClick = {
@@ -141,8 +141,8 @@ private fun CompaniesScreenContent(
                     0 -> {
                         CompaniesList(
                             companies = tourismCompanies,
-                            onNavigateToCompanyDetails = { companyId ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, false))
+                            onNavigateToCompanyDetails = { companyId, companyType ->
+                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, companyType))
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId
@@ -157,8 +157,8 @@ private fun CompaniesScreenContent(
                     1 -> {
                         CompaniesList(
                             companies = travelCompanies,
-                            onNavigateToCompanyDetails = { companyId ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, true))
+                            onNavigateToCompanyDetails = { companyId, companyType ->
+                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId,companyType))
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId

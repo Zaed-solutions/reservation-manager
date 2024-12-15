@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.reservation.details
 
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Ride
 
 sealed interface ReservationDetailsUiAction {
@@ -8,7 +9,7 @@ sealed interface ReservationDetailsUiAction {
     data class OnCopyPhoneNumber(val phoneNumber: String): ReservationDetailsUiAction
     data class OnMessagePhoneNumber(val phoneNumber: String): ReservationDetailsUiAction
     data class OnEmployeeClicked(val employeeId: String, val isDriver: Boolean = false): ReservationDetailsUiAction
-    data class OnCompanyClicked(val companyId: String, val isTravel: Boolean = false): ReservationDetailsUiAction
+    data class OnCompanyClicked(val companyId: String, val companyType: CompanyType): ReservationDetailsUiAction
     data object OnSendConfirmationMessage: ReservationDetailsUiAction
     data class OnDeleteRide(val rideId: String): ReservationDetailsUiAction
     data class OnAddRide(val ride: Ride): ReservationDetailsUiAction

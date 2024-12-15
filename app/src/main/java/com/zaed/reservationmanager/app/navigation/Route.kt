@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.app.navigation
 
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
@@ -45,7 +46,7 @@ sealed interface Route {
     data object DropDownMenuLists: Route
 
     @Serializable
-    data class CompanyDetailsRoute(val companyId: String = "", val isTravel: Boolean): Route
+    data class CompanyDetailsRoute(val companyId: String = "", val companyType: CompanyType): Route
 
     @Serializable
     data class CustomerDetailsRoute(val customerId: String = ""): Route

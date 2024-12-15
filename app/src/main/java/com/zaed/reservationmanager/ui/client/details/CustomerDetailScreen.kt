@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.client.details.components.CustomerDetailsHeader
@@ -50,7 +52,7 @@ fun CustomerDetailScreen(
     customerId: String = "",
     onBackPressed: () -> Unit = {},
     onNavigateToReservationDetails: (reservationId: String) -> Unit = {},
-    onNavigateToCompanyDetails: (companyId: String, isTravel: Boolean) -> Unit = {_,_ ->},
+    onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ ->},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -71,7 +73,7 @@ fun CustomerDetailScreen(
                     onBackPressed()
                 }
                 is CustomerDetailsUiAction.OnCompanyClicked -> {
-                    onNavigateToCompanyDetails(action.companyId, true)
+                    onNavigateToCompanyDetails(action.companyId, CompanyType.TRAVEL)
                 }
                 is CustomerDetailsUiAction.OnReservationDetailsClicked -> {
                     onNavigateToReservationDetails(action.reservationId)
@@ -140,7 +142,7 @@ private fun CustomerDetailScreenContent(
                         onClick = { onAction(CustomerDetailsUiAction.OnBackPressed) }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBackIosNew,
+                            imageVector = Icons.AutoMirrored.Default.ArrowBackIos,
                             contentDescription = null
                         )
                     }

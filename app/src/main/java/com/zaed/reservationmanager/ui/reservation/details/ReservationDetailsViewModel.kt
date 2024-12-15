@@ -217,7 +217,8 @@ class ReservationDetailsViewModel(
             reservationRepo.createRide(ride.copy(
                 reservationId = uiState.value.reservation.id,
                 customerId = uiState.value.reservation.clientId,
-                reservationNumber = uiState.value.reservation.reservationNumber
+                reservationNumber = uiState.value.reservation.reservationNumber,
+                tourismCompanyId = uiState.value.reservation.tourismCompanyId,
             ))
                 .collect { result ->
                     result.onSuccess { rideId ->

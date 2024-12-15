@@ -219,8 +219,8 @@ fun AddRideBottomSheet(
                         )
                     }
                 },
-                isOptional = false,
-                isError = errorMessage == ReservationError.COLLECTION_PRICE_IS_REQUIRED,
+                isOptional = true,
+                isError = false,
                 errorMessageRes = errorMessage.messageRes,
                 keyboardType = KeyboardType.Decimal
             )
