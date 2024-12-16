@@ -461,6 +461,7 @@ class CreateReservationViewModel(
 
     private fun createNewCustomer() {
         viewModelScope.launch {
+            Log.d(TAG, "createNewCustomer: ${_state.value.reservation}")
             customerRepository.createCustomer(
                 Customer(
                     id = _state.value.reservation.clientId,
@@ -753,6 +754,7 @@ class CreateReservationViewModel(
     }
 
     private fun fetchCustomerByNumber(number: String) {
+        Log.d(TAG, "fetchCustomerByNumber: $number")
         viewModelScope.launch {
             customerRepository.getCustomerByNumber(number)
                 .onSuccess { customer ->
@@ -760,6 +762,7 @@ class CreateReservationViewModel(
                     _state.update {
                         it.copy(
                             reservation = it.reservation.copy(
+                                clientId =  customer.id,
                                 clientName = customer.name,
                                 clientPhone = customer.phoneNumber,
                                 clientCountry = customer.residenceCountry

@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Customer
 import kotlinx.coroutines.channels.awaitClose
@@ -16,6 +17,7 @@ class CustomerRemoteDataSourceImpl(
     }
 
     override fun createCustomer(customer: Customer): Flow<Result<String>> = callbackFlow {
+        Log.d(TAG, "createCustomer: $customer")
         try {
             firestore.collection(CUSTOMER_COLLECTION)
                 .whereEqualTo("phoneNumber", customer.phoneNumber).get()
@@ -28,8 +30,14 @@ class CustomerRemoteDataSourceImpl(
                             trySend(Result.failure(e))
                         }
                     } else {
-                        firestore.collection(CUSTOMER_COLLECTION).document(customer.id)
-                            .set(customer)
+                        val data = data.toObjects(Customer::class.java).first()
+                        val map = mapOf(
+                            "name" to customer.name,
+                            "phoneNumber" to customer.phoneNumber,
+                            "residenceCountry" to customer.residenceCountry
+                        )
+                        firestore.collection(CUSTOMER_COLLECTION).document(data.id)
+                            .update(map)
                             .addOnSuccessListener {
                                 trySend(Result.success(customer.id))
                             }.addOnFailureListener { e ->
