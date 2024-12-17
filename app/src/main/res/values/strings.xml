@@ -210,4 +210,6 @@
     <string name="customer_updated_successfully">Customer updated successfully</string>
     <string name="driver_added_successfully">Driver added successfully!</string>
     <string name="driver_updated_successfully">Driver updated successfully!</string>
+    <string name="reservation_updated_successfully">Reservation updated successfully!</string>
+    <string name="reservation_added_successfully">Reservation added successfully!</string>
 </resources>

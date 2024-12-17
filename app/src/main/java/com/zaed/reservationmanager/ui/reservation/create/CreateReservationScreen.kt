@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import com.zaed.reservationmanager.ui.reservation.create.component.CenterAligned
 import com.zaed.reservationmanager.ui.reservation.create.component.EnteredRidesSection
 import com.zaed.reservationmanager.ui.reservation.create.component.MainActionButtons
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -108,6 +110,7 @@ fun CreateReservationScreenContent(
     resetSuccessStatus: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     var isAddMovementSheetVisible by remember { mutableStateOf(false) }
     val addMovementSheetState = rememberModalBottomSheetState(true)
@@ -127,7 +130,19 @@ fun CreateReservationScreenContent(
                 isAddMovementSheetVisible = false
                 resetSuccessStatus()
             }else {
-                onBackClicked()
+                snackbarHostState.showSnackbarWithDuration(
+                    message = context.getString(
+                        if (isEditMode)
+                            R.string.reservation_updated_successfully
+                        else
+                            R.string.reservation_added_successfully
+                    ),
+                    durationMillis = 1500L,
+                    scope = scope,
+                    onFinished = {
+                        onBackClicked()
+                    }
+                )
             }
         }
     }

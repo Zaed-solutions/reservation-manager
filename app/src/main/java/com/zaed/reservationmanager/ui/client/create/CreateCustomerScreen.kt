@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.client.create
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +41,9 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
+import com.zaed.reservationmanager.ui.components.TitledTextField2
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -49,12 +54,29 @@ fun AddCustomerScreen(
     navigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+    val context = LocalContext.current
     LaunchedEffect(true) {
         viewModel.init(initialCustomer)
     }
     LaunchedEffect(state.successStatus) {
         if (state.successStatus) {
-            navigateBack()
+            snackbarHostState.showSnackbarWithDuration(
+                message = context.getString(
+                    if (state.isNew)
+                        R.string.customer_added_successfully
+                    else
+                        R.string.customer_updated_successfully
+                ),
+                durationMillis = 1500L,
+                scope = scope,
+                onFinished = {
+                    navigateBack()
+                }
+            )
         }
     }
     NewClientDataEntryScreenContent(
@@ -65,7 +87,8 @@ fun AddCustomerScreen(
         countries = state.countries,
         isLoading = state.loading,
         isNew = state.isNew,
-        onBackClicked = navigateBack
+        onBackClicked = navigateBack,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -73,18 +96,19 @@ fun AddCustomerScreen(
 fun NewClientDataEntryScreenContent(
     customer: Customer = Customer(),
     isNew: Boolean = true,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     error: ClientUIError = ClientUIError.NONE,
     action: (CreateCustomerUiAction) -> Unit = {},
     nationalities: List<String> = emptyList(),
     countries: List<String> = emptyList(),
     isLoading: Boolean = false,
-    onBackClicked: () -> Unit = {}
+    onBackClicked: () -> Unit = {},
+    context: Context = LocalContext.current
 ) {
     val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-    if (error != ClientUIError.NONE) {
-        val errorString = stringResource(error.messageRes)
-        LaunchedEffect(true) {
+    LaunchedEffect(error) {
+        if (error != ClientUIError.NONE) {
+            val errorString = context.getString(error.messageRes)
             scope.launch {
                 snackbarHostState.showSnackbar(
                     message = errorString
@@ -99,7 +123,9 @@ fun NewClientDataEntryScreenContent(
         topBar = {
             CenterAlignedTopBar(
                 onBackClicked = onBackClicked,
-                title = if(isNew) stringResource(R.string.create_new_customer) else stringResource(R.string.update_customer)
+                title = if (isNew) stringResource(R.string.create_new_customer) else stringResource(
+                    R.string.update_customer
+                )
             )
         },
         bottomBar = {
@@ -124,7 +150,7 @@ fun NewClientDataEntryScreenContent(
                     onClick = { action(CreateCustomerUiAction.AddClient) },
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text(if(isNew) stringResource(R.string.add) else stringResource(R.string.update))
+                    Text(if (isNew) stringResource(R.string.add) else stringResource(R.string.update))
                 }
             }
         }
@@ -142,9 +168,9 @@ fun NewClientDataEntryScreenContent(
             if (isLoading) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
-            TitledTextField(
+            TitledTextField2(
                 title = stringResource(R.string.client_name),
-                initialValue = customer.name,
+                value = customer.name,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateName(newText)) },
                 isOptional = false,
                 isError = error in listOf(
@@ -176,9 +202,9 @@ fun NewClientDataEntryScreenContent(
                 errorMessageRes = R.string.country_is_required,
                 options = countries
             )
-            TitledTextField(
+            TitledTextField2(
                 title = stringResource(R.string.phone_number),
-                initialValue = customer.phoneNumber,
+                value = customer.phoneNumber,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateNumber(newText)) },
                 isOptional = false,
                 isError = error in listOf(
@@ -189,9 +215,9 @@ fun NewClientDataEntryScreenContent(
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )
-            TitledTextField(
+            TitledTextField2(
                 title = stringResource(R.string.email),
-                initialValue = customer.email,
+                value = customer.email,
                 onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateEmail(newText)) },
                 isOptional = true,
                 isError = error in listOf(ClientUIError.EMAIL_IS_INVALID),

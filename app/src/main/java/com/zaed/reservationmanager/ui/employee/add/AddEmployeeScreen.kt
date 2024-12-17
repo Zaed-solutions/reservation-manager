@@ -18,11 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +40,7 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -45,27 +50,52 @@ fun AddEmployeeScreen(
     onBackPressed: () -> Unit,
     initialEmployee: Employee = Employee(),
     isDriver: Boolean = false
-){
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         viewModel.init(initialEmployee, isDriver)
     }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    LaunchedEffect (state.isFinished){
-        if(state.isFinished){
-            onBackPressed()
+    LaunchedEffect(state.isFinished) {
+        if (state.isFinished) {
+            snackbarHostState.showSnackbarWithDuration(
+                message = context.getString(
+                    if (state.isNew) {
+                        if (isDriver) {
+                            R.string.driver_added_successfully
+                        } else {
+                            R.string.employee_added_successfully
+                        }
+                    } else {
+                        if (isDriver) {
+                            R.string.driver_updated_successfully
+                        } else {
+                            R.string.employee_updated_successfully
+                        }
+                    }
+
+                ),
+                durationMillis = 1500L,
+                scope = scope,
+                onFinished = {
+                    onBackPressed()
+                }
+            )
         }
     }
     AddEmployeeScreenContent(
         modifier = modifier,
         isDriver = isDriver,
+        snackbarHostState = snackbarHostState,
         initialEmployee = initialEmployee,
         currentEmployee = state.employee,
         error = state.error,
         isNew = state.isNew,
         companies = state.companies,
         onAction = { action ->
-            when(action){
+            when (action) {
                 AddEmployeeUiAction.OnBackPressed -> onBackPressed()
                 else -> viewModel.handleAction(action)
             }
@@ -79,6 +109,7 @@ fun AddEmployeeScreen(
 private fun AddEmployeeScreenContent(
     modifier: Modifier = Modifier,
     isDriver: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     initialEmployee: Employee = Employee(),
     currentEmployee: Employee = Employee(),
     onAction: (AddEmployeeUiAction) -> Unit = {},
@@ -88,12 +119,13 @@ private fun AddEmployeeScreenContent(
 ) {
     Scaffold(
         modifier = modifier.imePadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            val title = if(isDriver && isNew){
+            val title = if (isDriver && isNew) {
                 stringResource(id = R.string.add_new_driver)
-            } else if(isDriver){
+            } else if (isDriver) {
                 stringResource(id = R.string.update_driver)
-            } else if(isNew){
+            } else if (isNew) {
                 stringResource(id = R.string.add_employee)
             } else {
                 stringResource(id = R.string.update_employee)
@@ -169,7 +201,7 @@ private fun AddEmployeeScreenContent(
                 isOptional = false,
                 options = companies,
             )
-            if(isDriver){
+            if (isDriver) {
                 // nationality
                 TitledTextField(
                     title = stringResource(id = R.string.nationality),

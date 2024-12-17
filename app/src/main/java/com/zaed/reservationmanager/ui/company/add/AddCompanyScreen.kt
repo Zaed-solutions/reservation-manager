@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -43,6 +44,7 @@ import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -62,10 +64,19 @@ fun AddCompanyScreen(
     }
     LaunchedEffect(state.isFinished) {
         if (state.isFinished) {
-            scope.launch {
-                snackbarHostState.showSnackbar(context.getString(if (state.isNew) R.string.company_added_successfully else R.string.company_updated_successfully))
-                onBackPressed()
-            }
+            snackbarHostState.showSnackbarWithDuration(
+                message = context.getString(
+                    if (state.isNew)
+                        R.string.company_added_successfully
+                    else
+                        R.string.company_updated_successfully
+                ),
+                durationMillis = 1500L,
+                scope = scope,
+                onFinished = {
+                    onBackPressed()
+                }
+            )
         }
     }
     AddCompanyScreenContent(
