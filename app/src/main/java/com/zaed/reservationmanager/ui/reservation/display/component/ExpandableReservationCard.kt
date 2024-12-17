@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.ui.reservation.display.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,8 +44,8 @@ fun ExpandableReservationCard(
     reservation: Reservation,
     onDeleteClicked: () -> Unit = {},
     onNavigateToEditReservation: (Reservation) -> Unit = {},
-    onNavigateToReservationDetails: (reservationId: String) -> Unit = {}
-
+    onNavigateToReservationDetails: (reservationId: String) -> Unit = {},
+    onEmployeeClicked: (employeeId: String) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
     Surface(
@@ -201,7 +202,10 @@ fun ExpandableReservationCard(
                             text = reservation.tourismEmployee,
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.clickable{
+                                onEmployeeClicked(reservation.tourismEmployeeId)
+                            }
                         )
                     }
                     HorizontalDivider(Modifier.padding(vertical = 8.dp, horizontal = 2.dp))

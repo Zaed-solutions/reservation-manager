@@ -389,34 +389,19 @@ fun DisplayReservationScreenContent(
             val filteredRides1 = rides.filter { ride ->
                 val reservation = reservations.find { it.id == ride.reservationId }
                 listOfNotNull(
-                    ride.car,
-                    ride.driver,
                     ride.travelCompany,
-                    ride.startLocation,
-                    ride.endLocation,
-                    ride.type,
-                    reservation?.flightNumber,
                     reservation?.clientName,
                     reservation?.clientPhone,
-                    reservation?.clientCountry,
                     reservation?.tourismCompany,
-                    reservation?.tourismCompanyPhone,
-                    reservation?.tourismEmployee,
-                    reservation?.tourismEmployeePhone
                 ).any { field ->
                     field.contains(searchQuery, ignoreCase = true)
                 }
             }
             val filteredReservation1 = reservations.filter { reservation ->
                 listOfNotNull(
-                    reservation.flightNumber,
                     reservation.clientName,
                     reservation.clientPhone,
-                    reservation.clientCountry,
                     reservation.tourismCompany,
-                    reservation?.tourismCompanyPhone,
-                    reservation?.tourismEmployee,
-                    reservation?.tourismEmployeePhone
                 ).any { field ->
                     field.contains(searchQuery, ignoreCase = true)
                 }

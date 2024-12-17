@@ -20,6 +20,22 @@ class CustomerDetailsViewModel(
     fun init(customerId: String) {
         fetchCustomer(customerId)
         fetchCustomerRides(customerId)
+        fetchCustomerReservations(customerId)
+    }
+
+    private fun fetchCustomerReservations(customerId: String) {
+        viewModelScope.launch (Dispatchers.IO){
+            reservationRepo.getReservationByCustomerId(customerId).collect{ result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy( reservations = data)
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchCustomerReservations: failed")
+                    it.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchCustomer(customerId: String) {
@@ -53,8 +69,14 @@ class CustomerDetailsViewModel(
     fun handleAction(action: CustomerDetailsUiAction) {
         when (action) {
             is CustomerDetailsUiAction.OnDeleteRide -> deleteRide(action.rideId)
+            is CustomerDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
             else -> Unit
+
         }
+    }
+
+    private fun deleteReservation(reservationId: String) {
+        TODO("Not yet implemented")
     }
 
     private fun deleteRide(rideId: String) {

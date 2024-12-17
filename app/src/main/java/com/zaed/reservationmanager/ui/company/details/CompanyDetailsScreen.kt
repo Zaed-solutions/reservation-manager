@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -55,8 +54,6 @@ import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.company.details.components.BalanceSection
 import com.zaed.reservationmanager.ui.company.details.components.CompanyDetailsHeader
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
-import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
-import com.zaed.reservationmanager.ui.reservation.display.component.ExpandableReservationCard
 import com.zaed.reservationmanager.ui.reservation.details.components.RidesList
 import com.zaed.reservationmanager.ui.reservation.display.component.ReservationList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
@@ -72,7 +69,7 @@ fun CompanyDetailsScreen(
     companyType: CompanyType = CompanyType.TOURISM,
     onNavigateBack: () -> Unit,
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit,
-    onNavigateToDriverDetails: (driverId: String) -> Unit,
+    onNavigateToEmployeeDetails: (employeeId: String, isDriver: Boolean) -> Unit,
     onNavigateToEditReservation: (Reservation) -> Unit,
     onNavigateToReservationDetails: (reservationId: String) -> Unit,
 ) {
@@ -167,8 +164,8 @@ fun CompanyDetailsScreen(
                     onNavigateToCompanyDetails(action.companyId, action.type)
                 }
 
-                is CompanyDetailsUiAction.OnDriverClicked -> {
-                    onNavigateToDriverDetails(action.driverId)
+                is CompanyDetailsUiAction.OnEmployeeClicked -> {
+                    onNavigateToEmployeeDetails(action.employeeId, action.isDriver)
                 }
 
                 is CompanyDetailsUiAction.OnCopyPhoneNumber -> {
@@ -335,7 +332,7 @@ fun CompanyDetailsScreenContent(
                         selectedItemId = it
                         isConfirmDeleteDialogVisible = true
                     },
-                    onDriverClicked = { onAction(CompanyDetailsUiAction.OnDriverClicked(it)) },
+                    onDriverClicked = { onAction(CompanyDetailsUiAction.OnEmployeeClicked(it, true)) },
                     onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
                     onMessagePhoneNumber = {
                         onAction(
@@ -373,6 +370,11 @@ fun CompanyDetailsScreenContent(
                             )
                         )
                     },
+                    onEmployeeClicked = { employeeId ->
+                        onAction(
+                            CompanyDetailsUiAction.OnEmployeeClicked(employeeId, false)
+                        )
+                    }
                 )
             } else {
                 var selectedTabIndex by remember {
@@ -428,7 +430,7 @@ fun CompanyDetailsScreenContent(
                             selectedItemId = it
                             isConfirmDeleteDialogVisible = true
                         },
-                        onDriverClicked = { onAction(CompanyDetailsUiAction.OnDriverClicked(it)) },
+                        onDriverClicked = { onAction(CompanyDetailsUiAction.OnEmployeeClicked(it, true)) },
                         onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
                         onMessagePhoneNumber = {
                             onAction(

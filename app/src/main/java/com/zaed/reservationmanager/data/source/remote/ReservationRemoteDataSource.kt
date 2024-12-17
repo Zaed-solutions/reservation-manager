@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface ReservationRemoteDataSource {
     fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>>
     fun getReservationById(id: String): Flow<Result<Reservation>>
+    fun getReservationsByCustomerId(customerId: String): Flow<Result<List<Reservation>>>
     fun createRide(ride: Ride): Flow<Result<String>>
     fun getRidesByReservationId(id: String):Flow<Result<List<Ride>>>
     fun deleteReservation(id: String): Flow<Result<Boolean>>

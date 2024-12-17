@@ -120,9 +120,7 @@ fun NavigationHost(
                 navigateToReservationDetails = { reservationId ->
                     navController.navigate(Route.ReservationDetailsRoute(reservationId))
                 },
-                onNavigateToEmployeeDetails = { employeeId, isDriver ->
-                    // TODO: navigate to employee details
-                },
+                onNavigateToEmployeeDetails = { _, _ ->},
                 navigateToEditReservation = { reservation ->
                     navController.navigate(Route.CreateReservationRoute(reservation))
                 },
@@ -152,9 +150,7 @@ fun NavigationHost(
                 onNavigateToAddDriver = {
                     navController.navigate(Route.AddEmployeeRoute(isDriver = true))
                 },
-                onNavigateToEmployeeDetails = {
-                    /*TODO*/
-                },
+                onNavigateToEmployeeDetails = {},
                 onNavigateToEditDriver = { driver ->
                     navController.navigate(Route.AddEmployeeRoute(driver, isDriver = true))
                 }
@@ -166,9 +162,7 @@ fun NavigationHost(
                 onNavigateToAddEmployee = {
                     navController.navigate(Route.AddEmployeeRoute(isDriver = false))
                 },
-                onNavigateToEmployeeDetails = {
-                    /*TODO*/
-                },
+                onNavigateToEmployeeDetails = {},
                 onNavigateToEditEmployee = { employee ->
                     navController.navigate(Route.AddEmployeeRoute(employee, isDriver = false))
                 }
@@ -199,13 +193,7 @@ fun NavigationHost(
                 onNavigateToClientDetails = { clientId ->
                     navController.navigate(Route.CustomerDetailsRoute(clientId))
                 },
-                onNavigateToEmployeeDetails = { employeeId, isDriver ->
-                    Log.d(
-                        TAG,
-                        "NavigationHost: navigate to employee details with: $employeeId, $isDriver"
-                    )
-                    /*TODO*/
-                }
+                onNavigateToEmployeeDetails = { _, _ -> }
             )
         }
         composable<Route.CompanyDetailsRoute>{ backStackEntry ->
@@ -217,11 +205,13 @@ fun NavigationHost(
                 onNavigateToReservationDetails = { reservationId ->
                     navController.navigate(Route.ReservationDetailsRoute(reservationId))
                 },
-                onNavigateToDriverDetails = {/*TODO*/},
+                onNavigateToEmployeeDetails = {_, _ ->},
                 onNavigateToCompanyDetails = { companyId, companyType ->
                     navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 },
-                onNavigateToEditReservation = {/*TODO*/},
+                onNavigateToEditReservation = {
+                    navController.navigate(Route.CreateReservationRoute(it))
+                },
             )
         }
         composable<Route.CustomerDetailsRoute> { backStackEntry ->

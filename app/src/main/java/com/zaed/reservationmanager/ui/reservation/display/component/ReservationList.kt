@@ -25,6 +25,7 @@ fun ReservationList(
     onNavigateToReservationDetails: (String) -> Unit = {},
     onDeleteReservation: (String) -> Unit = {},
     onNavigateToEditReservation: (Reservation) -> Unit = {},
+    onEmployeeClicked: (employeeId: String) -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -52,7 +53,7 @@ fun ReservationList(
                                 onDeleteClicked = { onDeleteReservation(reservation.id) },
                                 onNavigateToEditReservation = onNavigateToEditReservation,
                                 onNavigateToReservationDetails = onNavigateToReservationDetails,
-
+                                onEmployeeClicked = onEmployeeClicked
                                 )
                         }
                     }

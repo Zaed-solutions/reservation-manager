@@ -15,9 +15,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -33,16 +35,19 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
 import com.zaed.reservationmanager.ui.client.details.components.CustomerDetailsHeader
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsUiAction
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.reservation.details.components.RidesList
+import com.zaed.reservationmanager.ui.reservation.display.component.ReservationList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -54,8 +59,10 @@ fun CustomerDetailScreen(
     customerId: String = "",
     onBackPressed: () -> Unit = {},
     onNavigateToReservationDetails: (reservationId: String) -> Unit = {},
+    onNavigateToEditReservation: (reservation: Reservation) -> Unit = {},
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ ->},
-    onNavigateToAddReservation: (Customer) -> Unit = {}
+    onNavigateToAddReservation: (Customer) -> Unit = {},
+    onNavigateToEmployeeDetails: (employeeId: String, isDriver: Boolean) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -69,6 +76,7 @@ fun CustomerDetailScreen(
         modifier = modifier,
         customer = state.customer,
         rides = state.rides,
+        reservations = state.reservations,
         snackbarHostState = snackbarHostState,
         onAction = { action ->
             when(action){
@@ -111,6 +119,12 @@ fun CustomerDetailScreen(
                 CustomerDetailsUiAction.OnAddReservation -> {
                     onNavigateToAddReservation(state.customer)
                 }
+                is CustomerDetailsUiAction.OnEditReservation -> {
+                    onNavigateToEditReservation(action.reservation)
+                }
+                is CustomerDetailsUiAction.OnEmployeeClicked -> {
+                    onNavigateToEmployeeDetails(action.employeeId, action.isDriver)
+                }
                 else -> viewModel.handleAction(action)
             }
         }
@@ -123,6 +137,7 @@ private fun CustomerDetailScreenContent(
     modifier: Modifier = Modifier,
     customer: Customer = Customer(),
     rides: List<Ride> = emptyList(),
+    reservations: List<Reservation> = emptyList(),
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     onAction: (CustomerDetailsUiAction) -> Unit = {},
 ) {
@@ -177,6 +192,7 @@ private fun CustomerDetailScreenContent(
                 onCopyPhone = { onAction(CustomerDetailsUiAction.OnCopyPhone(it)) },
                 onMessagePhone = { onAction(CustomerDetailsUiAction.OnMessagePhone(it)) },
             )
+            /*
             RidesList(
                 rides = rides,
                 isAddEnabled = false,
@@ -198,6 +214,74 @@ private fun CustomerDetailScreenContent(
                     onAction(CustomerDetailsUiAction.OnMessagePhone(it))
                 }
             )
+            */
+
+            var selectedTabIndex by remember {
+                mutableStateOf(0)
+            }
+            var isRideSelected by remember {
+                mutableStateOf(false)
+            }
+            PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
+                listOf(
+                    stringResource(R.string.reservations),
+                    stringResource(R.string.rides)
+                ).forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = {
+                            Text(
+                                text = title,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    )
+                }
+            }
+            if (selectedTabIndex == 0) {
+                ReservationList(
+                    reservations = reservations,
+                    onNavigateToReservationDetails = {
+                        onAction(CustomerDetailsUiAction.OnReservationDetailsClicked(it))
+                    },
+                    onDeleteReservation = {
+                        isRideSelected = false
+                        selectedItemId = it
+                        isConfirmDeleteDialogVisible = true
+                    },
+                    onNavigateToEditReservation = {
+                        onAction(CustomerDetailsUiAction.OnEditReservation(it))
+                    },
+                    onEmployeeClicked = { onAction(CustomerDetailsUiAction.OnEmployeeClicked(it, false)) }
+                )
+            } else {
+                RidesList(
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                    rides = rides,
+                    isHeaderVisible = false,
+                    isAddEnabled = false,
+                    isSendActionsVisible = false,
+                    onCompanyClicked = { companyId ->
+                        onAction(
+                            CustomerDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL)
+                        )
+                    },
+                    onDeleteRide = {
+                        isRideSelected = true
+                        selectedItemId = it
+                        isConfirmDeleteDialogVisible = true
+                    },
+                    onDriverClicked = { onAction(CustomerDetailsUiAction.OnEmployeeClicked(it, true)) },
+                    onCopyPhoneNumber = { onAction(CustomerDetailsUiAction.OnCopyPhone(it)) },
+                    onMessagePhoneNumber = {
+                        onAction(
+                            CustomerDetailsUiAction.OnMessagePhone(it)
+                        )
+                    },
+                )
+            }
             AnimatedVisibility(isConfirmDeleteDialogVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
@@ -207,13 +291,20 @@ private fun CustomerDetailScreenContent(
                     sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
-                        label = stringResource(id = R.string.ride),
+                        label = if (isRideSelected) stringResource(id = R.string.ride) else stringResource(
+                            id = R.string.reservation
+                        ),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         },
                         onConfirm = {
-                            onAction(CustomerDetailsUiAction.OnDeleteRide(selectedItemId))
+                            onAction(
+                                if (isRideSelected)
+                                    CustomerDetailsUiAction.OnDeleteRide(selectedItemId)
+                                else
+                                    CustomerDetailsUiAction.OnDeleteReservation(selectedItemId)
+                            )
                             isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         }

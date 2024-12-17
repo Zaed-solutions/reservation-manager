@@ -1,6 +1,5 @@
 package com.zaed.reservationmanager.data.source.remote
 
-import android.util.Log
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.CompanyBalance
@@ -9,7 +8,6 @@ import com.zaed.reservationmanager.data.model.Ride
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 
 class ReservationRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
@@ -69,6 +67,26 @@ class ReservationRemoteDataSourceImpl(
         }
         awaitClose {}
     }
+
+    override fun getReservationsByCustomerId(customerId: String): Flow<Result<List<Reservation>>> =
+        callbackFlow {
+            try {
+                firestore.collection(RESERVATION_COLLECTION)
+                    .whereEqualTo("clientId", customerId)
+                    .addSnapshotListener { value, error ->
+                        if (error != null) {
+                            trySend(Result.failure(error))
+                        } else {
+                            val reservations =
+                                value?.toObjects(Reservation::class.java) ?: emptyList()
+                            trySend(Result.success(reservations))
+                        }
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
 
     override fun createRide(ride: Ride): Flow<Result<String>> = callbackFlow {
         try {
@@ -290,16 +308,14 @@ class ReservationRemoteDataSourceImpl(
 
     override fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>> = callbackFlow {
         try {
-            firestore.collection(RIDE_COLLECTION).whereEqualTo("customerId", customerId).get()
-                .addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        trySend(Result.success(emptyList()))
+            firestore.collection(RIDE_COLLECTION).whereEqualTo("customerId", customerId)
+                .addSnapshotListener { data, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
                     } else {
-                        val rides = data.toObjects(Ride::class.java)
+                        val rides = data?.toObjects(Ride::class.java)?: emptyList()
                         trySend(Result.success(rides))
                     }
-                }.addOnFailureListener {
-                    trySend(Result.failure(it))
                 }
         } catch (e: Exception) {
             trySend(Result.failure(e))
@@ -319,32 +335,32 @@ class ReservationRemoteDataSourceImpl(
                         Filter.equalTo("travelCompanyId", companyId)
                     )
                 ).get().addOnSuccessListener { data ->
-                        if (data.isEmpty) {
-                            trySend(Result.success(CompanyBalance()))
-                        } else {
-                            val rides = data.toObjects(Ride::class.java)
-                            var totalBuying: Double = 0.0
-                            var totalSelling: Double = 0.0
-                            var totalCollected: Double = 0.0
-                            rides.forEach {
-                                totalBuying += it.buyingPrice
-                                totalSelling += it.sellingPrice
-                                totalCollected += it.collectedPrice
-                            }
-                            trySend(
-                                Result.success(
-                                    CompanyBalance(
-                                        totalBuying = totalBuying,
-                                        totalSelling = totalSelling,
-                                        totalCollected = totalCollected
-                                    )
+                    if (data.isEmpty) {
+                        trySend(Result.success(CompanyBalance()))
+                    } else {
+                        val rides = data.toObjects(Ride::class.java)
+                        var totalBuying: Double = 0.0
+                        var totalSelling: Double = 0.0
+                        var totalCollected: Double = 0.0
+                        rides.forEach {
+                            totalBuying += it.buyingPrice
+                            totalSelling += it.sellingPrice
+                            totalCollected += it.collectedPrice
+                        }
+                        trySend(
+                            Result.success(
+                                CompanyBalance(
+                                    totalBuying = totalBuying,
+                                    totalSelling = totalSelling,
+                                    totalCollected = totalCollected
                                 )
                             )
-                        }
-                    }.addOnFailureListener {
-                        it.printStackTrace()
-                        trySend(Result.failure(it))
+                        )
                     }
+                }.addOnFailureListener {
+                    it.printStackTrace()
+                    trySend(Result.failure(it))
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
 
