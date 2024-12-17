@@ -155,29 +155,6 @@ fun AddRideBottomSheet(
                 keyboardType = KeyboardType.Text
             )
             TitledTextField(
-                title = stringResource(R.string.buying_price),
-                initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toInt().toString(),
-                onValueChanged = { newText ->
-                    if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                        action(
-                            ReservationUiAction.UpdateBuyingPrice(
-                                price = newText
-                            )
-                        )
-
-                    }else if(newText.isBlank()){
-                        action(
-                            ReservationUiAction.UpdateBuyingPrice(
-                                price = "0"
-                            )
-                        )
-                    }
-                },
-                isOptional = false,
-
-                keyboardType = KeyboardType.Decimal
-            )
-            TitledTextField(
                 title = stringResource(R.string.selling_price),
                 initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toInt().toString(),
                 onValueChanged = { newText ->
@@ -199,6 +176,28 @@ fun AddRideBottomSheet(
                 isOptional = false,
                 isError = errorMessage == ReservationError.SELLING_PRICE_IS_REQUIRED,
                 errorMessageRes = errorMessage.messageRes,
+                keyboardType = KeyboardType.Decimal
+            )
+            TitledTextField(
+                title = stringResource(R.string.buying_price),
+                initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toInt().toString(),
+                onValueChanged = { newText ->
+                    if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                        action(
+                            ReservationUiAction.UpdateBuyingPrice(
+                                price = newText
+                            )
+                        )
+
+                    }else if(newText.isBlank()){
+                        action(
+                            ReservationUiAction.UpdateBuyingPrice(
+                                price = "0"
+                            )
+                        )
+                    }
+                },
+                isOptional = true,
                 keyboardType = KeyboardType.Decimal
             )
             TitledTextField(

@@ -34,8 +34,6 @@ object InputValidator {
             return ReservationError.END_LOCATION_IS_REQUIRED
         } else if (ride.sellingPrice == 0.0) {
             return ReservationError.SELLING_PRICE_IS_REQUIRED
-        } else if (ride.buyingPrice == 0.0) {
-            return ReservationError.BUYING_PRICE_IS_REQUIRED
         } else {
             return null
         }

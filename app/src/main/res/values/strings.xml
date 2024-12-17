@@ -112,7 +112,7 @@
     <string name="save_reservation">Save Reservation</string>
     <string name="drivers">Drivers</string>
     <string name="buying_price">Buying Price</string>
-    <string name="collection_price">Collection Price</string>
+    <string name="collection_price">Collected Money</string>
     <string name="note">Note</string>
     <string name="save_ride">Save Ride</string>
     <string name="customer_phone_is_invalid">Customer phone is invalid</string>
@@ -206,4 +206,8 @@
     <string name="selected_date">Selected Date</string>
     <string name="select_a_date">Select a date</string>
     <string name="no_reservations_added">No reservations added</string>
+    <string name="customer_added_successfully">Customer added succesfully</string>
+    <string name="customer_updated_successfully">Customer updated successfully</string>
+    <string name="driver_added_successfully">Driver added successfully!</string>
+    <string name="driver_updated_successfully">Driver updated successfully!</string>
 </resources>

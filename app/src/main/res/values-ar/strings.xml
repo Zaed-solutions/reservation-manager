@@ -113,7 +113,7 @@
     <string name="save_reservation">حفظ الحجز</string>
     <string name="drivers">السائقين</string>
     <string name="buying_price">سعر الشراء</string>
-    <string name="collection_price">سعر التحصيل</string>
+    <string name="collection_price">مبلغ التحصيل</string>
     <string name="note">ملاحظة</string>
     <string name="save_ride">حفظ الحركة</string>
     <string name="customer_phone_is_invalid">جوال الضيف غير صالح</string>

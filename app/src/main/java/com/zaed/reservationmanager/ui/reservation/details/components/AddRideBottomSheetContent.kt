@@ -153,21 +153,6 @@ fun AddRideBottomSheetContent(
             keyboardType = KeyboardType.Text
         )
         TitledTextField(
-            title = stringResource(R.string.selling_price),
-            initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toString(),
-            onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
-                    newRide = newRide.copy(
-                        sellingPrice = newText.toDouble()
-                    )
-                }
-            },
-            isOptional = false,
-            isError = rideError == ReservationError.SELLING_PRICE_IS_REQUIRED,
-            errorMessageRes = rideError.messageRes,
-            keyboardType = KeyboardType.Decimal
-        )
-        TitledTextField(
             title = stringResource(R.string.buying_price),
             initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toString(),
             onValueChanged = { newText ->
@@ -179,6 +164,21 @@ fun AddRideBottomSheetContent(
             },
             isOptional = false,
             isError = rideError == ReservationError.BUYING_PRICE_IS_REQUIRED,
+            errorMessageRes = rideError.messageRes,
+            keyboardType = KeyboardType.Decimal
+        )
+        TitledTextField(
+            title = stringResource(R.string.selling_price),
+            initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toString(),
+            onValueChanged = { newText ->
+                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
+                    newRide = newRide.copy(
+                        sellingPrice = newText.toDouble()
+                    )
+                }
+            },
+            isOptional = true,
+            isError = rideError == ReservationError.SELLING_PRICE_IS_REQUIRED,
             errorMessageRes = rideError.messageRes,
             keyboardType = KeyboardType.Decimal
         )

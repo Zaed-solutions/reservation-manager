@@ -336,14 +336,6 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid selling price", )
                 return false
-            } else if (newRide.buyingPrice == 0.0) {
-                _state.update {
-                    it.copy(
-                        rideError = ReservationError.BUYING_PRICE_IS_REQUIRED,
-                    )
-                }
-                Log.e(TAG, "validateRideData: invalid buying price", )
-                return false
             } else {
                 _state.update {
                     it.copy(
