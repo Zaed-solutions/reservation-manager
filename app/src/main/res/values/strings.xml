@@ -206,7 +206,7 @@
     <string name="selected_date">Selected Date</string>
     <string name="select_a_date">Select a date</string>
     <string name="no_reservations_added">No reservations added</string>
-    <string name="customer_added_successfully">Customer added succesfully</string>
+    <string name="customer_added_successfully">Customer added succesfully!</string>
     <string name="customer_updated_successfully">Customer updated successfully</string>
     <string name="driver_added_successfully">Driver added successfully!</string>
     <string name="driver_updated_successfully">Driver updated successfully!</string>

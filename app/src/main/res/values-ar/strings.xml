@@ -39,9 +39,9 @@
     <string name="mobile_number_is_invalid">رقم الجوال غير صالح</string>
     <string name="please_fill_in_all_required_fields">يرجى تعبئة جميع الحقول المطلوبة</string>
     <string name="cancel">إلغاء</string>
-    <string name="customer_with_this_phone_number_already_exists">ضيف بهذا الرقم موجود بالفعل</string>
-    <string name="create_new_customer">إضافة ضيف جديد</string>
-    <string name="client_name">اسم الضيف</string>
+    <string name="customer_with_this_phone_number_already_exists">عميل بهذا الرقم موجود بالفعل</string>
+    <string name="create_new_customer">إضافة عميل جديد</string>
+    <string name="client_name">اسم العميل</string>
     <string name="nationality">الجنسية</string>
     <string name="country_of_residence">بلد الإقامة</string>
     <string name="atleast_one_phone_number_is_required">يجب إضافة رقم جوال واحد على الأقل</string>
@@ -57,9 +57,9 @@
     <string name="add_new_driver">إضافة سائق جديد</string>
     <string name="update_driver">تحديث السائق</string>
     <string name="create_new_reservation">إنشاء حجز جديد</string>
-    <string name="phone_is_required">رقم الجوال للضيف فارغ</string>
+    <string name="phone_is_required">رقم جوال العميل فارغ</string>
     <string name="tourism_company_is_required">شركة السياحة مطلوبة</string>
-    <string name="client_phone">جوال الضيف</string>
+    <string name="client_phone">جوال العميل</string>
     <string name="date">التاريخ</string>
     <string name="type_is_required">النوع مطلوب</string>
     <string name="time">الوقت</string>
@@ -96,7 +96,7 @@
     <string name="car">سيارة</string>
     <string name="driver">السائق</string>
     <string name="notes">ملاحظات</string>
-    <string name="send_info_to_client">إرسال معلومات السائق للضيف</string>
+    <string name="send_info_to_client">إرسال معلومات السائق للعميل</string>
     <string name="driver_information_sent">تم إرسال معلومات السائق</string>
     <string name="ride_info_sent">تم إرسال معلومات الرحلة</string>
     <string name="send_ride_info_to_travel_company">إرسال معلومات الرحلة لشركة النقل</string>
@@ -117,10 +117,10 @@
     <string name="note">ملاحظة</string>
     <string name="save_ride">حفظ الحركة</string>
     <string name="customer_phone_is_invalid">جوال الضيف غير صالح</string>
-    <string name="customer_name_is_required">اسم الضيف مطلوب</string>
+    <string name="customer_name_is_required">اسم العميل مطلوب</string>
     <string name="employee_is_required">الموظف مطلوب</string>
-    <string name="customer_country">بلد الضيف</string>
-    <string name="customer_country_is_required">بلد الضيف مطلوب</string>
+    <string name="customer_country">بلد العميل</string>
+    <string name="customer_country_is_required">بلد العميل مطلوبة</string>
     <string name="travel_no">رقم الرحلة</string>
     <string name="tourist_company">شركة سياحة</string>
     <string name="add_ride">إضافة حركة</string>
@@ -132,11 +132,11 @@
     <string name="we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival">لدينا حجز مؤكد لك. يرجى الاتصال بنا عند وصولك بأمان.</string>
     <string name="it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing">يسعدنا خدمتك. يمكن الوصول إلى سائقك، %1$s، على الرقم %2$s. نتمنى لك رحلة آمنة وممتعة إن شاء الله.</string>
     <string name="transportation_details">
-        عزيزي %1$s،
+        مرحبا %1$s،
 
-        يرجى العثور أدناه على تفاصيل النقل للضيف:
+        يرجى العثور أدناه على تفاصيل النقل للعميل:
 
-        - اسم الضيف: %2$s
+        - اسم العميل: %2$s
         - رقم الجوال: %3$s
         - تاريخ الرحلة: %4$s
         - الموقع الابتدائي: %5$s
@@ -151,7 +151,7 @@
         شركة المسافرون
     </string>
     <string name="employees">الموظفون</string>
-    <string name="customers">الضيوف</string>
+    <string name="customers">العملاء</string>
     <string name="reservations">الحجوزات</string>
     <string name="residence_country">بلد الإقامة</string>
     <string name="created_at">أنشئ في</string>
@@ -168,13 +168,13 @@
     <string name="save_changes">حفظ التغييرات</string>
     <string name="drop_down_lists">تحديث القوائم المنسدلة</string>
     <string name="reservation">الحجز</string>
-    <string name="customer_details">تفاصيل الضيف</string>
+    <string name="customer_details">تفاصيل العميل</string>
     <string name="phonenumber_is_blank">رقم الجوال فارغ</string>
     <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
     <string name="export_as_csv">تصدير كـ CSV</string>
     <string name="export_as_pdf">تصدير كـ PDF</string>
-    <string name="customers_list">قائمة الضيوف</string>
-    <string name="customers_list_for_country">قائمة الضيوف لدولة: %1$s</string>
+    <string name="customers_list">قائمة العملاء</string>
+    <string name="customers_list_for_country">قائمة العملاء لدولة: %1$s</string>
     <string name="pdf_saved_at">تم حفظ الـ PDF في %1$s</string>
     <string name="error_exporting_pdf">حدث خطأ أثناء تصدير الـ PDF!</string>
     <string name="open">فتح</string>
@@ -187,7 +187,7 @@
     <string name="from_today_onwards">بداية من اليوم</string>
     <string name="selected_range">فترة محددة</string>
     <string name="selected_range_place">الفترة المحددة\" %1$s - %2$s</string>
-    <string name="customer_name">اسم الضيف</string>
+    <string name="customer_name">اسم العميل</string>
     <string name="company_phone">جوال الشركة</string>
     <string name="reservation_details_arrow"><![CDATA[تفاصيل الحجز >]]></string>
     <string name="search_by_anything">بحث ذكي</string>
@@ -207,4 +207,10 @@
     <string name="selected_date">تاريخ محدد</string>
     <string name="select_a_date">اختار تاريخ</string>
     <string name="no_reservations_added">لم تتم اضافة أي حجوزات</string>
+    <string name="customer_added_successfully">تم إضافة العميل بنجاح</string>
+    <string name="customer_updated_successfully">تم تحديث العميل بنجاح</string>
+    <string name="driver_added_successfully">تم اضافة السائق بنجاح</string>
+    <string name="driver_updated_successfully">تم تحديث السائق بنجاح</string>
+    <string name="reservation_updated_successfully">تم تحديث الحجز بنجاح</string>
+    <string name="reservation_added_successfully">تم اضافة الحجز بنجاح</string>
 </resources>
