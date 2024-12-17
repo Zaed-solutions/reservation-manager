@@ -2,40 +2,27 @@ package com.zaed.reservationmanager.data.repository
 
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
 class ReservationRepositoryImpl(
     private val remoteDataSource: ReservationRemoteDataSource
 ) : ReservationRepository {
-    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String,Long>>> {
+    override fun createReservation(reservation: ReservationModel): Flow<Result<Pair<String,Long>>> {
         return remoteDataSource.createReservation(reservation)
     }
 
-    override fun getReservationById(id: String): Flow<Result<Reservation>> {
+    override fun getReservationById(id: String): Flow<Result<ReservationModel>> {
         return remoteDataSource.getReservationById(id)
     }
 
-    override fun getReservationByCustomerId(customerId: String): Flow<Result<List<Reservation>>> {
+    override fun getReservationByCustomerId(customerId: String): Flow<Result<List<ReservationModel>>> {
         return remoteDataSource.getReservationsByCustomerId(customerId)
-    }
-
-    override fun createRide(ride: Ride): Flow<Result<String>> {
-        return remoteDataSource.createRide(ride)
-    }
-
-    override fun getRidesByReservationId(id: String): Flow<Result<List<Ride>>> {
-        return remoteDataSource.getRidesByReservationId(id)
     }
 
     override fun deleteReservation(id: String): Flow<Result<Boolean>> {
         return remoteDataSource.deleteReservation(id)
-    }
-
-    override fun deleteRide(id: String): Flow<Result<Boolean>> {
-        return remoteDataSource.deleteRide(id)
     }
 
     override fun updateReservation(
@@ -45,42 +32,23 @@ class ReservationRepositoryImpl(
         return remoteDataSource.updateReservation(reservationId, updates)
     }
 
-    override fun updateReservation(reservation: Reservation): Flow<Result<Boolean>> {
+    override fun updateReservation(reservation: ReservationModel): Flow<Result<Boolean>> {
         return remoteDataSource.updateReservation(reservation)
     }
 
-    override fun updateRide(rideId: String, updates: Map<String, Any>): Flow<Result<Boolean>> {
-        return remoteDataSource.updateRide(rideId, updates)
-    }
 
-    override fun updateRide(ride: Ride): Flow<Result<Boolean>> {
-        return remoteDataSource.updateRide(ride)
-    }
-
-    override fun getReservations(): Flow<Result<List<Reservation>>> {
+    override fun getReservations(): Flow<Result<List<ReservationModel>>> {
         return remoteDataSource.getReservations()
     }
 
-    override fun getRides(): Flow<Result<List<Ride>>> {
-        return  remoteDataSource.getRides()
-    }
-
-    override fun getCompanyBalance(
+    override suspend fun getCompanyBalance(
         companyId: String,
         companyType: CompanyType
-    ): Flow<Result<CompanyBalance>> {
+    ): Result<CompanyBalance> {
         return remoteDataSource.getCompanyBalance(companyId)
     }
 
-    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> {
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<ReservationModel>>> {
         return remoteDataSource.getReservationsByCompanyId(companyId)
-    }
-
-    override fun getRidesByCompanyId(companyId: String, companyType: CompanyType): Flow<Result<List<Ride>>> {
-        return remoteDataSource.getRidesByCompanyId(companyId)
-    }
-
-    override fun getRidesByCustomerId(customerId: String): Flow<Result<List<Ride>>> {
-        return remoteDataSource.getRidesByCustomerId(customerId)
     }
 }

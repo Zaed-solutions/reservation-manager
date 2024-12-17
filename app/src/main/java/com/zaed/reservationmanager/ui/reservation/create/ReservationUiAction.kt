@@ -2,7 +2,7 @@ package com.zaed.reservationmanager.ui.reservation.create
 
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 
 sealed class ReservationUiAction {
     data class UpdateCustomerNumber(val number: String) : ReservationUiAction()
@@ -29,7 +29,7 @@ sealed class ReservationUiAction {
     data class UpdateNote(val note: String) : ReservationUiAction()
     data object SaveReservation  : ReservationUiAction()
     data object ValidateReservationData  : ReservationUiAction()
-    data class EditRide(val ride: Ride) : ReservationUiAction()
+    data class EditRide(val reservationModel: ReservationModel) : ReservationUiAction()
 
 
 }

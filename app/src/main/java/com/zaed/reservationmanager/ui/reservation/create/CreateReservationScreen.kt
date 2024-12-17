@@ -31,7 +31,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.reservation.create.component.AddNewReservation
 import com.zaed.reservationmanager.ui.reservation.create.component.AddRideBottomSheet
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
@@ -61,8 +61,8 @@ fun CreateReservationScreen(
         initialReservation = reservation,
         travelCompanies = state.travelCompanies,
         tourismCompanies = state.tourismCompanies,
-        rides = state.rides,
-        newRide = state.newRide,
+        reservationModels = state.reservationModels,
+        newReservationModel = state.newReservationModel,
         isEditMode = reservation.id.isNotBlank(),
         types = state.transactionTypes,
         cars = state.carTypes,
@@ -92,8 +92,8 @@ fun CreateReservationScreenContent(
     successStatus: Boolean = false,
     isEditMode: Boolean = false,
     drivers: List<Employee> = emptyList(),
-    rides: List<Ride> = emptyList(),
-    newRide: Ride = Ride(),
+    reservationModels: List<ReservationModel> = emptyList(),
+    newReservationModel: ReservationModel = ReservationModel(),
     initialReservation: Reservation = Reservation(),
     employees: List<Employee> = emptyList(),
     countries: List<String> = emptyList(),
@@ -189,7 +189,7 @@ fun CreateReservationScreenContent(
             )
             EnteredRidesSection(
                 isEditMode = isEditMode,
-                rides = rides,
+                reservationModels = reservationModels,
                 onAddMovementClicked = {
                     action(ReservationUiAction.ValidateReservationData)
                     if (reservationError != ReservationError.NONE) return@EnteredRidesSection
@@ -210,7 +210,7 @@ fun CreateReservationScreenContent(
                 addMovementSheetState,
                 rideError,
                 action,
-                newRide,
+                newReservationModel,
                 types,
                 cars,
                 travelCompanies,
@@ -227,8 +227,8 @@ fun CreateReservationScreenContent(
 fun NewClientDataEntryScreenPreview() {
     ReservationManagerTheme {
         CreateReservationScreenContent(
-            rides = listOf(
-                Ride(
+            reservationModels = listOf(
+                ReservationModel(
                 )
             )
         )

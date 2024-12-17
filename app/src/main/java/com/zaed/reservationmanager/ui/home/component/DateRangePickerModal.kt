@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.reservation.display.component
+package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height

@@ -19,12 +19,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,7 +39,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,13 +46,13 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.company.details.components.BalanceSection
 import com.zaed.reservationmanager.ui.company.details.components.CompanyDetailsHeader
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
-import com.zaed.reservationmanager.ui.reservation.details.components.RidesList
-import com.zaed.reservationmanager.ui.reservation.display.component.ReservationList
+import com.zaed.reservationmanager.ui.reservation.details.components.AddRideBottomSheetContent
+import com.zaed.reservationmanager.ui.reservation.details.components.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportRidesAsCsv
 import kotlinx.coroutines.launch
@@ -69,9 +66,6 @@ fun CompanyDetailsScreen(
     companyType: CompanyType = CompanyType.TOURISM,
     onNavigateBack: () -> Unit,
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit,
-    onNavigateToEmployeeDetails: (employeeId: String, isDriver: Boolean) -> Unit,
-    onNavigateToEditReservation: (Reservation) -> Unit,
-    onNavigateToReservationDetails: (reservationId: String) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -86,7 +80,7 @@ fun CompanyDetailsScreen(
         onAction = { action ->
             when (action) {
                 CompanyDetailsUiAction.OnBackPressed -> onNavigateBack()
-                is CompanyDetailsUiAction.ExportRidesAsCSV -> {
+                is CompanyDetailsUiAction.ExportReservationsAsCSV -> {
                     val headers = if (companyType == CompanyType.TRAVEL) {
                         listOf(
                             context.getString(R.string.date),
@@ -119,7 +113,7 @@ fun CompanyDetailsScreen(
                             context.getString(R.string.balance),
                         )
                     }
-                    val file = state.rides.exportRidesAsCsv(
+                    val file = state.reservations.exportRidesAsCsv(
                         context = context,
                         headers = headers,
                         isTravelCompany = companyType == CompanyType.TRAVEL,
@@ -164,10 +158,6 @@ fun CompanyDetailsScreen(
                     onNavigateToCompanyDetails(action.companyId, action.type)
                 }
 
-                is CompanyDetailsUiAction.OnEmployeeClicked -> {
-                    onNavigateToEmployeeDetails(action.employeeId, action.isDriver)
-                }
-
                 is CompanyDetailsUiAction.OnCopyPhoneNumber -> {
                     clipboardManager.setText(AnnotatedString(action.phoneNumber))
                     scope.launch {
@@ -191,23 +181,13 @@ fun CompanyDetailsScreen(
                     )
                 }
 
-                is CompanyDetailsUiAction.OnEditReservation -> {
-                    onNavigateToEditReservation(action.reservation)
-                }
-
-                is CompanyDetailsUiAction.OnReservationClicked -> {
-                    onNavigateToReservationDetails(action.reservationId)
-                }
-
                 else -> viewModel.handleAction(action)
             }
         },
         company = state.company,
         balance = state.balance,
-        rides = state.rides,
         reservations = state.reservations,
         snackBarHostState = snackbarHostState,
-        companyType = companyType
     )
 }
 
@@ -217,20 +197,24 @@ fun CompanyDetailsScreenContent(
     modifier: Modifier = Modifier,
     onAction: (CompanyDetailsUiAction) -> Unit,
     company: Company = Company(),
-    companyType: CompanyType = CompanyType.TOURISM,
+    reservationTypes: List<String> = emptyList(),
+    cars: List<String> = emptyList(),
+    tourismCompanies: List<Company> = emptyList(),
+    employees: List<Employee> = emptyList(),
+    travelCompanies: List<Company> = emptyList(),
+    drivers: List<Employee> = emptyList(),
     snackBarHostState: SnackbarHostState,
-    rides: List<Ride> = emptyList(),
-    reservations: List<Reservation> = emptyList(),
+    reservations: List<ReservationModel> = emptyList(),
     balance: CompanyBalance = CompanyBalance(),
 ) {
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
     }
-    var isRideSelected by remember {
+    var isEditReservationBottomSheetVisible by remember {
         mutableStateOf(false)
     }
-    var selectedItemId by remember {
-        mutableStateOf("")
+    var selectedReservation by remember {
+        mutableStateOf(ReservationModel())
     }
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
@@ -275,7 +259,7 @@ fun CompanyDetailsScreenContent(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    onAction(CompanyDetailsUiAction.ExportRidesAsCSV)
+                                    onAction(CompanyDetailsUiAction.ExportReservationsAsCSV)
                                     isOptionsMenuVisible = false
                                 },
                                 text = {
@@ -316,129 +300,62 @@ fun CompanyDetailsScreenContent(
                 modifier = Modifier.padding(top = 16.dp),
                 balance = balance
             )
-            if (companyType == CompanyType.TRAVEL) {
-                RidesList(
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                    rides = rides,
-                    isAddEnabled = false,
-                    isSendActionsVisible = false,
-                    onCompanyClicked = { companyId ->
-                        if (companyId != company.id) onAction(
-                            CompanyDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL)
-                        )
-                    },
-                    onDeleteRide = {
-                        isRideSelected = true
-                        selectedItemId = it
-                        isConfirmDeleteDialogVisible = true
-                    },
-                    onDriverClicked = { onAction(CompanyDetailsUiAction.OnEmployeeClicked(it, true)) },
-                    onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
-                    onMessagePhoneNumber = {
-                        onAction(
-                            CompanyDetailsUiAction.OnMessagePhoneNumber(
-                                it
-                            )
-                        )
-                    },
-                )
-            } else if (companyType == CompanyType.TOURISM) {
-                Text(
-                    text = stringResource(id = R.string.reservations),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                )
-                ReservationList(
-                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                    reservations = reservations,
-                    onDeleteReservation = { reservationId ->
-                        isRideSelected = false
-                        selectedItemId = reservationId
-                        isConfirmDeleteDialogVisible = true
-                    },
-                    onNavigateToEditReservation = {
-                        onAction(
-                            CompanyDetailsUiAction.OnEditReservation(
-                                it
-                            )
-                        )
-                    },
-                    onNavigateToReservationDetails = { reservationId ->
-                        onAction(
-                            CompanyDetailsUiAction.OnReservationClicked(
-                                reservationId
-                            )
-                        )
-                    },
-                    onEmployeeClicked = { employeeId ->
-                        onAction(
-                            CompanyDetailsUiAction.OnEmployeeClicked(employeeId, false)
-                        )
-                    }
-                )
-            } else {
-                var selectedTabIndex by remember {
-                    mutableStateOf(0)
-                }
-                PrimaryTabRow(selectedTabIndex = selectedTabIndex) {
-                    listOf(
-                        stringResource(R.string.reservations),
-                        stringResource(R.string.rides)
-                    ).forEachIndexed { index, title ->
-                        Tab(
-                            selected = selectedTabIndex == index,
-                            onClick = { selectedTabIndex = index },
-                            text = {
-                                Text(
-                                    text = title,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        )
-                    }
-                }
-                if (selectedTabIndex == 0) {
-                    ReservationList(
-                        reservations = reservations,
-                        onNavigateToReservationDetails = {
-                            onAction(CompanyDetailsUiAction.OnReservationClicked(it))
-                        },
-                        onDeleteReservation = {
-                            isRideSelected = false
-                            selectedItemId = it
-                            isConfirmDeleteDialogVisible = true
-                        },
-                        onNavigateToEditReservation = {
-                            onAction(CompanyDetailsUiAction.OnEditReservation(it))
-                        }
+            ReservationsList(
+                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                reservations = reservations,
+                isAddEnabled = false,
+                onCompanyClicked = { companyId ->
+                    if (companyId != company.id) onAction(
+                        CompanyDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL)
                     )
-                } else {
-                    RidesList(
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        rides = rides,
-                        isHeaderVisible = false,
-                        isAddEnabled = false,
-                        isSendActionsVisible = false,
-                        onCompanyClicked = { companyId ->
-                            if (companyId != company.id) onAction(
-                                CompanyDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL)
-                            )
+                },
+                onDeleteReservation = {
+                    selectedReservation = ReservationModel(id = it)
+                    isConfirmDeleteDialogVisible = true
+                },
+                onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
+                onMessagePhoneNumber = {
+                    onAction(
+                        CompanyDetailsUiAction.OnMessagePhoneNumber(
+                            it
+                        )
+                    )
+                },
+            )
+            AnimatedVisibility(isEditReservationBottomSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isEditReservationBottomSheetVisible = false
+                        selectedReservation = ReservationModel()
+                    },
+                    sheetState = rememberModalBottomSheetState()
+                ) {
+                    AddRideBottomSheetContent(
+                        types = reservationTypes,
+                        cars = cars,
+                        tourismCompanies = tourismCompanies,
+                        onFetchEmployees = {
+                            onAction(CompanyDetailsUiAction.OnFetchEmployees(it))
                         },
-                        onDeleteRide = {
-                            isRideSelected = true
-                            selectedItemId = it
-                            isConfirmDeleteDialogVisible = true
+                        employees = employees,
+                        travelCompanies = travelCompanies,
+                        onFetchDrivers = {
+                            onAction(CompanyDetailsUiAction.OnFetchDrivers(it))
                         },
-                        onDriverClicked = { onAction(CompanyDetailsUiAction.OnEmployeeClicked(it, true)) },
-                        onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
-                        onMessagePhoneNumber = {
+                        drivers = drivers,
+                        initialReservation = selectedReservation,
+                        onAddRide = {
                             onAction(
-                                CompanyDetailsUiAction.OnMessagePhoneNumber(
-                                    it
-                                )
+                                CompanyDetailsUiAction.OnEditReservation(it)
                             )
+                            isEditReservationBottomSheetVisible = false
+                            selectedReservation = ReservationModel()
                         },
+                        onDismiss = {
+                            isEditReservationBottomSheetVisible = false
+                            selectedReservation = ReservationModel()
+                        }
+
                     )
                 }
             }
@@ -446,27 +363,24 @@ fun CompanyDetailsScreenContent(
                 ModalBottomSheet(
                     onDismissRequest = {
                         isConfirmDeleteDialogVisible = false
-                        selectedItemId = ""
+                        selectedReservation = ReservationModel()
                     },
                     sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
-                        label = if (isRideSelected) stringResource(id = R.string.ride) else stringResource(
+                        label = stringResource(
                             id = R.string.reservation
                         ),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
-                            selectedItemId = ""
+                            selectedReservation = ReservationModel()
                         },
                         onConfirm = {
                             onAction(
-                                if (isRideSelected)
-                                    CompanyDetailsUiAction.OnDeleteRide(selectedItemId)
-                                else
-                                    CompanyDetailsUiAction.OnDeleteReservation(selectedItemId)
+                                CompanyDetailsUiAction.OnDeleteReservation(selectedReservation.id)
                             )
                             isConfirmDeleteDialogVisible = false
-                            selectedItemId = ""
+                            selectedReservation = ReservationModel()
                         }
                     )
                 }

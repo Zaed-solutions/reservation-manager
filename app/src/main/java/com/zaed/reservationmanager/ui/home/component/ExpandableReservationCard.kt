@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.reservation.display.component
+package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable

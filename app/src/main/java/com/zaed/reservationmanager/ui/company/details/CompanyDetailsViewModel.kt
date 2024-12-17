@@ -4,8 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.data.repository.CompanyRepository
+import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
+import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,24 +19,87 @@ import kotlinx.coroutines.launch
 
 class CompanyDetailsViewModel(
     private val reservationRepo: ReservationRepository,
-    private val companyRepo: CompanyRepository
-): ViewModel() {
+    private val companyRepo: CompanyRepository,
+    private val employeeRepo: EmployeeRepository,
+    private val menuDataStore: MenuDataStore
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CompanyDetailsUiState())
     val uiState = _uiState.asStateFlow()
+
     companion object {
         private const val TAG = "CompanyDetailsViewModel"
     }
-    fun init(companyId: String, companyType: CompanyType){
+
+    fun init(companyId: String, companyType: CompanyType) {
         fetchCompany(companyId)
         fetchBalance(companyId, companyType)
-        if(companyType != CompanyType.TRAVEL){
-            fetchReservations(companyId)
+        fetchReservations(companyId)
+        fetchReservationTypes()
+        fetchCarTypes()
+        fetchTravelCompanies()
+        fetchTourismCompanies()
+    }
+
+    private fun fetchReservationTypes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        reservationTypes = data.toList()
+                    )
+                }
+            }
         }
-        fetchRides(companyId, companyType)
+    }
+
+    private fun fetchCarTypes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        cars = data.toList()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun fetchTravelCompanies() {
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.getCompanies(isDriver = true).collect { result ->
+                result.onSuccess { companies ->
+                    _uiState.update {
+                        it.copy(
+                            travelCompanies = companies
+                        )
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchTravelCompanies: failed")
+                    it.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun fetchTourismCompanies() {
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.getCompanies(isDriver = false).collect { result ->
+                result.onSuccess { companies ->
+                    _uiState.update {
+                        it.copy(
+                            tourismCompanies = companies
+                        )
+                    }
+                }.onFailure {
+                    Log.e(TAG, "fetchTourismCompanies: failed")
+                    it.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchReservations(companyId: String) {
-        viewModelScope.launch (Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservationsByCompanyId(companyId).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "fetchReservations: success ${it.size}")
@@ -46,39 +114,22 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchRides(companyId: String, companyType: CompanyType) {
-        viewModelScope.launch (Dispatchers.IO) {
-            reservationRepo.getRidesByCompanyId(companyId, companyType).collect { result ->
-                result.onSuccess {
-                    _uiState.update { oldState ->
-                        oldState.copy(rides = it)
-                    }
-                }.onFailure { e ->
-                    Log.e(TAG, "fetchRides: failed to fetch rides: ${e.message}")
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
     private fun fetchBalance(companyId: String, companyType: CompanyType) {
-        viewModelScope.launch (Dispatchers.IO) {
-            reservationRepo.getCompanyBalance(companyId, companyType).collect { result ->
-                result.onSuccess {
-                    _uiState.update { oldState ->
-                        oldState.copy(balance = it)
-                    }
-                    Log.d(TAG, "fetchBalance: $it")
-                }.onFailure { e ->
-                    Log.e(TAG, "fetchBalance: failed to fetch balance: ${e.message}")
-                    e.printStackTrace()
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.getCompanyBalance(companyId, companyType).onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(balance = it)
                 }
+                Log.d(TAG, "fetchBalance: $it")
+            }.onFailure { e ->
+                Log.e(TAG, "fetchBalance: failed to fetch balance: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
 
     private fun fetchCompany(companyId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             companyRepo.getCompanyById(companyId).collect { result ->
                 result.onSuccess {
                     _uiState.update { oldState ->
@@ -92,30 +143,60 @@ class CompanyDetailsViewModel(
         }
     }
 
-    fun handleAction(action: CompanyDetailsUiAction){
-        when(action){
-            is CompanyDetailsUiAction.OnDeleteRide -> deleteRide(action.rideId)
+    fun handleAction(action: CompanyDetailsUiAction) {
+        when (action) {
             is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
+            is CompanyDetailsUiAction.OnEditReservation -> editReservation(action.reservation)
+            is CompanyDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
+            is CompanyDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
             else -> Unit
         }
     }
-    private fun deleteRide(rideId: String) {
-        Log.d(TAG, "deleteRide: $rideId")
+
+    private fun fetchDrivers(companyId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            reservationRepo.deleteRide(rideId).collect { result ->
-                result.onSuccess {
-                    Log.d(TAG, "deleteRide: success")
+            employeeRepo.getEmployeesByCompany(companyId).collect { result ->
+                result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(rides = oldState.rides.filter { it.id != rideId })
+                        oldState.copy(drivers = data)
                     }
                 }.onFailure { e ->
-                    Log.e(TAG, "deleteRide: failed to delete: ${e.message}")
+                    Log.e(TAG, "fetchDrivers: failed to fetch drivers: ${e.message}")
                     e.printStackTrace()
                 }
             }
         }
     }
-    private fun deleteReservation(reservationId: String){
+
+    private fun fetchEmployees(companyId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            employeeRepo.getEmployeesByCompany(companyId).collect { result ->
+                result.onSuccess { data ->
+                    _uiState.update { oldState ->
+                        oldState.copy(employees = data)
+                    }
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchDrivers: failed to fetch drivers: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun editReservation(reservation: ReservationModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.updateReservation(reservation).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "updateReservations: success")
+                }.onFailure { e ->
+                    Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun deleteReservation(reservationId: String) {
         Log.d(TAG, "deleteReservation: $reservationId")
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.deleteReservation(reservationId).collect { result ->

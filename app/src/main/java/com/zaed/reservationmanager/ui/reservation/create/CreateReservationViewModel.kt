@@ -7,7 +7,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -182,7 +182,7 @@ class CreateReservationViewModel(
             ReservationUiAction.ValidateReservationData -> validateReservationData()
             is ReservationUiAction.UpdateBuyingPrice -> updateBuyingPrice(reservationUiAction.price)
             is ReservationUiAction.UpdateSellingPrice -> updateSellingPrice(reservationUiAction.price)
-            is ReservationUiAction.EditRide -> editSelectedRide(reservationUiAction.ride)
+            is ReservationUiAction.EditRide -> editSelectedRide(reservationUiAction.reservationModel)
         }
     }
 
@@ -190,7 +190,7 @@ class CreateReservationViewModel(
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    rides = it.rides.filter { ride -> ride.id != rideId }
+                    reservationModels = it.reservationModels.filter { ride -> ride.id != rideId }
                 )
             }
         }
@@ -209,10 +209,10 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun editSelectedRide(ride: Ride) {
+    private fun editSelectedRide(reservationModel: ReservationModel) {
         _state.update {
             it.copy(
-                newRide = ride
+                newReservationModel = reservationModel
             )
         }
     }
@@ -220,7 +220,7 @@ class CreateReservationViewModel(
     private fun updateSellingPrice(price: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(sellingPrice = price.toDouble()),
+                newReservationModel = it.newReservationModel.copy(sellingPrice = price.toDouble()),
                 rideError = ReservationError.NONE
             )
         }
@@ -229,7 +229,7 @@ class CreateReservationViewModel(
     private fun updateBuyingPrice(price: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(buyingPrice = price.toDouble()),
+                newReservationModel = it.newReservationModel.copy(buyingPrice = price.toDouble()),
                 rideError = ReservationError.NONE
             )
         }
@@ -280,7 +280,7 @@ class CreateReservationViewModel(
 
     private fun validateRideData(): Boolean {
         with(_state.value) {
-            if (newRide.date == 0L) {
+            if (newReservationModel.date == 0L) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.DATE_IS_REQUIRED,
@@ -296,7 +296,7 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid time", )
                 return false
-            } else if (newRide.type.isBlank()) {
+            } else if (newReservationModel.type.isBlank()) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.TYPE_IS_REQUIRED,
@@ -304,7 +304,7 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid type", )
                 return false
-            } else if (newRide.car.isBlank()) {
+            } else if (newReservationModel.car.isBlank()) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.CAR_IS_REQUIRED,
@@ -312,7 +312,7 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid car", )
                 return false
-            } else if (newRide.startLocation.isBlank()) {
+            } else if (newReservationModel.startLocation.isBlank()) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.START_LOCATION_IS_REQUIRED,
@@ -320,7 +320,7 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid start location", )
                 return false
-            } else if (newRide.endLocation.isBlank()) {
+            } else if (newReservationModel.endLocation.isBlank()) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.END_LOCATION_IS_REQUIRED,
@@ -328,7 +328,7 @@ class CreateReservationViewModel(
                 }
                 Log.e(TAG, "validateRideData: invalid end location", )
                 return false
-            } else if (newRide.sellingPrice == 0.0) {
+            } else if (newReservationModel.sellingPrice == 0.0) {
                 _state.update {
                     it.copy(
                         rideError = ReservationError.SELLING_PRICE_IS_REQUIRED,
@@ -378,14 +378,14 @@ class CreateReservationViewModel(
         viewModelScope.launch {
             reservationRepository.updateReservation(state.value.reservation).collect { result ->
                 result.onSuccess {
-                    if(state.value.rides.isEmpty()){
+                    if(state.value.reservationModels.isEmpty()){
                         _state.update {
                             it.copy(
                                 successStatus = true
                             )
                         }
                     }else {
-                        state.value.rides.forEach{ ride ->
+                        state.value.reservationModels.forEach{ ride ->
                             if(ride.id.isBlank()){
                                 createRide(
                                     ride.copy(
@@ -413,9 +413,9 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun updateRide(ride: Ride) {
+    private fun updateRide(reservationModel: ReservationModel) {
         viewModelScope.launch {
-            reservationRepository.updateRide(ride).collect { result ->
+            reservationRepository.updateRide(reservationModel).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateRide: ride updated")
                     _state.update {
@@ -440,13 +440,13 @@ class CreateReservationViewModel(
     private fun addMovements() {
         Log.d(TAG, "addMovements: ")
         if (!validateRideData()) return
-        val ride = state.value.newRide
+        val ride = state.value.newReservationModel
         _state.update {
             it.copy(
                 reservationError = ReservationError.NONE,
-                rides = if(!isEditMode || ride.id.isBlank()) it.rides + ride else it.rides.map { r -> if(r.id == ride.id) ride else r },
+                reservationModels = if(!isEditMode || ride.id.isBlank()) it.reservationModels + ride else it.reservationModels.map { r -> if(r.id == ride.id) ride else r },
                 successStatus = true,
-                newRide = Ride()
+                newReservationModel = ReservationModel()
             )
         }
     }
@@ -496,14 +496,14 @@ class CreateReservationViewModel(
                             reservation = it.reservation.copy(id = data.first),
                         )
                     }
-                    if(state.value.rides.isEmpty()){
+                    if(state.value.reservationModels.isEmpty()){
                         _state.update {
                             it.copy(
                                 successStatus = true
                             )
                         }
                     }else {
-                        state.value.rides.forEach { ride ->
+                        state.value.reservationModels.forEach { ride ->
                             createRide(
                                 ride.copy(
                                     reservationId = data.first,
@@ -526,10 +526,10 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun createRide(ride: Ride) {
+    private fun createRide(reservationModel: ReservationModel) {
         viewModelScope.launch {
             reservationRepository.createRide(
-                ride
+                reservationModel
             ).collect { result ->
                 result.onSuccess {
                     _state.update {
@@ -586,7 +586,7 @@ class CreateReservationViewModel(
     private fun updateStartLocation(location: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     startLocation = location
                 ),
                 rideError = ReservationError.NONE
@@ -597,7 +597,7 @@ class CreateReservationViewModel(
     private fun updateSelectedTravelCompany(company: Company) {
         _state.update { oldState ->
             oldState.copy(
-                newRide = oldState.newRide.copy(
+                newReservationModel = oldState.newReservationModel.copy(
                     travelCompany = company.name,
                     travelCompanyId = company.id,
                     travelCompanyPhone = company.phoneNumber
@@ -655,7 +655,7 @@ class CreateReservationViewModel(
     private fun updateReservationType(type: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     type = type
                 ),
                 rideError = ReservationError.NONE
@@ -667,8 +667,8 @@ class CreateReservationViewModel(
         Log.d(TAG, "updateReservationTime: $time")
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
-                    date = it.newRide.date + time,
+                newReservationModel = it.newReservationModel.copy(
+                    date = it.newReservationModel.date + time,
                 ),
                 time = time,
                 rideError = ReservationError.NONE
@@ -680,7 +680,7 @@ class CreateReservationViewModel(
         Log.d(TAG, "updateReservationDate: $date")
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     date = date ?: 0L
                 ),
                 rideError = ReservationError.NONE
@@ -691,7 +691,7 @@ class CreateReservationViewModel(
     private fun updateReservationCar(car: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     car = car
                 ),
                 rideError = ReservationError.NONE
@@ -702,7 +702,7 @@ class CreateReservationViewModel(
     private fun updateNote(note: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     note = note
                 ),
                 rideError = ReservationError.NONE
@@ -713,7 +713,7 @@ class CreateReservationViewModel(
     private fun updateEndLocation(location: String) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     endLocation = location
                 ),
                 rideError = ReservationError.NONE
@@ -724,7 +724,7 @@ class CreateReservationViewModel(
     private fun updateDriver(driver: Employee) {
         _state.update {
             it.copy(
-                newRide = it.newRide.copy(
+                newReservationModel = it.newReservationModel.copy(
                     driver = driver.name,
                     driverId = driver.id
                 ),
@@ -789,8 +789,8 @@ class CreateReservationViewModel(
     private fun updateCollectionPrice(price: String) {
         _state.update { oldState ->
             oldState.copy(
-                newRide = oldState.newRide.copy(
-                    collectedPrice = price.toDouble()
+                newReservationModel = oldState.newReservationModel.copy(
+                    collectedAmount = price.toDouble()
                 ),
                 rideError = ReservationError.NONE
             )
@@ -833,7 +833,7 @@ class CreateReservationViewModel(
                 result.onSuccess { rides ->
                     _state.update {
                         it.copy(
-                            rides = rides
+                            reservationModels = rides
                         )
                     }
                 }.onFailure {

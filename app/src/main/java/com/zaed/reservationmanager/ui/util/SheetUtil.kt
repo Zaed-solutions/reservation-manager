@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
@@ -63,7 +63,7 @@ object SheetUtil {
         return null
     }
 
-    fun List<Ride>.exportRidesAsCsv(
+    fun List<ReservationModel>.exportRidesAsCsv(
         context: Context,
         headers: List<String>,
         isAllRides: Boolean = false,
@@ -74,12 +74,12 @@ object SheetUtil {
             val fileName = "Rides_${Date()}.csv"
             val totalSelling = this.sumOf { it.sellingPrice }
             val totalBuying = this.sumOf { it.buyingPrice }
-            val totalCollected = this.sumOf { it.collectedPrice }
+            val totalCollected = this.sumOf { it.collectedAmount }
             val totalBalance = this.sumOf {
                 when {
                     isAllRides -> it.sellingPrice - it.buyingPrice
-                    isTourismCompany -> it.sellingPrice - it.collectedPrice
-                    isTravelCompany -> it.buyingPrice - it.collectedPrice
+                    isTourismCompany -> it.sellingPrice - it.collectedAmount
+                    isTravelCompany -> it.buyingPrice - it.collectedAmount
                     else -> 0.0
                 }
             }
@@ -104,12 +104,12 @@ object SheetUtil {
                 if (!isTourismCompany) {
                     row.createCell(columnIndex++).setCellValue(ride.buyingPrice)
                 }
-                row.createCell(columnIndex++).setCellValue(ride.collectedPrice)
+                row.createCell(columnIndex++).setCellValue(ride.collectedAmount)
                 row.createCell(columnIndex).setCellValue(
                     when {
                         isAllRides -> ride.sellingPrice - ride.buyingPrice
-                        isTourismCompany -> ride.sellingPrice - ride.collectedPrice
-                        isTravelCompany -> ride.buyingPrice - ride.collectedPrice
+                        isTourismCompany -> ride.sellingPrice - ride.collectedAmount
+                        isTravelCompany -> ride.buyingPrice - ride.collectedAmount
                         else -> 0.0
                     }
                 )

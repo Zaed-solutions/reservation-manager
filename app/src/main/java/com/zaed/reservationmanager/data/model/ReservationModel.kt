@@ -1,16 +1,25 @@
 package com.zaed.reservationmanager.data.model
 
-data class Ride(
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ReservationModel(
     val id: String = "",
-    val reservationId: String = "",
-    val reservationNumber: Long = 0L,
+    val reservationNumber: Long = 0,
+    val clientId: String = "",
     val clientName: String = "",
+    val clientPhone: String = "",
+    val clientCountry: String = "",
     val date: Long = 0L,
     val type: String = "",
-    val customerId : String = "",
     val startLocation: String = "",
     val endLocation: String = "",
     val tourismCompanyId: String = "",
+    val tourismCompany: String = "",
+    val tourismCompanyPhone: String = "",
+    val tourismEmployeeId: String = "",
+    val tourismEmployee: String = "",
+    val tourismEmployeePhone: String = "",
     val travelCompanyId: String = "",
     val travelCompany: String = "",
     val travelCompanyPhone: String = "",
@@ -20,8 +29,9 @@ data class Ride(
     val car: String = "",
     val buyingPrice: Double = 0.0,
     val sellingPrice: Double = 0.0,
-    val collectedPrice: Double = 0.0,
+    val collectedAmount: Double = 0.0,
     val note: String = "",
+    val sentConfirmToCustomer: Boolean = false,
     val sentDriverInfoToCustomer: Boolean = false,
     val sentToDriverCompany: Boolean = false,
-    )
+)

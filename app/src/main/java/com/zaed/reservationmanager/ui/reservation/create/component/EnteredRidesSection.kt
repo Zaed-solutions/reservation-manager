@@ -13,16 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.Ride
-import com.zaed.reservationmanager.ui.reservation.details.components.RideItem
+import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.ui.reservation.details.components.ReservationItem
 
 @Composable
 fun EnteredRidesSection(
     isEditMode: Boolean,
-    rides: List<Ride>,
+    reservationModels: List<ReservationModel>,
     onAddMovementClicked: () -> Unit,
-    onEditRide: (Ride) -> Unit,
+    onEditRide: (ReservationModel) -> Unit,
     onDeleteRide: (String) -> Unit,
 ) {
     Row(
@@ -43,12 +42,12 @@ fun EnteredRidesSection(
             )
         }
     }
-    rides.forEach { ride ->
-        RideItem(
-            ride = ride,
-            isEditMode = isEditMode,
-            onDeleteRide = { onDeleteRide(ride.id) },
-            onEditRide = { onEditRide(ride) },
+    reservationModels.forEach { ride ->
+        ReservationItem(
+            reservation = ride,
+            isEditEnabled = isEditMode,
+            onDeleteReservation = { onDeleteRide(ride.id) },
+            onEditReservation = { onEditRide(ride) },
             isActionsVisible = false
         )
     }

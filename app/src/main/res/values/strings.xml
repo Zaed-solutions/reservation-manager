@@ -97,8 +97,8 @@
     <string name="notes">Notes</string>
     <string name="send_info_to_client">Send Driver Information to Client</string>
     <string name="driver_information_sent">Driver Information Sent</string>
-    <string name="ride_info_sent">Ride Information Sent</string>
-    <string name="send_ride_info_to_travel_company">Send Ride Information to Travel Company</string>
+    <string name="reservation_info_sent">Reservation Information Sent</string>
+    <string name="send_reservation_info_to_travel_company">Send Reservation Information to Travel Company</string>
     <string name="no_rides_added">No Rides Added</string>
     <string name="number_copied_to_clipboard">Number copied to clipboard!</string>
     <string name="ride">Ride</string>

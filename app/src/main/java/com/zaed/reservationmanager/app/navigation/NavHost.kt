@@ -17,7 +17,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.client.create.AddCustomerScreen
 import com.zaed.reservationmanager.ui.client.details.CustomerDetailScreen
 import com.zaed.reservationmanager.ui.company.add.AddCompanyScreen
@@ -27,8 +27,7 @@ import com.zaed.reservationmanager.ui.driver.DriverListScreen
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListScreen
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
-import com.zaed.reservationmanager.ui.reservation.details.ReservationDetailsScreen
-import com.zaed.reservationmanager.ui.reservation.display.DisplayReservationScreen
+import com.zaed.reservationmanager.ui.home.HomeScreen
 import kotlin.reflect.typeOf
 
 private const val TAG: String = "NavigationHost"
@@ -42,7 +41,7 @@ fun NavigationHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Route.DisplayReservationRoute,
+        startDestination = Route.HomeRoute,
         enterTransition = {
             fadeIn(
                 animationSpec = tween(
@@ -111,15 +110,12 @@ fun NavigationHost(
                 initialCustomer = args.customer
             )
         }
-        composable<Route.DisplayReservationRoute> {
-            DisplayReservationScreen (
+        composable<Route.HomeRoute> {
+            HomeScreen (
                 navigateToAddReservation = {
                     navController.navigate(Route.CreateReservationRoute())
                 },
                 onShowNavDrawer = { onShowNavDrawer() },
-                navigateToReservationDetails = { reservationId ->
-                    navController.navigate(Route.ReservationDetailsRoute(reservationId))
-                },
                 onNavigateToEmployeeDetails = { _, _ ->},
                 navigateToEditReservation = { reservation ->
                     navController.navigate(Route.CreateReservationRoute(reservation))
@@ -170,7 +166,7 @@ fun NavigationHost(
         }
         composable<Route.CreateReservationRoute> (
             typeMap = mapOf(
-                typeOf<Reservation>() to CustomNavType.ReservationType,
+                typeOf<ReservationModel>() to CustomNavType.ReservationType,
                 typeOf<Customer>() to CustomNavType.CustomerType
             )
         ){
@@ -181,36 +177,15 @@ fun NavigationHost(
                 navigateBack = { navController.popBackStack() }
             )
         }
-        composable<Route.ReservationDetailsRoute> { navBackStackEntry ->
-            val reservationId =
-                navBackStackEntry.toRoute<Route.ReservationDetailsRoute>().reservationId
-            ReservationDetailsScreen(
-                reservationId = reservationId,
-                onBackPressed = { navController.popBackStack() },
-                onNavigateToCompanyDetails = { companyId, companyType ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
-                },
-                onNavigateToClientDetails = { clientId ->
-                    navController.navigate(Route.CustomerDetailsRoute(clientId))
-                },
-                onNavigateToEmployeeDetails = { _, _ -> }
-            )
-        }
+
         composable<Route.CompanyDetailsRoute>{ backStackEntry ->
             val args = backStackEntry.toRoute<Route.CompanyDetailsRoute>()
             CompanyDetailsScreen(
                 companyId = args.companyId,
                 companyType = args.companyType,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToReservationDetails = { reservationId ->
-                    navController.navigate(Route.ReservationDetailsRoute(reservationId))
-                },
-                onNavigateToEmployeeDetails = {_, _ ->},
                 onNavigateToCompanyDetails = { companyId, companyType ->
                     navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
-                },
-                onNavigateToEditReservation = {
-                    navController.navigate(Route.CreateReservationRoute(it))
                 },
             )
         }
@@ -220,14 +195,8 @@ fun NavigationHost(
             CustomerDetailScreen(
                 customerId = customerId,
                 onBackPressed = { navController.popBackStack() },
-                onNavigateToReservationDetails = { reservationId ->
-                    navController.navigate(Route.ReservationDetailsRoute(reservationId))
-                },
                 onNavigateToCompanyDetails = { companyId, companyType ->
                     navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
-                },
-                onNavigateToAddReservation = { customer ->
-                    navController.navigate(Route.CreateReservationRoute(initialCustomer = customer))
                 }
             )
         }

@@ -98,8 +98,8 @@
     <string name="notes">ملاحظات</string>
     <string name="send_info_to_client">إرسال معلومات السائق للعميل</string>
     <string name="driver_information_sent">تم إرسال معلومات السائق</string>
-    <string name="ride_info_sent">تم إرسال معلومات الرحلة</string>
-    <string name="send_ride_info_to_travel_company">إرسال معلومات الرحلة لشركة النقل</string>
+    <string name="reservation_info_sent">تم إرسال معلومات الحجز</string>
+    <string name="send_reservation_info_to_travel_company">إرسال معلومات الحجز لشركة النقل</string>
     <string name="no_rides_added">لم تتم إضافة أي رحلات</string>
     <string name="number_copied_to_clipboard">تم نسخ الرقم!</string>
     <string name="ride">الرحلة</string>

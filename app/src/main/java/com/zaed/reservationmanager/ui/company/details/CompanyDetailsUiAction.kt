@@ -1,17 +1,16 @@
 package com.zaed.reservationmanager.ui.company.details
 
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.data.model.ReservationModel
 
 sealed interface CompanyDetailsUiAction {
     data object OnBackPressed: CompanyDetailsUiAction
     data class OnCopyPhoneNumber(val phoneNumber: String): CompanyDetailsUiAction
     data class OnMessagePhoneNumber(val phoneNumber: String): CompanyDetailsUiAction
-    data class OnDeleteRide(val rideId: String): CompanyDetailsUiAction
     data class OnDeleteReservation(val reservationId: String): CompanyDetailsUiAction
-    data class OnEditReservation(val reservation: Reservation): CompanyDetailsUiAction
-    data class OnReservationClicked(val reservationId: String): CompanyDetailsUiAction
-    data class OnEmployeeClicked(val employeeId: String, val isDriver: Boolean): CompanyDetailsUiAction
-    data object ExportRidesAsCSV : CompanyDetailsUiAction
+    data class OnEditReservation(val reservation: ReservationModel): CompanyDetailsUiAction
+    data class OnFetchEmployees(val companyId: String): CompanyDetailsUiAction
+    data class OnFetchDrivers(val companyId: String): CompanyDetailsUiAction
+    data object ExportReservationsAsCSV : CompanyDetailsUiAction
     data class OnCompanyClicked(val companyId: String, val type: CompanyType): CompanyDetailsUiAction
 }

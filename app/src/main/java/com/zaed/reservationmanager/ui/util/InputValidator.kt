@@ -1,8 +1,7 @@
 package com.zaed.reservationmanager.ui.util
 
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
-import kotlinx.coroutines.flow.update
 
 object InputValidator {
     fun isEmailValid(email: String): Boolean {
@@ -21,18 +20,18 @@ object InputValidator {
         val regex = Regex("^(\\+?\\d+(\\s?|-?)\\d*(\\s?|-?)\\(?\\d{2,}\\)?(\\s?|-?)\\d{3,}\\s?\\d{3,})$")
         return regex.matches(faxNumber)
     }
-    fun validateRide(ride: Ride): ReservationError? {
-        if (ride.date == 0L) {
+    fun validateRide(reservationModel: ReservationModel): ReservationError? {
+        if (reservationModel.date == 0L) {
             return ReservationError.DATE_IS_REQUIRED
-        }  else if (ride.type.isBlank()) {
+        }  else if (reservationModel.type.isBlank()) {
             return ReservationError.TYPE_IS_REQUIRED
-        } else if (ride.car.isBlank()) {
+        } else if (reservationModel.car.isBlank()) {
             return ReservationError.CAR_IS_REQUIRED
-        } else if (ride.startLocation.isBlank()) {
+        } else if (reservationModel.startLocation.isBlank()) {
             return ReservationError.START_LOCATION_IS_REQUIRED
-        } else if (ride.endLocation.isBlank()) {
+        } else if (reservationModel.endLocation.isBlank()) {
             return ReservationError.END_LOCATION_IS_REQUIRED
-        } else if (ride.sellingPrice == 0.0) {
+        } else if (reservationModel.sellingPrice == 0.0) {
             return ReservationError.SELLING_PRICE_IS_REQUIRED
         } else {
             return null

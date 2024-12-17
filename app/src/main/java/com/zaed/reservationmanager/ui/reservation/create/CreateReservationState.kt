@@ -3,16 +3,16 @@ package com.zaed.reservationmanager.ui.reservation.create
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.data.model.Reservation
 
 data class CreateReservationState(
     val reservation: Reservation = Reservation(),
-    val rides : List<Ride> = emptyList(),
+    val reservationModels : List<ReservationModel> = emptyList(),
     val date: Long = 0L,
     val time : Long = 0L,
     val customer: Customer = Customer(),
-    val newRide: Ride = Ride(),
+    val newReservationModel: ReservationModel = ReservationModel(),
     val travelCompanies: List<Company> = emptyList(),//
     val tourismCompanies: List<Company> = emptyList(), //
     val transactionTypes: List<String> = emptyList(),

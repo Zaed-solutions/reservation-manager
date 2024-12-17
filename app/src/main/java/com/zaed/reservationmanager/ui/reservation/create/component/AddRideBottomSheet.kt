@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.Ride
+import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
@@ -31,7 +31,7 @@ fun AddRideBottomSheet(
     addMovementSheetState: SheetState,
     errorMessage: ReservationError,
     action: (ReservationUiAction) -> Unit,
-    newRide: Ride,
+    newReservationModel: ReservationModel,
     types: List<String>,
     cars: List<String>,
     travelCompanies: List<Company>,
@@ -69,7 +69,7 @@ fun AddRideBottomSheet(
             )
             TitledDropDownTextField(
                 title = stringResource(R.string.type),
-                selectedValue = newRide.type,
+                selectedValue = newReservationModel.type,
                 onValueChanged = { index ->
                     action(
                         ReservationUiAction.UpdateReservationType(
@@ -85,7 +85,7 @@ fun AddRideBottomSheet(
 
             TitledDropDownTextField(
                 title = stringResource(R.string.car),
-                selectedValue = newRide.car,
+                selectedValue = newReservationModel.car,
                 onValueChanged = { index ->
                     action(
                         ReservationUiAction.UpdateReservationCar(
@@ -100,7 +100,7 @@ fun AddRideBottomSheet(
             )
             TitledDropDownTextField(
                 title = stringResource(R.string.travel_company),
-                selectedValue = newRide.travelCompany,
+                selectedValue = newReservationModel.travelCompany,
                 onValueChanged = { index ->
                     action(
                         ReservationUiAction.UpdateSelectedTravelCompany(
@@ -113,7 +113,7 @@ fun AddRideBottomSheet(
             )
             TitledDropDownTextField(
                 title = stringResource(R.string.drivers),
-                selectedValue = newRide.driver,
+                selectedValue = newReservationModel.driver,
                 onValueChanged = { index ->
                     action(
                         ReservationUiAction.UpdateDriver(
@@ -126,7 +126,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.start_location),
-                initialValue = newRide.startLocation,
+                initialValue = newReservationModel.startLocation,
                 onValueChanged = { newText ->
                     action(
                         ReservationUiAction.UpdateStartLocation(
@@ -141,7 +141,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.end_location),
-                initialValue = newRide.endLocation,
+                initialValue = newReservationModel.endLocation,
                 onValueChanged = { newText ->
                     action(
                         ReservationUiAction.UpdateEndLocation(
@@ -156,7 +156,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.selling_price),
-                initialValue = if (newRide.sellingPrice == 0.0) "" else newRide.sellingPrice.toInt().toString(),
+                initialValue = if (newReservationModel.sellingPrice == 0.0) "" else newReservationModel.sellingPrice.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
@@ -180,7 +180,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.buying_price),
-                initialValue = if (newRide.buyingPrice == 0.0) "" else newRide.buyingPrice.toInt().toString(),
+                initialValue = if (newReservationModel.buyingPrice == 0.0) "" else newReservationModel.buyingPrice.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
@@ -202,7 +202,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.collection_price),
-                initialValue = if (newRide.collectedPrice == 0.0) "" else newRide.collectedPrice.toInt().toString(),
+                initialValue = if (newReservationModel.collectedAmount == 0.0) "" else newReservationModel.collectedAmount.toInt().toString(),
                 onValueChanged = { newText ->
                     if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                         action(
@@ -225,7 +225,7 @@ fun AddRideBottomSheet(
             )
             TitledTextField(
                 title = stringResource(R.string.note),
-                initialValue = newRide.note,
+                initialValue = newReservationModel.note,
                 onValueChanged = { newText ->
 
                     action(
