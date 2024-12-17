@@ -27,9 +27,9 @@ fun AddNewReservation(
     tourismCompanies: List<Company>,
     employees: List<Employee>
 ) {
-    TitledTextField(
+    TitledTextField2(
         title = stringResource(R.string.client_phone),
-        initialValue = initialReservation.clientPhone,
+        value = reservation.clientPhone,
         onValueChanged = { newText ->
             action(
                 ReservationUiAction.UpdateCustomerNumber(

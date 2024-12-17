@@ -40,7 +40,7 @@ class CustomerDetailsViewModel(
             reservationRepo.getRidesByCustomerId(customerId).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(rides = data)
+                        oldState.copy(rides = data.sortedByDescending { it.date })
                     }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchCustomerRides: failed to fetch customer rides ${e.message}")

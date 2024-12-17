@@ -176,11 +176,14 @@ fun NavigationHost(
         }
         composable<Route.CreateReservationRoute> (
             typeMap = mapOf(
-                typeOf<Reservation>() to CustomNavType.ReservationType
+                typeOf<Reservation>() to CustomNavType.ReservationType,
+                typeOf<Customer>() to CustomNavType.CustomerType
             )
         ){
+            val args = it.toRoute<Route.CreateReservationRoute>()
             CreateReservationScreen(
-                reservation = it.toRoute<Route.CreateReservationRoute>().reservation,
+                reservation = args.reservation,
+                initialCustomer = args.initialCustomer,
                 navigateBack = { navController.popBackStack() }
             )
         }
@@ -232,6 +235,9 @@ fun NavigationHost(
                 },
                 onNavigateToCompanyDetails = { companyId, companyType ->
                     navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
+                },
+                onNavigateToAddReservation = { customer ->
+                    navController.navigate(Route.CreateReservationRoute(initialCustomer = customer))
                 }
             )
         }

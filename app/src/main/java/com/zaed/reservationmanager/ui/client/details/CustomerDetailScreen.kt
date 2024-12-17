@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +55,7 @@ fun CustomerDetailScreen(
     onBackPressed: () -> Unit = {},
     onNavigateToReservationDetails: (reservationId: String) -> Unit = {},
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ ->},
+    onNavigateToAddReservation: (Customer) -> Unit = {}
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -105,6 +108,9 @@ fun CustomerDetailScreen(
                         }
                     }
                 }
+                CustomerDetailsUiAction.OnAddReservation -> {
+                    onNavigateToAddReservation(state.customer)
+                }
                 else -> viewModel.handleAction(action)
             }
         }
@@ -148,6 +154,16 @@ private fun CustomerDetailScreenContent(
                     }
                 },
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onAction(CustomerDetailsUiAction.OnAddReservation) },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                )
+            }
         }
     ) { innerPadding->
         Column(

@@ -797,24 +797,38 @@ class CreateReservationViewModel(
         }
     }
 
-    fun loadReservation(reservation: Reservation) {
-        isEditMode = true
-        _state.update {
-            it.copy(
-                reservation = reservation,
-                customer = Customer(
-                    id = reservation.clientId,
-                    name = reservation.clientName,
-                    phoneNumber = reservation.clientPhone,
-                    residenceCountry = reservation.clientCountry
+    fun init(reservation: Reservation, initialCustomer: Customer) {
+        if(reservation.id.isNotBlank()){
+            isEditMode = true
+            _state.update {
+                it.copy(
+                    reservation = reservation,
+                    customer = Customer(
+                        id = reservation.clientId,
+                        name = reservation.clientName,
+                        phoneNumber = reservation.clientPhone,
+                        residenceCountry = reservation.clientCountry
+                    )
                 )
-            )
+            }
+            fetchRides(reservation.id)
+        } else {
+            _state.update {
+                it.copy(
+                    reservation = reservation.copy(
+                        clientName = initialCustomer.name,
+                        clientId = initialCustomer.id,
+                        clientCountry = initialCustomer.residenceCountry,
+                        clientPhone = initialCustomer.phoneNumber
+                    ),
+                    customer = initialCustomer
+                )
+            }
         }
-        fetchRides(reservation.id)
     }
 
     private fun fetchRides(reservationId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             reservationRepository.getRidesByReservationId(reservationId).collect { result ->
                 result.onSuccess { rides ->
                     _state.update {

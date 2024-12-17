@@ -7,4 +7,5 @@ sealed interface CustomerDetailsUiAction {
     data object OnBackPressed: CustomerDetailsUiAction
     data class OnCompanyClicked(val companyId: String): CustomerDetailsUiAction
     data class OnReservationDetailsClicked(val reservationId: String): CustomerDetailsUiAction
+    data object OnAddReservation: CustomerDetailsUiAction
 }

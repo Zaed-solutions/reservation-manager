@@ -34,7 +34,7 @@ sealed interface Route {
     data object EmployeeListRoute: Route
 
     @Serializable
-    data class CreateReservationRoute(val reservation: Reservation= Reservation()): Route
+    data class CreateReservationRoute(val reservation: Reservation= Reservation(), val initialCustomer: Customer = Customer()): Route
 
     @Serializable
     data class ReservationDetailsRoute(val reservationId: String = ""): Route

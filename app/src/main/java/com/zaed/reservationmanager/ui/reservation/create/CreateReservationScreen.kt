@@ -1,11 +1,8 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,9 +26,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.Ride
@@ -48,13 +45,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CreateReservationScreen(
     reservation: Reservation = Reservation(),
+    initialCustomer: Customer = Customer(),
     viewModel: CreateReservationViewModel = koinViewModel(),
     navigateBack: () -> Unit
 ) {
-    LaunchedEffect (true){
-        if(reservation.id.isNotBlank()) {
-            viewModel.loadReservation(reservation)
-        }
+    LaunchedEffect(true) {
+        viewModel.init(reservation, initialCustomer)
     }
 
     val state by viewModel.state.collectAsState()
@@ -126,10 +122,10 @@ fun CreateReservationScreenContent(
     }
     LaunchedEffect(successStatus) {
         if (successStatus) {
-            if(isAddMovementSheetVisible){
+            if (isAddMovementSheetVisible) {
                 isAddMovementSheetVisible = false
                 resetSuccessStatus()
-            }else {
+            } else {
                 snackbarHostState.showSnackbarWithDuration(
                     message = context.getString(
                         if (isEditMode)
@@ -163,7 +159,8 @@ fun CreateReservationScreenContent(
             MainActionButtons(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
                 isEditMode = isEditMode,
-                action = action) {
+                action = action
+            ) {
                 onBackClicked()
             }
         }
@@ -198,7 +195,7 @@ fun CreateReservationScreenContent(
                     if (reservationError != ReservationError.NONE) return@EnteredRidesSection
                     isAddMovementSheetVisible = true
                 },
-                onEditRide = {ride->
+                onEditRide = { ride ->
                     action(ReservationUiAction.EditRide(ride))
                     isAddMovementSheetVisible = true
                 },
