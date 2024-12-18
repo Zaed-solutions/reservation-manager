@@ -11,6 +11,7 @@ import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
+import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,19 +99,26 @@ class HomeViewModel(
     }
 
     private fun fetchCountries() {
-//        TODO("Not yet implemented")
+        viewModelScope.launch(Dispatchers.IO) {
+            menuDataStore.getMenus(COUNTRIES_KEY).collect { data ->
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        countries = data.toList()
+                    )
+                }
+            }
+        }
     }
 
     private fun fetchCustomers() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             customerRepo.getCustomers().collect { result ->
                 result.onSuccess { data ->
                     val sortedCustomers = data.sortedBy { it.createdAtEpochSeconds }
                     _uiState.update { oldState ->
                         oldState.copy(
                             customers = sortedCustomers,
-                            displayedCustomers = sortedCustomers,
-                            countries = sortedCustomers.map { it.residenceCountry }.distinct()
+                            displayedCustomers = sortedCustomers
                         )
                     }
                 }.onFailure {
@@ -122,7 +130,7 @@ class HomeViewModel(
     }
 
     private fun fetchReservations() {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             reservationRepo.getReservations().collect { results ->
                 results.onSuccess { data ->
                     _uiState.update {
@@ -180,7 +188,7 @@ class HomeViewModel(
     }
 
     private fun filterData(timeFilter: TimeFilter, countryFilter: String, searchQuery: String) {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.Default){
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
                 _uiState.update {
                     it.copy(
@@ -340,7 +348,7 @@ class HomeViewModel(
 
 
     fun deleteCustomer(customerId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             customerRepo.deleteCustomer(customerId).collect { result ->
                 result.onSuccess {
                     Log.d("CustomerListViewModel", "Customer deleted successfully")
@@ -397,7 +405,7 @@ class HomeViewModel(
     }
 
     private fun deleteReservation(reservationId: String) {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             reservationRepo.deleteReservation(reservationId).collect {
                 it.onSuccess {
                     Log.d("DisplayReservationViewModel", "onDeleteReservation: success")
