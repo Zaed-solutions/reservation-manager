@@ -89,7 +89,8 @@ fun AddCompanyScreen(
         error = state.error,
         isNew = state.isNew,
         initialCompany = initialCompany,
-        company = state.company
+        company = state.company,
+        countryList = state.countryList
     )
 }
 
@@ -99,6 +100,7 @@ private fun AddCompanyScreenContent(
     modifier: Modifier = Modifier,
     initialCompany: Company = Company(),
     company: Company = Company(),
+    countryList : List<String> = emptyList(),
     isNew: Boolean = true,
     error: AddCompanyUiError = AddCompanyUiError.NONE,
     onAction: (AddCompanyUiAction) -> Unit = {},
@@ -183,12 +185,14 @@ private fun AddCompanyScreenContent(
                 options = CompanyType.entries.map { stringResource(id = it.displayNameRes) },
             )
             //country
-            TitledTextField(
+            TitledDropDownTextField(
                 title = stringResource(R.string.country),
-                initialValue = initialCompany.country,
-                onValueChanged = { country ->
-                    onAction(AddCompanyUiAction.OnCountryChanged(country))
+                onValueChanged = { index ->
+
+                    onAction(AddCompanyUiAction.OnCountryChanged(countryList[index]))
                 },
+                options = countryList,
+                selectedValue = company.country,
                 isOptional = false,
                 isError = error == AddCompanyUiError.COUNTRY_IS_REQUIRED,
                 errorMessageRes = error.messageRes

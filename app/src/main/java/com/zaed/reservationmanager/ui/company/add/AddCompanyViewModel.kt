@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.repository.CompanyRepository
+import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
 import com.zaed.reservationmanager.ui.util.InputValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 class AddCompanyViewModel(
-    private val companyRepo: CompanyRepository
+    private val companyRepo: CompanyRepository,
+    private val menuDataStore: MenuDataStore
 ) : ViewModel() {
     private val TAG = "AddCompanyViewModel"
     private val _uiState = MutableStateFlow(AddCompanyUiState())
@@ -24,7 +27,10 @@ class AddCompanyViewModel(
         _uiState.update {
             it.copy(isNew = initialCompany.id.isBlank(), company = initialCompany)
         }
+        fetchCountryList()
     }
+
+
 
     fun handleAction(action: AddCompanyUiAction) {
         when (action) {
@@ -104,6 +110,13 @@ class AddCompanyViewModel(
                     Log.e(TAG, "onSave: ${error.message}")
                     error.printStackTrace()
                 }
+            }
+        }
+    }
+    private fun fetchCountryList() {
+        viewModelScope.launch(Dispatchers.IO) {
+            menuDataStore.getMenus(COUNTRIES_KEY).collect { countryList ->
+                _uiState.update { it.copy(countryList = countryList.toList()) }
             }
         }
     }
