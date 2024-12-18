@@ -109,8 +109,8 @@ fun HomeScreen(
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     HomeScreenContent(
-        reservations = state.reservations,
-        customers = state.customers,
+        reservations = state.displayedReservations,
+        customers = state.displayedCustomers,
         searchQuery = state.searchQuery,
         selectedCountry = state.selectedCountry,
         selectedTimeFilter = state.timeFilter,
