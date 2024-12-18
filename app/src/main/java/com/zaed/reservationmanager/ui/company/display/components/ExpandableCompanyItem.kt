@@ -83,7 +83,9 @@ fun ExpandableCompanyItem(
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(top=8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.Start,
                 ) {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
@@ -63,7 +63,7 @@ object SheetUtil {
         return null
     }
 
-    fun List<ReservationModel>.exportReservationsAsCSV(
+    fun List<Reservation>.exportReservationsAsCSV(
         context: Context,
         headers: List<String>,
         isAllRides: Boolean = false,

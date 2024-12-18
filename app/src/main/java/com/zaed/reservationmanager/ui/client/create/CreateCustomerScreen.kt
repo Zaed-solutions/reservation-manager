@@ -20,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
-import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField2
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration

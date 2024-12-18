@@ -4,9 +4,9 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
-class CompanyRepositoryImpl (
+class CompanyRepositoryImpl(
     private val remoteSource: CompanyRemoteDataSource
-): CompanyRepository {
+) : CompanyRepository {
     override fun createCompany(company: Company): Flow<Result<Boolean>> {
         return remoteSource.createCompany(company)
     }

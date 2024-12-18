@@ -71,10 +71,10 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
-import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
 import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
@@ -100,7 +100,7 @@ fun HomeScreen(
     onNavigateToEditCustomer: (Customer) -> Unit = {},
     onNavigateToAddReservation: () -> Unit = {},
     onNavigateToCustomerDetails: (String) -> Unit = {},
-    onNavigateToCompanyDetails: (String, CompanyType) -> Unit = { _, _ ->},
+    onNavigateToCompanyDetails: (String, CompanyType) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
@@ -127,7 +127,11 @@ fun HomeScreen(
                 HomeUiAction.ShowNavDrawer -> onShowNavDrawer()
                 HomeUiAction.AddCustomer -> onNavigateToAddCustomer()
                 HomeUiAction.AddReservation -> onNavigateToAddReservation()
-                is HomeUiAction.OnCompanyClicked -> onNavigateToCompanyDetails(action.companyId, action.companyType)
+                is HomeUiAction.OnCompanyClicked -> onNavigateToCompanyDetails(
+                    action.companyId,
+                    action.companyType
+                )
+
                 is HomeUiAction.OnEditCustomerClicked -> onNavigateToEditCustomer(action.customer)
                 is HomeUiAction.OnViewCustomerDetails -> onNavigateToCustomerDetails(action.customerId)
                 HomeUiAction.ExportCustomersAsCsv -> {
@@ -174,6 +178,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 HomeUiAction.ExportReservationsAsCsv -> {
                     val file = state.displayedReservations.exportReservationsAsCSV(
                         context = context,
@@ -232,6 +237,7 @@ fun HomeScreen(
                         )
                     }
                 }
+
                 is HomeUiAction.OnMessagePhoneNumber -> {
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
@@ -244,8 +250,10 @@ fun HomeScreen(
                         }
                     )
                 }
+
                 is HomeUiAction.SendConfirmationToClient -> {
-                    val reservation = state.displayedReservations.first { it.id == action.reservationId }
+                    val reservation =
+                        state.displayedReservations.first { it.id == action.reservationId }
                     val messageText =
                         context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
                     PhoneUtil.sendWhatsappMessage(
@@ -262,8 +270,10 @@ fun HomeScreen(
                         }
                     )
                 }
+
                 is HomeUiAction.SendDriverInfoToClient -> {
-                    val reservation = state.displayedReservations.first{ it.id == action.reservationId }
+                    val reservation =
+                        state.displayedReservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
                         R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
                         reservation.driver,
@@ -283,8 +293,10 @@ fun HomeScreen(
                         }
                     )
                 }
+
                 is HomeUiAction.SendReservationInfoToTravelCompany -> {
-                    val reservation = state.displayedReservations.first { it.id == action.reservationId }
+                    val reservation =
+                        state.displayedReservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
                         R.string.transportation_details,
                         reservation.travelCompany,
@@ -310,6 +322,7 @@ fun HomeScreen(
                         }
                     )
                 }
+
                 else -> viewModel.handleAction(action)
             }
         }
@@ -319,7 +332,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
-    reservations: List<ReservationModel> = emptyList(),
+    reservations: List<Reservation> = emptyList(),
     customers: List<Customer> = emptyList(),
     searchQuery: String = "",
     selectedCountry: String = "",
@@ -346,7 +359,7 @@ fun HomeScreenContent(
         mutableStateOf(false)
     }
     var editedReservation by remember {
-        mutableStateOf(ReservationModel())
+        mutableStateOf(Reservation())
     }
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
@@ -526,7 +539,7 @@ fun HomeScreenContent(
                                 FilterChip(
                                     modifier = Modifier.padding(end = 8.dp),
                                     onClick = {
-                                        onAction(HomeUiAction.UpdateCountryFilter(if(country!= selectedCountry) country else ""))
+                                        onAction(HomeUiAction.UpdateCountryFilter(if (country != selectedCountry) country else ""))
                                     },
                                     label = {
                                         Text(country)
@@ -568,8 +581,10 @@ fun HomeScreenContent(
                         Column {
                             TimeFiltersChips(
                                 onUpdateTimeFilter = { timeFilter ->
-                                    onAction(HomeUiAction.UpdateTimeFilter(
-                                        if(timeFilter::class == selectedTimeFilter::class) timeFilter else TimeFilter.All)
+                                    onAction(
+                                        HomeUiAction.UpdateTimeFilter(
+                                            if (timeFilter::class == selectedTimeFilter::class) timeFilter else TimeFilter.All
+                                        )
                                     )
                                 },
                                 selectedTimeFilter = selectedTimeFilter,
@@ -667,11 +682,11 @@ fun HomeScreenContent(
                         onSaveReservation = {
                             onAction(HomeUiAction.UpdateReservation(it))
                             isEditReservationBottomSheetVisible = false
-                            editedReservation = ReservationModel()
+                            editedReservation = Reservation()
                         },
                         onDismiss = {
                             isEditReservationBottomSheetVisible = false
-                            editedReservation = ReservationModel()
+                            editedReservation = Reservation()
                         }
 
                     )

@@ -13,10 +13,11 @@ import kotlinx.coroutines.launch
 
 class CompaniesViewModel(
     private val companyRepo: CompanyRepository
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CompaniesUiState())
     val uiState = _uiState.asStateFlow()
     private val TAG = "CompaniesViewModel"
+
     init {
         fetchCompanies()
     }
@@ -41,15 +42,15 @@ class CompaniesViewModel(
     }
 
     fun handleAction(action: CompaniesUiAction) {
-        when(action){
+        when (action) {
             is CompaniesUiAction.OnDeleteCompanyConfirmed -> deleteCompany(action.companyId)
             else -> Unit
         }
     }
 
     private fun deleteCompany(companyId: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            companyRepo.deleteCompany(companyId).collect{ result ->
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.deleteCompany(companyId).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "Company deleted successfully")
                 }.onFailure {

@@ -1,6 +1,6 @@
 package com.zaed.reservationmanager.ui.util
 
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 
 object InputValidator {
@@ -20,18 +20,18 @@ object InputValidator {
         val regex = Regex("^(\\+?\\d+(\\s?|-?)\\d*(\\s?|-?)\\(?\\d{2,}\\)?(\\s?|-?)\\d{3,}\\s?\\d{3,})$")
         return regex.matches(faxNumber)
     }
-    fun validateRide(reservationModel: ReservationModel): ReservationError? {
-        if (reservationModel.date == 0L) {
+    fun validateRide(reservation: Reservation): ReservationError? {
+        if (reservation.date == 0L) {
             return ReservationError.DATE_IS_REQUIRED
-        }  else if (reservationModel.type.isBlank()) {
+        }  else if (reservation.type.isBlank()) {
             return ReservationError.TYPE_IS_REQUIRED
-        } else if (reservationModel.car.isBlank()) {
+        } else if (reservation.car.isBlank()) {
             return ReservationError.CAR_IS_REQUIRED
-        } else if (reservationModel.startLocation.isBlank()) {
+        } else if (reservation.startLocation.isBlank()) {
             return ReservationError.START_LOCATION_IS_REQUIRED
-        } else if (reservationModel.endLocation.isBlank()) {
+        } else if (reservation.endLocation.isBlank()) {
             return ReservationError.END_LOCATION_IS_REQUIRED
-        } else if (reservationModel.sellingPrice == 0.0) {
+        } else if (reservation.sellingPrice == 0.0) {
             return ReservationError.SELLING_PRICE_IS_REQUIRED
         } else {
             return null

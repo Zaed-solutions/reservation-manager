@@ -4,7 +4,6 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
 import kotlinx.serialization.Serializable
 
 sealed interface Route {
@@ -21,9 +20,6 @@ sealed interface Route {
     data class AddCustomerRoute(val customer: Customer = Customer()): Route
 
     @Serializable
-    data object CustomerListRoute: Route
-
-    @Serializable
     data object ReservationListRoute: Route
 
     @Serializable
@@ -33,7 +29,7 @@ sealed interface Route {
     data object EmployeeListRoute: Route
 
     @Serializable
-    data class CreateReservationRoute(val reservation: ReservationModel = ReservationModel(), val initialCustomer: Customer = Customer()): Route
+    data object CreateReservationRoute: Route
 
 
     @Serializable

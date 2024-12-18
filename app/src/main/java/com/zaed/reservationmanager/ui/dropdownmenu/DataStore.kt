@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore("menu_prefs")
+
 class MenuDataStoreImpl(val context: Context) : MenuDataStore {
 
     override fun getMenus(key: Preferences.Key<Set<String>>): Flow<Set<String>> {
@@ -39,6 +40,7 @@ class MenuDataStoreImpl(val context: Context) : MenuDataStore {
         }
     }
 }
+
 val reservationTypesList = listOf(
     "Reception",
     "Departure",

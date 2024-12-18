@@ -90,7 +90,10 @@ fun UpdateDropDownListsScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            Text(stringResource(R.string.select_a_menu_to_manage), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.select_a_menu_to_manage),
+                style = MaterialTheme.typography.titleMedium
+            )
             TextButton({
                 if (selectedMenuKey == RESERVATION_TYPES_KEY) {
                     selectedMenuKey = null
@@ -98,7 +101,10 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = RESERVATION_TYPES_KEY
                 }
             }) {
-                Text(stringResource(R.string.reservation_types), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.reservation_types),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
@@ -110,7 +116,7 @@ fun UpdateDropDownListsScreen(
             AnimatedVisibility(selectedMenuKey == RESERVATION_TYPES_KEY) {
                 MenuList(
                     reservationTypesFlow.value,
-                ){
+                ) {
                     viewModel.deleteMenu(RESERVATION_TYPES_KEY, it)
                 }
             }
@@ -121,7 +127,10 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = CAR_TYPES_KEY
                 }
             }) {
-                Text(stringResource(R.string.car_types), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.car_types),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
@@ -131,7 +140,7 @@ fun UpdateDropDownListsScreen(
                 }
             }
             AnimatedVisibility(selectedMenuKey == CAR_TYPES_KEY) {
-                MenuList(carTypesFlow.value){
+                MenuList(carTypesFlow.value) {
                     viewModel.deleteMenu(CAR_TYPES_KEY, it)
                 }
             }
@@ -142,7 +151,10 @@ fun UpdateDropDownListsScreen(
                     selectedMenuKey = COUNTRIES_KEY
                 }
             }) {
-                Text(stringResource(R.string.countries), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.countries),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true

@@ -3,7 +3,7 @@ package com.zaed.reservationmanager.ui.company.add
 import androidx.annotation.StringRes
 import com.zaed.reservationmanager.R
 
-enum class AddCompanyUiError(@StringRes val messageRes: Int){
+enum class AddCompanyUiError(@StringRes val messageRes: Int) {
     NONE(0),
     NAME_IS_REQUIRED(R.string.name_is_required),
     COUNTRY_IS_REQUIRED(R.string.country_is_required),

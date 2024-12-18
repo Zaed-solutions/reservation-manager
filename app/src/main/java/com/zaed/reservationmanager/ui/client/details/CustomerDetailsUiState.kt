@@ -3,11 +3,11 @@ package com.zaed.reservationmanager.ui.client.details
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 
-data class CustomerDetailsUiState (
+data class CustomerDetailsUiState(
     val customer: Customer = Customer(),
-    val reservations: List<ReservationModel> = emptyList(),
+    val reservations: List<Reservation> = emptyList(),
     val reservationTypes: List<String> = emptyList(),
     val cars: List<String> = emptyList(),
     val travelCompanies: List<Company> = emptyList(),

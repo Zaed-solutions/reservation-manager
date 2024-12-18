@@ -64,6 +64,7 @@ fun DateRangePickerModal(
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateFixedPickerModal(
@@ -78,7 +79,7 @@ fun DateFixedPickerModal(
             TextButton(
                 onClick = {
                     onDateSelected(
-                            datePickerState.selectedDateMillis?.toSeconds()
+                        datePickerState.selectedDateMillis?.toSeconds()
                     )
                     onDismiss()
                 }

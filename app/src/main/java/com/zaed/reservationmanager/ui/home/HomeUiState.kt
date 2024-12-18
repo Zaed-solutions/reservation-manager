@@ -3,13 +3,13 @@ package com.zaed.reservationmanager.ui.home
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 
 data class HomeUiState(
     val isLoading: Boolean = false,
-    val reservations: List<ReservationModel> = emptyList(),
-    val displayedReservations: List<ReservationModel> = emptyList(),
+    val reservations: List<Reservation> = emptyList(),
+    val displayedReservations: List<Reservation> = emptyList(),
     val searchQuery: String = "",
     val customers: List<Customer> = emptyList(),
     val selectedCountry: String = "",

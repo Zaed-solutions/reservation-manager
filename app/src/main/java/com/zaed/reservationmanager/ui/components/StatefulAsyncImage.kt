@@ -39,21 +39,24 @@ fun StatefulAsyncImage(
             contentScale = contentScale
         ) {
             val state = painter.state
-            when(state){
+            when (state) {
                 is AsyncImagePainter.State.Success -> {
                     SubcomposeAsyncImageContent()
                 }
+
                 is AsyncImagePainter.State.Loading -> {
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .shimmerEffect()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shimmerEffect()
                     )
                 }
+
                 is AsyncImagePainter.State.Error -> {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = Color.Gray.copy(alpha = 0.3f)
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Default.BrokenImage,
                             contentDescription = null,
@@ -63,6 +66,7 @@ fun StatefulAsyncImage(
                         )
                     }
                 }
+
                 else -> Unit
             }
         }

@@ -23,22 +23,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
 @Composable
 fun ReservationsList(
     modifier: Modifier = Modifier,
-    reservations: List<ReservationModel> = emptyList(),
+    reservations: List<Reservation> = emptyList(),
     onAddReservation: () -> Unit = {},
     isHeaderVisible: Boolean = true,
     isAddEnabled: Boolean = true,
     isSendActionsVisible: Boolean = true,
+    isEditable: Boolean = true,
     onDeleteReservation: (reservationId: String) -> Unit = {},
-    onCompanyClicked: (companyId: String, companyType: CompanyType) -> Unit = {_ , _->},
+    onCompanyClicked: (companyId: String, companyType: CompanyType) -> Unit = { _, _ -> },
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
-    onEditReservation: (reservation: ReservationModel) -> Unit = {},
+    onEditReservation: (reservation: Reservation) -> Unit = {},
     onSendConfirmationToCustomer: (reservationId: String) -> Unit = {},
     onSendDriverInfoToClient: (reservationId: String) -> Unit = { },
     onSendInfoToTravelCompany: (reservationId: String) -> Unit = {},
@@ -92,10 +93,11 @@ fun ReservationsList(
                                 onDeleteReservation = {
                                     onDeleteReservation(reservation.id)
                                 },
+                                isEditable = isEditable,
                                 onEditReservation = {
                                     onEditReservation(reservation)
                                 },
-                                onCompanyClicked = { companyId, companyType->
+                                onCompanyClicked = { companyId, companyType ->
                                     onCompanyClicked(companyId, companyType)
                                 },
                                 onCopyPhoneNumber = { number ->
@@ -128,8 +130,8 @@ fun ReservationsList(
 @Composable
 private fun Preview() {
     ReservationManagerTheme {
-        val reservationModels = listOf(
-            ReservationModel(
+        val reservations = listOf(
+            Reservation(
                 id = "tristique",
                 date = 7041,
                 type = "Mazarat El Madina",
@@ -146,7 +148,7 @@ private fun Preview() {
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
             ),
-            ReservationModel(
+            Reservation(
                 id = "tristique",
                 date = 7041,
                 type = "Mazarat El Madina",

@@ -52,7 +52,9 @@ fun ConfirmDeleteDialog(
                 Text(text = stringResource(id = R.string.cancel))
             }
             Button(
-                modifier = Modifier.widthIn(min = 100.dp).weight(1f),
+                modifier = Modifier
+                    .widthIn(min = 100.dp)
+                    .weight(1f),
                 onClick = { onConfirm() },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {

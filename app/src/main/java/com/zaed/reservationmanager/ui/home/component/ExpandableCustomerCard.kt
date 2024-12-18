@@ -83,7 +83,9 @@ fun ExpandableCustomerCard(
 
             AnimatedVisibility(expanded) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DetailRow(

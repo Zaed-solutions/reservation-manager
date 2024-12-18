@@ -2,22 +2,26 @@ package com.zaed.reservationmanager.data.repository
 
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
 class ReservationRepositoryImpl(
     private val remoteDataSource: ReservationRemoteDataSource
 ) : ReservationRepository {
-    override fun createReservation(reservation: ReservationModel): Flow<Result<Pair<String,Long>>> {
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> {
         return remoteDataSource.createReservation(reservation)
     }
 
-    override fun getReservationById(id: String): Flow<Result<ReservationModel>> {
+    override fun createReservations(reservations: List<Reservation>): Flow<Result<Unit>> {
+        return remoteDataSource.createReservations(reservations)
+    }
+
+    override fun getReservationById(id: String): Flow<Result<Reservation>> {
         return remoteDataSource.getReservationById(id)
     }
 
-    override fun getReservationByCustomerId(customerId: String): Flow<Result<List<ReservationModel>>> {
+    override fun getReservationByCustomerId(customerId: String): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getReservationsByCustomerId(customerId)
     }
 
@@ -32,12 +36,12 @@ class ReservationRepositoryImpl(
         return remoteDataSource.updateReservation(reservationId, updates)
     }
 
-    override fun updateReservation(reservation: ReservationModel): Flow<Result<Boolean>> {
+    override fun updateReservation(reservation: Reservation): Flow<Result<Boolean>> {
         return remoteDataSource.updateReservation(reservation)
     }
 
 
-    override fun getReservations(): Flow<Result<List<ReservationModel>>> {
+    override fun getReservations(): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getReservations()
     }
 
@@ -48,7 +52,7 @@ class ReservationRepositoryImpl(
         return remoteDataSource.getCompanyBalance(companyId)
     }
 
-    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<ReservationModel>>> {
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getReservationsByCompanyId(companyId)
     }
 }

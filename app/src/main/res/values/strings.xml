@@ -40,7 +40,7 @@
     <string name="cancel">Cancel</string>
     <string name="customer_with_this_phone_number_already_exists">Customer with this phone number already exists</string>
     <string name="create_new_customer">Create New Customer</string>
-    <string name="client_name">Client Name</string>
+    <string name="client_name">Customer Name</string>
     <string name="nationality">Nationality</string>
     <string name="country_of_residence">Residence Country</string>
     <string name="atleast_one_phone_number_is_required">Atleast one phone number is required</string>
@@ -212,4 +212,5 @@
     <string name="driver_updated_successfully">Driver updated successfully!</string>
     <string name="reservation_updated_successfully">Reservation updated successfully!</string>
     <string name="reservation_added_successfully">Reservation added successfully!</string>
+    <string name="save_reservations">Save Reservations</string>
 </resources>

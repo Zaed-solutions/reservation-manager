@@ -17,7 +17,7 @@ import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 fun CompaniesList(
     modifier: Modifier = Modifier,
     companies: List<Company> = emptyList(),
-    onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _->},
+    onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ -> },
     onDeleteCompany: (companyId: String) -> Unit = {},
     onEditCompany: (company: Company) -> Unit = {}
 ) {

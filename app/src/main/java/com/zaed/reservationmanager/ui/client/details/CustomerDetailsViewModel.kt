@@ -3,7 +3,7 @@ package com.zaed.reservationmanager.ui.client.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -34,9 +34,10 @@ class CustomerDetailsViewModel(
         fetchTravelCompanies()
         fetchTourismCompanies()
     }
+
     private fun fetchReservationTypes() {
         viewModelScope.launch(Dispatchers.IO) {
-            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data->
+            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data ->
                 _uiState.update { oldState ->
                     oldState.copy(
                         reservationTypes = data.toList()
@@ -45,6 +46,7 @@ class CustomerDetailsViewModel(
             }
         }
     }
+
     private fun fetchCarTypes() {
         viewModelScope.launch(Dispatchers.IO) {
             menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
@@ -56,6 +58,7 @@ class CustomerDetailsViewModel(
             }
         }
     }
+
     private fun fetchTravelCompanies() {
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.getCompanies(isDriver = true).collect { result ->
@@ -91,11 +94,11 @@ class CustomerDetailsViewModel(
     }
 
     private fun fetchCustomerReservations(customerId: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            reservationRepo.getReservationByCustomerId(customerId).collect{ result ->
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.getReservationByCustomerId(customerId).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy( reservations = data.sortedByDescending { it.date })
+                        oldState.copy(reservations = data.sortedByDescending { it.date })
                     }
                 }.onFailure {
                     Log.e(TAG, "fetchCustomerReservations: failed")
@@ -129,14 +132,17 @@ class CustomerDetailsViewModel(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)
             )
+
             is CustomerDetailsUiAction.ReservationConfirmationSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentConfirmToCustomer" to true)
             )
+
             is CustomerDetailsUiAction.ReservationInfoToTravelCompanySent -> updateReservation(
                 action.reservationId,
                 mapOf("sentToDriverCompany" to true)
             )
+
             else -> Unit
         }
     }
@@ -161,7 +167,7 @@ class CustomerDetailsViewModel(
     }
 
     private fun fetchDrivers(companyId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.getEmployeesByCompany(companyId).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
@@ -176,7 +182,7 @@ class CustomerDetailsViewModel(
     }
 
     private fun fetchEmployees(companyId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.getEmployeesByCompany(companyId).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
@@ -190,9 +196,9 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateReservation(reservation: ReservationModel) {
-        viewModelScope.launch (Dispatchers.IO){
-            reservationRepo.updateReservation(reservation).collect{ result ->
+    private fun updateReservation(reservation: Reservation) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
                 }.onFailure { e ->
@@ -203,8 +209,8 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun addReservation(reservation: ReservationModel) {
-        viewModelScope.launch (Dispatchers.IO){
+    private fun addReservation(reservation: Reservation) {
+        viewModelScope.launch(Dispatchers.IO) {
             val customer = uiState.value.customer
             reservationRepo.createReservation(
                 reservation.copy(
@@ -212,7 +218,8 @@ class CustomerDetailsViewModel(
                     clientName = customer.name,
                     clientCountry = customer.residenceCountry,
                     clientPhone = customer.phoneNumber
-                )).collect { result ->
+                )
+            ).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "addReservation: success")
                 }.onFailure { e ->
@@ -224,7 +231,7 @@ class CustomerDetailsViewModel(
     }
 
     private fun deleteReservation(reservationId: String) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.deleteReservation(reservationId).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "deleteReservation: success")
@@ -235,6 +242,7 @@ class CustomerDetailsViewModel(
             }
         }
     }
+
     companion object {
         private const val TAG = "CustomerDetailsVM"
     }

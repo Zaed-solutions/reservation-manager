@@ -1,6 +1,5 @@
 package com.zaed.reservationmanager.ui.util
 
-import android.icu.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs

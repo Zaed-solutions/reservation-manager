@@ -52,8 +52,8 @@ class EmployeeRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -66,8 +66,8 @@ class EmployeeRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -116,7 +116,7 @@ class EmployeeRemoteDataSourceImpl(
                 Log.d(TAG, "getEmployeesByCompany: $company")
                 firestore.collection(EMPLOYEE_COLLECTION)
                     .whereEqualTo("company", company)
-                    .addSnapshotListener{ value, error ->
+                    .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.failure(error))
                         } else {
@@ -125,7 +125,7 @@ class EmployeeRemoteDataSourceImpl(
                             trySend(Result.success(employees ?: emptyList()))
                         }
                     }
-            }catch (e: Exception) {
+            } catch (e: Exception) {
                 trySend(Result.failure(e))
             }
             awaitClose { }

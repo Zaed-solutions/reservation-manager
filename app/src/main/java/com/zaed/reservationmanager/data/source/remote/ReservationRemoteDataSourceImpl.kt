@@ -5,7 +5,7 @@ import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.CompanyBalance
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -15,7 +15,7 @@ class ReservationRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : ReservationRemoteDataSource {
     private val RESERVATION_COLLECTION = "reservations"
-    override fun createReservation(reservation: ReservationModel): Flow<Result<Pair<String, Long>>> =
+    override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
         callbackFlow {
             try {
                 firestore.collection(RESERVATION_COLLECTION)
@@ -50,13 +50,47 @@ class ReservationRemoteDataSourceImpl(
             awaitClose { }
         }
 
-    override fun getReservationById(id: String): Flow<Result<ReservationModel>> = callbackFlow {
+    override fun createReservations(reservations: List<Reservation>): Flow<Result<Unit>> =
+        callbackFlow {
+            try {
+                firestore.collection(RESERVATION_COLLECTION)
+                    .orderBy(
+                        "reservationNumber",
+                        com.google.firebase.firestore.Query.Direction.DESCENDING
+                    )
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { doc ->
+                        var reservationNumber = if (!doc.isEmpty) {
+                            doc.documents[0].get("reservationNumber") as Long
+                        } else {
+                            0
+                        }
+                        val batch = firestore.batch()
+                        reservations.forEach { reservation ->
+                            val reservationRef =
+                                firestore.collection(RESERVATION_COLLECTION).document()
+                            batch.set(reservationRef, reservation.copy(id = reservationRef.id, reservationNumber = reservationNumber++))
+                        }
+                        batch.commit().addOnSuccessListener {
+                            trySend(Result.success(Unit))
+                        }.addOnFailureListener {
+                            trySend(Result.failure(it))
+                        }
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
+
+    override fun getReservationById(id: String): Flow<Result<Reservation>> = callbackFlow {
         try {
             firestore
                 .collection(RESERVATION_COLLECTION)
                 .document(id)
                 .get().addOnSuccessListener {
-                    val reservation = it.toObject(ReservationModel::class.java)
+                    val reservation = it.toObject(Reservation::class.java)
                     reservation?.let {
                         trySend(Result.success(reservation))
                     } ?: trySend(Result.failure(Exception("Reservation not found")))
@@ -69,7 +103,7 @@ class ReservationRemoteDataSourceImpl(
         awaitClose {}
     }
 
-    override fun getReservationsByCustomerId(customerId: String): Flow<Result<List<ReservationModel>>> =
+    override fun getReservationsByCustomerId(customerId: String): Flow<Result<List<Reservation>>> =
         callbackFlow {
             try {
                 firestore.collection(RESERVATION_COLLECTION)
@@ -79,7 +113,7 @@ class ReservationRemoteDataSourceImpl(
                             trySend(Result.failure(error))
                         } else {
                             val reservations =
-                                value?.toObjects(ReservationModel::class.java) ?: emptyList()
+                                value?.toObjects(Reservation::class.java) ?: emptyList()
                             trySend(Result.success(reservations))
                         }
                     }
@@ -90,14 +124,14 @@ class ReservationRemoteDataSourceImpl(
         }
 
 
-    override fun getReservations(): Flow<Result<List<ReservationModel>>> = callbackFlow {
+    override fun getReservations(): Flow<Result<List<Reservation>>> = callbackFlow {
         try {
             firestore.collection(RESERVATION_COLLECTION)
                 .addSnapshotListener { task, error ->
                     if (error != null) {
                         trySend(Result.failure(error))
                     } else {
-                        val reservations = task?.toObjects(ReservationModel::class.java)
+                        val reservations = task?.toObjects(Reservation::class.java)
                         trySend(Result.success(reservations ?: emptyList()))
                     }
                 }
@@ -139,7 +173,7 @@ class ReservationRemoteDataSourceImpl(
     }
 
     override fun updateReservation(
-        reservation: ReservationModel
+        reservation: Reservation
     ): Flow<Result<Boolean>> = callbackFlow {
         try {
             firestore.collection(RESERVATION_COLLECTION).document(reservation.id).set(reservation)
@@ -154,7 +188,7 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<ReservationModel>>> =
+    override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> =
         callbackFlow {
             try {
                 firestore.collection(RESERVATION_COLLECTION)
@@ -169,7 +203,7 @@ class ReservationRemoteDataSourceImpl(
                             trySend(Result.failure(error))
                         } else {
                             val reservations =
-                                data?.toObjects(ReservationModel::class.java) ?: emptyList()
+                                data?.toObjects(Reservation::class.java) ?: emptyList()
                             trySend(Result.success(reservations))
 
                         }

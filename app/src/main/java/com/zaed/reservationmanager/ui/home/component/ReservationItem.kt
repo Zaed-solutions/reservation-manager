@@ -44,7 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
@@ -52,9 +52,9 @@ import com.zaed.reservationmanager.ui.util.formatMoney
 @Composable
 fun ReservationItem(
     modifier: Modifier = Modifier,
-    reservation: ReservationModel = ReservationModel(),
+    reservation: Reservation = Reservation(),
     onDeleteReservation: () -> Unit = {},
-    onCompanyClicked: (String, CompanyType) -> Unit = {_, _ ->},
+    onCompanyClicked: (String, CompanyType) -> Unit = { _, _ -> },
     onMessagePhoneNumber: (String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
@@ -62,7 +62,8 @@ fun ReservationItem(
     onSendConfirmationToCustomer: () -> Unit = {},
     onReservationClicked: () -> Unit = {},
     onEditReservation: () -> Unit = {},
-    isActionsVisible: Boolean = true
+    isActionsVisible: Boolean = true,
+    isEditable: Boolean = true,
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -135,17 +136,19 @@ fun ReservationItem(
                                 )
                             },
                         )
-                        DropdownMenuItem(
-                            onClick = {
-                                onEditReservation()
-                                isOptionMenuVisible = false
-                            },
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.edit),
-                                )
-                            },
-                        )
+                        if (isEditable) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onEditReservation()
+                                    isOptionMenuVisible = false
+                                },
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.edit),
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
             }
@@ -405,7 +408,7 @@ private fun Preview() {
     ReservationManagerTheme {
         ReservationItem(
             modifier = Modifier.padding(16.dp),
-            reservation = ReservationModel(
+            reservation = Reservation(
                 id = "tristique",
                 date = 7041,
                 type = "Mazarat El Madina",

@@ -83,10 +83,12 @@ fun ExpandableEmployeeCard(
 
             AnimatedVisibility(expanded) {
                 Column(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if(isDriver){
+                    if (isDriver) {
                         DetailRow(
                             label = stringResource(R.string.nationality),
                             value = employee.nationality,
@@ -118,9 +120,11 @@ fun ExpandableEmployeeCard(
                         text = stringResource(R.string.view_details),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(top = 4.dp).clickable {
-                            onEmployeeDetailsClicked()
-                        }
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .clickable {
+                                onEmployeeDetailsClicked()
+                            }
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),

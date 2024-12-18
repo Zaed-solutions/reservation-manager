@@ -1,17 +1,25 @@
 package com.zaed.reservationmanager.ui.reservation.create
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,206 +39,201 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.data.model.ReservationModel
-import com.zaed.reservationmanager.ui.reservation.create.component.AddNewReservation
-import com.zaed.reservationmanager.ui.reservation.create.component.AddRideBottomSheet
+import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
-import com.zaed.reservationmanager.ui.reservation.create.component.EnteredRidesSection
-import com.zaed.reservationmanager.ui.reservation.create.component.MainActionButtons
+import com.zaed.reservationmanager.ui.reservation.create.component.CustomerInfoSection
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateReservationScreen(
-    reservation: Reservation = Reservation(),
-    initialCustomer: Customer = Customer(),
     viewModel: CreateReservationViewModel = koinViewModel(),
     navigateBack: () -> Unit
 ) {
-    LaunchedEffect(true) {
-        viewModel.init(reservation, initialCustomer)
+    val state by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    LaunchedEffect(state.isFinished) {
+        if (state.isFinished) {
+            snackbarHostState.showSnackbarWithDuration(
+                message = context.getString(R.string.reservation_added_successfully),
+                durationMillis = 1500L,
+                scope = scope,
+                onFinished = {
+                    navigateBack()
+                }
+            )
+        }
     }
-
-    val state by viewModel.state.collectAsState()
-
     CreateReservationScreenContent(
-        reservation = state.reservation,
-        successStatus = state.successStatus,
-        initialReservation = reservation,
-        travelCompanies = state.travelCompanies,
+        snackbarHostState = snackbarHostState,
+        reservations = state.reservations,
+        isNewCustomer = state.isNewCustomer,
+        customer = state.customer,
         tourismCompanies = state.tourismCompanies,
-        reservationModels = state.reservationModels,
-        newReservationModel = state.newReservationModel,
-        isEditMode = reservation.id.isNotBlank(),
-        types = state.transactionTypes,
-        cars = state.carTypes,
-        drivers = state.drivers,
-        action = viewModel::handleAction,
-        userMessage = state.userMessage,
         employees = state.employees,
+        travelCompanies = state.travelCompanies,
+        drivers = state.drivers,
+        reservationTypes = state.reservationTypes,
+        cars = state.carTypes,
         countries = state.countries,
-        isLoading = state.loading,
-        rideError = state.rideError,
+        isLoading = state.isLoading,
         reservationError = state.reservationError,
-        onBackClicked = navigateBack,
-        resetSuccessStatus = {
-            viewModel.resetSuccessStatus()
+        onAction = { action ->
+            when (action) {
+                CreateReservationUiAction.OnBackPressed -> navigateBack()
+                else -> viewModel.handleAction(action)
+            }
         }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateReservationScreenContent(
-    reservation: Reservation = Reservation(),
-    travelCompanies: List<Company> = emptyList(),
+private fun CreateReservationScreenContent(
+    modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    reservations: List<Reservation> = emptyList(),
+    isNewCustomer: Boolean? = null,
+    customer: Customer = Customer(),
     tourismCompanies: List<Company> = emptyList(),
-    types: List<String> = emptyList(),
-    cars: List<String> = emptyList(),
-    successStatus: Boolean = false,
-    isEditMode: Boolean = false,
-    drivers: List<Employee> = emptyList(),
-    reservationModels: List<ReservationModel> = emptyList(),
-    newReservationModel: ReservationModel = ReservationModel(),
-    initialReservation: Reservation = Reservation(),
     employees: List<Employee> = emptyList(),
+    travelCompanies: List<Company> = emptyList(),
+    drivers: List<Employee> = emptyList(),
+    reservationTypes: List<String> = emptyList(),
+    cars: List<String> = emptyList(),
     countries: List<String> = emptyList(),
-    action: (ReservationUiAction) -> Unit = {},
     isLoading: Boolean = false,
-    rideError: ReservationError = ReservationError.NONE,
     reservationError: ReservationError = ReservationError.NONE,
-    userMessage: String = "",
-    onBackClicked: () -> Unit = {},
-    resetSuccessStatus: () -> Unit = {}
+    onAction: (CreateReservationUiAction) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
-    var isAddMovementSheetVisible by remember { mutableStateOf(false) }
-    val addMovementSheetState = rememberModalBottomSheetState(true)
-    if (userMessage.isNotBlank()) {
-        isAddMovementSheetVisible = false
-        LaunchedEffect(true) {
-            scope.launch {
-                snackbarHostState.showSnackbar(
-                    message = userMessage
-                )
-            }
-        }
-    }
-    LaunchedEffect(successStatus) {
-        if (successStatus) {
-            if (isAddMovementSheetVisible) {
-                isAddMovementSheetVisible = false
-                resetSuccessStatus()
-            } else {
-                snackbarHostState.showSnackbarWithDuration(
-                    message = context.getString(
-                        if (isEditMode)
-                            R.string.reservation_updated_successfully
-                        else
-                            R.string.reservation_added_successfully
-                    ),
-                    durationMillis = 1500L,
-                    scope = scope,
-                    onFinished = {
-                        onBackClicked()
-                    }
-                )
-            }
-        }
-    }
-    if (reservationError != ReservationError.NONE) {
-        isAddMovementSheetVisible = false
-    }
+    var isAddReservationSheetVisible by remember { mutableStateOf(false) }
     Scaffold(
+        modifier = modifier,
         snackbarHost = {
             SnackbarHost(snackbarHostState)
         },
         topBar = {
             CenterAlignedTopBar(
-                onBackClicked = onBackClicked,
+                onBackClicked = { onAction(CreateReservationUiAction.OnBackPressed) },
                 title = stringResource(R.string.create_new_reservation)
             )
         },
         bottomBar = {
-            MainActionButtons(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                isEditMode = isEditMode,
-                action = action
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                shadowElevation = 4.dp
             ) {
-                onBackClicked()
+                Button(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    enabled = isNewCustomer != null,
+                    onClick = { onAction(CreateReservationUiAction.SaveReservations) },
+                ) {
+                    Text(text = stringResource(R.string.save_reservations))
+                }
             }
         }
-    ) {
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(it)
                 .fillMaxSize()
+                .padding(innerPadding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             if (isLoading) {
                 LinearProgressIndicator()
             }
-            AddNewReservation(
-                initialReservation = initialReservation,
-                reservation,
-                action,
-                reservationError,
-                countries,
-                tourismCompanies,
-                employees
-            )
-            EnteredRidesSection(
-                isEditMode = isEditMode,
-                reservationModels = reservationModels,
-                onAddMovementClicked = {
-                    action(ReservationUiAction.ValidateReservationData)
-                    if (reservationError != ReservationError.NONE) return@EnteredRidesSection
-                    isAddMovementSheetVisible = true
+            CustomerInfoSection(
+                customer = customer,
+                isNewCustomer = isNewCustomer,
+                onSearchCustomer = {
+                    onAction(CreateReservationUiAction.SearchCustomer)
                 },
-                onEditRide = { ride ->
-                    action(ReservationUiAction.EditRide(ride))
-                    isAddMovementSheetVisible = true
+                onUpdateName = {
+                    onAction(CreateReservationUiAction.UpdateCustomerName(it))
                 },
-                onDeleteRide = {
-                    action(ReservationUiAction.DeleteRide(it))
+                onUpdateCountry = {
+                    onAction(CreateReservationUiAction.UpdateCustomerCountry(it))
+                },
+                countries = countries,
+                onUpdatePhoneNumber = {
+                    onAction(CreateReservationUiAction.UpdateCustomerPhone(it))
+                },
+                onUpdateEmail = {
+                    onAction(CreateReservationUiAction.UpdateCustomerEmail(it))
+                },
+                error = reservationError,
+                onUpdateNationality = {
+                    onAction(CreateReservationUiAction.UpdateCustomerNationality(it))
                 }
             )
-
-        }
-        if (isAddMovementSheetVisible) {
-            AddRideBottomSheet(
-                addMovementSheetState,
-                rideError,
-                action,
-                newReservationModel,
-                types,
-                cars,
-                travelCompanies,
-                drivers,
-                onDismissRequest = { isAddMovementSheetVisible = false }
-            )
+            AnimatedVisibility(isNewCustomer != null) {
+                ReservationsList(
+                    reservations = reservations,
+                    onAddReservation = {
+                        isAddReservationSheetVisible = true
+                    },
+                    isHeaderVisible = true,
+                    isAddEnabled = true,
+                    isSendActionsVisible = false,
+                    onDeleteReservation = {
+                        onAction(CreateReservationUiAction.DeleteReservation(it))
+                    },
+                )
+            }
+            AnimatedVisibility(isAddReservationSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isAddReservationSheetVisible = false
+                    }
+                ) {
+                    AddReservationBottomSheetContent(
+                        tourismCompanies = tourismCompanies,
+                        employees = employees,
+                        onFetchEmployees = {
+                            onAction(CreateReservationUiAction.FetchEmployees(it))
+                        },
+                        types = reservationTypes,
+                        cars = cars,
+                        travelCompanies = travelCompanies,
+                        onFetchDrivers = {
+                            onAction(CreateReservationUiAction.FetchDrivers(it))
+                        },
+                        drivers = drivers,
+                        onSaveReservation = {
+                            onAction(CreateReservationUiAction.AddReservation(it))
+                        },
+                        onDismiss = {
+                            isAddReservationSheetVisible = false
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 
-@Preview(device = "spec:id=reference_phone,shape=Normal,width=411,height=891,unit=dp,dpi=420")
+@Preview()
 @Composable
 fun NewClientDataEntryScreenPreview() {
     ReservationManagerTheme {
-        CreateReservationScreenContent(
-            reservationModels = listOf(
-                ReservationModel(
-                )
-            )
-        )
+//        CreateReservationScreenContent(
+//            reservationModels = listOf(
+//                ReservationModel(
+//                )
+//            )
+//        )
     }
 }

@@ -16,17 +16,18 @@ import kotlinx.datetime.Clock
 
 class AddCompanyViewModel(
     private val companyRepo: CompanyRepository
-): ViewModel() {
+) : ViewModel() {
     private val TAG = "AddCompanyViewModel"
     private val _uiState = MutableStateFlow(AddCompanyUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(initialCompany: Company){
-        _uiState.update{
+    fun init(initialCompany: Company) {
+        _uiState.update {
             it.copy(isNew = initialCompany.id.isBlank(), company = initialCompany)
         }
     }
-    fun handleAction(action: AddCompanyUiAction){
-        when (action){
+
+    fun handleAction(action: AddCompanyUiAction) {
+        when (action) {
             is AddCompanyUiAction.OnCountryChanged -> onUpdateCountry(action.country)
             is AddCompanyUiAction.OnEmailChanged -> onUpdateEmail(action.email)
             is AddCompanyUiAction.OnFaxNumberChanged -> onUpdateFaxNumber(action.faxNumber)
@@ -41,39 +42,39 @@ class AddCompanyViewModel(
     private fun onSave() {
         Log.d(TAG, "onSave: ${uiState.value.company}")
         viewModelScope.launch {
-            with(uiState.value){
-                if (company.name.isBlank()){
+            with(uiState.value) {
+                if (company.name.isBlank()) {
                     _uiState.update { it.copy(error = AddCompanyUiError.NAME_IS_REQUIRED) }
                     return@launch
                 }
-                if(company.country.isBlank()){
+                if (company.country.isBlank()) {
                     _uiState.update { it.copy(error = AddCompanyUiError.COUNTRY_IS_REQUIRED) }
                     return@launch
                 }
-                if (company.email.isNotBlank() && !InputValidator.isEmailValid(company.email)){
+                if (company.email.isNotBlank() && !InputValidator.isEmailValid(company.email)) {
                     _uiState.update { it.copy(error = AddCompanyUiError.EMAIL_IS_INVALID) }
                     return@launch
                 }
-                if (company.faxNumber.isNotBlank() && !InputValidator.isFaxNumberValid(company.faxNumber)){
+                if (company.faxNumber.isNotBlank() && !InputValidator.isFaxNumberValid(company.faxNumber)) {
                     _uiState.update { it.copy(error = AddCompanyUiError.FAX_NUMBER_IS_INVALID) }
                     return@launch
                 }
-                if (company.phoneNumber.isNotBlank() && !InputValidator.isPhoneNumberValid(company.phoneNumber)){
+                if (company.phoneNumber.isNotBlank() && !InputValidator.isPhoneNumberValid(company.phoneNumber)) {
                     _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_IS_INVALID) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = AddCompanyUiError.NONE) }
             }
-                if(uiState.value.isNew){
-                    createCompany()
-                } else {
-                    updateCompany()
-                }
+            if (uiState.value.isNew) {
+                createCompany()
+            } else {
+                updateCompany()
+            }
         }
     }
 
     private fun updateCompany() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             companyRepo.updateCompany(uiState.value.company).collect { result ->
                 result.onSuccess {
                     _uiState.update { it.copy(isFinished = true) }
@@ -87,7 +88,7 @@ class AddCompanyViewModel(
 
     private suspend fun createCompany() {
         Log.d(TAG, "createCompany: ${uiState.value.company}")
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             companyRepo.createCompany(
                 uiState.value.company.copy(
                     createdAtEpochSeconds = Clock.System.now().epochSeconds

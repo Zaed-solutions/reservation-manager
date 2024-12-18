@@ -203,7 +203,7 @@ fun ExpandableReservationCard(
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable{
+                            modifier = Modifier.clickable {
                                 onEmployeeClicked(reservation.tourismEmployeeId)
                             }
                         )

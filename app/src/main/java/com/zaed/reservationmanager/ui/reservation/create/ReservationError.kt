@@ -6,8 +6,9 @@ import com.zaed.reservationmanager.R
 enum class ReservationError(@StringRes val messageRes: Int) {
     NONE(0),
     CUSTOMER_PHONE_IS_REQUIRED(R.string.phone_is_required),
+    EMAIL_IS_INVALID(R.string.email_is_invalid),
     TOURISM_COMPANY_IS_REQUIRED(R.string.tourism_company_is_required),
-    TYPE_IS_REQUIRED (R.string.type_is_required),
+    TYPE_IS_REQUIRED(R.string.type_is_required),
     CAR_IS_REQUIRED(R.string.car_is_required),
     BUYING_PRICE_IS_REQUIRED(R.string.buying_price_is_required),
     COLLECTION_PRICE_IS_REQUIRED(R.string.collection_price_is_required),
@@ -21,10 +22,7 @@ enum class ReservationError(@StringRes val messageRes: Int) {
     EMPLOYEE_IS_REQUIRED(R.string.employee_is_required),
     CUSTOMER_COUNTRY_IS_REQUIRED(R.string.customer_country_is_required),
     TOURISM_EMPLOYEE_IS_REQUIRED(R.string.tourism_employee_is_required),
-    SELLING_PRICE_IS_REQUIRED (R.string.selling_price_is_required),
-
-
-
+    SELLING_PRICE_IS_REQUIRED(R.string.selling_price_is_required),
 
 
 }

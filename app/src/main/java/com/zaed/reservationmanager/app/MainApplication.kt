@@ -1,7 +1,6 @@
 package com.zaed.reservationmanager.app
 
 import android.app.Application
-import com.zaed.reservationmanager.app.di.appModule
 import com.zaed.reservationmanager.app.di.remoteModule
 import com.zaed.reservationmanager.app.di.repositoryModule
 import com.zaed.reservationmanager.app.di.viewModelModule

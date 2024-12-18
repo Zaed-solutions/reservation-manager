@@ -52,7 +52,7 @@ fun CustomerDetailsHeader(
     }
 }
 
-@Preview( showBackground = true)
+@Preview(showBackground = true)
 @Composable
 private fun Preview() {
     ReservationManagerTheme {

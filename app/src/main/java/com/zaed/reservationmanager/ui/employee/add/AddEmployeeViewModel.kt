@@ -18,30 +18,35 @@ import kotlinx.datetime.Clock
 class AddEmployeeViewModel(
     private val companyRepo: CompanyRepository,
     private val employeeRepo: EmployeeRepository,
-): ViewModel() {
+) : ViewModel() {
     private val TAG = "AddEmployeeViewModel"
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
     val uiState = _uiState.asStateFlow()
-    fun init(initialEmployee: Employee, isDriver: Boolean){
+    fun init(initialEmployee: Employee, isDriver: Boolean) {
         viewModelScope.launch {
-            if(initialEmployee.id.isNotBlank()){
+            if (initialEmployee.id.isNotBlank()) {
                 _uiState.update { it.copy(employee = initialEmployee, isNew = false) }
             }
-            if(isDriver){
-                _uiState.update { oldState -> oldState.copy(isDriver = true, employee = oldState.employee.copy(position = EmployeeType.DRIVER.name)) }
+            if (isDriver) {
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        isDriver = true,
+                        employee = oldState.employee.copy(position = EmployeeType.DRIVER.name)
+                    )
+                }
             }
             fetchCompanies()
         }
     }
 
     private fun fetchCompanies() {
-        viewModelScope.launch (Dispatchers.IO){
-            companyRepo.getCompaniesNames(uiState.value.isDriver).collect{ result ->
-                result.onSuccess{ data ->
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.getCompaniesNames(uiState.value.isDriver).collect { result ->
+                result.onSuccess { data ->
                     _uiState.update { oldState ->
                         oldState.copy(companies = data)
                     }
-                }.onFailure{ error ->
+                }.onFailure { error ->
                     Log.e(TAG, error.message.toString())
                     error.printStackTrace()
                 }
@@ -49,8 +54,8 @@ class AddEmployeeViewModel(
         }
     }
 
-    fun handleAction(action: AddEmployeeUiAction){
-        when(action){
+    fun handleAction(action: AddEmployeeUiAction) {
+        when (action) {
             is AddEmployeeUiAction.OnCompanyChanged -> updateCompany(action.company)
             is AddEmployeeUiAction.OnNameChanged -> updateName(action.name)
             is AddEmployeeUiAction.OnPhoneNumber1Changed -> updatePhoneNumber1(action.phoneNumber)
@@ -81,34 +86,37 @@ class AddEmployeeViewModel(
 
     private fun onSave() {
         viewModelScope.launch {
-            with(uiState.value){
-                if (employee.name.isBlank()){
+            with(uiState.value) {
+                if (employee.name.isBlank()) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.NAME_IS_REQUIRED) }
                     return@launch
                 }
-                if (employee.email.isNotBlank() && !InputValidator.isEmailValid(employee.email)){
+                if (employee.email.isNotBlank() && !InputValidator.isEmailValid(employee.email)) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.EMAIL_IS_INVALID) }
                     return@launch
                 }
-                if(isDriver && employee.nationality.isBlank()){
+                if (isDriver && employee.nationality.isBlank()) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.NATIONALITY_IS_REQUIRED) }
                     return@launch
                 }
-                if(employee.phoneNumber1.isBlank()){
+                if (employee.phoneNumber1.isBlank()) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_IS_REQUIRED) }
                     return@launch
                 }
-                if (!InputValidator.isPhoneNumberValid(employee.phoneNumber1)){
+                if (!InputValidator.isPhoneNumberValid(employee.phoneNumber1)) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_IS_INVALID) }
                     return@launch
                 }
-                if (employee.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(employee.phoneNumber2)){
+                if (employee.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(
+                        employee.phoneNumber2
+                    )
+                ) {
                     _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_IS_INVALID) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = AddEmployeeUiError.NONE) }
             }
-            if(uiState.value.isNew){
+            if (uiState.value.isNew) {
                 createCompany()
             } else {
                 updateCompany()
@@ -117,7 +125,7 @@ class AddEmployeeViewModel(
     }
 
     private fun updateCompany() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.updateEmployee(uiState.value.employee).collect { result ->
                 result.onSuccess {
                     _uiState.update { it.copy(isFinished = true) }
@@ -130,7 +138,7 @@ class AddEmployeeViewModel(
     }
 
     private suspend fun createCompany() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.createEmployee(
                 uiState.value.employee.copy(
                     createdAtEpochSeconds = Clock.System.now().epochSeconds
@@ -149,6 +157,7 @@ class AddEmployeeViewModel(
             }
         }
     }
+
     private fun updatePosition(position: String) {
         _uiState.update {
             it.copy(employee = it.employee.copy(position = position))

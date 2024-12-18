@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class EmployeeListViewModel (
+class EmployeeListViewModel(
     private val employeeRepository: EmployeeRepository,
-): ViewModel() {
-    val _state = MutableStateFlow(EmployeeListUiState())
+) : ViewModel() {
+    private val _state = MutableStateFlow(EmployeeListUiState())
     val state = _state.asStateFlow()
 
     init {
@@ -22,9 +22,9 @@ class EmployeeListViewModel (
 
     private fun getEmployees() {
         viewModelScope.launch {
-            employeeRepository.getEmployees().collect{result->
-                result.onSuccess {data->
-                    _state.update {oldState->
+            employeeRepository.getEmployees().collect { result ->
+                result.onSuccess { data ->
+                    _state.update { oldState ->
                         oldState.copy(
                             employees = data,
                             loading = false,
@@ -42,9 +42,10 @@ class EmployeeListViewModel (
             }
         }
     }
-    fun deleteEmployee(employeeId: String){
-        viewModelScope.launch (Dispatchers.IO){
-            employeeRepository.deleteEmployee(employeeId).collect{result->
+
+    fun deleteEmployee(employeeId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            employeeRepository.deleteEmployee(employeeId).collect { result ->
                 result.onSuccess {
                     Log.d("EmployeeListViewModel", "Employee deleted successfully")
                 }.onFailure {

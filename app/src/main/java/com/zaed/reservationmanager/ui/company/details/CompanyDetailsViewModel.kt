@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.CompanyType
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
-import com.zaed.reservationmanager.ui.client.details.CustomerDetailsUiAction
 import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
@@ -154,14 +153,17 @@ class CompanyDetailsViewModel(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)
             )
+
             is CompanyDetailsUiAction.ReservationConfirmationSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentConfirmToCustomer" to true)
             )
+
             is CompanyDetailsUiAction.ReservationInfoToTravelCompanySent -> updateReservation(
                 action.reservationId,
                 mapOf("sentToDriverCompany" to true)
             )
+
             else -> Unit
         }
     }
@@ -215,7 +217,7 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun editReservation(reservation: ReservationModel) {
+    private fun editReservation(reservation: Reservation) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {

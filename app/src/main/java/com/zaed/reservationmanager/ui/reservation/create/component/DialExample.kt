@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,10 +40,10 @@ fun DialExample(
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ) {
-        Dialog (
+        Dialog(
             onDismissRequest = onDismiss,
             content = {
-                Card() {
+                Card {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -79,7 +78,8 @@ fun DialExample(
                         }
 
                     }
-                }})
+                }
+            })
 
     }
 }

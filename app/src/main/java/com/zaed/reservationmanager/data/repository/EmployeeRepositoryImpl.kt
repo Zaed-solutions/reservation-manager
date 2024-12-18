@@ -4,9 +4,9 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
-class EmployeeRepositoryImpl (
+class EmployeeRepositoryImpl(
     private val remoteSource: EmployeeRemoteDataSource
-): EmployeeRepository {
+) : EmployeeRepository {
     override fun createEmployee(employee: Employee): Flow<Result<Boolean>> {
         return remoteSource.createEmployee(employee)
     }
@@ -27,7 +27,7 @@ class EmployeeRepositoryImpl (
         return remoteSource.getDrivers()
     }
 
-    override fun getEmployeesByCompany(company: String): Flow<Result<List<Employee>>>  =
+    override fun getEmployeesByCompany(company: String): Flow<Result<List<Employee>>> =
         remoteSource.getEmployeesByCompany(company)
 
 }

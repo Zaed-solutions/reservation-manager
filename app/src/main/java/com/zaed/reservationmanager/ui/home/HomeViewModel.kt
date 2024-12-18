@@ -3,7 +3,7 @@ package com.zaed.reservationmanager.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -383,7 +383,7 @@ class HomeViewModel(
         }
     }
 
-    private fun updateReservation(reservation: ReservationModel) {
+    private fun updateReservation(reservation: Reservation) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {

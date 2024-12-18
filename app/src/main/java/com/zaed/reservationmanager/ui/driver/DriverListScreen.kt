@@ -109,7 +109,7 @@ fun DriverListWithScreenContent(
                     FilterChip(
                         modifier = Modifier.padding(end = 8.dp),
                         onClick = {
-                            if(selected == country) {
+                            if (selected == country) {
                                 selected = ""
                             } else {
                                 selected = country
@@ -168,7 +168,7 @@ val mockEmployees = listOf(
     ),
 
 
-)
+    )
 
 
 @Composable

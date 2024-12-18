@@ -56,7 +56,11 @@ fun CompaniesScreen(
         onAction = { action ->
             when (action) {
                 CompaniesUiAction.OnShowNavDrawer -> onShowNavDrawer()
-                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(action.companyId, action.companyType)
+                is CompaniesUiAction.OnCompanyDetailsClicked -> onNavigateToDetails(
+                    action.companyId,
+                    action.companyType
+                )
+
                 is CompaniesUiAction.OnEditCompanyClicked -> onNavigateToEditCompany(action.company)
                 CompaniesUiAction.OnAddCompanyClicked -> onNavigateToAddCompany()
                 else -> viewModel.handleAction(action)
@@ -142,7 +146,12 @@ private fun CompaniesScreenContent(
                         CompaniesList(
                             companies = tourismCompanies,
                             onNavigateToCompanyDetails = { companyId, companyType ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId, companyType))
+                                onAction(
+                                    CompaniesUiAction.OnCompanyDetailsClicked(
+                                        companyId,
+                                        companyType
+                                    )
+                                )
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId
@@ -158,7 +167,12 @@ private fun CompaniesScreenContent(
                         CompaniesList(
                             companies = travelCompanies,
                             onNavigateToCompanyDetails = { companyId, companyType ->
-                                onAction(CompaniesUiAction.OnCompanyDetailsClicked(companyId,companyType))
+                                onAction(
+                                    CompaniesUiAction.OnCompanyDetailsClicked(
+                                        companyId,
+                                        companyType
+                                    )
+                                )
                             },
                             onDeleteCompany = { companyId ->
                                 clickedCompanyId = companyId

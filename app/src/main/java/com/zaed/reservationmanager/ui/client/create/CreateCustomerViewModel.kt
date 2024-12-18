@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 private const val TAG = "CreateCustomerViewModel"
+
 class CreateCustomerViewModel(
     private val repository: CustomerRepository,
     private val menuDataStore: MenuDataStore
@@ -23,8 +24,8 @@ class CreateCustomerViewModel(
     private val _uiState = MutableStateFlow(NewClientUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun init(initialCustomer: Customer){
-        _uiState.update{
+    fun init(initialCustomer: Customer) {
+        _uiState.update {
             it.copy(isNew = initialCustomer.id.isBlank(), customer = initialCustomer)
         }
         fetchCountries()
@@ -48,25 +49,25 @@ class CreateCustomerViewModel(
             _uiState.update {
                 it.copy(loading = true)
             }
-            with(uiState.value){
-                if(customer.name.isBlank()){
+            with(uiState.value) {
+                if (customer.name.isBlank()) {
                     _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED) }
                     return@launch
                 }
-                if(customer.phoneNumber.isBlank()){
+                if (customer.phoneNumber.isBlank()) {
                     _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED) }
                     return@launch
                 }
-                if(!InputValidator.isPhoneNumberValid(customer.phoneNumber)){
+                if (!InputValidator.isPhoneNumberValid(customer.phoneNumber)) {
                     _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_INVALID) }
                     return@launch
                 }
-                if(customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)){
+                if (customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)) {
                     _uiState.update { it.copy(error = ClientUIError.EMAIL_IS_INVALID) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = ClientUIError.NONE) }
-                if(isNew){
+                if (isNew) {
                     createClient()
                 } else {
                     updateClient()
@@ -99,29 +100,31 @@ class CreateCustomerViewModel(
 
     private fun createClient() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds)).collect { result ->
-                result.onSuccess {
-                    _uiState.update { oldState ->
-                        oldState.copy(successStatus = true, loading = false)
+            repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds))
+                .collect { result ->
+                    result.onSuccess {
+                        _uiState.update { oldState ->
+                            oldState.copy(successStatus = true, loading = false)
+                        }
+                        Log.d(TAG, "addClient: SUCCESS")
+                    }.onFailure { error ->
+                        _uiState.update { oldState ->
+                            oldState.copy(
+                                error = ClientUIError.valueOf(error.message ?: ""),
+                                loading = false
+                            )
+                        }
+                        Log.d(TAG, "addClient: ${error.message}")
+                        error.printStackTrace()
                     }
-                    Log.d(TAG, "addClient: SUCCESS")
-                }.onFailure { error ->
-                    _uiState.update { oldState ->
-                        oldState.copy(
-                            error = ClientUIError.valueOf(error.message ?: ""),
-                            loading = false
-                        )
-                    }
-                    Log.d(TAG, "addClient: ${error.message}")
-                    error.printStackTrace()
                 }
-            }
         }
     }
 
     private fun resetForm() {
         _uiState.value = NewClientUiState()
     }
+
     private fun dismissErrorDialog() {
         _uiState.update {
             it.copy(

@@ -3,7 +3,7 @@ package com.zaed.reservationmanager.data.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ReservationModel(
+data class Reservation(
     val id: String = "",
     val reservationNumber: Long = 0,
     val clientId: String = "",

@@ -26,26 +26,27 @@ import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.reservation.create.component.DatePickerFieldToModal
 import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFieldToModal
 import com.zaed.reservationmanager.ui.util.InputValidator
+
 @Composable
 fun AddReservationBottomSheetContent(
     modifier: Modifier = Modifier,
     tourismCompanies: List<Company> = emptyList(),
     employees: List<Employee> = emptyList(),
     onFetchEmployees: (String) -> Unit = {},
-    initialReservation: ReservationModel = ReservationModel(),
+    initialReservation: Reservation = Reservation(),
     types: List<String> = emptyList(),
     cars: List<String> = emptyList(),
     travelCompanies: List<Company> = emptyList(),
     onFetchDrivers: (String) -> Unit = {},
     drivers: List<Employee> = emptyList(),
-    onSaveReservation: (ReservationModel) -> Unit = {},
+    onSaveReservation: (Reservation) -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     var reservation by remember {
@@ -264,11 +265,11 @@ fun AddReservationBottomSheetContent(
                 modifier = Modifier.weight(1f),
                 onClick = {
                     val error = InputValidator.validateRide(reservation)
-                    if(error != null){
+                    if (error != null) {
                         reservationError = error
                     } else {
                         onSaveReservation(reservation)
-                        reservation = ReservationModel()
+                        reservation = Reservation()
                         reservationError = ReservationError.NONE
                     }
                 },

@@ -45,8 +45,8 @@ class CustomerRemoteDataSourceImpl(
                             }
                     }
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -60,7 +60,7 @@ class CustomerRemoteDataSourceImpl(
                 .whereEqualTo("phoneNumber", number)
                 .get().await()
             if (task.isEmpty) {
-                Result.failure(Exception("Customer not found"))
+                Result.success(Customer())
             } else {
                 val customer = task.toObjects(Customer::class.java).first()
                 Result.success(customer)
@@ -71,18 +71,19 @@ class CustomerRemoteDataSourceImpl(
     }
 
     override suspend fun getCustomerById(id: String): Result<Customer> {
-        return try{
+        return try {
             val task = firestore
                 .collection(CUSTOMER_COLLECTION)
                 .whereEqualTo("id", id)
                 .get().await()
-            if(task.isEmpty){
+            if (task.isEmpty) {
                 Result.failure(Exception("Customer not found"))
             } else {
-                val customer = task.documents.first().toObject(Customer::class.java)?: throw Exception("Customer could not be parsed")
+                val customer = task.documents.first().toObject(Customer::class.java)
+                    ?: throw Exception("Customer could not be parsed")
                 Result.success(customer)
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }
@@ -94,8 +95,8 @@ class CustomerRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -108,8 +109,8 @@ class CustomerRemoteDataSourceImpl(
                 .addOnSuccessListener {
                     trySend(Result.success(Unit))
                 }.addOnFailureListener { e ->
-                trySend(Result.failure(e))
-            }
+                    trySend(Result.failure(e))
+                }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }

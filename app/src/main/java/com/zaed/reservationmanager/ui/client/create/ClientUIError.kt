@@ -3,7 +3,7 @@ package com.zaed.reservationmanager.ui.client.create
 import androidx.annotation.StringRes
 import com.zaed.reservationmanager.R
 
-enum class ClientUIError (@StringRes val messageRes: Int){
+enum class ClientUIError(@StringRes val messageRes: Int) {
     NONE(0),
     NAME_IS_REQUIRED(R.string.name_is_required),
     EMAIL_IS_REQUIRED(R.string.email_is_required),

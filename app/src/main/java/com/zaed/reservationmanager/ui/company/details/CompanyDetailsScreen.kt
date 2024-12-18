@@ -47,8 +47,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Employee
-import com.zaed.reservationmanager.data.model.ReservationModel
-import com.zaed.reservationmanager.ui.client.details.CustomerDetailsUiAction
+import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.details.components.BalanceSection
 import com.zaed.reservationmanager.ui.company.details.components.CompanyDetailsHeader
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
@@ -185,7 +184,7 @@ fun CompanyDetailsScreen(
                 }
 
                 is CompanyDetailsUiAction.SendReservationInfo -> {
-                    val reservation = state.reservations.first{ it.id == action.reservationId }
+                    val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
                         R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
                         reservation.driver,
@@ -205,6 +204,7 @@ fun CompanyDetailsScreen(
                         }
                     )
                 }
+
                 is CompanyDetailsUiAction.SendReservationConfirmation -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText =
@@ -214,7 +214,11 @@ fun CompanyDetailsScreen(
                         phoneNumber = reservation.clientPhone,
                         message = messageText,
                         onSuccess = {
-                            viewModel.handleAction(CompanyDetailsUiAction.ReservationConfirmationSent(action.reservationId))
+                            viewModel.handleAction(
+                                CompanyDetailsUiAction.ReservationConfirmationSent(
+                                    action.reservationId
+                                )
+                            )
                         },
                         onFailure = {
                             scope.launch {
@@ -223,6 +227,7 @@ fun CompanyDetailsScreen(
                         }
                     )
                 }
+
                 is CompanyDetailsUiAction.SendReservationInfoToTravelCompany -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
@@ -241,7 +246,11 @@ fun CompanyDetailsScreen(
                         phoneNumber = reservation.travelCompanyPhone,
                         message = messageText,
                         onSuccess = {
-                            viewModel.handleAction(CompanyDetailsUiAction.ReservationInfoToTravelCompanySent(action.reservationId))
+                            viewModel.handleAction(
+                                CompanyDetailsUiAction.ReservationInfoToTravelCompanySent(
+                                    action.reservationId
+                                )
+                            )
                         },
                         onFailure = {
                             scope.launch {
@@ -274,7 +283,7 @@ fun CompanyDetailsScreenContent(
     travelCompanies: List<Company> = emptyList(),
     drivers: List<Employee> = emptyList(),
     snackBarHostState: SnackbarHostState,
-    reservations: List<ReservationModel> = emptyList(),
+    reservations: List<Reservation> = emptyList(),
     balance: CompanyBalance = CompanyBalance(),
 ) {
     var isConfirmDeleteDialogVisible by remember {
@@ -284,7 +293,7 @@ fun CompanyDetailsScreenContent(
         mutableStateOf(false)
     }
     var selectedReservation by remember {
-        mutableStateOf(ReservationModel())
+        mutableStateOf(Reservation())
     }
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
@@ -380,7 +389,7 @@ fun CompanyDetailsScreenContent(
                     )
                 },
                 onDeleteReservation = {
-                    selectedReservation = ReservationModel(id = it)
+                    selectedReservation = Reservation(id = it)
                     isConfirmDeleteDialogVisible = true
                 },
                 onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
@@ -415,7 +424,7 @@ fun CompanyDetailsScreenContent(
                 ModalBottomSheet(
                     onDismissRequest = {
                         isEditReservationBottomSheetVisible = false
-                        selectedReservation = ReservationModel()
+                        selectedReservation = Reservation()
                     },
                     sheetState = rememberModalBottomSheetState()
                 ) {
@@ -438,11 +447,11 @@ fun CompanyDetailsScreenContent(
                                 CompanyDetailsUiAction.OnEditReservation(it)
                             )
                             isEditReservationBottomSheetVisible = false
-                            selectedReservation = ReservationModel()
+                            selectedReservation = Reservation()
                         },
                         onDismiss = {
                             isEditReservationBottomSheetVisible = false
-                            selectedReservation = ReservationModel()
+                            selectedReservation = Reservation()
                         }
 
                     )
@@ -452,7 +461,7 @@ fun CompanyDetailsScreenContent(
                 ModalBottomSheet(
                     onDismissRequest = {
                         isConfirmDeleteDialogVisible = false
-                        selectedReservation = ReservationModel()
+                        selectedReservation = Reservation()
                     },
                     sheetState = rememberModalBottomSheetState()
                 ) {
@@ -462,14 +471,14 @@ fun CompanyDetailsScreenContent(
                         ),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
-                            selectedReservation = ReservationModel()
+                            selectedReservation = Reservation()
                         },
                         onConfirm = {
                             onAction(
                                 CompanyDetailsUiAction.OnDeleteReservation(selectedReservation.id)
                             )
                             isConfirmDeleteDialogVisible = false
-                            selectedReservation = ReservationModel()
+                            selectedReservation = Reservation()
                         }
                     )
                 }

@@ -5,35 +5,24 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
 import android.util.Log
-import android.util.Xml
-import com.itextpdf.io.image.ImageDataFactory
-import com.itextpdf.io.source.ByteArrayOutputStream
-import com.itextpdf.kernel.pdf.PdfDocument
-import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.layout.Document
-import com.itextpdf.layout.element.Image
-import com.itextpdf.layout.element.Paragraph
-import com.itextpdf.layout.element.Table
-import com.itextpdf.layout.properties.HorizontalAlignment
-import com.itextpdf.layout.properties.TextAlignment
-import com.tom_roush.fontbox.encoding.Encoding
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
-import com.tom_roush.pdfbox.cos.COSName
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.PDPage
 import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
 import com.tom_roush.pdfbox.pdmodel.font.PDTrueTypeFont
-import com.tom_roush.pdfbox.pdmodel.font.PDType1Font
 import com.tom_roush.pdfbox.pdmodel.graphics.image.PDImageXObject
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
-import org.apache.poi.ss.formula.functions.NumericFunction.COS
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 
 object PdfUtil {
-    fun List<Customer>.exportCustomersToPdf(context: Context, headers: List<String>, title: String): File? {
+    fun List<Customer>.exportCustomersToPdf(
+        context: Context,
+        headers: List<String>,
+        title: String
+    ): File? {
         try {
             val fileName = "Customers_${Date()}.pdf"
             PDFBoxResourceLoader.init(context)
@@ -54,7 +43,8 @@ object PdfUtil {
             contentStream.showText("PDF Title: Customers Data")
             contentStream.endText()
 
-            val bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_foreground)
+            val bitmap: Bitmap =
+                BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_foreground)
             val stream = FileOutputStream(File(context.cacheDir, "temp_image.png"))
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
             stream.close()
@@ -106,7 +96,8 @@ object PdfUtil {
             contentStream.close()
 
             // Save PDF to device
-            val pdfFile = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+            val pdfFile =
+                File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
             document.save(pdfFile)
             document.close()
             return pdfFile
