@@ -88,6 +88,7 @@ import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -122,6 +123,7 @@ fun HomeScreen(
         countries = state.countries,
         isLoading = state.isLoading,
         snackbarHostState = snackbarHostState,
+        scope = scope,
         onAction = { action ->
             when (action) {
                 HomeUiAction.ShowNavDrawer -> onShowNavDrawer()
@@ -347,14 +349,12 @@ fun HomeScreenContent(
     isLoading: Boolean = false,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onAction: (HomeUiAction) -> Unit = {},
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
     }
     val pagerState = rememberPagerState(pageCount = { 2 })
-    var selectedTab by remember {
-        mutableIntStateOf(0)
-    }
     var isEditReservationBottomSheetVisible by remember {
         mutableStateOf(false)
     }
@@ -406,7 +406,7 @@ fun HomeScreenContent(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    if (selectedTab == 0) {
+                                    if (pagerState.currentPage == 0) {
                                         onAction(HomeUiAction.ExportCustomersAsCsv)
                                     } else {
                                         onAction(HomeUiAction.ExportReservationsAsCsv)
@@ -439,7 +439,7 @@ fun HomeScreenContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (selectedTab == 0) {
+                    if (pagerState.currentPage == 0) {
                         onAction(HomeUiAction.AddCustomer)
                     } else {
                         onAction(HomeUiAction.AddReservation)
@@ -491,7 +491,7 @@ fun HomeScreenContent(
                 shape = MaterialTheme.shapes.large
             )
             PrimaryTabRow(
-                selectedTabIndex = selectedTab,
+                selectedTabIndex = pagerState.currentPage,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
                         modifier = Modifier
@@ -501,14 +501,18 @@ fun HomeScreenContent(
                                 else
                                     this
                             }
-                            .tabIndicatorOffset(selectedTab, true),
+                            .tabIndicatorOffset(pagerState.currentPage, true),
                         width = Dp.Unspecified,
                     )
                 }
             ) {
                 Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        scope.launch{
+                            pagerState.animateScrollToPage(0)
+                        }
+                    },
                     text = {
                         Text(
                             text = stringResource(R.string.customers),
@@ -518,8 +522,11 @@ fun HomeScreenContent(
                     }
                 )
                 Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        scope.launch{
+                            pagerState.animateScrollToPage(1)
+                        }},
                     text = {
                         Text(
                             text = stringResource(R.string.reservations),
@@ -534,51 +541,58 @@ fun HomeScreenContent(
             ) { page ->
                 when (page) {
                     0 -> {
-                        LazyRow {
-                            items(countries) { country ->
-                                FilterChip(
-                                    modifier = Modifier.padding(end = 8.dp),
-                                    onClick = {
-                                        onAction(HomeUiAction.UpdateCountryFilter(if (country != selectedCountry) country else ""))
-                                    },
-                                    label = {
-                                        Text(country)
-                                    },
-                                    selected = selectedCountry == country,
-                                    leadingIcon = {
-                                        if (selectedCountry == country) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Done,
-                                                contentDescription = "Done icon",
-                                                modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                            )
-                                        }
-                                    },
-                                )
+                        Column(
+                            modifier = Modifier.padding(top = 8.dp).fillMaxSize()
+                        ){
+
+                            LazyRow{
+                                items(countries) { country ->
+                                    FilterChip(
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        onClick = {
+                                            onAction(HomeUiAction.UpdateCountryFilter(if (country != selectedCountry) country else ""))
+                                        },
+                                        label = {
+                                            Text(country)
+                                        },
+                                        selected = selectedCountry == country,
+                                        leadingIcon = {
+                                            if (selectedCountry == country) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Done,
+                                                    contentDescription = "Done icon",
+                                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                                )
+                                            }
+                                        },
+                                    )
+                                }
                             }
+                            CustomerListWithTitle(
+                                customers = customers,
+                                onViewCustomerDetailsClicked = { customerId ->
+                                    onAction(
+                                        HomeUiAction.OnViewCustomerDetails(customerId)
+                                    )
+                                },
+                                onDeleteCustomer = { customerId ->
+                                    isCustomer = true
+                                    selectedItemId = customerId
+                                    isConfirmDeleteDialogVisible = true
+                                },
+                                onEditCustomer = { customer ->
+                                    onAction(
+                                        HomeUiAction.OnEditCustomerClicked(customer)
+                                    )
+                                }
+                            )
                         }
-                        CustomerListWithTitle(
-                            customers = customers,
-                            onViewCustomerDetailsClicked = { customerId ->
-                                onAction(
-                                    HomeUiAction.OnViewCustomerDetails(customerId)
-                                )
-                            },
-                            onDeleteCustomer = { customerId ->
-                                isCustomer = true
-                                selectedItemId = customerId
-                                isConfirmDeleteDialogVisible = true
-                            },
-                            onEditCustomer = { customer ->
-                                onAction(
-                                    HomeUiAction.OnEditCustomerClicked(customer)
-                                )
-                            }
-                        )
                     }
 
                     1 -> {
-                        Column {
+                        Column(
+                            modifier = Modifier.padding(top = 8.dp).fillMaxSize()
+                        ) {
                             TimeFiltersChips(
                                 onUpdateTimeFilter = { timeFilter ->
                                     onAction(
