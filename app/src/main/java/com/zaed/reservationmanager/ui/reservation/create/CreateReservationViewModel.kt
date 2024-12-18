@@ -157,8 +157,9 @@ class CreateReservationViewModel(
             _uiState.update {
                 it.copy(
                     customer = it.customer.copy(
-                        phoneNumber = phone
-                    )
+                        phoneNumber = phone,
+                    ),
+                    isNewCustomer = if(phone.isBlank()) null else it.isNewCustomer
                 )
             }
         }
@@ -348,7 +349,14 @@ class CreateReservationViewModel(
                     _uiState.update { oldState ->
                         oldState.copy(
                             isNewCustomer = customer.id.isEmpty(),
-                            customer = customer
+                            customer = oldState.customer.copy(
+                                id = customer.id,
+                                name = customer.name,
+                                email = customer.email,
+                                residenceCountry = customer.residenceCountry,
+                                nationality = customer.nationality,
+                                createdAtEpochSeconds = customer.createdAtEpochSeconds
+                            )
                         )
                     }
                 }.onFailure { error ->

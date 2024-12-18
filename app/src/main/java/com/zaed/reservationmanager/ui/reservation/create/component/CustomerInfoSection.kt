@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.reservation.create.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.Composable
@@ -56,72 +57,82 @@ fun CustomerInfoSection(
         )
         AnimatedVisibility(isNewCustomer != null) {
             when {
-                isNewCustomer == true -> {
-                    TitledTextField2(
-                        title = stringResource(R.string.client_name),
-                        value = customer.name,
-                        onValueChanged = { newText ->
-                            onUpdateName(newText)
-                        },
-                        isOptional = false,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                        isError = (error == ReservationError.CUSTOMER_NAME_IS_REQUIRED),
-                        errorMessageRes = error.messageRes,
-                    )
-                    TitledTextField(
-                        title = stringResource(R.string.nationality),
-                        initialValue = customer.nationality,
-                        onValueChanged = { nationality ->
-                            onUpdateNationality(nationality)
-                        },
-                        isOptional = true,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                    )
-                    TitledDropDownTextField(
-                        title = stringResource(R.string.residence_country),
-                        selectedValue = customer.residenceCountry,
-                        onValueChanged = { index ->
-                            onUpdateCountry(countries[index])
-                        },
-                        isOptional = false,
-                        options = countries,
-                        isError = (error == ReservationError.CUSTOMER_COUNTRY_IS_REQUIRED),
-                        errorMessageRes = error.messageRes,
-                    )
-                    TitledDropDownTextField(
-                        title = stringResource(R.string.email),
-                        selectedValue = customer.email,
-                        onValueChanged = { index ->
-                            onUpdateEmail(countries[index])
-                        },
-                        isOptional = true,
-                        options = countries,
-                        isError = (error == ReservationError.EMAIL_IS_INVALID),
-                        errorMessageRes = error.messageRes,
-                    )
+                isNewCustomer == true ->{
+                    Column(
+                        modifier = modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
 
+                        TitledTextField2(
+                            title = stringResource(R.string.client_name),
+                            value = customer.name,
+                            onValueChanged = { newText ->
+                                onUpdateName(newText)
+                            },
+                            isOptional = false,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                            isError = (error == ReservationError.CUSTOMER_NAME_IS_REQUIRED),
+                            errorMessageRes = error.messageRes,
+                        )
+                        TitledTextField(
+                            title = stringResource(R.string.nationality),
+                            initialValue = customer.nationality,
+                            onValueChanged = { nationality ->
+                                onUpdateNationality(nationality)
+                            },
+                            isOptional = true,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
+                        )
+                        TitledDropDownTextField(
+                            title = stringResource(R.string.residence_country),
+                            selectedValue = customer.residenceCountry,
+                            onValueChanged = { index ->
+                                onUpdateCountry(countries[index])
+                            },
+                            isOptional = false,
+                            options = countries,
+                            isError = (error == ReservationError.CUSTOMER_COUNTRY_IS_REQUIRED),
+                            errorMessageRes = error.messageRes,
+                        )
+                        TitledDropDownTextField(
+                            title = stringResource(R.string.email),
+                            selectedValue = customer.email,
+                            onValueChanged = { index ->
+                                onUpdateEmail(countries[index])
+                            },
+                            isOptional = true,
+                            options = countries,
+                            isError = (error == ReservationError.EMAIL_IS_INVALID),
+                            errorMessageRes = error.messageRes,
+                        )
+                    }
                 }
 
                 else -> {
-                    DetailRow(
-                        label = stringResource(R.string.client_name),
-                        value = customer.name,
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.nationality),
-                        value = customer.nationality
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.residence_country),
-                        value = customer.residenceCountry
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.email),
-                        value = customer.email,
-                        isDividerVisible = false
-                    )
+                    Column (
+                        modifier = modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ){
+                        DetailRow(
+                            label = stringResource(R.string.client_name),
+                            value = customer.name,
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.nationality),
+                            value = customer.nationality
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.residence_country),
+                            value = customer.residenceCountry
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.email),
+                            value = customer.email,
+                            isDividerVisible = false
+                        )
+                    }
                 }
             }
         }

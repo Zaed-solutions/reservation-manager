@@ -46,7 +46,7 @@ fun DetailRow(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.reservation_number),
+                    text = label,
                     style = style,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
