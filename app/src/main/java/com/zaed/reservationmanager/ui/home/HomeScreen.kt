@@ -1,0 +1,744 @@
+package com.zaed.reservationmanager.ui.home
+
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
+import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.data.model.Employee
+import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
+import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
+import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
+import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
+import com.zaed.reservationmanager.ui.home.component.ReservationsList
+import com.zaed.reservationmanager.ui.home.component.TimeFilter
+import com.zaed.reservationmanager.ui.home.component.TimeFiltersChips
+import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
+import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.PhoneUtil
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatMoney
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+
+
+@Composable
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel(),
+    onShowNavDrawer: () -> Unit = {},
+    onNavigateToAddCustomer: () -> Unit = {},
+    onNavigateToEditCustomer: (Customer) -> Unit = {},
+    onNavigateToAddReservation: () -> Unit = {},
+    onNavigateToCustomerDetails: (String) -> Unit = {},
+    onNavigateToCompanyDetails: (String, CompanyType) -> Unit = { _, _ ->},
+) {
+    val context = LocalContext.current
+    val state by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    HomeScreenContent(
+        reservations = state.reservations,
+        customers = state.customers,
+        searchQuery = state.searchQuery,
+        selectedCountry = state.selectedCountry,
+        selectedTimeFilter = state.timeFilter,
+        reservationTypes = state.reservationTypes,
+        cars = state.cars,
+        tourismCompanies = state.tourismCompanies,
+        employees = state.employees,
+        travelCompanies = state.travelCompanies,
+        drivers = state.drivers,
+        countries = state.countries,
+        isLoading = state.isLoading,
+        snackbarHostState = snackbarHostState,
+        onAction = { action ->
+            when (action) {
+                HomeUiAction.ShowNavDrawer -> onShowNavDrawer()
+                HomeUiAction.AddCustomer -> onNavigateToAddCustomer()
+                HomeUiAction.AddReservation -> onNavigateToAddReservation()
+                is HomeUiAction.OnCompanyClicked -> onNavigateToCompanyDetails(action.companyId, action.companyType)
+                is HomeUiAction.OnEditCustomerClicked -> onNavigateToEditCustomer(action.customer)
+                is HomeUiAction.OnViewCustomerDetails -> onNavigateToCustomerDetails(action.customerId)
+                HomeUiAction.ExportCustomersAsCsv -> {
+                    val file = state.displayedCustomers.exportCustomersToExcel(
+                        context = context,
+                        headers = listOf(
+                            context.getString(R.string.name),
+                            context.getString(R.string.nationality),
+                            context.getString(R.string.residence_country),
+                            context.getString(R.string.email),
+                            context.getString(R.string.phone_number)
+                        )
+                    )
+                    scope.launch {
+                        if (file != null) {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.csv_saved_at, file.path),
+                                actionLabel = context.getString(R.string.open)
+                            ).let { result ->
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    try {
+                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
+                                            val fileUri: Uri = FileProvider.getUriForFile(
+                                                context,
+                                                "${context.packageName}.fileprovider",
+                                                file
+                                            )
+                                            setDataAndType(fileUri, "text/csv")
+                                            flags =
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        }
+                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
+                                            context.startActivity(openFileIntent)
+                                        } else {
+                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                        } else {
+                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_csv))
+                        }
+                    }
+                }
+                HomeUiAction.ExportReservationsAsCsv -> {
+                    val file = state.displayedReservations.exportReservationsAsCSV(
+                        context = context,
+                        isAllRides = true,
+                        headers = listOf(
+                            context.getString(R.string.date),
+                            context.getString(R.string.type),
+                            context.getString(R.string.car),
+                            context.getString(R.string.client_name),
+                            context.getString(R.string.selling_price),
+                            context.getString(R.string.buying_price),
+                            context.getString(R.string.collected_price),
+                            context.getString(R.string.balance)
+                        )
+                    )
+                    scope.launch {
+                        if (file != null) {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.csv_saved_at, file.path),
+                                actionLabel = context.getString(R.string.open)
+                            ).let { result ->
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    try {
+                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
+                                            val fileUri: Uri = FileProvider.getUriForFile(
+                                                context,
+                                                "${context.packageName}.fileprovider",
+                                                file
+                                            )
+                                            setDataAndType(fileUri, "text/csv")
+                                            flags =
+                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        }
+                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
+                                            context.startActivity(openFileIntent)
+                                        } else {
+                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                        } else {
+                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_csv))
+                        }
+                    }
+                }
+
+                is HomeUiAction.OnCopyPhoneNumber -> {
+                    clipboardManager.setText(AnnotatedString(action.phoneNumber))
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.number_copied_to_clipboard),
+                            withDismissAction = true
+                        )
+                    }
+                }
+                is HomeUiAction.OnMessagePhoneNumber -> {
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = action.phoneNumber,
+                        message = "",
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                is HomeUiAction.SendConfirmationToClient -> {
+                    val reservation = state.displayedReservations.first { it.id == action.reservationId }
+                    val messageText =
+                        context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(HomeUiAction.OnConfirmationSentToClient(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                is HomeUiAction.SendDriverInfoToClient -> {
+                    val reservation = state.displayedReservations.first{ it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
+                        reservation.driver,
+                        reservation.driverPhoneNumber
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(HomeUiAction.OnDriverInfoSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                is HomeUiAction.SendReservationInfoToTravelCompany -> {
+                    val reservation = state.displayedReservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.transportation_details,
+                        reservation.travelCompany,
+                        reservation.clientName,
+                        reservation.clientPhone,
+                        reservation.date.formatEpochSecondsToDateTime(),
+                        reservation.startLocation,
+                        reservation.endLocation,
+                        reservation.buyingPrice.formatMoney(),
+                        reservation.collectedAmount.formatMoney()
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.travelCompanyPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(HomeUiAction.OnInfoSentToTravelCompany(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                else -> viewModel.handleAction(action)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenContent(
+    reservations: List<ReservationModel> = emptyList(),
+    customers: List<Customer> = emptyList(),
+    searchQuery: String = "",
+    selectedCountry: String = "",
+    selectedTimeFilter: TimeFilter = TimeFilter.All,
+    reservationTypes: List<String> = emptyList(),
+    cars: List<String> = emptyList(),
+    tourismCompanies: List<Company> = emptyList(),
+    employees: List<Employee> = emptyList(),
+    travelCompanies: List<Company> = emptyList(),
+    drivers: List<Employee> = emptyList(),
+    countries: List<String> = emptyList(),
+    isLoading: Boolean = false,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onAction: (HomeUiAction) -> Unit = {},
+) {
+    var isOptionsMenuVisible by remember {
+        mutableStateOf(false)
+    }
+    val pagerState = rememberPagerState(pageCount = { 2 })
+    var selectedTab by remember {
+        mutableIntStateOf(0)
+    }
+    var isEditReservationBottomSheetVisible by remember {
+        mutableStateOf(false)
+    }
+    var editedReservation by remember {
+        mutableStateOf(ReservationModel())
+    }
+    var isConfirmDeleteDialogVisible by remember {
+        mutableStateOf(false)
+    }
+    var selectedItemId by remember {
+        mutableStateOf("")
+    }
+    var isCustomer by remember {
+        mutableStateOf(true)
+    }
+    var isDateRangePickerVisible by remember { mutableStateOf(false) }
+    var isFixedDatePickerVisible by remember { mutableStateOf(false) }
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(stringResource(R.string.reservations))
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        onAction(HomeUiAction.ShowNavDrawer)
+                    }) {
+                        Icon(imageVector = Icons.Default.Menu, contentDescription = null)
+                    }
+
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        IconButton(
+                            onClick = { isOptionsMenuVisible = !isOptionsMenuVisible },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = null,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = isOptionsMenuVisible,
+                            onDismissRequest = { isOptionsMenuVisible = false }
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    if (selectedTab == 0) {
+                                        onAction(HomeUiAction.ExportCustomersAsCsv)
+                                    } else {
+                                        onAction(HomeUiAction.ExportReservationsAsCsv)
+                                    }
+                                    isOptionsMenuVisible = false
+                                },
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.export_as_csv),
+                                    )
+                                },
+                            )
+//                            DropdownMenuItem(
+//                                onClick = {
+//                                    onExportCustomersAsPDF()
+//                                    isOptionsMenuVisible = false
+//                                },
+//                                text = {
+//                                    Text(
+//                                        text = stringResource(R.string.export_as_pdf),
+//                                    )
+//                                },
+//                            )
+                        }
+                    }
+                }
+
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (selectedTab == 0) {
+                        onAction(HomeUiAction.AddCustomer)
+                    } else {
+                        onAction(HomeUiAction.AddReservation)
+                    }
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            AnimatedVisibility(isLoading) {
+                LinearProgressIndicator()
+            }
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    onAction(HomeUiAction.UpdateSearchQuery(it))
+                },
+                placeholder = { Text(stringResource(R.string.smart_search)) },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                onAction(HomeUiAction.UpdateSearchQuery(""))
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
+            )
+            PrimaryTabRow(
+                selectedTabIndex = selectedTab,
+                indicator = {
+                    TabRowDefaults.PrimaryIndicator(
+                        modifier = Modifier
+                            .run {
+                                if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                                    scale(-1f, 1f)
+                                else
+                                    this
+                            }
+                            .tabIndicatorOffset(selectedTab, true),
+                        width = Dp.Unspecified,
+                    )
+                }
+            ) {
+                Tab(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.customers),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+                Tab(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.reservations),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+            HorizontalPager(
+                state = pagerState
+            ) { page ->
+                when (page) {
+                    0 -> {
+                        LazyRow {
+                            items(countries) { country ->
+                                FilterChip(
+                                    modifier = Modifier.padding(end = 8.dp),
+                                    onClick = {
+                                        onAction(HomeUiAction.UpdateCountryFilter(if(country!= selectedCountry) country else ""))
+                                    },
+                                    label = {
+                                        Text(country)
+                                    },
+                                    selected = selectedCountry == country,
+                                    leadingIcon = {
+                                        if (selectedCountry == country) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Done,
+                                                contentDescription = "Done icon",
+                                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                            )
+                                        }
+                                    },
+                                )
+                            }
+                        }
+                        CustomerListWithTitle(
+                            customers = customers,
+                            onViewCustomerDetailsClicked = { customerId ->
+                                onAction(
+                                    HomeUiAction.OnViewCustomerDetails(customerId)
+                                )
+                            },
+                            onDeleteCustomer = { customerId ->
+                                isCustomer = true
+                                selectedItemId = customerId
+                                isConfirmDeleteDialogVisible = true
+                            },
+                            onEditCustomer = { customer ->
+                                onAction(
+                                    HomeUiAction.OnEditCustomerClicked(customer)
+                                )
+                            }
+                        )
+                    }
+
+                    1 -> {
+                        Column {
+                            TimeFiltersChips(
+                                onUpdateTimeFilter = { timeFilter ->
+                                    onAction(HomeUiAction.UpdateTimeFilter(
+                                        if(timeFilter::class == selectedTimeFilter::class) timeFilter else TimeFilter.All)
+                                    )
+                                },
+                                selectedTimeFilter = selectedTimeFilter,
+                                onShowDatePicker = {
+                                    isFixedDatePickerVisible = true
+                                },
+                                onShowDateRangePicker = {
+                                    isDateRangePickerVisible = true
+                                }
+                            )
+                            if (selectedTimeFilter is TimeFilter.FixedRange) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.selected_range_place,
+                                        selectedTimeFilter.startDate.formatEpochSecondsToDate(),
+                                        selectedTimeFilter.endDate.formatEpochSecondsToDate()
+                                    ),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            } else if (selectedTimeFilter is TimeFilter.FixedDate) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.selected_date_place,
+                                        selectedTimeFilter.date.formatEpochSecondsToDate()
+                                    ),
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                            ReservationsList(
+                                reservations = reservations,
+                                onAddReservation = {},
+                                isHeaderVisible = false,
+                                isAddEnabled = false,
+                                isSendActionsVisible = true,
+                                onDeleteReservation = { reservationId ->
+                                    isCustomer = false
+                                    selectedItemId = reservationId
+                                    isConfirmDeleteDialogVisible = true
+                                },
+                                onCompanyClicked = { companyId, companyType ->
+                                    onAction(HomeUiAction.OnCompanyClicked(companyId, companyType))
+                                },
+                                onCopyPhoneNumber = { phoneNumber ->
+                                    onAction(HomeUiAction.OnCopyPhoneNumber(phoneNumber))
+                                },
+                                onMessagePhoneNumber = { phoneNumber ->
+                                    onAction(HomeUiAction.OnMessagePhoneNumber(phoneNumber))
+                                },
+                                onEditReservation = { reservation ->
+                                    editedReservation = reservation
+                                    isEditReservationBottomSheetVisible = true
+                                },
+                                onSendDriverInfoToClient = { reservationId: String ->
+                                    onAction(HomeUiAction.SendDriverInfoToClient(reservationId))
+                                },
+                                onSendInfoToTravelCompany = { reservationId: String ->
+                                    onAction(
+                                        HomeUiAction.SendReservationInfoToTravelCompany(
+                                            reservationId
+                                        )
+                                    )
+                                },
+                                onSendConfirmationToCustomer = { reservationId: String ->
+                                    onAction(HomeUiAction.SendConfirmationToClient(reservationId))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            AnimatedVisibility(isEditReservationBottomSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isEditReservationBottomSheetVisible = false
+                    },
+                ) {
+                    AddReservationBottomSheetContent(
+                        types = reservationTypes,
+                        cars = cars,
+                        tourismCompanies = tourismCompanies,
+                        employees = employees,
+                        onFetchEmployees = {
+                            onAction(
+                                HomeUiAction.FetchEmployees(it)
+                            )
+                        },
+                        travelCompanies = travelCompanies,
+                        drivers = drivers,
+                        initialReservation = editedReservation,
+                        onFetchDrivers = {
+                            onAction(
+                                HomeUiAction.FetchDrivers(it)
+                            )
+                        },
+                        onSaveReservation = {
+                            onAction(HomeUiAction.UpdateReservation(it))
+                            isEditReservationBottomSheetVisible = false
+                            editedReservation = ReservationModel()
+                        },
+                        onDismiss = {
+                            isEditReservationBottomSheetVisible = false
+                            editedReservation = ReservationModel()
+                        }
+
+                    )
+                }
+            }
+            AnimatedVisibility(isDateRangePickerVisible) {
+                DateRangePickerModal(
+                    onDateRangeSelected = {
+                        onAction(
+                            HomeUiAction.UpdateTimeFilter(
+                                TimeFilter.FixedRange(
+                                    it.first?.toSeconds() ?: 0L,
+                                    it.second?.toSeconds() ?: 0L
+                                )
+                            )
+                        )
+                    },
+                    onDismiss = { isDateRangePickerVisible = false }
+                )
+            }
+            AnimatedVisibility(isFixedDatePickerVisible) {
+                DateFixedPickerModal(
+                    onDateSelected = {
+                        onAction(
+                            HomeUiAction.UpdateTimeFilter(
+                                TimeFilter.FixedDate(it?.toSeconds() ?: 0L)
+                            )
+                        )
+                    },
+                    onDismiss = { isFixedDatePickerVisible = false }
+                )
+            }
+            AnimatedVisibility(isConfirmDeleteDialogVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isConfirmDeleteDialogVisible = false
+                        selectedItemId = ""
+                    },
+                    sheetState = rememberModalBottomSheetState()
+                ) {
+                    ConfirmDeleteDialog(
+                        label = stringResource(id = R.string.reservation),
+                        onDismiss = {
+                            isConfirmDeleteDialogVisible = false
+                            selectedItemId = ""
+                        },
+                        onConfirm = {
+                            onAction(
+                                if (isCustomer)
+                                    HomeUiAction.OnDeleteCustomer(selectedItemId)
+                                else
+                                    HomeUiAction.OnDeleteReservation(selectedItemId)
+                            )
+                            isConfirmDeleteDialogVisible = false
+                            selectedItemId = ""
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun CustomerListScreenPreview() {
+    ReservationManagerTheme {
+        HomeScreenContent()
+    }
+}

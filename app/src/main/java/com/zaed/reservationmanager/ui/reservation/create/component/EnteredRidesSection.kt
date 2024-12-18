@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.ReservationModel
-import com.zaed.reservationmanager.ui.reservation.details.components.ReservationItem
+import com.zaed.reservationmanager.ui.home.component.ReservationItem
 
 @Composable
 fun EnteredRidesSection(

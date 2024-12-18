@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,10 +40,12 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.ui.client.details.components.CustomerDetailsHeader
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
-import com.zaed.reservationmanager.ui.reservation.create.component.AddNewReservation
-import com.zaed.reservationmanager.ui.reservation.details.components.AddRideBottomSheetContent
-import com.zaed.reservationmanager.ui.reservation.details.components.ReservationsList
+import com.zaed.reservationmanager.ui.home.HomeUiAction
+import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatMoney
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -113,6 +113,72 @@ fun CustomerDetailScreen(
                             snackbarHostState.showSnackbar(context.getString(R.string.phonenumber_is_blank))
                         }
                     }
+                }
+                is CustomerDetailsUiAction.SendReservationInfo -> {
+                    val reservation = state.reservations.first{ it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
+                        reservation.driver,
+                        reservation.driverPhoneNumber
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(CustomerDetailsUiAction.ReservationInfoSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                is CustomerDetailsUiAction.SendReservationConfirmation -> {
+                    val reservation = state.reservations.first { it.id == action.reservationId }
+                    val messageText =
+                        context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(CustomerDetailsUiAction.ReservationConfirmationSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+                is CustomerDetailsUiAction.SendReservationInfoToTravelCompany -> {
+                    val reservation = state.reservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.transportation_details,
+                        reservation.travelCompany,
+                        reservation.clientName,
+                        reservation.clientPhone,
+                        reservation.date.formatEpochSecondsToDateTime(),
+                        reservation.startLocation,
+                        reservation.endLocation,
+                        reservation.buyingPrice.formatMoney(),
+                        reservation.collectedAmount.formatMoney()
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.travelCompanyPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(CustomerDetailsUiAction.ReservationInfoToTravelCompanySent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
                 }
 
                 else -> viewModel.handleAction(action)
@@ -183,9 +249,9 @@ private fun CustomerDetailScreenContent(
             ReservationsList(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 reservations = reservations,
-                onCompanyClicked = { companyId ->
+                onCompanyClicked = { companyId, companyType ->
                     onAction(
-                        CustomerDetailsUiAction.OnCompanyClicked(companyId, CompanyType.TRAVEL)
+                        CustomerDetailsUiAction.OnCompanyClicked(companyId, companyType)
                     )
                 },
                 onDeleteReservation = {
@@ -198,6 +264,30 @@ private fun CustomerDetailScreenContent(
                         CustomerDetailsUiAction.OnMessagePhone(it)
                     )
                 },
+                onEditReservation = {
+                    selectedReservation = it
+                    isAddReservationBottomSheetVisible = true
+                },
+                onSendConfirmationToCustomer = {
+                    onAction(
+                        CustomerDetailsUiAction.SendReservationConfirmation(it)
+                    )
+                },
+                onSendInfoToTravelCompany = {
+                    onAction(
+                        CustomerDetailsUiAction.SendReservationInfoToTravelCompany(it)
+                    )
+                },
+                onSendDriverInfoToClient = {
+                    onAction(
+                        CustomerDetailsUiAction.SendReservationInfo(it)
+                    )
+                },
+                onAddReservation = {
+                    selectedReservation = ReservationModel()
+                    isAddReservationBottomSheetVisible = true
+                },
+
             )
             AnimatedVisibility(isAddReservationBottomSheetVisible) {
                 ModalBottomSheet(
@@ -207,7 +297,7 @@ private fun CustomerDetailScreenContent(
                     },
                     sheetState = rememberModalBottomSheetState()
                 ) {
-                    AddRideBottomSheetContent(
+                    AddReservationBottomSheetContent(
                         types = reservationTypes,
                         cars = cars,
                         tourismCompanies = tourismCompanies,
@@ -225,7 +315,7 @@ private fun CustomerDetailScreenContent(
                                 CustomerDetailsUiAction.OnFetchDrivers(it)
                             )
                         },
-                        onAddRide = {
+                        onSaveReservation = {
                             if(selectedReservation.id.isEmpty()) {
                                 onAction(
                                     CustomerDetailsUiAction.OnAddReservation(it)

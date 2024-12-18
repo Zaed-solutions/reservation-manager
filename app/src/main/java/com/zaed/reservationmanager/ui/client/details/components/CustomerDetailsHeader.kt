@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.ui.reservation.details.components.DetailRow
+import com.zaed.reservationmanager.ui.home.component.DetailRow
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
 @Composable

@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.client.display.components
+package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn

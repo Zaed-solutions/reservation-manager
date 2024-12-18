@@ -1,25 +1,18 @@
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +39,6 @@ import androidx.core.content.FileProvider
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.client.display.CustomerListViewModel
-import com.zaed.reservationmanager.ui.client.display.components.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PdfUtil.exportCustomersToPdf
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
@@ -277,37 +269,7 @@ fun CustomerListWithScreenContent(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            LazyRow {
-                items(countriesList) { country ->
-                    FilterChip(
-                        modifier = Modifier.padding(end = 8.dp),
-                        onClick = {
-                            onFilterCountries(if (selectedCountry == country) "" else country)
-                        },
-                        label = {
-                            Text(country)
-                        },
-                        selected = selectedCountry == country,
-                        leadingIcon = if (selectedCountry == country) {
-                            {
-                                Icon(
-                                    imageVector = Icons.Filled.Done,
-                                    contentDescription = "Done icon",
-                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                )
-                            }
-                        } else {
-                            null
-                        },
-                    )
-                }
-            }
-            CustomerListWithTitle(
-                customers = displayedCustomers,
-                onViewCustomerDetailsClicked = onViewCustomerDetails,
-                onDeleteCustomer = onDeleteCustomer,
-                onEditCustomer = onEditCustomer
-            )
+
         }
     }
 }

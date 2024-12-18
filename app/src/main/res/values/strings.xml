@@ -140,9 +140,8 @@
         - Ride Date: %4$s
         - Start Location: %5$s
         - End Location: %6$s
-        - Flight Number: %7$s
-        - Ride Price: %8$s
-        - Payment Collection: %9$s
+        - Ride Price: %7$s
+        - Payment Collection: %8$s
 
         Kindly confirm receipt of this information and ensure timely arrangements. Please do not hesitate to contact us if you require further details.
 
@@ -186,10 +185,11 @@
     <string name="from_today_onwards">From today onwards</string>
     <string name="selected_range">Selected Range</string>
     <string name="selected_range_place">Selected Range: %1$s - %2$s</string>
+    <string name="selected_date_place">Selected Date: %1$s - %2$s</string>
     <string name="customer_name">Customer Name</string>
     <string name="company_phone">Company Phone</string>
     <string name="reservation_details_arrow"><![CDATA[Reservation Details >]]></string>
-    <string name="search_by_anything">Search by anything</string>
+    <string name="smart_search">Smart Search</string>
     <string name="balance">Balance</string>
     <string name="csv_saved_at">CSV saved at: %1$s</string>
     <string name="dd_mm_yyyy">DD/MM/YYYY</string>

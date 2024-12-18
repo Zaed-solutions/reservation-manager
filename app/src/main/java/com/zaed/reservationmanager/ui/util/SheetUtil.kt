@@ -63,7 +63,7 @@ object SheetUtil {
         return null
     }
 
-    fun List<ReservationModel>.exportRidesAsCsv(
+    fun List<ReservationModel>.exportReservationsAsCSV(
         context: Context,
         headers: List<String>,
         isAllRides: Boolean = false,
@@ -71,7 +71,7 @@ object SheetUtil {
         isTravelCompany: Boolean = false
     ): File? {
         try {
-            val fileName = "Rides_${Date()}.csv"
+            val fileName = "Reservations_${Date()}.csv"
             val totalSelling = this.sumOf { it.sellingPrice }
             val totalBuying = this.sumOf { it.buyingPrice }
             val totalCollected = this.sumOf { it.collectedAmount }
@@ -84,7 +84,7 @@ object SheetUtil {
                 }
             }
             val workbook = XSSFWorkbook()
-            val sheet = workbook.createSheet("Rides")
+            val sheet = workbook.createSheet("Reservations")
 
             val headerRow = sheet.createRow(0)
             headers.forEachIndexed { index, header ->

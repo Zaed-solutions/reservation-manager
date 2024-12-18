@@ -125,7 +125,38 @@ class CustomerDetailsViewModel(
             is CustomerDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CustomerDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
             is CustomerDetailsUiAction.OnUpdateReservation -> updateReservation(action.reservation)
+            is CustomerDetailsUiAction.ReservationInfoSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentDriverInfoToCustomer" to true)
+            )
+            is CustomerDetailsUiAction.ReservationConfirmationSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentConfirmToCustomer" to true)
+            )
+            is CustomerDetailsUiAction.ReservationInfoToTravelCompanySent -> updateReservation(
+                action.reservationId,
+                mapOf("sentToDriverCompany" to true)
+            )
             else -> Unit
+        }
+    }
+
+    private fun updateReservation(reservationId: String, updates: Map<String, Any>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.updateReservation(
+                reservationId,
+                updates
+            ).collect { result ->
+                result.onSuccess {
+                    Log.d("DisplayReservationViewModel", "sendInfoToTravelCompany: success")
+                }.onFailure { e ->
+                    Log.e(
+                        "DisplayReservationViewModel",
+                        "sendInfoToTravelCompany: ${e.message}"
+                    )
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

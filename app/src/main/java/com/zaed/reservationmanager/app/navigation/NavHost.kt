@@ -7,6 +7,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.compiler.plugins.kotlin.EmptyFunctionMetrics.composable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -112,16 +113,21 @@ fun NavigationHost(
         }
         composable<Route.HomeRoute> {
             HomeScreen (
-                navigateToAddReservation = {
-                    navController.navigate(Route.CreateReservationRoute())
-                },
                 onShowNavDrawer = { onShowNavDrawer() },
-                onNavigateToEmployeeDetails = { _, _ ->},
-                navigateToEditReservation = { reservation ->
-                    navController.navigate(Route.CreateReservationRoute(reservation))
+                onNavigateToCompanyDetails = { companyId, companyType ->
+                    navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 },
-                navigateToCompanyDetails = { companyId ->
-                    navController.navigate(Route.CompanyDetailsRoute(companyId, CompanyType.TRAVEL))
+                onNavigateToEditCustomer = {
+                    navController.navigate(Route.AddCustomerRoute(it))
+                },
+                onNavigateToCustomerDetails = {
+                    navController.navigate(Route.CustomerDetailsRoute(it))
+                },
+                onNavigateToAddCustomer = {
+                    navController.navigate(Route.AddCustomerRoute())
+                },
+                onNavigateToAddReservation = {
+                    navController.navigate(Route.CreateReservationRoute())
                 }
             )
         }

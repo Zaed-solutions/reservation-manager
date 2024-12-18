@@ -8,6 +8,7 @@ import com.zaed.reservationmanager.data.model.ReservationModel
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
+import com.zaed.reservationmanager.ui.client.details.CustomerDetailsUiAction
 import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
@@ -149,7 +150,38 @@ class CompanyDetailsViewModel(
             is CompanyDetailsUiAction.OnEditReservation -> editReservation(action.reservation)
             is CompanyDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CompanyDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
+            is CompanyDetailsUiAction.ReservationInfoSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentDriverInfoToCustomer" to true)
+            )
+            is CompanyDetailsUiAction.ReservationConfirmationSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentConfirmToCustomer" to true)
+            )
+            is CompanyDetailsUiAction.ReservationInfoToTravelCompanySent -> updateReservation(
+                action.reservationId,
+                mapOf("sentToDriverCompany" to true)
+            )
             else -> Unit
+        }
+    }
+
+    private fun updateReservation(reservationId: String, updates: Map<String, Any>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.updateReservation(
+                reservationId,
+                updates
+            ).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "sendInfoToTravelCompany: success")
+                }.onFailure { e ->
+                    Log.e(
+                        TAG,
+                        "sendInfoToTravelCompany: ${e.message}"
+                    )
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

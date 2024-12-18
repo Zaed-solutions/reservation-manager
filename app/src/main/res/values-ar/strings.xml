@@ -141,9 +141,8 @@
         - تاريخ الرحلة: %4$s
         - الموقع الابتدائي: %5$s
         - الموقع النهائي: %6$s
-        - رقم الرحلة: %7$s
-        - سعر الرحلة: %8$s
-        - التحصيل: %9$s
+        - سعر الرحلة: %7$s
+        - التحصيل: %8$s
 
         يرجى تأكيد استلام هذه المعلومات وضمان الترتيبات في الوقت المحدد. لا تتردد في الاتصال بنا إذا كنت بحاجة إلى مزيد من التفاصيل.
 
@@ -187,10 +186,11 @@
     <string name="from_today_onwards">بداية من اليوم</string>
     <string name="selected_range">فترة محددة</string>
     <string name="selected_range_place">الفترة المحددة\" %1$s - %2$s</string>
+    <string name="selected_date_place">التاريخ المحدد\" %1$s - %2$s</string>
     <string name="customer_name">اسم العميل</string>
     <string name="company_phone">جوال الشركة</string>
     <string name="reservation_details_arrow"><![CDATA[تفاصيل الحجز >]]></string>
-    <string name="search_by_anything">بحث ذكي</string>
+    <string name="smart_search">البحث الذكي</string>
     <string name="csv_saved_at">تم حفظ الـ CSV في %1$s</string>
     <string name="dd_mm_yyyy">يوم / شهر / سنة</string>
     <string name="balance">الرصيد</string>

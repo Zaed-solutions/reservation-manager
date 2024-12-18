@@ -1,0 +1,172 @@
+package com.zaed.reservationmanager.ui.home.component
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.ReservationModel
+import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+
+@Composable
+fun ReservationsList(
+    modifier: Modifier = Modifier,
+    reservations: List<ReservationModel> = emptyList(),
+    onAddReservation: () -> Unit = {},
+    isHeaderVisible: Boolean = true,
+    isAddEnabled: Boolean = true,
+    isSendActionsVisible: Boolean = true,
+    onDeleteReservation: (reservationId: String) -> Unit = {},
+    onCompanyClicked: (companyId: String, companyType: CompanyType) -> Unit = {_ , _->},
+    onCopyPhoneNumber: (String) -> Unit = {},
+    onMessagePhoneNumber: (String) -> Unit = {},
+    onEditReservation: (reservation: ReservationModel) -> Unit = {},
+    onSendConfirmationToCustomer: (reservationId: String) -> Unit = {},
+    onSendDriverInfoToClient: (reservationId: String) -> Unit = { },
+    onSendInfoToTravelCompany: (reservationId: String) -> Unit = {},
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (isHeaderVisible) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.reservations),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                if (isAddEnabled) {
+                    IconButton(onClick = { onAddReservation() }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add Reservation"
+                        )
+                    }
+                }
+            }
+        }
+
+        AnimatedContent(targetState = reservations.isEmpty()) { state ->
+            when {
+                state -> {
+                    Text(
+                        modifier = Modifier.padding(top = 36.dp),
+                        text = stringResource(R.string.no_reservations_added),
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(reservations) { reservation ->
+                            ReservationItem(
+                                modifier = Modifier.animateItem(),
+                                reservation = reservation,
+                                isActionsVisible = isSendActionsVisible,
+                                onDeleteReservation = {
+                                    onDeleteReservation(reservation.id)
+                                },
+                                onEditReservation = {
+                                    onEditReservation(reservation)
+                                },
+                                onCompanyClicked = { companyId, companyType->
+                                    onCompanyClicked(companyId, companyType)
+                                },
+                                onCopyPhoneNumber = { number ->
+                                    onCopyPhoneNumber(number)
+                                },
+                                onMessagePhoneNumber = { number ->
+                                    onMessagePhoneNumber(number)
+                                },
+                                onSendDriverInfoToClient = {
+                                    onSendDriverInfoToClient(
+                                        reservation.id
+                                    )
+                                },
+                                onSendInfoToTravelCompany = {
+                                    onSendInfoToTravelCompany(reservation.id)
+                                },
+                                onSendConfirmationToCustomer = {
+                                    onSendConfirmationToCustomer(reservation.id)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun Preview() {
+    ReservationManagerTheme {
+        val reservationModels = listOf(
+            ReservationModel(
+                id = "tristique",
+                date = 7041,
+                type = "Mazarat El Madina",
+                car = "Camaro",
+                travelCompanyPhone = "(398) 742-4872",
+                driver = "Ahmed Mohsen",
+                travelCompany = "Gawhara Travel Company",
+                startLocation = "Gadda",
+                endLocation = "Riyadh",
+                buyingPrice = 0.1,
+                sellingPrice = 2.3,
+                collectedAmount = 4.5,
+                note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
+                sentDriverInfoToCustomer = false,
+                sentToDriverCompany = true
+            ),
+            ReservationModel(
+                id = "tristique",
+                date = 7041,
+                type = "Mazarat El Madina",
+                car = "Camaro",
+                travelCompanyPhone = "(398) 742-4872",
+                driver = "Ahmed Mohsen",
+                travelCompany = "Gawhara Travel Company",
+                startLocation = "Gadda",
+                endLocation = "Riyadh",
+                buyingPrice = 0.1,
+                sellingPrice = 2.3,
+                collectedAmount = 4.5,
+                note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
+                sentDriverInfoToCustomer = false,
+                sentToDriverCompany = true
+            )
+        )
+        ReservationsList(
+            modifier = Modifier.padding(16.dp),
+            reservations = emptyList()
+        )
+    }
+}

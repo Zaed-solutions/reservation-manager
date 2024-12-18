@@ -1,4 +1,4 @@
-package com.zaed.reservationmanager.ui.client.display.components
+package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
-import com.zaed.reservationmanager.ui.reservation.details.components.DetailRow
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
