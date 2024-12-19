@@ -67,7 +67,7 @@ fun ReservationItem(
     isEditable: Boolean = true,
 ) {
     var isExpanded by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
     var isOptionMenuVisible by remember {
         mutableStateOf(false)
@@ -107,7 +107,6 @@ fun ReservationItem(
                     text = reservation.type,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -115,7 +114,9 @@ fun ReservationItem(
                     imageVector = Icons.Default.CalendarMonth,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     contentDescription = "Reservation Date",
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(16.dp)
                 )
                 Text(
                     modifier = Modifier.weight(0.6f),
@@ -130,8 +131,9 @@ fun ReservationItem(
                     IconButton(
                         onClick = { isOptionMenuVisible = !isOptionMenuVisible },
                         modifier = Modifier
-                            .size(24.dp)
                             .padding(start = 4.dp)
+                            .size(24.dp)
+
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -199,6 +201,18 @@ fun ReservationItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    text = reservation.clientName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(10.dp)
+                        .padding(horizontal = 12.dp)
+                )
+                Text(
                     text = reservation.tourismCompany,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -206,19 +220,8 @@ fun ReservationItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(10.dp)
-                        .padding(horizontal = 8.dp)
-                )
-                Text(
-                    text = reservation.clientName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+
+
 //                VerticalDivider(
 //                    modifier = Modifier.height(20.dp).padding(horizontal = 8.dp)
 //                )
@@ -248,13 +251,7 @@ fun ReservationItem(
                             onReservationClicked()
                         }
                     )
-                    DetailRow(
-                        label = stringResource(R.string.travel_company),
-                        value = reservation.travelCompany,
-                        onClick = {
-                            onCompanyClicked(reservation.travelCompanyId, CompanyType.TRAVEL)
-                        }
-                    )
+
                     DetailRow(
                         label = stringResource(R.string.tourism_company),
                         value = reservation.tourismCompany,
@@ -287,23 +284,42 @@ fun ReservationItem(
                         }
                     )
                     DetailRow(
-                        label = stringResource(R.string.car),
-                        value = reservation.car
+                        label = stringResource(R.string.travel_company),
+                        value = reservation.travelCompany,
+                        onClick = {
+                            onCompanyClicked(reservation.travelCompanyId, CompanyType.TRAVEL)
+                        }
+                    )
+                    DetailRow(
+                            label = stringResource(id = R.string.phone_number),
+                    value = reservation.travelCompanyPhone,
+                    onClick = {
+                        onMessagePhoneNumber(reservation.travelCompanyPhone)
+                    },
+                    onLongClick = {
+                        onCopyPhoneNumber(reservation.travelCompanyPhone)
+                    }
+                    )
+                    DetailRow(
+                            label = stringResource(id = R.string.driver),
+                    value = reservation.driver,
                     )
                     DetailRow(
                         label = stringResource(id = R.string.driver),
-                        value = reservation.driver,
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = reservation.travelCompanyPhone,
+                        value = reservation.driverPhoneNumber,
                         onClick = {
-                            onMessagePhoneNumber(reservation.travelCompanyPhone)
+                            onMessagePhoneNumber(reservation.driverPhoneNumber)
                         },
                         onLongClick = {
-                            onCopyPhoneNumber(reservation.travelCompanyPhone)
+                            onCopyPhoneNumber(reservation.driverPhoneNumber)
                         }
                     )
+                    DetailRow(
+                        label = stringResource(R.string.car),
+                        value = reservation.car
+                    )
+
+
                     DetailRow(
                         label = stringResource(R.string.buying_price),
                         value = reservation.buyingPrice.formatMoney(),
@@ -318,7 +334,9 @@ fun ReservationItem(
                     )
                     DetailRow(
                         label = stringResource(R.string.notes),
-                        value = reservation.note
+                        value = reservation.note,
+                        isDividerVisible = false,
+                        isValueSingleLine = false
                     )
                     if (isActionsVisible) {
                         Column(
@@ -469,15 +487,17 @@ private fun Preview() {
                 clientName = "Ahmed Mohsen",
                 tourismCompany = "Gawhara Tourism Company",
                 car = "Camaro",
+                tourismEmployee = "kkkkkkkk",
                 travelCompanyPhone = "(398) 742-4872",
                 driver = "Ahmed Mohsen",
                 travelCompany = "Gawhara Travel Company",
                 startLocation = "Gadda",
                 endLocation = "Riyadh",
                 buyingPrice = 0.1,
+                driverPhoneNumber = "0000000000000",
                 sellingPrice = 2.3,
                 collectedAmount = 4.5,
-                note = "unum unum num unum unum ",
+                note = "unum unum n unum ",
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
             )

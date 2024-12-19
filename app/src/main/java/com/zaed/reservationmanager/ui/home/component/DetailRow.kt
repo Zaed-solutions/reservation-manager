@@ -32,7 +32,8 @@ fun DetailRow(
     style: TextStyle = MaterialTheme.typography.bodyLarge,
     onClick: (() -> Unit) = {},
     onLongClick: (() -> Unit) = {},
-    isDividerVisible: Boolean = true
+    isDividerVisible: Boolean = true,
+    isValueSingleLine : Boolean = true
 
 ) {
     AnimatedVisibility(value.isNotBlank()) {
@@ -43,7 +44,7 @@ fun DetailRow(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
             ) {
                 Text(
                     text = label,
@@ -57,7 +58,7 @@ fun DetailRow(
                     text = value,
                     style = style,
                     color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
+                    maxLines = if(isValueSingleLine) 1 else 5,
                     textAlign = TextAlign.End,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)

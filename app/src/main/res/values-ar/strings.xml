@@ -214,4 +214,5 @@
     <string name="reservation_updated_successfully">تم تحديث الحجز بنجاح</string>
     <string name="reservation_added_successfully">تم اضافة الحجز بنجاح</string>
     <string name="save_reservations">احفظ الحجوزات</string>
+    <string name="home">الرئيسية</string>
 </resources>
