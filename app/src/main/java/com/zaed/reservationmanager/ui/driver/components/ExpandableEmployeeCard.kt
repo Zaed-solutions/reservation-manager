@@ -116,16 +116,7 @@ fun ExpandableEmployeeCard(
                         value = employee.createdAtEpochSeconds.formatEpochSecondsToDateTime(),
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Text(
-                        text = stringResource(R.string.view_details),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .padding(top = 4.dp)
-                            .clickable {
-                                onEmployeeDetailsClicked()
-                            }
-                    )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
