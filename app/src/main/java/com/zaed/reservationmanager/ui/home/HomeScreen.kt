@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.home
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -543,7 +544,9 @@ fun HomeScreenContent(
                 when (page) {
                     0 -> {
                         Column(
-                            modifier = Modifier.padding(top = 8.dp).fillMaxSize()
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .fillMaxSize()
                         ){
 
                             LazyRow{
@@ -592,13 +595,15 @@ fun HomeScreenContent(
 
                     1 -> {
                         Column(
-                            modifier = Modifier.padding(top = 8.dp).fillMaxSize()
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .fillMaxSize()
                         ) {
                             TimeFiltersChips(
                                 onUpdateTimeFilter = { timeFilter ->
                                     onAction(
                                         HomeUiAction.UpdateTimeFilter(
-                                            if (timeFilter::class == selectedTimeFilter::class) timeFilter else TimeFilter.All
+                                            if (timeFilter::class == selectedTimeFilter::class) TimeFilter.All else timeFilter
                                         )
                                     )
                                 },
@@ -730,7 +735,7 @@ fun HomeScreenContent(
                     onDateSelected = {
                         onAction(
                             HomeUiAction.UpdateTimeFilter(
-                                TimeFilter.FixedDate(it?.toSeconds() ?: 0L)
+                                TimeFilter.FixedDate(it ?: 0L)
                             )
                         )
                     },

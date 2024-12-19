@@ -134,8 +134,9 @@ class HomeViewModel(
             reservationRepo.getReservations().collect { results ->
                 results.onSuccess { data ->
                     _uiState.update {
-                        it.copy(reservations = data)
+                        it.copy(reservations = data, displayedReservations = data)
                     }
+                    filterData(timeFilter = uiState.value.timeFilter)
                 }.onFailure {
                     Log.d("DisplayReservationViewModel", "fetchReservations: ${it.message}")
                 }
@@ -165,29 +166,28 @@ class HomeViewModel(
             )
 
             is HomeUiAction.UpdateCountryFilter -> filterData(
-                uiState.value.timeFilter,
-                action.countryFilter,
-                uiState.value.searchQuery
+                countryFilter = action.countryFilter
             )
 
             is HomeUiAction.UpdateReservation -> updateReservation(action.reservation)
             is HomeUiAction.UpdateSearchQuery -> filterData(
-                uiState.value.timeFilter,
-                uiState.value.selectedCountry,
-                action.query
+                searchQuery = action.query
             )
 
             is HomeUiAction.UpdateTimeFilter -> filterData(
-                action.timeFilter,
-                uiState.value.selectedCountry,
-                uiState.value.searchQuery
+                timeFilter = action.timeFilter,
             )
 
             else -> Unit
         }
     }
 
-    private fun filterData(timeFilter: TimeFilter, countryFilter: String, searchQuery: String) {
+    private fun filterData(
+        timeFilter: TimeFilter = uiState.value.timeFilter,
+        countryFilter: String = uiState.value.selectedCountry,
+        searchQuery: String = uiState.value.searchQuery
+    ) {
+        Log.d(TAG, "filterData: timeFilter: $timeFilter, currentSeconds: ${java.time.Instant.now().epochSecond}")
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -199,6 +199,7 @@ class HomeViewModel(
         }
         viewModelScope.launch (Dispatchers.Default){
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
+
                 _uiState.update {
                     it.copy(
                         displayedCustomers = it.customers,
@@ -248,12 +249,14 @@ class HomeViewModel(
                 }
             }
             if (searchQuery.isBlank() && timeFilter == TimeFilter.All) {
+                Log.d(TAG, "filterData: searchQuery is blank and timeFilter is All")
                 _uiState.update {
                     it.copy(
                         displayedReservations = it.reservations,
                     )
                 }
             } else if (searchQuery.isBlank()) {
+                Log.d(TAG, "filterData: searchQuery is blank")
                 val filteredReservations = uiState.value.reservations.filter { reservation ->
                     matchesFilter(
                         timeFilter,
@@ -266,6 +269,7 @@ class HomeViewModel(
                     )
                 }
             } else if (timeFilter == TimeFilter.All) {
+                Log.d(TAG, "filterData: timeFilter is All")
                 val filteredReservations = uiState.value.reservations.filter { reservation ->
                     listOf(
                         reservation.clientName,
@@ -282,6 +286,7 @@ class HomeViewModel(
                     )
                 }
             } else {
+                Log.d(TAG, "filterData: searchQuery and timeFilter are not blank")
                 val filteredReservations = uiState.value.reservations.filter { reservation ->
                     listOf(
                         reservation.clientName,
@@ -295,12 +300,10 @@ class HomeViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             }
+            Log.d(TAG, "filterData: displayedReservations: ${uiState.value.displayedReservations}, timeFilter: $timeFilter")
         }
     }
 

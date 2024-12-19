@@ -33,9 +33,9 @@ fun TimeFiltersChips(
                     onUpdateTimeFilter(filter.filter)
                 },
                 label = { Text(stringResource(filter.titleRes)) },
-                selected = filter.filter == selectedTimeFilter,
+                selected = filter.filter::class == selectedTimeFilter::class,
                 leadingIcon = {
-                    if (selectedTimeFilter == filter.filter) {
+                    if (filter.filter::class == selectedTimeFilter::class) {
                         Icon(
                             imageVector = Icons.Filled.Done,
                             contentDescription = null,
@@ -49,16 +49,16 @@ fun TimeFiltersChips(
             FilterChip(
                 modifier = Modifier.padding(end = 8.dp),
                 onClick = {
-                    if (selectedTimeFilter is TimeFilter.FixedDate) {
+                    if (selectedTimeFilter::class ==  TimeFilter.FixedDate::class) {
                         onUpdateTimeFilter(TimeFilter.All)
                     } else {
                         onShowDatePicker()
                     }
                 },
                 label = { Text(stringResource(R.string.selected_date)) },
-                selected = selectedTimeFilter is TimeFilter.FixedDate,
+                selected = selectedTimeFilter::class ==  TimeFilter.FixedDate::class,
                 leadingIcon = {
-                    if (selectedTimeFilter is TimeFilter.FixedDate) {
+                    if (selectedTimeFilter::class ==  TimeFilter.FixedDate::class) {
                         Icon(
                             imageVector = Icons.Filled.Done,
                             contentDescription = null,
@@ -72,16 +72,16 @@ fun TimeFiltersChips(
             FilterChip(
                 modifier = Modifier.padding(end = 8.dp),
                 onClick = {
-                    if (selectedTimeFilter is TimeFilter.FixedRange) {
+                    if (selectedTimeFilter::class == TimeFilter.FixedRange::class) {
                         onUpdateTimeFilter(TimeFilter.All)
                     } else {
                         onShowDateRangePicker()
                     }
                 },
                 label = { Text(stringResource(R.string.selected_range)) },
-                selected = selectedTimeFilter is TimeFilter.FixedRange,
+                selected = selectedTimeFilter::class == TimeFilter.FixedRange::class,
                 leadingIcon = {
-                    if (selectedTimeFilter is TimeFilter.FixedRange) {
+                    if (selectedTimeFilter::class == TimeFilter.FixedRange::class) {
                         Icon(
                             imageVector = Icons.Filled.Done,
                             contentDescription = null,

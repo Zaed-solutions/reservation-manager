@@ -17,7 +17,7 @@ data class HomeUiState(
     val countries: List<String> = emptyList(),
     val errorMessage: String = "",
     val loading: Boolean = false,
-    val timeFilter: TimeFilter = TimeFilter.All,
+    val timeFilter: TimeFilter = TimeFilter.Today,
     val reservationTypes: List<String> = emptyList(),
     val cars: List<String> = emptyList(),
     val travelCompanies: List<Company> = emptyList(),
