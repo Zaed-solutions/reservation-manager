@@ -48,6 +48,7 @@ import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
 
 @Composable
@@ -120,7 +121,7 @@ fun ReservationItem(
                 )
                 Text(
                     modifier = Modifier.weight(0.6f),
-                    text = reservation.date.formatEpochSecondsToDate(),
+                    text = reservation.date.formatEpochSecondsToDateTime(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
