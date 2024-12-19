@@ -372,12 +372,13 @@ fun HomeScreenContent(
     }
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    Text(stringResource(R.string.reservations))
+                    Text(stringResource(R.string.app_name))
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -671,11 +672,14 @@ fun HomeScreenContent(
             }
             AnimatedVisibility(isEditReservationBottomSheetVisible) {
                 ModalBottomSheet(
+                    sheetState = bottomSheetState,
+                    modifier= Modifier.fillMaxSize(),
                     onDismissRequest = {
                         isEditReservationBottomSheetVisible = false
                     },
                 ) {
                     AddReservationBottomSheetContent(
+                        modifier= Modifier.fillMaxSize(),
                         types = reservationTypes,
                         cars = cars,
                         tourismCompanies = tourismCompanies,

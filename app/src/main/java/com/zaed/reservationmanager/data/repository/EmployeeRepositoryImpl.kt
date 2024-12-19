@@ -27,7 +27,7 @@ class EmployeeRepositoryImpl(
         return remoteSource.getDrivers()
     }
 
-    override fun getEmployeesByCompany(company: String): Flow<Result<List<Employee>>> =
-        remoteSource.getEmployeesByCompany(company)
+    override fun getEmployeesByCompany(companyId: String): Flow<Result<List<Employee>>> =
+        remoteSource.getEmployeesByCompany(companyId)
 
 }

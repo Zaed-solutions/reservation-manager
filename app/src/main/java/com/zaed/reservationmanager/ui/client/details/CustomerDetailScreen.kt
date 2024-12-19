@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.client.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -225,6 +226,7 @@ private fun CustomerDetailScreenContent(
     var isAddReservationBottomSheetVisible by remember {
         mutableStateOf(false)
     }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -309,9 +311,11 @@ private fun CustomerDetailScreenContent(
                         isAddReservationBottomSheetVisible = false
                         selectedReservation = Reservation()
                     },
-                    sheetState = rememberModalBottomSheetState()
+                    modifier = Modifier.fillMaxSize(),
+                    sheetState = bottomSheetState
                 ) {
                     AddReservationBottomSheetContent(
+                        modifier = Modifier.fillMaxSize(),
                         types = reservationTypes,
                         cars = cars,
                         tourismCompanies = tourismCompanies,

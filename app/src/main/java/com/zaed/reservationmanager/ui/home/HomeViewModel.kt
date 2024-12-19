@@ -188,14 +188,20 @@ class HomeViewModel(
     }
 
     private fun filterData(timeFilter: TimeFilter, countryFilter: String, searchQuery: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    timeFilter = timeFilter,
+                    selectedCountry = countryFilter,
+                    searchQuery = searchQuery
+                )
+            }
+        }
         viewModelScope.launch (Dispatchers.Default){
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
                 _uiState.update {
                     it.copy(
                         displayedCustomers = it.customers,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -209,10 +215,7 @@ class HomeViewModel(
                 }
                 _uiState.update { oldState ->
                     oldState.copy(
-                        displayedCustomers = filteredCustomers,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
+                        displayedCustomers = filteredCustomers
                     )
                 }
             } else if (countryFilter.isBlank()) {
@@ -227,9 +230,6 @@ class HomeViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             } else {
@@ -244,9 +244,6 @@ class HomeViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             }
@@ -254,9 +251,6 @@ class HomeViewModel(
                 _uiState.update {
                     it.copy(
                         displayedReservations = it.reservations,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -269,9 +263,6 @@ class HomeViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             } else if (timeFilter == TimeFilter.All) {
@@ -288,9 +279,6 @@ class HomeViewModel(
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
-                        timeFilter = timeFilter,
-                        selectedCountry = countryFilter,
-                        searchQuery = searchQuery
                     )
                 }
             } else {

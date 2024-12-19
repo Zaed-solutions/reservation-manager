@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -298,6 +299,7 @@ fun CompanyDetailsScreenContent(
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
     }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -426,9 +428,11 @@ fun CompanyDetailsScreenContent(
                         isEditReservationBottomSheetVisible = false
                         selectedReservation = Reservation()
                     },
-                    sheetState = rememberModalBottomSheetState()
+                    sheetState = bottomSheetState,
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     AddReservationBottomSheetContent(
+                        modifier = Modifier.fillMaxSize(),
                         types = reservationTypes,
                         cars = cars,
                         tourismCompanies = tourismCompanies,

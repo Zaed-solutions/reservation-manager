@@ -20,6 +20,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,7 +31,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +45,7 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
+import com.zaed.reservationmanager.ui.reservation.create.component.AddedReservationsList
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
 import com.zaed.reservationmanager.ui.reservation.create.component.CustomerInfoSection
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -111,6 +116,8 @@ private fun CreateReservationScreenContent(
     onAction: (CreateReservationUiAction) -> Unit,
 ) {
     var isAddReservationSheetVisible by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val nestedScrollConnection = rememberNestedScrollInteropConnection()
     Scaffold(
         modifier = modifier,
         snackbarHost = {
@@ -134,7 +141,7 @@ private fun CreateReservationScreenContent(
                         .fillMaxWidth()
                         .heightIn(min = 48.dp),
                     shape = MaterialTheme.shapes.medium,
-                    enabled = isNewCustomer != null,
+                    enabled = isNewCustomer != null && reservations.isNotEmpty(),
                     onClick = { onAction(CreateReservationUiAction.SaveReservations) },
                 ) {
                     Text(text = stringResource(R.string.save_reservations))
@@ -147,7 +154,8 @@ private fun CreateReservationScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+            .nestedScroll(nestedScrollConnection),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -179,13 +187,11 @@ private fun CreateReservationScreenContent(
                 }
             )
             AnimatedVisibility(isNewCustomer != null) {
-                ReservationsList(
+                AddedReservationsList(
                     reservations = reservations,
                     onAddReservation = {
                         isAddReservationSheetVisible = true
                     },
-                    isHeaderVisible = true,
-                    isAddEnabled = true,
                     isSendActionsVisible = false,
                     onDeleteReservation = {
                         onAction(CreateReservationUiAction.DeleteReservation(it))
@@ -194,11 +200,14 @@ private fun CreateReservationScreenContent(
             }
             AnimatedVisibility(isAddReservationSheetVisible) {
                 ModalBottomSheet(
+                    modifier = Modifier.fillMaxSize(),
+                    sheetState = bottomSheetState,
                     onDismissRequest = {
                         isAddReservationSheetVisible = false
                     }
                 ) {
                     AddReservationBottomSheetContent(
+                        modifier = Modifier.fillMaxSize(),
                         tourismCompanies = tourismCompanies,
                         employees = employees,
                         onFetchEmployees = {
@@ -213,6 +222,7 @@ private fun CreateReservationScreenContent(
                         drivers = drivers,
                         onSaveReservation = {
                             onAction(CreateReservationUiAction.AddReservation(it))
+                            isAddReservationSheetVisible = false
                         },
                         onDismiss = {
                             isAddReservationSheetVisible = false

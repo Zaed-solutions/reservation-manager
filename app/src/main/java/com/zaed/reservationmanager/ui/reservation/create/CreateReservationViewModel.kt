@@ -315,9 +315,9 @@ class CreateReservationViewModel(
         }
     }
 
-    private fun fetchCompanyEmployees(company: String, driver: Boolean = false) {
+    private fun fetchCompanyEmployees(companyId: String, driver: Boolean = false) {
         viewModelScope.launch {
-            employeeRepository.getEmployeesByCompany(company).collect { result ->
+            employeeRepository.getEmployeesByCompany(companyId).collect { result ->
                 result.onSuccess { data ->
                     Log.d(TAG, "fetchCompanyEmployees: success: $data")
                     if (driver) {

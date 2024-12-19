@@ -134,7 +134,7 @@ fun AddReservationBottomSheetContent(
             options = travelCompanies.map { it.name },
         )
         TitledDropDownTextField(
-            title = stringResource(R.string.drivers),
+            title = stringResource(R.string.driver),
             selectedValue = reservation.driver,
             onValueChanged = { index ->
                 val driver = drivers[index]
@@ -187,21 +187,6 @@ fun AddReservationBottomSheetContent(
             keyboardType = KeyboardType.Text
         )
         TitledTextField(
-            title = stringResource(R.string.buying_price),
-            initialValue = if (reservation.buyingPrice == 0.0) "" else reservation.buyingPrice.toString(),
-            onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                    reservation = reservation.copy(
-                        buyingPrice = newText.toDouble()
-                    )
-                }
-            },
-            isOptional = false,
-            isError = reservationError == ReservationError.BUYING_PRICE_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Decimal
-        )
-        TitledTextField(
             title = stringResource(R.string.selling_price),
             initialValue = if (reservation.sellingPrice == 0.0) "" else reservation.sellingPrice.toString(),
             onValueChanged = { newText ->
@@ -211,14 +196,29 @@ fun AddReservationBottomSheetContent(
                     )
                 }
             },
-            isOptional = true,
+            isOptional = false,
             isError = reservationError == ReservationError.SELLING_PRICE_IS_REQUIRED,
             errorMessageRes = reservationError.messageRes,
             keyboardType = KeyboardType.Decimal
         )
         TitledTextField(
+            title = stringResource(R.string.buying_price),
+            initialValue = if (reservation.buyingPrice == 0.0) "" else reservation.buyingPrice.toString(),
+            onValueChanged = { newText ->
+                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                    reservation = reservation.copy(
+                        buyingPrice = newText.toDouble()
+                    )
+                }
+            },
+            isOptional = true,
+            isError = reservationError == ReservationError.BUYING_PRICE_IS_REQUIRED,
+            errorMessageRes = reservationError.messageRes,
+            keyboardType = KeyboardType.Decimal
+        )
+        TitledTextField(
             title = stringResource(R.string.collection_price),
-            initialValue = reservation.collectedAmount.toString(),
+            initialValue = if (reservation.collectedAmount == 0.0) "" else reservation.collectedAmount.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(

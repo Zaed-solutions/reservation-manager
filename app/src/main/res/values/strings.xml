@@ -213,4 +213,5 @@
     <string name="reservation_updated_successfully">Reservation updated successfully!</string>
     <string name="reservation_added_successfully">Reservation added successfully!</string>
     <string name="save_reservations">Save Reservations</string>
+    <string name="home">Home</string>
 </resources>

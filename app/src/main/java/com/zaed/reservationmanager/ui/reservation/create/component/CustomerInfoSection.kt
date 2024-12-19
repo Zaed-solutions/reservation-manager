@@ -75,15 +75,14 @@ fun CustomerInfoSection(
                             isError = (error == ReservationError.CUSTOMER_NAME_IS_REQUIRED),
                             errorMessageRes = error.messageRes,
                         )
-                        TitledTextField(
+                        TitledDropDownTextField(
                             title = stringResource(R.string.nationality),
-                            initialValue = customer.nationality,
-                            onValueChanged = { nationality ->
-                                onUpdateNationality(nationality)
+                            selectedValue = customer.nationality,
+                            onValueChanged = { index ->
+                                onUpdateNationality(countries[index])
                             },
                             isOptional = true,
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Next,
+                            options = countries,
                         )
                         TitledDropDownTextField(
                             title = stringResource(R.string.residence_country),
@@ -96,16 +95,17 @@ fun CustomerInfoSection(
                             isError = (error == ReservationError.CUSTOMER_COUNTRY_IS_REQUIRED),
                             errorMessageRes = error.messageRes,
                         )
-                        TitledDropDownTextField(
+                        TitledTextField(
                             title = stringResource(R.string.email),
-                            selectedValue = customer.email,
-                            onValueChanged = { index ->
-                                onUpdateEmail(countries[index])
+                            initialValue = customer.email,
+                            onValueChanged = { email ->
+                                onUpdateEmail(email)
                             },
                             isOptional = true,
-                            options = countries,
                             isError = (error == ReservationError.EMAIL_IS_INVALID),
                             errorMessageRes = error.messageRes,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next,
                         )
                     }
                 }

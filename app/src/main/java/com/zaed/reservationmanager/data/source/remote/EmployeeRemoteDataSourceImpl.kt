@@ -110,12 +110,12 @@ class EmployeeRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun getEmployeesByCompany(company: String): Flow<Result<List<Employee>>> =
+    override fun getEmployeesByCompany(companyId: String): Flow<Result<List<Employee>>> =
         callbackFlow {
             try {
-                Log.d(TAG, "getEmployeesByCompany: $company")
+                Log.d(TAG, "getEmployeesByCompany: $companyId")
                 firestore.collection(EMPLOYEE_COLLECTION)
-                    .whereEqualTo("company", company)
+                    .whereEqualTo("companyId", companyId)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.failure(error))
