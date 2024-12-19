@@ -8,6 +8,7 @@ data class Employee(
     val id: String = "",
     val name: String = "",
     val company: String = "",
+    val companyId : String = "",
     val position: String = "",
     val phoneNumber1: String = "",
     val phoneNumber2: String = "",

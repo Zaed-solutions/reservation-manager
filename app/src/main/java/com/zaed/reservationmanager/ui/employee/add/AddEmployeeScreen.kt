@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
@@ -115,7 +116,7 @@ private fun AddEmployeeScreenContent(
     onAction: (AddEmployeeUiAction) -> Unit = {},
     error: AddEmployeeUiError = AddEmployeeUiError.NONE,
     isNew: Boolean = true,
-    companies: List<String> = emptyList()
+    companies: List<Company> = emptyList()
 ) {
     Scaffold(
         modifier = modifier.imePadding(),
@@ -196,10 +197,10 @@ private fun AddEmployeeScreenContent(
                 title = stringResource(R.string.company),
                 selectedValue = currentEmployee.company,
                 onValueChanged = { index ->
-                    onAction(AddEmployeeUiAction.OnCompanyChanged(companies.getOrElse(index) { "" }))
+                    onAction(AddEmployeeUiAction.OnCompanyChanged(companies.getOrElse(index) { Company() }))
                 },
                 isOptional = false,
-                options = companies,
+                options = companies.map { it.name },
             )
             if (isDriver) {
                 // nationality
