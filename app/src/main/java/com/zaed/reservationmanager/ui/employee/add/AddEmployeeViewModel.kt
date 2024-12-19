@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.employee.add
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.EmployeeType
 import com.zaed.reservationmanager.data.repository.CompanyRepository
@@ -41,7 +42,7 @@ class AddEmployeeViewModel(
 
     private fun fetchCompanies() {
         viewModelScope.launch(Dispatchers.IO) {
-            companyRepo.getCompaniesNames(uiState.value.isDriver).collect { result ->
+            companyRepo.getCompanies(uiState.value.isDriver).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
                         oldState.copy(companies = data)
@@ -117,14 +118,14 @@ class AddEmployeeViewModel(
                 _uiState.update { it.copy(error = AddEmployeeUiError.NONE) }
             }
             if (uiState.value.isNew) {
-                createCompany()
+                createEmployee()
             } else {
-                updateCompany()
+                updateEmployee()
             }
         }
     }
 
-    private fun updateCompany() {
+    private fun updateEmployee() {
         viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.updateEmployee(uiState.value.employee).collect { result ->
                 result.onSuccess {
@@ -137,7 +138,7 @@ class AddEmployeeViewModel(
         }
     }
 
-    private suspend fun createCompany() {
+    private suspend fun createEmployee() {
         viewModelScope.launch(Dispatchers.IO) {
             employeeRepo.createEmployee(
                 uiState.value.employee.copy(
@@ -188,10 +189,12 @@ class AddEmployeeViewModel(
         }
     }
 
-    private fun updateCompany(company: String) {
+    private fun updateCompany(company: Company) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(company = company))
+                oldState.copy(
+                    employee = oldState.employee.copy(company = company.name, companyId = company.id)
+                )
             }
         }
     }
