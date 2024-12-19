@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,6 @@ fun DetailRow(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    modifier = Modifier.weight(1f),
                     text = label,
                     style = style,
                     maxLines = 1,
@@ -58,8 +58,9 @@ fun DetailRow(
                     style = style,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
+                    textAlign = TextAlign.End,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
+                    modifier = Modifier.weight(1f)
                         .combinedClickable(
                             onClick = { onClick() },
                             onLongClick = { onLongClick() }

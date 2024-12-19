@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -28,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,7 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
-import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatMoney
 
 @Composable
@@ -86,11 +87,13 @@ fun ReservationItem(
         tonalElevation = 2.dp
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 0.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -104,7 +107,21 @@ fun ReservationItem(
                     text = reservation.type,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    contentDescription = "Reservation Date",
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    modifier = Modifier.weight(0.6f),
+                    text = reservation.date.formatEpochSecondsToDate(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Box(
                     modifier = Modifier
@@ -113,7 +130,8 @@ fun ReservationItem(
                     IconButton(
                         onClick = { isOptionMenuVisible = !isOptionMenuVisible },
                         modifier = Modifier
-                            .padding(start = 8.dp)
+                            .size(24.dp)
+                            .padding(start = 4.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -173,194 +191,230 @@ fun ReservationItem(
                     location = reservation.endLocation
                 )
             }
-
-
-            Column(
-                modifier = Modifier.padding(top = 10.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CalendarMonth,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        contentDescription = "Reservation Date",
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = reservation.date.formatEpochSecondsToDateTime(),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = (reservation.buyingPrice - reservation.sellingPrice).formatMoney(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                AnimatedVisibility(visible = isExpanded) {
-                    Column(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        DetailRow(
-                            label = stringResource(R.string.reservation_number),
-                            value = "#${reservation.reservationNumber}",
-                            onClick = {
-                                onReservationClicked()
-                            }
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.travel_company),
-                            value = reservation.travelCompany,
-                            onClick = {
-                                onCompanyClicked(reservation.travelCompanyId, CompanyType.TRAVEL)
-                            }
-                        )
-                        DetailRow(
-                            label = stringResource(id = R.string.phone_number),
-                            value = reservation.travelCompanyPhone,
-                            onClick = {
-                                onMessagePhoneNumber(reservation.travelCompanyPhone)
-                            },
-                            onLongClick = {
-                                onCopyPhoneNumber(reservation.travelCompanyPhone)
-                            }
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.car),
-                            value = reservation.car
-                        )
-                        DetailRow(
-                            label = stringResource(id = R.string.driver),
-                            value = reservation.driver,
-                        )
-                        DetailRow(
-                            label = stringResource(id = R.string.phone_number),
-                            value = reservation.travelCompanyPhone,
-                            onClick = {
-                                onMessagePhoneNumber(reservation.travelCompanyPhone)
-                            },
-                            onLongClick = {
-                                onCopyPhoneNumber(reservation.travelCompanyPhone)
-                            }
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.buying_price),
-                            value = reservation.buyingPrice.formatMoney(),
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.selling_price),
-                            value = reservation.sellingPrice.formatMoney(),
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.collected_price),
-                            value = reservation.collectedAmount.formatMoney(),
-                        )
-                        DetailRow(
-                            label = stringResource(R.string.notes),
-                            value = reservation.note
-                        )
-                        if (isActionsVisible) {
-                            Column(
-                                modifier = Modifier.padding(top = 8.dp)
-                            ) {
-                                Button(
-                                    enabled = !reservation.sentConfirmToCustomer,
-                                    onClick = { onSendConfirmationToCustomer() },
-                                    contentPadding = PaddingValues(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Icon(
-                                        imageVector = if (reservation.sentConfirmToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
-                                        contentDescription = null,
-                                        tint = if (reservation.sentConfirmToCustomer)
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        else
-                                            MaterialTheme.colorScheme.onPrimary
-                                    )
-                                    Text(
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        text = stringResource(
-                                            if (reservation.sentConfirmToCustomer)
-                                                R.string.confirmation_sent
-                                            else
-                                                R.string.send_confirmation_to_client
-                                        )
-                                    )
-                                }
+                Text(
+                    text = reservation.tourismCompany,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(10.dp)
+                        .padding(horizontal = 8.dp)
+                )
+                Text(
+                    text = reservation.clientName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+//                VerticalDivider(
+//                    modifier = Modifier.height(20.dp).padding(horizontal = 8.dp)
+//                )
+//                Text(
+//                    text = reservation.travelCompany,
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                    modifier = Modifier.weight(1f)
+//                )
+//                Text(
+//                    text = reservation.driver,
+//                    style = MaterialTheme.typography.bodySmall,
+//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                    modifier = Modifier.weight(1f)
+//                )
+            }
 
+            AnimatedVisibility(visible = isExpanded) {
+                Column(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    DetailRow(
+                        label = stringResource(R.string.reservation_number),
+                        value = "#${reservation.reservationNumber}",
+                        onClick = {
+                            onReservationClicked()
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.travel_company),
+                        value = reservation.travelCompany,
+                        onClick = {
+                            onCompanyClicked(reservation.travelCompanyId, CompanyType.TRAVEL)
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.tourism_company),
+                        value = reservation.tourismCompany,
+                        onClick = {
+                            onCompanyClicked(reservation.tourismCompany, CompanyType.TOURISM)
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.tourism_employee),
+                        value = reservation.tourismEmployee,
+                        onClick = {
+                            //TODO
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.tourism_employee),
+                        value = reservation.tourismEmployeePhone,
+                        onClick = {
+                            onCopyPhoneNumber(reservation.tourismCompany)
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(id = R.string.phone_number),
+                        value = reservation.travelCompanyPhone,
+                        onClick = {
+                            onMessagePhoneNumber(reservation.travelCompanyPhone)
+                        },
+                        onLongClick = {
+                            onCopyPhoneNumber(reservation.travelCompanyPhone)
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.car),
+                        value = reservation.car
+                    )
+                    DetailRow(
+                        label = stringResource(id = R.string.driver),
+                        value = reservation.driver,
+                    )
+                    DetailRow(
+                        label = stringResource(id = R.string.phone_number),
+                        value = reservation.travelCompanyPhone,
+                        onClick = {
+                            onMessagePhoneNumber(reservation.travelCompanyPhone)
+                        },
+                        onLongClick = {
+                            onCopyPhoneNumber(reservation.travelCompanyPhone)
+                        }
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.buying_price),
+                        value = reservation.buyingPrice.formatMoney(),
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.selling_price),
+                        value = reservation.sellingPrice.formatMoney(),
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.collected_price),
+                        value = reservation.collectedAmount.formatMoney(),
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.notes),
+                        value = reservation.note
+                    )
+                    if (isActionsVisible) {
+                        Column(
+                            modifier = Modifier.padding(top = 8.dp)
+                        ) {
+                            Button(
+                                enabled = !reservation.sentConfirmToCustomer,
+                                onClick = { onSendConfirmationToCustomer() },
+                                contentPadding = PaddingValues(
+                                    horizontal = 16.dp,
+                                    vertical = 8.dp
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = if (reservation.sentConfirmToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                    contentDescription = null,
+                                    tint = if (reservation.sentConfirmToCustomer)
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    else
+                                        MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = stringResource(
+                                        if (reservation.sentConfirmToCustomer)
+                                            R.string.confirmation_sent
+                                        else
+                                            R.string.send_confirmation_to_client
+                                    )
+                                )
+                            }
+
+                            Button(
+                                enabled = !reservation.sentDriverInfoToCustomer,
+                                onClick = { onSendDriverInfoToClient() },
+                                contentPadding = PaddingValues(
+                                    horizontal = 16.dp,
+                                    vertical = 8.dp
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = if (reservation.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                    contentDescription = null,
+                                    tint = if (reservation.sentDriverInfoToCustomer)
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    else
+                                        MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = stringResource(
+                                        if (reservation.sentDriverInfoToCustomer)
+                                            R.string.driver_information_sent
+                                        else
+                                            R.string.send_info_to_client
+                                    )
+                                )
+                            }
+                            if (reservation.driver.isNotBlank()) {
                                 Button(
-                                    enabled = !reservation.sentDriverInfoToCustomer,
-                                    onClick = { onSendDriverInfoToClient() },
+                                    enabled = !reservation.sentToDriverCompany,
+                                    onClick = { onSendInfoToTravelCompany() },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
                                     contentPadding = PaddingValues(
                                         horizontal = 16.dp,
                                         vertical = 8.dp
-                                    ),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
+                                    )
                                 ) {
                                     Icon(
-                                        imageVector = if (reservation.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        imageVector = if (reservation.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
                                         contentDescription = null,
-                                        tint = if (reservation.sentDriverInfoToCustomer)
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        else
-                                            MaterialTheme.colorScheme.onPrimary
+                                        tint = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
                                     )
                                     Text(
                                         modifier = Modifier.padding(start = 8.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
-                                        style = MaterialTheme.typography.bodyMedium,
                                         text = stringResource(
-                                            if (reservation.sentDriverInfoToCustomer)
-                                                R.string.driver_information_sent
+                                            if (reservation.sentToDriverCompany)
+                                                R.string.reservation_info_sent
                                             else
-                                                R.string.send_info_to_client
+                                                R.string.send_reservation_info_to_travel_company
                                         )
                                     )
-                                }
-                                if (reservation.driver.isNotBlank()) {
-                                    Button(
-                                        enabled = !reservation.sentToDriverCompany,
-                                        onClick = { onSendInfoToTravelCompany() },
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        contentPadding = PaddingValues(
-                                            horizontal = 16.dp,
-                                            vertical = 8.dp
-                                        )
-                                    ) {
-                                        Icon(
-                                            imageVector = if (reservation.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                            contentDescription = null,
-                                            tint = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                                        )
-                                        Text(
-                                            modifier = Modifier.padding(start = 8.dp),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            text = stringResource(
-                                                if (reservation.sentToDriverCompany)
-                                                    R.string.reservation_info_sent
-                                                else
-                                                    R.string.send_reservation_info_to_travel_company
-                                            )
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -412,6 +466,8 @@ private fun Preview() {
                 id = "tristique",
                 date = 7041,
                 type = "Mazarat El Madina",
+                clientName = "Ahmed Mohsen",
+                tourismCompany = "Gawhara Tourism Company",
                 car = "Camaro",
                 travelCompanyPhone = "(398) 742-4872",
                 driver = "Ahmed Mohsen",
@@ -421,7 +477,7 @@ private fun Preview() {
                 buyingPrice = 0.1,
                 sellingPrice = 2.3,
                 collectedAmount = 4.5,
-                note = "unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum unum ",
+                note = "unum unum num unum unum ",
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
             )
