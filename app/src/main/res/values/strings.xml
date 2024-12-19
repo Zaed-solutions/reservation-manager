@@ -185,7 +185,7 @@
     <string name="from_today_onwards">From today onwards</string>
     <string name="selected_range">Selected Range</string>
     <string name="selected_range_place">Selected Range: %1$s - %2$s</string>
-    <string name="selected_date_place">Selected Date: %1$s - %2$s</string>
+    <string name="selected_date_place">Selected Date: %1$s</string>
     <string name="customer_name">Customer Name</string>
     <string name="company_phone">Company Phone</string>
     <string name="reservation_details_arrow"><![CDATA[Reservation Details >]]></string>
