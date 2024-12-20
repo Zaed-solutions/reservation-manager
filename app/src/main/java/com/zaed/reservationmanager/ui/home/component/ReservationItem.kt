@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +48,6 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
-import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
 
@@ -68,7 +68,7 @@ fun ReservationItem(
     isEditable: Boolean = true,
 ) {
     var isExpanded by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var isOptionMenuVisible by remember {
         mutableStateOf(false)
@@ -98,12 +98,6 @@ fun ReservationItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.Category,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Reservation Category",
-                    modifier = Modifier.size(16.dp)
-                )
                 Text(
                     text = reservation.type,
                     style = MaterialTheme.typography.bodySmall,
@@ -111,20 +105,28 @@ fun ReservationItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Icon(
-                    imageVector = Icons.Default.CalendarMonth,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    contentDescription = "Reservation Date",
+                VerticalDivider(
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(16.dp)
+                        .height(10.dp)
+                        .padding(horizontal = 8.dp)
                 )
                 Text(
-                    modifier = Modifier.weight(0.6f),
                     text = reservation.date.formatEpochSecondsToDateTime(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                VerticalDivider(
+                    modifier = Modifier
+                        .height(10.dp)
+                        .padding(horizontal = 8.dp)
+                )
+                if(reservation.car.isNotBlank()){
+                    Text(
+                        text = reservation.carCount.toString() + " " + reservation.car,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopEnd)
@@ -211,7 +213,7 @@ fun ReservationItem(
                 VerticalDivider(
                     modifier = Modifier
                         .height(10.dp)
-                        .padding(horizontal = 12.dp)
+                        .padding(horizontal = 8.dp)
                 )
                 Text(
                     text = reservation.tourismCompany,
@@ -221,23 +223,12 @@ fun ReservationItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-
-
-//                VerticalDivider(
-//                    modifier = Modifier.height(20.dp).padding(horizontal = 8.dp)
-//                )
-//                Text(
-//                    text = reservation.travelCompany,
-//                    style = MaterialTheme.typography.bodySmall,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                    modifier = Modifier.weight(1f)
-//                )
-//                Text(
-//                    text = reservation.driver,
-//                    style = MaterialTheme.typography.bodySmall,
-//                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                    modifier = Modifier.weight(1f)
-//                )
+                Text(
+                    text = (reservation.buyingPrice - reservation.sellingPrice).formatMoney(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
             AnimatedVisibility(visible = isExpanded) {
@@ -254,29 +245,39 @@ fun ReservationItem(
                     )
 
                     DetailRow(
+                        label = stringResource(R.string.client_phone),
+                        value = reservation.clientPhone,
+                        onClick = {
+                            onMessagePhoneNumber(reservation.clientPhone)
+                        },
+                        onLongClick = {
+                            onCopyPhoneNumber(reservation.clientPhone)
+                        }
+                    )
+
+                    DetailRow(
                         label = stringResource(R.string.tourism_company),
                         value = reservation.tourismCompany,
                         onClick = {
-                            onCompanyClicked(reservation.tourismCompany, CompanyType.TOURISM)
+                            onMessagePhoneNumber(reservation.tourismCompanyPhone)
+                        },
+                        onLongClick = {
+                            onCopyPhoneNumber(reservation.tourismCompanyPhone)
                         }
                     )
                     DetailRow(
-                        label = stringResource(R.string.tourism_employee),
+                        label = stringResource(R.string.reservation_by),
                         value = reservation.tourismEmployee,
                         onClick = {
-                            //TODO
+                            onMessagePhoneNumber(reservation.tourismEmployeePhone)
+                        },
+                        onLongClick = {
+                            onCopyPhoneNumber(reservation.tourismEmployeePhone)
                         }
                     )
                     DetailRow(
-                        label = stringResource(R.string.tourism_employee),
-                        value = reservation.tourismEmployeePhone,
-                        onClick = {
-                            onCopyPhoneNumber(reservation.tourismCompany)
-                        }
-                    )
-                    DetailRow(
-                        label = stringResource(id = R.string.phone_number),
-                        value = reservation.travelCompanyPhone,
+                        label = stringResource(R.string.travel_company),
+                        value = reservation.travelCompany,
                         onClick = {
                             onMessagePhoneNumber(reservation.travelCompanyPhone)
                         },
@@ -285,29 +286,8 @@ fun ReservationItem(
                         }
                     )
                     DetailRow(
-                        label = stringResource(R.string.travel_company),
-                        value = reservation.travelCompany,
-                        onClick = {
-                            onCompanyClicked(reservation.travelCompanyId, CompanyType.TRAVEL)
-                        }
-                    )
-                    DetailRow(
-                            label = stringResource(id = R.string.phone_number),
-                    value = reservation.travelCompanyPhone,
-                    onClick = {
-                        onMessagePhoneNumber(reservation.travelCompanyPhone)
-                    },
-                    onLongClick = {
-                        onCopyPhoneNumber(reservation.travelCompanyPhone)
-                    }
-                    )
-                    DetailRow(
-                            label = stringResource(id = R.string.driver),
-                    value = reservation.driver,
-                    )
-                    DetailRow(
                         label = stringResource(id = R.string.driver),
-                        value = reservation.driverPhoneNumber,
+                        value = reservation.driver,
                         onClick = {
                             onMessagePhoneNumber(reservation.driverPhoneNumber)
                         },
@@ -375,6 +355,37 @@ fun ReservationItem(
                                 )
                             }
 
+                            if (reservation.driver.isNotBlank()) {
+                                Button(
+                                    enabled = !reservation.sentToDriverCompany,
+                                    onClick = { onSendInfoToTravelCompany() },
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = if (reservation.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
+                                        contentDescription = null,
+                                        tint = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        text = stringResource(
+                                            if (reservation.sentToDriverCompany)
+                                                R.string.reservation_info_sent
+                                            else
+                                                R.string.send_reservation_info_to_travel_company
+                                        )
+                                    )
+                                }
+                            }
+
                             Button(
                                 enabled = !reservation.sentDriverInfoToCustomer,
                                 onClick = { onSendDriverInfoToClient() },
@@ -405,36 +416,6 @@ fun ReservationItem(
                                             R.string.send_info_to_client
                                     )
                                 )
-                            }
-                            if (reservation.driver.isNotBlank()) {
-                                Button(
-                                    enabled = !reservation.sentToDriverCompany,
-                                    onClick = { onSendInfoToTravelCompany() },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    contentPadding = PaddingValues(
-                                        horizontal = 16.dp,
-                                        vertical = 8.dp
-                                    )
-                                ) {
-                                    Icon(
-                                        imageVector = if (reservation.sentToDriverCompany) Icons.Default.Check else Icons.Default.Whatsapp,
-                                        contentDescription = null,
-                                        tint = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onPrimary
-                                    )
-                                    Text(
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        text = stringResource(
-                                            if (reservation.sentToDriverCompany)
-                                                R.string.reservation_info_sent
-                                            else
-                                                R.string.send_reservation_info_to_travel_company
-                                        )
-                                    )
-                                }
                             }
                         }
                     }

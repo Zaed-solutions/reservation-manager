@@ -92,7 +92,7 @@
     <string name="confirmation_sent">Confirmation Sent</string>
     <string name="rides">Rides</string>
     <string name="travel_company">Travel Company</string>
-    <string name="car">Car</string>
+    <string name="car">Car Type</string>
     <string name="driver">Driver</string>
     <string name="notes">Notes</string>
     <string name="send_info_to_client">Send Driver Information to Client</string>
@@ -112,7 +112,7 @@
     <string name="save_reservation">Save Reservation</string>
     <string name="drivers">Drivers</string>
     <string name="buying_price">Buying Price</string>
-    <string name="collection_price">Collected Money</string>
+    <string name="collection_price">Collected Payment</string>
     <string name="note">Note</string>
     <string name="save_ride">Save Ride</string>
     <string name="customer_phone_is_invalid">Customer phone is invalid</string>
@@ -128,25 +128,28 @@
     <string name="whatsapp_is_not_installed">WhatsApp is not installed</string>
     <string name="collected_price">Collected Price</string>
     <string name="selling_price">Selling Price</string>
-    <string name="we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival">We have a confirmed travel booking for you. Kindly contact me upon your safe arrival.</string>
-    <string name="it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing">It is our pleasure to serve you. Your driver, %1$s, can be reached at %2$s. Wishing you a safe and pleasant journey, God willing.</string>
+    <string name="confirmation_message">
+        Peace be upon you,
+        Reservation has been booked for you on %1$s.
+        We will contact you before your trip, And send you the transportation details.
+        - Al-Mosaferoon Transportation Services.</string>
+    <string name="reservation_details_message">
+    Date and time of transportation: %1$s
+    You will be served by Captain %2$s
+    Their phone number is %3$s
+    Have a safe trip, God willing.
+    - Al-Mosaferoon Transportation Services.
+    </string>
     <string name="transportation_details">
-        Dear %1$s,
-
-        Please find below the transportation details for the guest:
-
-        - Guest Name: %2$s
-        - Guest Phone Number: %3$s
-        - Ride Date: %4$s
+        - Customer Name: %1$s
+        - Customer Phone Number: %2$s
+        - Ride Date: %3$s
+        - Car: %4$s
         - Start Location: %5$s
         - End Location: %6$s
-        - Ride Price: %7$s
-        - Payment Collection: %8$s
-
-        Kindly confirm receipt of this information and ensure timely arrangements. Please do not hesitate to contact us if you require further details.
-
-        Best regards,
-        Al-Mosaferoon Company
+        - Reservation Cost: %7$s
+        - Collected Payment: %8$s
+        - Notes: %9$s
     </string>
     <string name="employees">Employees</string>
     <string name="customers">Customers</string>
@@ -214,4 +217,10 @@
     <string name="reservation_added_successfully">Reservation added successfully!</string>
     <string name="save_reservations">Save Reservations</string>
     <string name="home">Home</string>
+    <string name="view_reservations">View Reservations</string>
+    <string name="reservation_by">Reservation by</string>
+    <string name="employee_name">Employee Name</string>
+    <string name="reservation_type">Reservation Type</string>
+    <string name="driver_name">Driver Name</string>
+    <string name="car_count">Cars Count</string>
 </resources>

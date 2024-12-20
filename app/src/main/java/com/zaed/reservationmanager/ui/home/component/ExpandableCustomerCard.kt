@@ -109,7 +109,7 @@ fun ExpandableCustomerCard(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = stringResource(R.string.view_details),
+                        text = stringResource(R.string.view_reservations),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable {
@@ -131,7 +131,7 @@ fun ExpandableCustomerCard(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = stringResource(R.string.edit),
+                                text = stringResource(R.string.update_customer),
                                 modifier = Modifier.wrapContentWidth()
                             )
                         }

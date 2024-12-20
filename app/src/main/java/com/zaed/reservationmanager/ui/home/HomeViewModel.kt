@@ -114,13 +114,13 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             customerRepo.getCustomers().collect { result ->
                 result.onSuccess { data ->
-                    val sortedCustomers = data.sortedBy { it.createdAtEpochSeconds }
                     _uiState.update { oldState ->
                         oldState.copy(
-                            customers = sortedCustomers,
-                            displayedCustomers = sortedCustomers
+                            customers = data,
+                            displayedCustomers = data
                         )
                     }
+                    filterData(countryFilter = uiState.value.selectedCountry)
                 }.onFailure {
                     _uiState.value =
                         _uiState.value.copy(errorMessage = it.message ?: "Unknown error")
@@ -199,10 +199,9 @@ class HomeViewModel(
         }
         viewModelScope.launch (Dispatchers.Default){
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
-
                 _uiState.update {
                     it.copy(
-                        displayedCustomers = it.customers,
+                        displayedCustomers = it.customers.sortedByDescending { customer -> customer.createdAtEpochSeconds },
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -213,7 +212,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
-                }
+                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers
@@ -227,7 +226,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
-                }
+                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,
@@ -241,7 +240,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
-                }
+                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,
@@ -252,7 +251,7 @@ class HomeViewModel(
                 Log.d(TAG, "filterData: searchQuery is blank and timeFilter is All")
                 _uiState.update {
                     it.copy(
-                        displayedReservations = it.reservations,
+                        displayedReservations = it.reservations.sortedBy { it.date },
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -262,7 +261,7 @@ class HomeViewModel(
                         timeFilter,
                         reservation.date
                     )
-                }
+                }.sortedBy { it.date }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
@@ -279,7 +278,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
-                }
+                }.sortedBy { it.date }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
@@ -296,7 +295,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && matchesFilter(timeFilter, reservation.date)
-                }
+                }.sortedByDescending { it.date }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,

@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -92,7 +93,7 @@ fun AddReservationBottomSheetContent(
             options = tourismCompanies.map { it.name },
         )
         TitledDropDownTextField(
-            title = stringResource(R.string.employees),
+            title = stringResource(R.string.employee_name),
             selectedValue = reservation.tourismEmployee,
             onValueChanged = { index ->
                 val employee = employees[index]
@@ -106,7 +107,7 @@ fun AddReservationBottomSheetContent(
             options = employees.map { it.name },
         )
         TitledDropDownTextField(
-            title = stringResource(R.string.type),
+            title = stringResource(R.string.reservation_type),
             selectedValue = reservation.type,
             onValueChanged = { index ->
                 reservation = reservation.copy(
@@ -134,7 +135,7 @@ fun AddReservationBottomSheetContent(
             options = travelCompanies.map { it.name },
         )
         TitledDropDownTextField(
-            title = stringResource(R.string.driver),
+            title = stringResource(R.string.driver_name),
             selectedValue = reservation.driver,
             onValueChanged = { index ->
                 val driver = drivers[index]
@@ -160,6 +161,21 @@ fun AddReservationBottomSheetContent(
             errorMessageRes = reservationError.messageRes,
             options = cars,
         )
+        AnimatedVisibility(visible = reservation.car.isNotBlank()) {
+            TitledDropDownTextField(
+                title = stringResource(R.string.car_count),
+                selectedValue = reservation.carCount.toString(),
+                onValueChanged = { index ->
+                    reservation = reservation.copy(
+                        carCount = index+1
+                    )
+                },
+                options = (1..10).map { it.toString() },
+                isOptional = true,
+                isError = false,
+                errorMessageRes = reservationError.messageRes,
+            )
+        }
         TitledTextField(
             title = stringResource(R.string.start_location),
             initialValue = reservation.startLocation,
@@ -232,7 +248,7 @@ fun AddReservationBottomSheetContent(
             keyboardType = KeyboardType.Decimal
         )
         TitledTextField(
-            title = stringResource(R.string.note),
+            title = stringResource(R.string.notes),
             initialValue = reservation.note,
             onValueChanged = { newText ->
                 reservation = reservation.copy(

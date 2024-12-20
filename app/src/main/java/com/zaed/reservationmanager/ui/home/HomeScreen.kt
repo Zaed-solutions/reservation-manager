@@ -2,7 +2,6 @@ package com.zaed.reservationmanager.ui.home
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +46,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -258,7 +256,7 @@ fun HomeScreen(
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(R.string.we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival)
+                        context.getString(R.string.confirmation_message, reservation.date.formatEpochSecondsToDateTime())
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -278,7 +276,8 @@ fun HomeScreen(
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
-                        R.string.it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing,
+                        R.string.reservation_details_message,
+                        reservation.date.formatEpochSecondsToDateTime(),
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -302,14 +301,15 @@ fun HomeScreen(
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
                         R.string.transportation_details,
-                        reservation.travelCompany,
                         reservation.clientName,
                         reservation.clientPhone,
                         reservation.date.formatEpochSecondsToDateTime(),
+                        reservation.car,
                         reservation.startLocation,
                         reservation.endLocation,
                         reservation.buyingPrice.formatMoney(),
-                        reservation.collectedAmount.formatMoney()
+                        reservation.collectedAmount.formatMoney(),
+                        reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,

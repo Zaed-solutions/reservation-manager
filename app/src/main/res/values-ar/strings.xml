@@ -86,15 +86,15 @@
     <string name="reservation_details">تفاصيل الحجز</string>
     <string name="from">من:</string>
     <string name="to">إلى:</string>
-    <string name="tourism_company">شركة السياحة</string>
+    <string name="tourism_company">الشركة السياحية</string>
     <string name="residence">الإقامة</string>
     <string name="tourism_employee">موظف السياحة</string>
-    <string name="send_confirmation_to_client">إرسال تأكيد للضيف</string>
+    <string name="send_confirmation_to_client">إرسال تأكيد للعميل</string>
     <string name="confirmation_sent">تم إرسال التأكيد</string>
     <string name="rides">الرحلات</string>
     <string name="travel_company">شركة النقل</string>
-    <string name="car">سيارة</string>
-    <string name="driver">السائق</string>
+    <string name="car">نوع السيارة</string>
+    <string name="driver">اسم السائق</string>
     <string name="notes">ملاحظات</string>
     <string name="send_info_to_client">إرسال معلومات السائق للعميل</string>
     <string name="driver_information_sent">تم إرسال معلومات السائق</string>
@@ -116,7 +116,7 @@
     <string name="collection_price">مبلغ التحصيل</string>
     <string name="note">ملاحظة</string>
     <string name="save_ride">حفظ الحركة</string>
-    <string name="customer_phone_is_invalid">جوال الضيف غير صالح</string>
+    <string name="customer_phone_is_invalid">جوال العميل غير صالح</string>
     <string name="customer_name_is_required">اسم العميل مطلوب</string>
     <string name="employee_is_required">الموظف مطلوب</string>
     <string name="customer_country">بلد العميل</string>
@@ -129,32 +129,36 @@
     <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
     <string name="collected_price">سعر التحصيل</string>
     <string name="selling_price">سعر البيع</string>
-    <string name="we_have_a_confirmed_travel_booking_for_you_kindly_contact_me_upon_your_safe_arrival">لدينا حجز مؤكد لك. يرجى الاتصال بنا عند وصولك بأمان.</string>
-    <string name="it_is_our_pleasure_to_serve_you_your_driver_can_be_reached_at_wishing_you_a_safe_and_pleasant_journey_god_willing">يسعدنا خدمتك. يمكن الوصول إلى سائقك، %1$s، على الرقم %2$s. نتمنى لك رحلة آمنة وممتعة إن شاء الله.</string>
+    <string name="confirmation_message">
+    السلام عليكم ورحمة الله وبركاته
+    محجوز لكم مواصلات في %1$s
+    سيتم التواصل معكم قبل سفركم وإرسال تفاصيل حركة النقل.
+    - المسافرون لخدمات النقل.
+</string>
+    <string name="reservation_details_message">
+    تاريخ ووقت الحركة: %1$s
+    يتشرف بخدمتكم الكابتن %2$s
+    وجواله %3$s
+    رحلة موفقة بإذن الله
+    - المسافرون لخدمات النقل
+</string>
     <string name="transportation_details">
-        مرحبا %1$s،
-
-        يرجى العثور أدناه على تفاصيل النقل للعميل:
-
-        - اسم العميل: %2$s
-        - رقم الجوال: %3$s
-        - تاريخ الرحلة: %4$s
-        - الموقع الابتدائي: %5$s
-        - الموقع النهائي: %6$s
-        - سعر الرحلة: %7$s
-        - التحصيل: %8$s
-
-        يرجى تأكيد استلام هذه المعلومات وضمان الترتيبات في الوقت المحدد. لا تتردد في الاتصال بنا إذا كنت بحاجة إلى مزيد من التفاصيل.
-
-        مع أطيب التحيات،
-        شركة المسافرون
-    </string>
+        - اسم العميل: %1$s
+        - جوال العميل: %2$s
+        - التاريخ والوقت: %3$s
+        - نوع السيارة: %4$s
+        - بداية الحركة: %5$s
+        - نهاية الحركة: %6$s
+        - سعر المشوار: %7$s
+        - مبلغ التحصيل: %8$s
+        - ملاحظات: %9$s
+</string>
     <string name="employees">الموظفون</string>
     <string name="customers">العملاء</string>
     <string name="reservations">الحجوزات</string>
     <string name="residence_country">بلد الإقامة</string>
     <string name="created_at">أنشئ في</string>
-    <string name="update_customer">تحديث الضيف</string>
+    <string name="update_customer">تحديث البروفايل</string>
     <string name="company_details">تفاصيل الشركة</string>
     <string name="buying">الشراء</string>
     <string name="selling">البيع</string>
@@ -215,4 +219,10 @@
     <string name="reservation_added_successfully">تم اضافة الحجز بنجاح</string>
     <string name="save_reservations">احفظ الحجوزات</string>
     <string name="home">الرئيسية</string>
+    <string name="view_reservations">عرض الحجوزات</string>
+    <string name="reservation_by">الحجز عن طريق</string>
+    <string name="employee_name">اسم الموظف</string>
+    <string name="reservation_type">نوع المشوار</string>
+    <string name="driver_name">اسم السائق</string>
+    <string name="car_count">عدد السيارات</string>
 </resources>

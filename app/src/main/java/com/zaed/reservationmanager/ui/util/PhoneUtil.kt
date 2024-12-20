@@ -16,7 +16,8 @@ object PhoneUtil {
             data = Uri.parse("https://wa.me/${phoneNumber}?text=${Uri.encode(message)}")
         }
         if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
+            val chooser = Intent.createChooser(intent, "Choose WhatsApp version")
+            context.startActivity(chooser)
             onSuccess()
         } else {
             onFailure()
