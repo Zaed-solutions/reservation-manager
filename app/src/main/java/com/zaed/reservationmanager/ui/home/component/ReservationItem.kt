@@ -98,34 +98,39 @@ fun ReservationItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = reservation.type,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(10.dp)
-                        .padding(horizontal = 8.dp)
-                )
-                Text(
-                    text = reservation.date.formatEpochSecondsToDateTime(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(10.dp)
-                        .padding(horizontal = 8.dp)
-                )
-                if(reservation.car.isNotBlank()){
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                ){
                     Text(
-                        text = reservation.carCount.toString() + " " + reservation.car,
+                        text = reservation.type,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .padding(horizontal = 8.dp)
+                    )
+                    Text(
+                        text = reservation.date.formatEpochSecondsToDateTime(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .padding(horizontal = 8.dp)
+                    )
+                    if(reservation.car.isNotBlank()){
+                        Text(
+                            text = reservation.carCount.toString() + " " + reservation.car,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Box(
                     modifier = Modifier

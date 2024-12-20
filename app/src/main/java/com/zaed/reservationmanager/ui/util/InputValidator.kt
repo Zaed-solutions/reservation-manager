@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.util
 
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
+import kotlinx.datetime.Clock
 
 object InputValidator {
     fun isEmailValid(email: String): Boolean {
@@ -21,12 +22,10 @@ object InputValidator {
         return regex.matches(faxNumber)
     }
     fun validateRide(reservation: Reservation): ReservationError? {
-        if (reservation.date == 0L) {
+        if (reservation.date == 0L || reservation.date <= Clock.System.now().epochSeconds) {
             return ReservationError.DATE_IS_REQUIRED
         }  else if (reservation.type.isBlank()) {
             return ReservationError.TYPE_IS_REQUIRED
-        } else if (reservation.car.isBlank()) {
-            return ReservationError.CAR_IS_REQUIRED
         } else if (reservation.startLocation.isBlank()) {
             return ReservationError.START_LOCATION_IS_REQUIRED
         } else if (reservation.endLocation.isBlank()) {

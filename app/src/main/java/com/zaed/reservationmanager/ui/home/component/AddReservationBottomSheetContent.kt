@@ -156,7 +156,7 @@ fun AddReservationBottomSheetContent(
                     car = cars[index]
                 )
             },
-            isOptional = false,
+            isOptional = true,
             isError = reservationError == ReservationError.CAR_IS_REQUIRED,
             errorMessageRes = reservationError.messageRes,
             options = cars,
