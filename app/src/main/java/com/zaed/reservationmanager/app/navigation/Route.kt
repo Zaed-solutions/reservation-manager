@@ -11,6 +11,9 @@ sealed interface Route {
     data class AddCompanyRoute(val company: Company = Company()): Route
 
     @Serializable
+    data object ArchiveScreen: Route
+
+    @Serializable
     data class AddEmployeeRoute(val employee: Employee = Employee(), val isDriver: Boolean = false): Route
 
     @Serializable

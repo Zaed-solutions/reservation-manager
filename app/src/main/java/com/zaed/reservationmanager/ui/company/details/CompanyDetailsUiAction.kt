@@ -24,4 +24,6 @@ sealed interface CompanyDetailsUiAction {
 
     data class ReservationInfoToTravelCompanySent(val reservationId: String) :
         CompanyDetailsUiAction
+    data class ArchiveReservation(val reservationId: String) :
+        CompanyDetailsUiAction
 }

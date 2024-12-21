@@ -56,7 +56,7 @@ fun ReservationItem(
     modifier: Modifier = Modifier,
     reservation: Reservation = Reservation(),
     onDeleteReservation: () -> Unit = {},
-    onCompanyClicked: (String, CompanyType) -> Unit = { _, _ -> },
+    onArchiveReservation: () -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onSendDriverInfoToClient: () -> Unit = {},
@@ -153,6 +153,19 @@ fun ReservationItem(
                         expanded = isOptionMenuVisible,
                         onDismissRequest = { isOptionMenuVisible = false }
                     ) {
+                        if(reservation.id.isNotBlank()){
+                            DropdownMenuItem(
+                                onClick = {
+                                    onArchiveReservation()
+                                    isOptionMenuVisible = false
+                                },
+                                text = {
+                                    Text(
+                                        text = stringResource(if(reservation.archived) R.string.unarchive else R.string.add_archive),
+                                    )
+                                },
+                            )
+                        }
                         DropdownMenuItem(
                             onClick = {
                                 onDeleteReservation()

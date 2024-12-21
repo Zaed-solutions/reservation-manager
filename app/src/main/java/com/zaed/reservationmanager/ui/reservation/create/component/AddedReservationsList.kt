@@ -89,9 +89,6 @@ fun AddedReservationsList(
                                 onEditReservation = {
                                     onEditReservation(reservation)
                                 },
-                                onCompanyClicked = { companyId, companyType ->
-                                    onCompanyClicked(companyId, companyType)
-                                },
                                 onCopyPhoneNumber = { number ->
                                     onCopyPhoneNumber(number)
                                 },

@@ -31,12 +31,12 @@ fun ReservationsList(
     modifier: Modifier = Modifier,
     reservations: List<Reservation> = emptyList(),
     onAddReservation: () -> Unit = {},
+    onArchiveReservation: (String) -> Unit = {},
     isHeaderVisible: Boolean = true,
     isAddEnabled: Boolean = true,
     isSendActionsVisible: Boolean = true,
     isEditable: Boolean = true,
     onDeleteReservation: (reservationId: String) -> Unit = {},
-    onCompanyClicked: (companyId: String, companyType: CompanyType) -> Unit = { _, _ -> },
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
     onEditReservation: (reservation: Reservation) -> Unit = {},
@@ -97,8 +97,8 @@ fun ReservationsList(
                                 onEditReservation = {
                                     onEditReservation(reservation)
                                 },
-                                onCompanyClicked = { companyId, companyType ->
-                                    onCompanyClicked(companyId, companyType)
+                                onArchiveReservation = {
+                                    onArchiveReservation(reservation.id)
                                 },
                                 onCopyPhoneNumber = { number ->
                                     onCopyPhoneNumber(number)

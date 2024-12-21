@@ -225,4 +225,8 @@
     <string name="reservation_type">نوع المشوار</string>
     <string name="driver_name">اسم السائق</string>
     <string name="car_count">عدد السيارات</string>
+    <string name="archive">الأرشيف</string>
+    <string name="unarchive">فك الأرشفة</string>
+    <string name="reservation_archive">أرشيف الحجوزات</string>
+    <string name="add_archive">أرشفة</string>
 </resources>

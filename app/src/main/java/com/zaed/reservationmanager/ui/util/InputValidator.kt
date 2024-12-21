@@ -13,7 +13,7 @@ object InputValidator {
     }
 
     fun isPhoneNumberValid(phoneNumber: String): Boolean {
-        val regex = Regex("^\\+966\\d{10}$")
+        val regex = Regex("^\\+966\\d{8,}$")
         return regex.matches(phoneNumber)
     }
 

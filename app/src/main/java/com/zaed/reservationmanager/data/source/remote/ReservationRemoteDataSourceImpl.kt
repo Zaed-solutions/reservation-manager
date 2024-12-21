@@ -107,7 +107,12 @@ class ReservationRemoteDataSourceImpl(
         callbackFlow {
             try {
                 firestore.collection(RESERVATION_COLLECTION)
-                    .whereEqualTo("clientId", customerId)
+                    .where(
+                        Filter.and(
+                            Filter.equalTo("clientId", customerId),
+                            Filter.equalTo("archived", false)
+                        )
+                    )
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.failure(error))
@@ -127,6 +132,7 @@ class ReservationRemoteDataSourceImpl(
     override fun getReservations(): Flow<Result<List<Reservation>>> = callbackFlow {
         try {
             firestore.collection(RESERVATION_COLLECTION)
+                .whereEqualTo("archived", false)
                 .addSnapshotListener { task, error ->
                     if (error != null) {
                         trySend(Result.failure(error))
@@ -193,9 +199,12 @@ class ReservationRemoteDataSourceImpl(
             try {
                 firestore.collection(RESERVATION_COLLECTION)
                     .where(
-                        Filter.or(
-                            Filter.equalTo("tourismCompanyId", companyId),
-                            Filter.equalTo("travelCompanyId", companyId)
+                        Filter.and(
+                            Filter.or(
+                                Filter.equalTo("tourismCompanyId", companyId),
+                                Filter.equalTo("travelCompanyId", companyId)
+                            ),
+                            Filter.equalTo("archived", false)
                         )
                     )
                     .addSnapshotListener { data, error ->
@@ -213,6 +222,24 @@ class ReservationRemoteDataSourceImpl(
             }
             awaitClose { }
         }
+
+    override fun getArchivedReservations(): Flow<Result<List<Reservation>>> = callbackFlow {
+        try {
+            firestore.collection(RESERVATION_COLLECTION)
+                .whereEqualTo("archived", true)
+                .addSnapshotListener { task, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val reservations = task?.toObjects(Reservation::class.java)
+                        trySend(Result.success(reservations ?: emptyList()))
+                    }
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
 
     override suspend fun getCompanyBalance(
         companyId: String

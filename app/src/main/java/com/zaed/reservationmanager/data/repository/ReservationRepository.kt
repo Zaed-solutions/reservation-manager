@@ -20,4 +20,5 @@ interface ReservationRepository {
     ): Result<CompanyBalance>
 
     fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>>
+    fun getArchivedReservations(): Flow<Result<List<Reservation>>>
 }

@@ -12,6 +12,7 @@ sealed interface HomeUiAction {
     data object AddReservation : HomeUiAction
     data object AddCustomer : HomeUiAction
     data class OnDriverInfoSent(val reservationId: String) : HomeUiAction
+    data class ArchiveReservation(val reservationId: String) : HomeUiAction
     data class OnConfirmationSentToClient(val reservationId: String) : HomeUiAction
     data class OnInfoSentToTravelCompany(val reservationId: String) : HomeUiAction
     data class OnDeleteReservation(val reservationId: String) : HomeUiAction

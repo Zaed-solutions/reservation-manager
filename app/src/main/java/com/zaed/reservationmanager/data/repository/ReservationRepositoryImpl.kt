@@ -55,4 +55,8 @@ class ReservationRepositoryImpl(
     override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getReservationsByCompanyId(companyId)
     }
+
+    override fun getArchivedReservations(): Flow<Result<List<Reservation>>> {
+        return remoteDataSource.getArchivedReservations()
+    }
 }

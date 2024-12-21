@@ -164,6 +164,13 @@ class CompanyDetailsViewModel(
                 mapOf("sentToDriverCompany" to true)
             )
 
+            is CompanyDetailsUiAction.ArchiveReservation -> {
+                updateReservation(
+                    action.reservationId,
+                    hashMapOf("archived" to true)
+                )
+            }
+
             else -> Unit
         }
     }

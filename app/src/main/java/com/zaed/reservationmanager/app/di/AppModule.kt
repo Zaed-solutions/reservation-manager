@@ -31,6 +31,7 @@ import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListViewModel
 import com.zaed.reservationmanager.ui.home.HomeViewModel
+import com.zaed.reservationmanager.ui.reservation.archive.ArchiveViewModel
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.bind
@@ -53,6 +54,7 @@ val viewModelModule = module {
     viewModelOf(::UpdateDropDownListsViewModel)
     viewModelOf(::CompanyDetailsViewModel)
     viewModelOf(::CustomerDetailsViewModel)
+    viewModelOf(::ArchiveViewModel)
 }
 
 val repositoryModule = module {

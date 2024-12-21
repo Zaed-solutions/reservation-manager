@@ -644,8 +644,8 @@ fun HomeScreenContent(
                                     selectedItemId = reservationId
                                     isConfirmDeleteDialogVisible = true
                                 },
-                                onCompanyClicked = { companyId, companyType ->
-                                    onAction(HomeUiAction.OnCompanyClicked(companyId, companyType))
+                                onArchiveReservation = { reservationId ->
+                                    onAction(HomeUiAction.ArchiveReservation(reservationId))
                                 },
                                 onCopyPhoneNumber = { phoneNumber ->
                                     onAction(HomeUiAction.OnCopyPhoneNumber(phoneNumber))

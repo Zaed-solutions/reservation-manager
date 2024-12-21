@@ -387,10 +387,8 @@ fun CompanyDetailsScreenContent(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 reservations = reservations,
                 isAddEnabled = false,
-                onCompanyClicked = { companyId, companyType ->
-                    if (companyId != company.id) onAction(
-                        CompanyDetailsUiAction.OnCompanyClicked(companyId, companyType)
-                    )
+                onArchiveReservation = { reservationId ->
+                    onAction(CompanyDetailsUiAction.ArchiveReservation(reservationId))
                 },
                 onDeleteReservation = {
                     selectedReservation = Reservation(id = it)

@@ -267,9 +267,9 @@ private fun CustomerDetailScreenContent(
             ReservationsList(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 reservations = reservations,
-                onCompanyClicked = { companyId, companyType ->
+                onArchiveReservation = { reservationId ->
                     onAction(
-                        CustomerDetailsUiAction.OnCompanyClicked(companyId, companyType)
+                        CustomerDetailsUiAction.ArchiveReservation(reservationId)
                     )
                 },
                 onDeleteReservation = {

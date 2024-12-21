@@ -177,7 +177,14 @@ class HomeViewModel(
             is HomeUiAction.UpdateTimeFilter -> filterData(
                 timeFilter = action.timeFilter,
             )
-
+            is HomeUiAction.ArchiveReservation -> {
+                updateReservation(
+                    action.reservationId,
+                    hashMapOf(
+                        "archived" to true,
+                    )
+                )
+            }
             else -> Unit
         }
     }

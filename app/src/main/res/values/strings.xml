@@ -223,4 +223,8 @@
     <string name="reservation_type">Reservation Type</string>
     <string name="driver_name">Driver Name</string>
     <string name="car_count">Cars Count</string>
+    <string name="archive">Archive</string>
+    <string name="unarchive">Unarchive</string>
+    <string name="reservation_archive">Reservation Archive</string>
+    <string name="add_archive">Archive</string>
 </resources>
