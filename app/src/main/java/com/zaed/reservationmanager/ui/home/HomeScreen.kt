@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.home
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -87,6 +88,7 @@ import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -328,7 +330,8 @@ fun HomeScreen(
 
                 else -> viewModel.handleAction(action)
             }
-        }
+        },
+        context= context
     )
 }
 
@@ -350,7 +353,8 @@ fun HomeScreenContent(
     isLoading: Boolean = false,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onAction: (HomeUiAction) -> Unit = {},
-    scope: CoroutineScope = rememberCoroutineScope()
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current
 ) {
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
@@ -703,9 +707,21 @@ fun HomeScreenContent(
                             )
                         },
                         onSaveReservation = {
-                            onAction(HomeUiAction.UpdateReservation(it))
-                            isEditReservationBottomSheetVisible = false
-                            editedReservation = Reservation()
+                            onAction(
+                                HomeUiAction.UpdateReservation(
+                                    reservation = it,
+                                    onSuccess = {
+                                        snackbarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.reservation_updated_successfully),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isEditReservationBottomSheetVisible = false
+                                                editedReservation = Reservation()
+                                            }
+                                        )
+                                    }
+                                ))
                         },
                         onDismiss = {
                             isEditReservationBottomSheetVisible = false

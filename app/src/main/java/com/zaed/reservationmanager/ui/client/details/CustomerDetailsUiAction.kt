@@ -13,8 +13,8 @@ sealed interface CustomerDetailsUiAction {
     data class OnCompanyClicked(val companyId: String, val companyType: CompanyType) :
         CustomerDetailsUiAction
 
-    data class OnAddReservation(val reservation: Reservation) : CustomerDetailsUiAction
-    data class OnUpdateReservation(val reservation: Reservation) : CustomerDetailsUiAction
+    data class OnAddReservation(val reservation: Reservation, val onSuccess: () -> Unit) : CustomerDetailsUiAction
+    data class OnUpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : CustomerDetailsUiAction
     data class SendReservationConfirmation(val reservationId: String) : CustomerDetailsUiAction
     data class ReservationConfirmationSent(val reservationId: String) : CustomerDetailsUiAction
     data class SendReservationInfo(val reservationId: String) : CustomerDetailsUiAction

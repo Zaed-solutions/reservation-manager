@@ -8,7 +8,7 @@ sealed interface CompanyDetailsUiAction {
     data class OnCopyPhoneNumber(val phoneNumber: String) : CompanyDetailsUiAction
     data class OnMessagePhoneNumber(val phoneNumber: String) : CompanyDetailsUiAction
     data class OnDeleteReservation(val reservationId: String) : CompanyDetailsUiAction
-    data class OnEditReservation(val reservation: Reservation) : CompanyDetailsUiAction
+    data class OnEditReservation(val reservation: Reservation, val onSuccess: () -> Unit) : CompanyDetailsUiAction
     data class OnFetchEmployees(val companyId: String) : CompanyDetailsUiAction
     data class OnFetchDrivers(val companyId: String) : CompanyDetailsUiAction
     data object ExportReservationsAsCSV : CompanyDetailsUiAction

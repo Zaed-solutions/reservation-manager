@@ -30,5 +30,5 @@ sealed interface HomeUiAction {
     data class SendReservationInfoToTravelCompany(val reservationId: String) : HomeUiAction
     data class FetchEmployees(val companyId: String) : HomeUiAction
     data class FetchDrivers(val companyId: String) : HomeUiAction
-    data class UpdateReservation(val reservation: Reservation) : HomeUiAction
+    data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
 }

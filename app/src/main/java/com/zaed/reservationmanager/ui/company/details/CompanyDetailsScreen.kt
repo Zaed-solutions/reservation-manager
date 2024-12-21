@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.company.details
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
@@ -58,6 +59,8 @@ import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -270,6 +273,8 @@ fun CompanyDetailsScreen(
         balance = state.balance,
         reservations = state.reservations,
         snackBarHostState = snackbarHostState,
+        scope = scope,
+        context = context
     )
 }
 
@@ -288,6 +293,8 @@ fun CompanyDetailsScreenContent(
     snackBarHostState: SnackbarHostState,
     reservations: List<Reservation> = emptyList(),
     balance: CompanyBalance = CompanyBalance(),
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current
 ) {
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
@@ -448,10 +455,21 @@ fun CompanyDetailsScreenContent(
                         initialReservation = selectedReservation,
                         onSaveReservation = {
                             onAction(
-                                CompanyDetailsUiAction.OnEditReservation(it)
+                                CompanyDetailsUiAction.OnEditReservation(
+                                    reservation = it,
+                                    onSuccess = {
+                                        snackBarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.reservation_updated_successfully),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isEditReservationBottomSheetVisible = false
+                                                selectedReservation = Reservation()
+                                            }
+                                        )
+                                    }
+                                )
                             )
-                            isEditReservationBottomSheetVisible = false
-                            selectedReservation = Reservation()
                         },
                         onDismiss = {
                             isEditReservationBottomSheetVisible = false

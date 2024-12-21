@@ -169,7 +169,7 @@ class HomeViewModel(
                 countryFilter = action.countryFilter
             )
 
-            is HomeUiAction.UpdateReservation -> updateReservation(action.reservation)
+            is HomeUiAction.UpdateReservation -> updateReservation(action.reservation, action.onSuccess)
             is HomeUiAction.UpdateSearchQuery -> filterData(
                 searchQuery = action.query
             )
@@ -388,11 +388,12 @@ class HomeViewModel(
         }
     }
 
-    private fun updateReservation(reservation: Reservation) {
+    private fun updateReservation(reservation: Reservation, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
+                    onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
                     e.printStackTrace()

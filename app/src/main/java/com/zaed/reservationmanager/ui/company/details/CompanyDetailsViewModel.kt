@@ -146,7 +146,7 @@ class CompanyDetailsViewModel(
     fun handleAction(action: CompanyDetailsUiAction) {
         when (action) {
             is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
-            is CompanyDetailsUiAction.OnEditReservation -> editReservation(action.reservation)
+            is CompanyDetailsUiAction.OnEditReservation -> editReservation(action.reservation, action.onSuccess)
             is CompanyDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CompanyDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
             is CompanyDetailsUiAction.ReservationInfoSent -> updateReservation(
@@ -224,11 +224,12 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun editReservation(reservation: Reservation) {
+    private fun editReservation(reservation: Reservation, onSuccess: ()-> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
+                    onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
                     e.printStackTrace()

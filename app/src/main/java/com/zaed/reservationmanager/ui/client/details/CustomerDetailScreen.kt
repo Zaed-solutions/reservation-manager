@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.client.details
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,6 +47,8 @@ import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -218,6 +221,8 @@ private fun CustomerDetailScreenContent(
     drivers: List<Employee> = emptyList(),
     snackbarHostState: SnackbarHostState = SnackbarHostState(),
     onAction: (CustomerDetailsUiAction) -> Unit = {},
+    context: Context = LocalContext.current,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
@@ -335,18 +340,38 @@ private fun CustomerDetailScreenContent(
                                 CustomerDetailsUiAction.OnFetchDrivers(it)
                             )
                         },
-                        onSaveReservation = {
-                            if (selectedReservation.id.isEmpty()) {
-                                onAction(
-                                    CustomerDetailsUiAction.OnAddReservation(it)
-                                )
-                            } else {
-                                onAction(
-                                    CustomerDetailsUiAction.OnUpdateReservation(it)
-                                )
-                            }
-                            isAddReservationBottomSheetVisible = false
-                            selectedReservation = Reservation()
+                        onSaveReservation = { reservation ->
+                            onAction(
+                                if (selectedReservation.id.isEmpty()) {
+                                    CustomerDetailsUiAction.OnAddReservation(
+                                        reservation,
+                                        onSuccess = {
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_added_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    isAddReservationBottomSheetVisible = false
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        })
+                                } else {
+                                    CustomerDetailsUiAction.OnUpdateReservation(
+                                        reservation,
+                                        onSuccess = {
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_updated_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    isAddReservationBottomSheetVisible = false
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        })
+                                }
+                            )
                         },
                         onDismiss = {
                             isAddReservationBottomSheetVisible = false

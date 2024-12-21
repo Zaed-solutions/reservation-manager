@@ -124,10 +124,10 @@ class CustomerDetailsViewModel(
     fun handleAction(action: CustomerDetailsUiAction) {
         when (action) {
             is CustomerDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
-            is CustomerDetailsUiAction.OnAddReservation -> addReservation(action.reservation)
+            is CustomerDetailsUiAction.OnAddReservation -> addReservation(action.reservation, action.onSuccess)
             is CustomerDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CustomerDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
-            is CustomerDetailsUiAction.OnUpdateReservation -> updateReservation(action.reservation)
+            is CustomerDetailsUiAction.OnUpdateReservation -> updateReservation(action.reservation, action.onSuccess)
             is CustomerDetailsUiAction.ReservationInfoSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)
@@ -203,11 +203,12 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun updateReservation(reservation: Reservation) {
+    private fun updateReservation(reservation: Reservation, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
+                    onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
                     e.printStackTrace()
@@ -216,7 +217,7 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun addReservation(reservation: Reservation) {
+    private fun addReservation(reservation: Reservation, onSuccess: ()-> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             val customer = uiState.value.customer
             reservationRepo.createReservation(
@@ -229,6 +230,7 @@ class CustomerDetailsViewModel(
             ).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "addReservation: success")
+                    onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "addReservation: failed to add reservation: ${e.message}")
                     e.printStackTrace()
