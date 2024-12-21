@@ -227,4 +227,16 @@
     <string name="unarchive">Unarchive</string>
     <string name="reservation_archive">Reservation Archive</string>
     <string name="add_archive">Archive</string>
+    <string name="messages">Messages</string>
+    <string name="message">Message</string>
+    <string name="title">Title</string>
+    <string name="title_is_required">Title is required</string>
+    <string name="message_is_required">Message is required</string>
+    <string name="save_message">Save Message</string>
+    <string name="message_updated_successfully">Message updated successfully!</string>
+    <string name="message_added_successfully">Message added successfully!</string>
+    <string name="search">Search</string>
+    <string name="message_copied_to_clipboard">Message copied to clipboard!</string>
+    <string name="no_messages_added">No messages added</string>
+    <string name="no_matching_messages">No matching messages</string>
 </resources>

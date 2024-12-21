@@ -229,4 +229,16 @@
     <string name="unarchive">فك الأرشفة</string>
     <string name="reservation_archive">أرشيف الحجوزات</string>
     <string name="add_archive">أرشفة</string>
+    <string name="messages">الرسائل</string>
+    <string name="message">الرسالة</string>
+    <string name="title">العنوان</string>
+    <string name="title_is_required">العنوان مطلوب</string>
+    <string name="message_is_required">الرسالة مطلوبة</string>
+    <string name="save_message">حفظ الرسالة</string>
+    <string name="message_updated_successfully">تم تحديث الرسالة بنجاح</string>
+    <string name="message_added_successfully">تم حفظ الرسالة بنجاح</string>
+    <string name="search">البحث</string>
+    <string name="message_copied_to_clipboard">تم نسخ الرسالة بنجاح</string>
+    <string name="no_messages_added">لا توجد رسائل مضافة</string>
+    <string name="no_matching_messages">لم يتم العثور على رسائل</string>
 </resources>

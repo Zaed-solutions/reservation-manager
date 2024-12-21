@@ -25,7 +25,7 @@ fun DatePickerModal(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
+                onDateSelected(datePickerState.selectedDateMillis?.toSeconds()?:0L)
                 onDismiss()
             }) {
                 Text(stringResource(R.string.confirm))

@@ -27,17 +27,10 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialExample(
-    onConfirm: (TimePickerState) -> Unit,
-    initialValue: Long = 0L,
+    timePickerState: TimePickerState,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val currentTime = Calendar.getInstance()
-    val initialMinutes = initialValue/1000L
-    val timePickerState = rememberTimePickerState(
-        initialHour = (initialMinutes / 60).toInt(),
-        initialMinute = (initialMinutes%60).toInt(),
-        is24Hour = false,
-    )
     Surface(
         modifier = Modifier.background(MaterialTheme.colorScheme.surface)
     ) {
@@ -70,8 +63,7 @@ fun DialExample(
                                     .padding(4.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 onClick = {
-                                    onConfirm(timePickerState)
-                                    onDismiss()
+                                    onConfirm()
                                 }
                             ) {
                                 Text(stringResource(R.string.confirm))

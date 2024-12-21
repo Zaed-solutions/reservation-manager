@@ -11,6 +11,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,11 +29,11 @@ fun DatePickerFieldToModal(
     onDateSelected: (Long?) -> Unit = {},
     errorMessage: ReservationError
 ) {
-    var selectedDate by remember { mutableStateOf<Long?>(null) }
+    var selectedDate by remember { mutableLongStateOf(initialValue) }
     var showModal by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = selectedDate?.let { convertMillisToDate(it) } ?: "",
+        value = convertSecondsToString(selectedDate),
         onValueChange = { },
         label = { Text(stringResource(R.string.date)) },
         placeholder = { Text(stringResource(R.string.dd_mm_yyyy)) },
@@ -62,7 +63,7 @@ fun DatePickerFieldToModal(
         DatePickerModal(
             initialValue = initialValue,
             onDateSelected = {
-                selectedDate = it
+                selectedDate = it?:0L
                 onDateSelected(it?.toSeconds())
                 showModal = false
             },

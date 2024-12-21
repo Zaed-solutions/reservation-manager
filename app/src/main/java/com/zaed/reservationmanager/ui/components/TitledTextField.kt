@@ -44,7 +44,8 @@ fun TitledTextField(
     imeAction: ImeAction = ImeAction.Default,
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    singleLine: Boolean = true
 ) {
     var value by remember { mutableStateOf(initialValue) }
     Column(
@@ -58,7 +59,7 @@ fun TitledTextField(
             style = MaterialTheme.typography.titleMedium,
         )
         OutlinedTextField(
-            singleLine = true,
+            singleLine = singleLine,
             value = value,
             enabled = isEnabled,
             onValueChange = {

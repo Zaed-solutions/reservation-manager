@@ -9,5 +9,6 @@ enum class NavigationDrawerItem(@StringRes val titleRes: Int, val route: Route) 
     COMPANIES(R.string.companies, Route.CompaniesScreen),
     EMPLOYEES(R.string.employees, Route.EmployeeListRoute),
     DRIVERS(R.string.drivers, Route.DriversListRoute),
+    MESSAGES(R.string.messages, Route.MessagesRoute),
     DROP_DOWN_LISTS(R.string.drop_down_lists, Route.DropDownMenuLists)
 }

@@ -132,7 +132,7 @@ class ReservationRemoteDataSourceImpl(
     override fun getReservations(): Flow<Result<List<Reservation>>> = callbackFlow {
         try {
             firestore.collection(RESERVATION_COLLECTION)
-                .whereEqualTo("archived", false)
+                .whereNotEqualTo("archived", true)
                 .addSnapshotListener { task, error ->
                     if (error != null) {
                         trySend(Result.failure(error))

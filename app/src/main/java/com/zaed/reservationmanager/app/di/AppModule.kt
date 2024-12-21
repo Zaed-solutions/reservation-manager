@@ -9,6 +9,8 @@ import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepositoryImpl
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepositoryImpl
+import com.zaed.reservationmanager.data.repository.MessageRepository
+import com.zaed.reservationmanager.data.repository.MessageRepositoryImpl
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepositoryImpl
 import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSource
@@ -17,6 +19,8 @@ import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.CustomerRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.EmployeeRemoteDataSourceImpl
+import com.zaed.reservationmanager.data.source.remote.MessageRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.MessageRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSourceImpl
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
@@ -31,6 +35,7 @@ import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListViewModel
 import com.zaed.reservationmanager.ui.home.HomeViewModel
+import com.zaed.reservationmanager.ui.messages.MessagesViewModel
 import com.zaed.reservationmanager.ui.reservation.archive.ArchiveViewModel
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -55,10 +60,12 @@ val viewModelModule = module {
     viewModelOf(::CompanyDetailsViewModel)
     viewModelOf(::CustomerDetailsViewModel)
     viewModelOf(::ArchiveViewModel)
+    viewModelOf(::MessagesViewModel)
 }
 
 val repositoryModule = module {
     singleOf(::CompanyRepositoryImpl) { bind<CompanyRepository>() }
+    singleOf(::MessageRepositoryImpl) { bind<MessageRepository>() }
     singleOf(::CustomerRepositoryImpl) { bind<CustomerRepository>() }
     singleOf(::EmployeeRepositoryImpl) { bind<EmployeeRepository>() }
     singleOf(::ReservationRepositoryImpl) { bind<ReservationRepository>() }
@@ -66,6 +73,7 @@ val repositoryModule = module {
 
 val remoteModule = module {
     singleOf(::CompanyRemoteDataSourceImpl) { bind<CompanyRemoteDataSource>() }
+    singleOf(::MessageRemoteDataSourceImpl) { bind<MessageRemoteDataSource>() }
     singleOf(::CustomerRemoteDataSourceImpl) { bind<CustomerRemoteDataSource>() }
     singleOf(::EmployeeRemoteDataSourceImpl) { bind<EmployeeRemoteDataSource>() }
     singleOf(::ReservationRemoteDataSourceImpl) { bind<ReservationRemoteDataSource>() }

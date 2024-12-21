@@ -16,7 +16,7 @@ fun SnackbarHostState.showSnackbarWithDuration(
     message: String,
     durationMillis: Long,
     scope: CoroutineScope,
-    onFinished: () -> Unit
+    onFinished: () -> Unit = {}
 ) {
     scope.launch {
         val job = launch {

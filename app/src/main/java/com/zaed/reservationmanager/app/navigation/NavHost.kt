@@ -24,6 +24,7 @@ import com.zaed.reservationmanager.ui.driver.DriverListScreen
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeScreen
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListScreen
 import com.zaed.reservationmanager.ui.home.HomeScreen
+import com.zaed.reservationmanager.ui.messages.MessagesScreen
 import com.zaed.reservationmanager.ui.reservation.archive.ArchiveScreen
 import com.zaed.reservationmanager.ui.reservation.create.CreateReservationScreen
 import kotlin.reflect.typeOf
@@ -182,6 +183,11 @@ fun NavigationHost(
         }
         composable<Route.ArchiveScreen> {
             ArchiveScreen(
+                onShowNavDrawer = onShowNavDrawer
+            )
+        }
+        composable<Route.MessagesRoute> {
+            MessagesScreen(
                 onShowNavDrawer = onShowNavDrawer
             )
         }

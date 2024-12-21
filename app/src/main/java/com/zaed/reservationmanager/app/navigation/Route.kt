@@ -47,4 +47,6 @@ sealed interface Route {
     @Serializable
     data class CustomerDetailsRoute(val customerId: String = ""): Route
 
+    @Serializable
+    data object MessagesRoute: Route
 }

@@ -12,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,11 +35,15 @@ fun TimePickerFieldToModal(
     onTimeSelected: (Long?) -> Unit = {},
     errorMessage: ReservationError
 ) {
-    var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
     var showModal by remember { mutableStateOf(false) }
-
+    val initialMinutes = initialValue / 60L
+    val timePickerState = rememberTimePickerState(
+        initialHour = (initialMinutes / 60).toInt(),
+        initialMinute = (initialMinutes%60).toInt(),
+        is24Hour = false,
+    )
     OutlinedTextField(
-        value = selectedTime?.let { convertTimeStateToTime(it) } ?: "",
+        value = convertTimeStateToTime(timePickerState),
         onValueChange = { },
         label = { Text(stringResource(R.string.time)) },
         placeholder = { Text("HH / MM / AM_PM") },
@@ -53,7 +58,7 @@ fun TimePickerFieldToModal(
         },
         modifier = modifier
             .fillMaxWidth()
-            .pointerInput(selectedTime) {
+            .pointerInput(timePickerState) {
                 awaitEachGesture {
                     awaitFirstDown(pass = PointerEventPass.Initial)
                     val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
@@ -65,13 +70,12 @@ fun TimePickerFieldToModal(
     )
     if (showModal) {
         DialExample(
-            initialValue = initialValue,
             onDismiss = {
                 showModal = false
             },
+            timePickerState = timePickerState,
             onConfirm = {
-                selectedTime = it
-                onTimeSelected(it.toSeconds())
+                onTimeSelected(timePickerState.toSeconds())
                 showModal = false
             }
         )
