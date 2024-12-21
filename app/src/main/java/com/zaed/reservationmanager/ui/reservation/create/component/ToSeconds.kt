@@ -9,5 +9,5 @@ fun Long.toSeconds() = this / 1000
 
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
+    return if(millis != 0L) formatter.format(Date(millis)) else ""
 }

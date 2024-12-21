@@ -30,6 +30,7 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 @Composable
 fun TimePickerFieldToModal(
     modifier: Modifier = Modifier,
+    initialValue: Long = 0L,
     onTimeSelected: (Long?) -> Unit = {},
     errorMessage: ReservationError
 ) {
@@ -64,12 +65,13 @@ fun TimePickerFieldToModal(
     )
     if (showModal) {
         DialExample(
+            initialValue = initialValue,
             onDismiss = {
                 showModal = false
             },
             onConfirm = {
                 selectedTime = it
-                onTimeSelected(it.toMillis())
+                onTimeSelected(it.toSeconds())
                 showModal = false
             }
         )

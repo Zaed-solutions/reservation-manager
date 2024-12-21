@@ -13,10 +13,13 @@ import com.zaed.reservationmanager.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
+    initialValue: Long = 0L,
     onDateSelected: (Long?) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = initialValue*1000L
+    )
 
     DatePickerDialog(
         onDismissRequest = onDismiss,

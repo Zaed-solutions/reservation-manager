@@ -115,7 +115,7 @@ fun ReservationItem(
                             .padding(horizontal = 8.dp)
                     )
                     Text(
-                        text = reservation.date.formatEpochSecondsToDateTime(),
+                        text = (reservation.date + reservation.time).formatEpochSecondsToDateTime(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

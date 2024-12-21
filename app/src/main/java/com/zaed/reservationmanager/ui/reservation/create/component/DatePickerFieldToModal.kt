@@ -24,6 +24,7 @@ import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 @Composable
 fun DatePickerFieldToModal(
     modifier: Modifier = Modifier,
+    initialValue: Long = 0L,
     onDateSelected: (Long?) -> Unit = {},
     errorMessage: ReservationError
 ) {
@@ -59,6 +60,7 @@ fun DatePickerFieldToModal(
 
     if (showModal) {
         DatePickerModal(
+            initialValue = initialValue,
             onDateSelected = {
                 selectedDate = it
                 onDateSelected(it?.toSeconds())

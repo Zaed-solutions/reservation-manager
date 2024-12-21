@@ -62,6 +62,7 @@ fun AddReservationBottomSheetContent(
             .verticalScroll(rememberScrollState())
     ) {
         DatePickerFieldToModal(
+            initialValue = initialReservation.date,
             errorMessage = reservationError,
             onDateSelected = { newDate ->
                 reservation = reservation.copy(
@@ -70,10 +71,11 @@ fun AddReservationBottomSheetContent(
             }
         )
         TimePickerFieldToModal(
+            initialValue = initialReservation.time,
             errorMessage = reservationError,
             onTimeSelected = { data ->
                 reservation = reservation.copy(
-                    date = reservation.date + (data ?: 0L),
+                    time = data?:0L,
                 )
             }
         )

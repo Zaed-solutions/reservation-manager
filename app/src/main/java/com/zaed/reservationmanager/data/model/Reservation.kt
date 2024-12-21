@@ -11,6 +11,7 @@ data class Reservation(
     val clientPhone: String = "",
     val clientCountry: String = "",
     val date: Long = 0L,
+    val time: Long = 0L,
     val type: String = "",
     val startLocation: String = "",
     val endLocation: String = "",

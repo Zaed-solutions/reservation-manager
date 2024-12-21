@@ -28,13 +28,14 @@ import java.util.Calendar
 @Composable
 fun DialExample(
     onConfirm: (TimePickerState) -> Unit,
+    initialValue: Long = 0L,
     onDismiss: () -> Unit,
 ) {
     val currentTime = Calendar.getInstance()
-
+    val initialMinutes = initialValue/1000L
     val timePickerState = rememberTimePickerState(
-        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-        initialMinute = currentTime.get(Calendar.MINUTE),
+        initialHour = (initialMinutes / 60).toInt(),
+        initialMinute = (initialMinutes%60).toInt(),
         is24Hour = false,
     )
     Surface(

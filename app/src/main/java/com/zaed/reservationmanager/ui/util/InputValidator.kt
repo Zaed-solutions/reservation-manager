@@ -37,7 +37,7 @@ object InputValidator {
         return regex.matches(faxNumber)
     }
     fun validateRide(reservation: Reservation): ReservationError? {
-        if (reservation.date == 0L || reservation.date <= Clock.System.now().epochSeconds) {
+        if (reservation.date == 0L) {
             return ReservationError.DATE_IS_REQUIRED
         }  else if (reservation.type.isBlank()) {
             return ReservationError.TYPE_IS_REQUIRED

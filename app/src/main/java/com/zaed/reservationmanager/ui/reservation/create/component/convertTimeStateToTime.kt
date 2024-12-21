@@ -13,8 +13,8 @@ fun convertTimeStateToTime(selectedTime: TimePickerState): String {
     cal.set(Calendar.MINUTE, selectedTime.minute)
     cal.isLenient = false
     val formatter = SimpleDateFormat("hh:mm a", Locale.getDefault())
-    return formatter.format(cal.time)
+    return if(selectedTime.hour == 0 && selectedTime.minute == 0) "" else formatter.format(cal.time)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun TimePickerState.toMillis() = (hour * 60L + minute) * 60L
+fun TimePickerState.toSeconds() = (hour * 60L + minute) * 60L
