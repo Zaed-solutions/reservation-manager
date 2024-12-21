@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.util
 
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import kotlinx.datetime.Clock
@@ -10,6 +11,20 @@ object InputValidator {
         """^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"""
         )
         return emailRegex.matches(email)
+    }
+    fun Customer.validate():Boolean {
+        return if(name.isBlank()) {
+
+            false
+        } else if (email.isNotBlank() && !isEmailValid(email)) {
+            false
+        }else if (phoneNumber.isBlank() || !isPhoneNumberValid(phoneNumber)) {
+            false
+        }else if(residenceCountry.isBlank()) {
+            false
+        }else {
+            true
+        }
     }
 
     fun isPhoneNumberValid(phoneNumber: String): Boolean {

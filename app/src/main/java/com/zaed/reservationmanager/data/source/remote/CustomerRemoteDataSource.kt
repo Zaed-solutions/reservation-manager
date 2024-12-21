@@ -10,4 +10,6 @@ interface CustomerRemoteDataSource {
     fun getCustomers(): Flow<Result<List<Customer>>>
     suspend fun getCustomerByNumber(number: String): Result<Customer>
     suspend fun getCustomerById(id: String): Result<Customer>
+    fun addCustomers(customers: List<Customer>): Flow<Result<Unit>>
+    fun updateCustomers(customers: List<Customer>): Flow<Result<Unit>>
 }

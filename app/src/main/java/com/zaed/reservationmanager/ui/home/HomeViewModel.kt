@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
@@ -152,6 +153,7 @@ class HomeViewModel(
                 action.reservationId,
                 mapOf("sentConfirmToCustomer" to true)
             )
+            is HomeUiAction.AddCustomers -> handleImportedCustomer(action.customers)
 
             is HomeUiAction.OnDeleteCustomer -> deleteCustomer(action.customerId)
             is HomeUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
@@ -186,6 +188,52 @@ class HomeViewModel(
                 )
             }
             else -> Unit
+        }
+    }
+    private fun handleImportedCustomer(customers: List<Customer>) {
+        viewModelScope.launch(Dispatchers.Default) {
+            val existingCustomers = mutableListOf<Customer>()
+            val newCustomers = mutableListOf<Customer>()
+
+            customers.forEach {newCustomer ->
+                if (uiState.value.customers.any { it.phoneNumber == newCustomer.phoneNumber }) {
+                    val existingCustomer = uiState.value.customers.first { it.phoneNumber == newCustomer.phoneNumber }
+                    existingCustomers.add(newCustomer.copy(id = existingCustomer.id))
+                } else {
+                    newCustomers.add(newCustomer)
+                }
+            }
+            if (newCustomers.isNotEmpty()) {
+                addCustomers(newCustomers)
+            }
+            if(existingCustomers.isNotEmpty()){
+                updateCustomers(existingCustomers)
+            }
+        }
+    }
+
+    private fun addCustomers(customers: List<Customer>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            customerRepo.addCustomers(customers).collect { result ->
+                result.onSuccess {
+                    Log.d("HomeViewModel", "addCustomers: success")
+                }.onFailure {
+                    Log.e("HomeViewModel", "addCustomers: ${it.message}")
+                    it.printStackTrace()
+                }
+            }
+        }
+    }
+    private fun updateCustomers(customers: List<Customer>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            customerRepo.updateCustomers(customers).collect { result ->
+                result.onSuccess {
+                    Log.d("HomeViewModel", "addCustomers: success")
+                }.onFailure {
+                    Log.e("HomeViewModel", "addCustomers: ${it.message}")
+                    it.printStackTrace()
+                }
+            }
         }
     }
 

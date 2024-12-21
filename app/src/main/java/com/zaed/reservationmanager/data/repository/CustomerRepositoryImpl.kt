@@ -11,6 +11,14 @@ class CustomerRepositoryImpl(
         return remoteSource.createCustomer(customer)
     }
 
+    override fun addCustomers(customers: List<Customer>): Flow<Result<Unit>> {
+        return remoteSource.addCustomers(customers)
+    }
+
+    override fun updateCustomers(customers: List<Customer>): Flow<Result<Unit>> {
+        return remoteSource.updateCustomers(customers)
+    }
+
     override fun updateCustomer(customer: Customer): Flow<Result<Unit>> {
         return remoteSource.updateCustomer(customer)
     }

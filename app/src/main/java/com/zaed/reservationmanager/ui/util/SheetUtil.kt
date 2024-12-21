@@ -1,17 +1,141 @@
 package com.zaed.reservationmanager.ui.util
 
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import com.opencsv.CSVReader
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.util.InputValidator.validate
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.DateUtil
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.util.Date
 
 object SheetUtil {
+
+    fun importCustomersFromCSV(
+        context: Context,
+        fileUri: Uri,
+        onImportCompleted: (List<Customer>) -> Unit
+    ) {
+        try {
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(fileUri)
+
+            inputStream?.use { stream ->
+                val reader = CSVReader(InputStreamReader(stream))
+                val customers = mutableListOf<Customer>()
+
+                // Skip header row
+                val rows = reader.readAll().drop(1)
+
+                // Read each row
+                for (row in rows) {
+                    if (row.size < 5) continue // Ensure row has all required columns
+
+                    val name = row[0]
+                    val nationality = row[1]
+                    val residenceCountry = row[2]
+                    val phoneNumber = row[3]
+                    val email = row[4]
+
+                    // Create a Customer object
+                    val customer = Customer(
+                        name = name,
+                        nationality = nationality,
+                        residenceCountry = residenceCountry,
+                        phoneNumber = phoneNumber,
+                        email = email
+                    )
+                    customers.add(customer)
+                }
+
+                // Return the imported customers through the callback
+                onImportCompleted(customers)
+            } ?: Log.e("ImportUtil", "Failed to open input stream")
+        } catch (e: Exception) {
+            Log.e("ImportUtil", "importCustomersFromCSV: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+    fun importCustomersFromExcel(
+        context: Context,
+        fileUri: Uri,
+        onImportCompleted: (List<Customer>) -> Unit
+    ) {
+        try {
+            val contentResolver = context.contentResolver
+            val inputStream: InputStream? = contentResolver.openInputStream(fileUri)
+
+            inputStream?.use { stream ->
+                val workbook = XSSFWorkbook(stream)
+                val sheet = workbook.getSheetAt(0) // Assuming data is in the first sheet
+                val customers = mutableListOf<Customer>()
+
+                // Start reading rows, skipping the header row (index 0)
+                for (rowIndex in 1..sheet.lastRowNum) {
+                    val row = sheet.getRow(rowIndex) ?: continue
+
+                    val name = getCellStringValue(row.getCell(0))
+                    val nationality = getCellStringValue(row.getCell(1))
+                    val residenceCountry = getCellStringValue(row.getCell(2))
+                    val phoneNumber = getCellStringValue(row.getCell(3))
+                    val email = getCellStringValue(row.getCell(4))
+
+                    Log.d("ImportUtil", "importCustomersFromExcel: $name, $nationality, $residenceCountry, $phoneNumber, $email")
+
+                    // Create a Customer object
+                    val customer = Customer(
+                        name = name,
+                        nationality = nationality,
+                        residenceCountry = residenceCountry,
+                        phoneNumber = phoneNumber,
+                        email = email
+                    )
+                    if(customer.validate()){
+                        customers.add(customer)
+                    }else {
+                        Log.d("ImportUtil", "importCustomersFromExcel:Invalid Customer")
+                    }
+                }
+
+                workbook.close()
+
+                // Return the imported customers through the callback
+                onImportCompleted(customers)
+            } ?: Log.e("ImportUtil", "Failed to open input stream")
+        } catch (e: Exception) {
+            Log.e("ImportUtil", "importCustomersFromExcel: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Helper function to get string value from a cell, regardless of its type.
+     */
+    private fun getCellStringValue(cell: Cell?): String {
+        return when (cell?.cellType) {
+            CellType.STRING -> cell.stringCellValue
+            CellType.NUMERIC -> {
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    cell.dateCellValue.toString() // Format date if necessary
+                } else {
+                    cell.numericCellValue.toLong().toString() // Convert number to string
+                }
+            }
+            CellType.BOOLEAN -> cell.booleanCellValue.toString()
+            CellType.FORMULA -> cell.cellFormula // You may need to evaluate the formula
+            else -> "" // Handle BLANK or NULL cells
+        }
+    }
     fun List<Customer>.exportCustomersToExcel(
         context: Context,
         headers: List<String> = listOf(

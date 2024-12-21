@@ -132,4 +132,58 @@ class CustomerRemoteDataSourceImpl(
         }
         awaitClose { }
     }
+
+    override fun addCustomers(customers: List<Customer>): Flow<Result<Unit>> = callbackFlow {
+        try {
+            val batch = firestore.batch()
+            customers.forEach { customer ->
+                val customerRef =
+                    firestore.collection(CUSTOMER_COLLECTION).document()
+                batch.set(customerRef, customer.copy(id = customerRef.id))
+            }
+            batch.commit().addOnSuccessListener {
+                trySend(Result.success(Unit))
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override fun updateCustomers(customers: List<Customer>): Flow<Result<Unit>>  = callbackFlow {
+        try {
+            val batch = firestore.batch()
+            customers.forEach { customer ->
+                val map = mutableMapOf<String,Any>()
+                if(customer.name.isNotBlank()) {
+                    map["name"] = customer.name
+                }
+                if(customer.phoneNumber.isNotBlank()) {
+                    map["phoneNumber"] = customer.phoneNumber
+                }
+                if(customer.residenceCountry.isNotBlank()) {
+                    map["residenceCountry"] = customer.residenceCountry
+                }
+                if (customer.email.isNotBlank()) {
+                    map["email"] = customer.email
+                }
+                if (customer.nationality.isNotBlank()) {
+                    map["nationality"] = customer.nationality
+                }
+                val customerRef =
+                    firestore.collection(CUSTOMER_COLLECTION).document(customer.id)
+                batch.update(customerRef, map)
+            }
+            batch.commit().addOnSuccessListener {
+                trySend(Result.success(Unit))
+            }.addOnFailureListener {
+                trySend(Result.failure(it))
+            }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
 }

@@ -3,6 +3,9 @@ package com.zaed.reservationmanager.ui.home
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,6 +88,8 @@ import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
+import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromCSV
+import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
@@ -375,9 +380,21 @@ fun HomeScreenContent(
     var isCustomer by remember {
         mutableStateOf(true)
     }
+    val context = LocalContext.current
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val filePicker =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            result.data?.data?.let { fileUri ->
+                importCustomersFromExcel(
+                    context = context,
+                    fileUri = fileUri
+                ) { customers ->
+                    onAction(HomeUiAction.AddCustomers(customers))
+                }
+            }
+        }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -425,17 +442,28 @@ fun HomeScreenContent(
                                     )
                                 },
                             )
-//                            DropdownMenuItem(
-//                                onClick = {
-//                                    onExportCustomersAsPDF()
-//                                    isOptionsMenuVisible = false
-//                                },
-//                                text = {
-//                                    Text(
-//                                        text = stringResource(R.string.export_as_pdf),
-//                                    )
-//                                },
-//                            )
+                            DropdownMenuItem(
+                                onClick = {
+                                    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                                        type = "text/csv" // MIME type for CSV files
+                                        putExtra(
+                                            Intent.EXTRA_MIME_TYPES,
+                                            arrayOf(
+                                                "text/csv",
+                                                "application/vnd.ms-excel",
+                                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                            )
+                                        )
+                                    }
+                                    filePicker.launch(intent)
+                                    isOptionsMenuVisible = false
+                                },
+                                text = {
+                                    Text(
+                                        text = "Import Customers from Excel",
+                                    )
+                                },
+                            )
                         }
                     }
                 }
@@ -515,7 +543,7 @@ fun HomeScreenContent(
                 Tab(
                     selected = pagerState.currentPage == 0,
                     onClick = {
-                        scope.launch{
+                        scope.launch {
                             pagerState.animateScrollToPage(0)
                         }
                     },
@@ -530,9 +558,10 @@ fun HomeScreenContent(
                 Tab(
                     selected = pagerState.currentPage == 1,
                     onClick = {
-                        scope.launch{
+                        scope.launch {
                             pagerState.animateScrollToPage(1)
-                        }},
+                        }
+                    },
                     text = {
                         Text(
                             text = stringResource(R.string.reservations),
@@ -551,9 +580,9 @@ fun HomeScreenContent(
                             modifier = Modifier
                                 .padding(top = 8.dp)
                                 .fillMaxSize()
-                        ){
+                        ) {
 
-                            LazyRow{
+                            LazyRow {
                                 items(countries) { country ->
                                     FilterChip(
                                         modifier = Modifier.padding(end = 8.dp),
@@ -682,13 +711,13 @@ fun HomeScreenContent(
             AnimatedVisibility(isEditReservationBottomSheetVisible) {
                 ModalBottomSheet(
                     sheetState = bottomSheetState,
-                    modifier= Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     onDismissRequest = {
                         isEditReservationBottomSheetVisible = false
                     },
                 ) {
                     AddReservationBottomSheetContent(
-                        modifier= Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         types = reservationTypes,
                         cars = cars,
                         tourismCompanies = tourismCompanies,
