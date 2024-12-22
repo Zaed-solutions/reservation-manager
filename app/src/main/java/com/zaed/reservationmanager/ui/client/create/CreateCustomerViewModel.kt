@@ -79,11 +79,21 @@ class CreateCustomerViewModel(
     private fun updateClient() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateCustomer(uiState.value.customer).collect { result ->
-                result.onSuccess {
-                    _uiState.update { oldState ->
-                        oldState.copy(successStatus = true, loading = false)
+                result.onSuccess { data ->
+                    if(data){
+                        _uiState.update { oldState ->
+                            oldState.copy(successStatus = true, loading = false)
+                        }
+                        Log.d(TAG, "addClient: SUCCESS")
+                    } else {
+                        _uiState.update { oldState ->
+                            oldState.copy(
+                                error = ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
+                                loading = false
+                            )
+                        }
+                        Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
                     }
-                    Log.d(TAG, "updateClient: SUCCESS")
                 }.onFailure { error ->
                     _uiState.update { oldState ->
                         oldState.copy(
@@ -102,11 +112,21 @@ class CreateCustomerViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds))
                 .collect { result ->
-                    result.onSuccess {
-                        _uiState.update { oldState ->
-                            oldState.copy(successStatus = true, loading = false)
+                    result.onSuccess { data ->
+                        if(data){
+                            _uiState.update { oldState ->
+                                oldState.copy(successStatus = true, loading = false)
+                            }
+                            Log.d(TAG, "addClient: SUCCESS")
+                        } else {
+                            _uiState.update { oldState ->
+                                oldState.copy(
+                                    error = ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
+                                    loading = false
+                                )
+                            }
+                            Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
                         }
-                        Log.d(TAG, "addClient: SUCCESS")
                     }.onFailure { error ->
                         _uiState.update { oldState ->
                             oldState.copy(
