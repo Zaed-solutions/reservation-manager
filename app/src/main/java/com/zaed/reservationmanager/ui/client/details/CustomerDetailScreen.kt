@@ -341,6 +341,7 @@ private fun CustomerDetailScreenContent(
                             )
                         },
                         onSaveReservation = { reservation ->
+                            isAddReservationBottomSheetVisible = false
                             onAction(
                                 if (selectedReservation.id.isEmpty()) {
                                     CustomerDetailsUiAction.OnAddReservation(
@@ -351,7 +352,6 @@ private fun CustomerDetailScreenContent(
                                                 durationMillis = 1500L,
                                                 scope = scope,
                                                 onFinished = {
-                                                    isAddReservationBottomSheetVisible = false
                                                     selectedReservation = Reservation()
                                                 }
                                             )
@@ -365,7 +365,6 @@ private fun CustomerDetailScreenContent(
                                                 durationMillis = 1500L,
                                                 scope = scope,
                                                 onFinished = {
-                                                    isAddReservationBottomSheetVisible = false
                                                     selectedReservation = Reservation()
                                                 }
                                             )

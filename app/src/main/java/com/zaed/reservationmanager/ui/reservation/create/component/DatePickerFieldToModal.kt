@@ -21,6 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
+import java.time.Clock
 
 @Composable
 fun DatePickerFieldToModal(
@@ -64,7 +65,7 @@ fun DatePickerFieldToModal(
             initialValue = initialValue,
             onDateSelected = {
                 selectedDate = it?:0L
-                onDateSelected(it?.toSeconds())
+                onDateSelected(it)
                 showModal = false
             },
             onDismiss = { showModal = false }

@@ -9,6 +9,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.zaed.reservationmanager.R
+import kotlinx.datetime.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -18,7 +19,7 @@ fun DatePickerModal(
     onDismiss: () -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialValue*1000L
+        initialSelectedDateMillis =if(initialValue==0L)Clock.System.now().toEpochMilliseconds() else  initialValue*1000L
     )
 
     DatePickerDialog(

@@ -454,6 +454,7 @@ fun CompanyDetailsScreenContent(
                         drivers = drivers,
                         initialReservation = selectedReservation,
                         onSaveReservation = {
+                            isEditReservationBottomSheetVisible = false
                             onAction(
                                 CompanyDetailsUiAction.OnEditReservation(
                                     reservation = it,
@@ -463,7 +464,6 @@ fun CompanyDetailsScreenContent(
                                             durationMillis = 1500L,
                                             scope = scope,
                                             onFinished = {
-                                                isEditReservationBottomSheetVisible = false
                                                 selectedReservation = Reservation()
                                             }
                                         )

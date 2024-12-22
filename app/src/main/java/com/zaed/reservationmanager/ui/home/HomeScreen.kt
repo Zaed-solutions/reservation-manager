@@ -736,6 +736,7 @@ fun HomeScreenContent(
                             )
                         },
                         onSaveReservation = {
+                            isEditReservationBottomSheetVisible = false
                             onAction(
                                 HomeUiAction.UpdateReservation(
                                     reservation = it,
@@ -745,7 +746,6 @@ fun HomeScreenContent(
                                             durationMillis = 1500L,
                                             scope = scope,
                                             onFinished = {
-                                                isEditReservationBottomSheetVisible = false
                                                 editedReservation = Reservation()
                                             }
                                         )
