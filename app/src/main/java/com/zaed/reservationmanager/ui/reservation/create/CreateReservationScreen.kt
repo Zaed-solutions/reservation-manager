@@ -44,7 +44,6 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
-import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.reservation.create.component.AddedReservationsList
 import com.zaed.reservationmanager.ui.reservation.create.component.CenterAlignedTopBar
 import com.zaed.reservationmanager.ui.reservation.create.component.CustomerInfoSection

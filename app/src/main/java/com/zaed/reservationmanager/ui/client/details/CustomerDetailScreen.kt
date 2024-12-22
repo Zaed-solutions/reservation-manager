@@ -272,6 +272,7 @@ private fun CustomerDetailScreenContent(
             ReservationsList(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 reservations = reservations,
+                isEditProfileEnabled = false,
                 onArchiveReservation = { reservationId ->
                     onAction(
                         CustomerDetailsUiAction.ArchiveReservation(reservationId)

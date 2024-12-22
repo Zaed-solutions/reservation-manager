@@ -78,7 +78,7 @@ object SheetUtil {
             inputStream?.use { stream ->
                 val workbook = XSSFWorkbook(stream)
                 val sheet = workbook.getSheetAt(0) // Assuming data is in the first sheet
-                val customers = mutableListOf<Customer>()
+                val customers = mutableMapOf<String, Customer>()
 
                 // Start reading rows, skipping the header row (index 0)
                 for (rowIndex in 1..sheet.lastRowNum) {
@@ -101,16 +101,13 @@ object SheetUtil {
                         email = email
                     )
                     if(customer.validate()){
-                        customers.add(customer)
+                        customers[customer.phoneNumber] = customer
                     }else {
                         Log.d("ImportUtil", "importCustomersFromExcel:Invalid Customer")
                     }
                 }
-
                 workbook.close()
-
-                // Return the imported customers through the callback
-                onImportCompleted(customers)
+                onImportCompleted(customers.values.toList())
             } ?: Log.e("ImportUtil", "Failed to open input stream")
         } catch (e: Exception) {
             Log.e("ImportUtil", "importCustomersFromExcel: ${e.message}")

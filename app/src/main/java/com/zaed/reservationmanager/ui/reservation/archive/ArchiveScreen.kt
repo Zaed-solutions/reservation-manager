@@ -110,6 +110,7 @@ private fun ArchiveScreenContent(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             reservations = reservations,
+            isEditProfileEnabled = false,
             onArchiveReservation = { reservationId ->
                 onAction(ArchiveUiAction.UnarchiveReservation(reservationId))
             },

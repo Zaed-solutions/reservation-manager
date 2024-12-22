@@ -333,6 +333,11 @@ fun HomeScreen(
                     )
                 }
 
+                is HomeUiAction.FetchCustomerForUpdating -> {
+                    val customer = state.customers.first { it.id == action.customerId }
+                    onNavigateToEditCustomer(customer)
+                }
+
                 else -> viewModel.handleAction(action)
             }
         },
@@ -380,7 +385,6 @@ fun HomeScreenContent(
     var isCustomer by remember {
         mutableStateOf(true)
     }
-    val context = LocalContext.current
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -669,6 +673,10 @@ fun HomeScreenContent(
                             ReservationsList(
                                 reservations = reservations,
                                 onAddReservation = {},
+                                isEditProfileEnabled = true,
+                                onEditProfile = {
+                                    onAction(HomeUiAction.FetchCustomerForUpdating(it))
+                                },
                                 isHeaderVisible = false,
                                 isAddEnabled = false,
                                 isSendActionsVisible = true,

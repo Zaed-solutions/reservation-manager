@@ -64,8 +64,10 @@ fun ReservationItem(
     onSendConfirmationToCustomer: () -> Unit = {},
     onReservationClicked: () -> Unit = {},
     onEditReservation: () -> Unit = {},
+    onEditProfile: () -> Unit = {},
     isActionsVisible: Boolean = true,
     isEditable: Boolean = true,
+    isEditProfileEnabled: Boolean = true,
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -186,6 +188,19 @@ fun ReservationItem(
                                 text = {
                                     Text(
                                         text = stringResource(R.string.edit),
+                                    )
+                                },
+                            )
+                        }
+                        if (isEditProfileEnabled) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onEditProfile()
+                                    isOptionMenuVisible = false
+                                },
+                                text = {
+                                    Text(
+                                        text = stringResource(R.string.profile),
                                     )
                                 },
                             )
