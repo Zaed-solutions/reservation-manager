@@ -130,14 +130,19 @@ class CustomerRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun deleteCustomer(customerId: String): Flow<Result<Unit>> = callbackFlow {
+    override fun deleteCustomer(customerId: String): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(CUSTOMER_COLLECTION).document(customerId).delete()
-                .addOnSuccessListener {
-                    trySend(Result.success(Unit))
-                }.addOnFailureListener { e ->
-                    trySend(Result.failure(e))
-                }
+            val reservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("clientId", customerId).get().await()
+            if(reservations.isEmpty){
+                firestore.collection(CUSTOMER_COLLECTION).document(customerId).delete()
+                    .addOnSuccessListener {
+                        trySend(Result.success(true))
+                    }.addOnFailureListener { e ->
+                        trySend(Result.failure(e))
+                    }
+            } else {
+                trySend(Result.success(false))
+            }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }

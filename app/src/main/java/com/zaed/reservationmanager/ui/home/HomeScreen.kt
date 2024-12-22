@@ -810,13 +810,23 @@ fun HomeScreenContent(
                             selectedItemId = ""
                         },
                         onConfirm = {
+                            isConfirmDeleteDialogVisible = false
+
                             onAction(
                                 if (isCustomer)
-                                    HomeUiAction.OnDeleteCustomer(selectedItemId)
+                                    HomeUiAction.OnDeleteCustomer(
+                                        customerId = selectedItemId,
+                                        onShowMessage = { isDeleted ->
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = if (isDeleted) context.getString(R.string.customer_deleted_successfully) else context.getString(R.string.customer_has_reservations_and_cannot_be_deleted),
+                                                durationMillis = 1500L,
+                                                scope = scope
+                                            )
+                                        }
+                                    )
                                 else
                                     HomeUiAction.OnDeleteReservation(selectedItemId)
                             )
-                            isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         }
                     )

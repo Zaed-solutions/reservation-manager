@@ -23,7 +23,7 @@ class CustomerRepositoryImpl(
         return remoteSource.updateCustomer(customer)
     }
 
-    override fun deleteCustomer(customerId: String): Flow<Result<Unit>> {
+    override fun deleteCustomer(customerId: String): Flow<Result<Boolean>> {
         return remoteSource.deleteCustomer(customerId)
     }
 
