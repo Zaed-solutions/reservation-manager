@@ -18,3 +18,9 @@ fun Long.formatEpochSecondsToDateTime(): String {
     val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy, hh:mm a", Locale.getDefault())
     return dateTime.format(formatter)
 }
+fun Long.formatEpochSecondsToMessageDateTime(): String {
+    val dateTime =
+        java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("d MMM, hh:mm a", Locale.getDefault())
+    return dateTime.format(formatter)
+}

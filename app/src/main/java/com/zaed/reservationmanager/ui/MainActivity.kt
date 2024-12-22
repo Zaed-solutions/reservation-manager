@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
@@ -78,21 +80,25 @@ fun App() {
 
                 }
                 HorizontalDivider(modifier = Modifier.padding(bottom = 16.dp))
-                NavigationDrawerItem.entries.forEach { item ->
-                    NavigationDrawerItem(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        label = { Text(text = stringResource(item.titleRes)) },
-                        selected = item == selectedNavDrawerItem,
-                        onClick = {
-                            selectedNavDrawerItem = item
-                            navController.navigate(item.route)
-                            scope.launch {
-                                drawerState.apply {
-                                    if (isClosed) open() else close()
+                Column (
+                    modifier = Modifier.padding(vertical = 8.dp).verticalScroll(rememberScrollState())
+                ){
+                    NavigationDrawerItem.entries.forEach { item ->
+                        NavigationDrawerItem(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            label = { Text(text = stringResource(item.titleRes)) },
+                            selected = item == selectedNavDrawerItem,
+                            onClick = {
+                                selectedNavDrawerItem = item
+                                navController.navigate(item.route)
+                                scope.launch {
+                                    drawerState.apply {
+                                        if (isClosed) open() else close()
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         },

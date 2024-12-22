@@ -130,29 +130,35 @@
     <string name="collected_price">سعر التحصيل</string>
     <string name="selling_price">سعر البيع</string>
     <string name="confirmation_message">
-    السلام عليكم ورحمة الله وبركاته
-    محجوز لكم مواصلات في %1$s
-    سيتم التواصل معكم قبل سفركم وإرسال تفاصيل حركة النقل.
-    - المسافرون لخدمات النقل.
+    السلام عليكم ورحمة الله\n
+    محجوز لكم مواصلات في\n
+    %1$s\n
+    سيتم التواصل معكم قبل سفركم\n
+    وإرسال تفاصيل حركة النقل\n
+    المسافرون لخدمات النقل
 </string>
+
     <string name="reservation_details_message">
-    تاريخ ووقت الحركة: %1$s
-    يتشرف بخدمتكم الكابتن %2$s
-    وجواله %3$s
-    رحلة موفقة بإذن الله
+    تاريخ ووقت الحركة:\n
+    %1$s\n
+    يتشرف بخدمتكم الكابتن %2$s\n
+    وجواله %3$s\n
+    رحلة موفقة بإذن الله\n
     - المسافرون لخدمات النقل
 </string>
+
     <string name="transportation_details">
-        - اسم العميل: %1$s
-        - جوال العميل: %2$s
-        - التاريخ والوقت: %3$s
-        - نوع السيارة: %4$s
-        - بداية الحركة: %5$s
-        - نهاية الحركة: %6$s
-        - سعر المشوار: %7$s
-        - مبلغ التحصيل: %8$s
-        - ملاحظات: %9$s
+    - إسم الضيف: %1$s\n
+    - جوال الضيف: %2$s\n
+    - التاريخ والوقت: %3$s\n
+    - نوع السيارة: %4$s\n
+    - بداية الحركة: %5$s\n
+    - نهاية الحركة: %6$s\n
+    - سعر المشوار: %7$s ر.س\n
+    - مبلغ التحصيل: %8$s ر.س\n
+    - ملاحظات: %9$s
 </string>
+
     <string name="employees">الموظفون</string>
     <string name="customers">العملاء</string>
     <string name="reservations">الحجوزات</string>
@@ -218,7 +224,7 @@
     <string name="reservation_updated_successfully">تم تحديث الحجز بنجاح</string>
     <string name="reservation_added_successfully">تم اضافة الحجز بنجاح</string>
     <string name="save_reservations">احفظ الحجوزات</string>
-    <string name="home">الرئيسية</string>
+    <string name="home">الحجوزات</string>
     <string name="view_reservations">عرض الحجوزات</string>
     <string name="reservation_by">الحجز عن طريق</string>
     <string name="employee_name">اسم الموظف</string>
@@ -241,6 +247,10 @@
     <string name="message_copied_to_clipboard">تم نسخ الرسالة بنجاح</string>
     <string name="no_messages_added">لا توجد رسائل مضافة</string>
     <string name="no_matching_messages">لم يتم العثور على رسائل</string>
+    <string name="people_count">عدد الأشخاص</string>
+    <string name="customers_count_is_customers">عدد العملاء هو %1$s عميل</string>
+    <string name="no_driver">بدون سائق</string>
+
     <string name="profile">البروفايل</string>
     <string name="customer_deleted_successfully">تم حذف العميل بنجاح</string>
     <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>

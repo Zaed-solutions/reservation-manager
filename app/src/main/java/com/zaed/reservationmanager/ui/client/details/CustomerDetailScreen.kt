@@ -46,6 +46,7 @@ import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetCo
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
@@ -120,9 +121,11 @@ fun CustomerDetailScreen(
 
                 is CustomerDetailsUiAction.SendReservationInfo -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
+                    val messageText =
+
+                        context.getString(
                         R.string.reservation_details_message,
-                        reservation.date.formatEpochSecondsToDateTime(),
+                        reservation.date.formatEpochSecondsToMessageDateTime(),
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -148,7 +151,7 @@ fun CustomerDetailScreen(
                 is CustomerDetailsUiAction.SendReservationConfirmation -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(R.string.confirmation_message, reservation.date.formatEpochSecondsToDateTime())
+                        context.getString(R.string.confirmation_message, reservation.date.formatEpochSecondsToMessageDateTime())
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -174,12 +177,12 @@ fun CustomerDetailScreen(
                         R.string.transportation_details,
                         reservation.clientName,
                         reservation.clientPhone,
-                        reservation.date.formatEpochSecondsToDateTime(),
+                        reservation.date.formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
                         reservation.endLocation,
-                        reservation.buyingPrice.formatMoney(),
-                        reservation.collectedAmount.formatMoney(),
+                        reservation.buyingPrice.toString(),
+                        reservation.collectedAmount.toString(),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(
