@@ -240,4 +240,6 @@
     <string name="no_messages_added">No messages added</string>
     <string name="no_matching_messages">No matching messages</string>
     <string name="profile">Profile</string>
+    <string name="customer_deleted_successfully">Customer deleted successfully!</string>
+    <string name="customer_has_reservations_and_cannot_be_deleted">Customer has reservations and cannot be deleted!</string>
 </resources>

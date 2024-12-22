@@ -155,7 +155,7 @@ class HomeViewModel(
             )
             is HomeUiAction.AddCustomers -> handleImportedCustomer(action.customers)
 
-            is HomeUiAction.OnDeleteCustomer -> deleteCustomer(action.customerId)
+            is HomeUiAction.OnDeleteCustomer -> deleteCustomer(action.customerId, action.onShowMessage)
             is HomeUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
             is HomeUiAction.OnDriverInfoSent -> updateReservation(
                 action.reservationId,
@@ -392,10 +392,11 @@ class HomeViewModel(
     }
 
 
-    fun deleteCustomer(customerId: String) {
+    private fun deleteCustomer(customerId: String, onShowMessage: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             customerRepo.deleteCustomer(customerId).collect { result ->
-                result.onSuccess {
+                result.onSuccess { data ->
+                    onShowMessage(data)
                     Log.d("CustomerListViewModel", "Customer deleted successfully")
                 }.onFailure {
                     _uiState.update { oldState ->

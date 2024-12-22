@@ -17,7 +17,7 @@ sealed interface HomeUiAction {
     data class OnConfirmationSentToClient(val reservationId: String) : HomeUiAction
     data class OnInfoSentToTravelCompany(val reservationId: String) : HomeUiAction
     data class OnDeleteReservation(val reservationId: String) : HomeUiAction
-    data class OnDeleteCustomer(val customerId: String) : HomeUiAction
+    data class OnDeleteCustomer(val customerId: String, val onShowMessage: (Boolean) -> Unit ) : HomeUiAction
     data class UpdateSearchQuery(val query: String) : HomeUiAction
     data class UpdateTimeFilter(val timeFilter: TimeFilter) : HomeUiAction
     data class UpdateCountryFilter(val countryFilter: String) : HomeUiAction
