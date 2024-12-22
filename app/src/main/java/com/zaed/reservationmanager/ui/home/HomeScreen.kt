@@ -607,7 +607,10 @@ fun HomeScreenContent(
                             }
                             AnimatedVisibility(selectedCountry!="" && customers.isNotEmpty()) {
                                 Text(
-                                    text =  "Customers Count is " + customers.size + " customers",
+                                    text = stringResource(
+                                        R.string.customers_count_is_customers,
+                                        customers.size
+                                    ),
                                     modifier = Modifier.padding(start = 8.dp,top = 8.dp)
                                 )
                             }

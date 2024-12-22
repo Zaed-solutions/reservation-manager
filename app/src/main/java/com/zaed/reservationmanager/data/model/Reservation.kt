@@ -28,6 +28,7 @@ data class Reservation(
     val driverPhoneNumber: String = "",
     val driverId: String = "",
     val car: String = "",
+    val peopleCount: Int = 1,
     val carCount: Int = 1,
     val buyingPrice: Double = 0.0,
     val sellingPrice: Double = 0.0,

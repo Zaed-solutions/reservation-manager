@@ -239,4 +239,6 @@
     <string name="message_copied_to_clipboard">Message copied to clipboard!</string>
     <string name="no_messages_added">No messages added</string>
     <string name="no_matching_messages">No matching messages</string>
+    <string name="people_count">People Count</string>
+    <string name="customers_count_is_customers">Customers Count is %1$s customers</string>
 </resources>

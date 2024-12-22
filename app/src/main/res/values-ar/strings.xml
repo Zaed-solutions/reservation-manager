@@ -241,4 +241,7 @@
     <string name="message_copied_to_clipboard">تم نسخ الرسالة بنجاح</string>
     <string name="no_messages_added">لا توجد رسائل مضافة</string>
     <string name="no_matching_messages">لم يتم العثور على رسائل</string>
+    <string name="people_count">عدد الأشخاص</string>
+    <string name="customers_count_is_customers">عدد العملاء هو %1$s عميل</string>
+
 </resources>

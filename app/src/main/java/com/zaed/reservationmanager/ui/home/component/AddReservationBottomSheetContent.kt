@@ -56,6 +56,9 @@ fun AddReservationBottomSheetContent(
     var reservationError by remember {
         mutableStateOf(ReservationError.NONE)
     }
+    val peopleCounter by remember {
+        mutableStateOf((1..50).toList())
+    }
     Column(
         modifier = modifier
             .padding(16.dp)
@@ -162,6 +165,17 @@ fun AddReservationBottomSheetContent(
             isError = reservationError == ReservationError.CAR_IS_REQUIRED,
             errorMessageRes = reservationError.messageRes,
             options = cars,
+        )
+        TitledDropDownTextField(
+            title = stringResource(R.string.people_count),
+            selectedValue = reservation.peopleCount.toString(),
+            onValueChanged = { index ->
+                reservation = reservation.copy(
+                    peopleCount = peopleCounter[index]
+                )
+            },
+            isOptional = true,
+            options = peopleCounter.map { it.toString() },
         )
         AnimatedVisibility(visible = reservation.car.isNotBlank()) {
             TitledDropDownTextField(
