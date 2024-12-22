@@ -68,7 +68,7 @@ fun ReservationItem(
     isEditable: Boolean = true,
 ) {
     var isExpanded by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var isOptionMenuVisible by remember {
         mutableStateOf(false)
@@ -322,15 +322,15 @@ fun ReservationItem(
                         value = reservation.peopleCount.toString()
                     )
 
-
-                    DetailRow(
-                        label = stringResource(R.string.buying_price),
-                        value = reservation.buyingPrice.formatMoney(),
-                    )
                     DetailRow(
                         label = stringResource(R.string.selling_price),
                         value = reservation.sellingPrice.formatMoney(),
                     )
+                    DetailRow(
+                        label = stringResource(R.string.buying_price),
+                        value = reservation.buyingPrice.formatMoney(),
+                    )
+
                     DetailRow(
                         label = stringResource(R.string.collected_price),
                         value = reservation.collectedAmount.formatMoney(),
