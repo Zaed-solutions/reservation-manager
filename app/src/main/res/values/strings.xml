@@ -129,28 +129,33 @@
     <string name="collected_price">Collected Price</string>
     <string name="selling_price">Selling Price</string>
     <string name="confirmation_message">
-        Peace be upon you,
-        Reservation has been booked for you on %1$s.
-        We will contact you before your trip, And send you the transportation details.
-        - Al-Mosaferoon Transportation Services.</string>
-    <string name="reservation_details_message">
-    Date and time of transportation: %1$s
-    You will be served by Captain %2$s
-    Their phone number is %3$s
-    Have a safe trip, God willing.
+    Peace be upon you,\n
+    Reservation has been booked for you on %1$s.\n
+    We will contact you before your trip,\n
+    And send you the transportation details.\n
     - Al-Mosaferoon Transportation Services.
-    </string>
+</string>
+
+    <string name="reservation_details_message">
+    Date and time of transportation: %1$s\n
+    You will be served by Captain %2$s\n
+    Their phone number is %3$s\n
+    Have a safe trip, God willing.\n
+    - Al-Mosaferoon Transportation Services.
+</string>
+
     <string name="transportation_details">
-        - Customer Name: %1$s
-        - Customer Phone Number: %2$s
-        - Ride Date: %3$s
-        - Car: %4$s
-        - Start Location: %5$s
-        - End Location: %6$s
-        - Reservation Cost: %7$s
-        - Collected Payment: %8$s
-        - Notes: %9$s
-    </string>
+    - Customer Name: %1$s\n
+    - Customer Phone Number: %2$s\n
+    - Ride Date: %3$s\n
+    - Car: %4$s\n
+    - Start Location: %5$s\n
+    - End Location: %6$s\n
+    - Reservation Cost: %7$s\n
+    - Collected Payment: %8$s\n
+    - Notes: %9$s
+</string>
+
     <string name="employees">Employees</string>
     <string name="customers">Customers</string>
     <string name="reservations">Reservations</string>
@@ -241,4 +246,5 @@
     <string name="no_matching_messages">No matching messages</string>
     <string name="people_count">People Count</string>
     <string name="customers_count_is_customers">Customers Count is %1$s customers</string>
+    <string name="no_driver">No Driver</string>
 </resources>

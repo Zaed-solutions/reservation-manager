@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.LocationOn
@@ -41,11 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
@@ -101,7 +99,7 @@ fun ReservationItem(
                 Row(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically,
-                ){
+                ) {
                     Text(
                         text = reservation.type,
                         style = MaterialTheme.typography.bodySmall,
@@ -124,7 +122,7 @@ fun ReservationItem(
                             .height(10.dp)
                             .padding(horizontal = 8.dp)
                     )
-                    if(reservation.car.isNotBlank()){
+                    if (reservation.car.isNotBlank()) {
                         Text(
                             text = reservation.carCount.toString() + " " + reservation.car,
                             style = MaterialTheme.typography.bodySmall,
@@ -153,7 +151,7 @@ fun ReservationItem(
                         expanded = isOptionMenuVisible,
                         onDismissRequest = { isOptionMenuVisible = false }
                     ) {
-                        if(reservation.id.isNotBlank()){
+                        if (reservation.id.isNotBlank()) {
                             DropdownMenuItem(
                                 onClick = {
                                     onArchiveReservation()
@@ -161,7 +159,7 @@ fun ReservationItem(
                                 },
                                 text = {
                                     Text(
-                                        text = stringResource(if(reservation.archived) R.string.unarchive else R.string.add_archive),
+                                        text = stringResource(if (reservation.archived) R.string.unarchive else R.string.add_archive),
                                     )
                                 },
                             )
@@ -219,7 +217,6 @@ fun ReservationItem(
                     .fillMaxWidth()
                     .padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = reservation.clientName,
@@ -228,19 +225,41 @@ fun ReservationItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                VerticalDivider(
-                    modifier = Modifier
-                        .height(10.dp)
-                        .padding(horizontal = 8.dp)
-                )
-                Text(
-                    text = reservation.tourismCompany,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Text(
+                        text = reservation.tourismCompany,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    VerticalDivider(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .padding(horizontal = 4.dp)
+                    )
+                    Text(
+                        text = reservation.driver.ifBlank {
+                            stringResource(
+                                R.string.no_driver
+                            )
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Text(
                     text = (reservation.buyingPrice - reservation.sellingPrice).formatMoney(),
                     style = MaterialTheme.typography.bodyLarge,
