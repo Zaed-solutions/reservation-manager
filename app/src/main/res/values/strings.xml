@@ -216,7 +216,7 @@
     <string name="reservation_updated_successfully">Reservation updated successfully!</string>
     <string name="reservation_added_successfully">Reservation added successfully!</string>
     <string name="save_reservations">Save Reservations</string>
-    <string name="home">Home</string>
+    <string name="home">Reservations</string>
     <string name="view_reservations">View Reservations</string>
     <string name="reservation_by">Reservation by</string>
     <string name="employee_name">Employee Name</string>

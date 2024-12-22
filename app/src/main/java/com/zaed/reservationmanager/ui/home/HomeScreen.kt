@@ -549,7 +549,7 @@ fun HomeScreenContent(
                     },
                     text = {
                         Text(
-                            text = stringResource(R.string.customers),
+                            text = stringResource(R.string.reservations),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -564,7 +564,7 @@ fun HomeScreenContent(
                     },
                     text = {
                         Text(
-                            text = stringResource(R.string.reservations),
+                            text = stringResource(R.string.customers),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -575,7 +575,7 @@ fun HomeScreenContent(
                 state = pagerState
             ) { page ->
                 when (page) {
-                    0 -> {
+                    1 -> {
                         Column(
                             modifier = Modifier
                                 .padding(top = 8.dp)
@@ -635,7 +635,7 @@ fun HomeScreenContent(
                         }
                     }
 
-                    1 -> {
+                    0 -> {
                         Column(
                             modifier = Modifier
                                 .padding(top = 8.dp)
