@@ -605,6 +605,12 @@ fun HomeScreenContent(
                                     )
                                 }
                             }
+                            AnimatedVisibility(selectedCountry!="" && customers.isNotEmpty()) {
+                                Text(
+                                    text =  "Customers Count is " + customers.size + " customers",
+                                    modifier = Modifier.padding(start = 8.dp,top = 8.dp)
+                                )
+                            }
                             CustomerListWithTitle(
                                 customers = customers,
                                 onViewCustomerDetailsClicked = { customerId ->
