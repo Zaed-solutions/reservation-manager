@@ -225,7 +225,7 @@
     <string name="no_messages_added">لا توجد رسائل مضافة</string>
     <string name="no_matching_messages">لم يتم العثور على رسائل</string>
     <string name="people_count">عدد الأشخاص</string>
-    <string name="customers_count_is_customers">عدد العملاء هو %1$s عميل</string>
+    <string name="customers_count_is_customers">عدد العملاء: %1$s</string>
     <string name="no_driver">بدون سائق</string>
 
     <string name="profile">البروفايل</string>

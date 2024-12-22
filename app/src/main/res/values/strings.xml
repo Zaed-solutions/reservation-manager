@@ -223,7 +223,7 @@
     <string name="no_messages_added">No messages added</string>
     <string name="no_matching_messages">No matching messages</string>
     <string name="people_count">People Count</string>
-    <string name="customers_count_is_customers">Customers Count is %1$s customers</string>
+    <string name="customers_count_is_customers">Customers Count: %1$s</string>
     <string name="no_driver">No Driver</string>
     <string name="profile">Profile</string>
     <string name="customer_deleted_successfully">Customer deleted successfully!</string>
