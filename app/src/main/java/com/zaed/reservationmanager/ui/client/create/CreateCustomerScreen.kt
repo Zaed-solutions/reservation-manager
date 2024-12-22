@@ -145,7 +145,7 @@ fun NewClientDataEntryScreenContent(
                 Button(
                     modifier = Modifier
                         .weight(1f),
-                    onClick = { action(CreateCustomerUiAction.AddClient) },
+                    onClick = { action(CreateCustomerUiAction.SubmitClient) },
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(if (isNew) stringResource(R.string.add) else stringResource(R.string.update))

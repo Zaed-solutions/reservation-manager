@@ -251,4 +251,7 @@
     <string name="customers_count_is_customers">عدد العملاء هو %1$s عميل</string>
     <string name="no_driver">بدون سائق</string>
 
+    <string name="profile">البروفايل</string>
+    <string name="customer_deleted_successfully">تم حذف العميل بنجاح</string>
+    <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>
 </resources>

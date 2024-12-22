@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class CustomerRepositoryImpl(
     private val remoteSource: CustomerRemoteDataSource
 ) : CustomerRepository {
-    override fun createCustomer(customer: Customer): Flow<Result<String>> {
+    override fun createCustomer(customer: Customer): Flow<Result<Boolean>> {
         return remoteSource.createCustomer(customer)
     }
 
@@ -19,11 +19,11 @@ class CustomerRepositoryImpl(
         return remoteSource.updateCustomers(customers)
     }
 
-    override fun updateCustomer(customer: Customer): Flow<Result<Unit>> {
+    override fun updateCustomer(customer: Customer): Flow<Result<Boolean>> {
         return remoteSource.updateCustomer(customer)
     }
 
-    override fun deleteCustomer(customerId: String): Flow<Result<Unit>> {
+    override fun deleteCustomer(customerId: String): Flow<Result<Boolean>> {
         return remoteSource.deleteCustomer(customerId)
     }
 

@@ -334,6 +334,11 @@ fun HomeScreen(
                     )
                 }
 
+                is HomeUiAction.FetchCustomerForUpdating -> {
+                    val customer = state.customers.first { it.id == action.customerId }
+                    onNavigateToEditCustomer(customer)
+                }
+
                 else -> viewModel.handleAction(action)
             }
         },
@@ -381,7 +386,6 @@ fun HomeScreenContent(
     var isCustomer by remember {
         mutableStateOf(true)
     }
-    val context = LocalContext.current
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -679,6 +683,10 @@ fun HomeScreenContent(
                             ReservationsList(
                                 reservations = reservations,
                                 onAddReservation = {},
+                                isEditProfileEnabled = true,
+                                onEditProfile = {
+                                    onAction(HomeUiAction.FetchCustomerForUpdating(it))
+                                },
                                 isHeaderVisible = false,
                                 isAddEnabled = false,
                                 isSendActionsVisible = true,
@@ -812,13 +820,23 @@ fun HomeScreenContent(
                             selectedItemId = ""
                         },
                         onConfirm = {
+                            isConfirmDeleteDialogVisible = false
+
                             onAction(
                                 if (isCustomer)
-                                    HomeUiAction.OnDeleteCustomer(selectedItemId)
+                                    HomeUiAction.OnDeleteCustomer(
+                                        customerId = selectedItemId,
+                                        onShowMessage = { isDeleted ->
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = if (isDeleted) context.getString(R.string.customer_deleted_successfully) else context.getString(R.string.customer_has_reservations_and_cannot_be_deleted),
+                                                durationMillis = 1500L,
+                                                scope = scope
+                                            )
+                                        }
+                                    )
                                 else
                                     HomeUiAction.OnDeleteReservation(selectedItemId)
                             )
-                            isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         }
                     )

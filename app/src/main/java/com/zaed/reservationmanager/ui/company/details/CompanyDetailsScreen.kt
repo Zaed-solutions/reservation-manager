@@ -48,6 +48,7 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.details.components.BalanceSection
@@ -73,6 +74,7 @@ fun CompanyDetailsScreen(
     companyType: CompanyType = CompanyType.TOURISM,
     onNavigateBack: () -> Unit,
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit,
+    onNavigateToEditCustomer: (customer: Customer) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -267,6 +269,16 @@ fun CompanyDetailsScreen(
                     )
                 }
 
+                is CompanyDetailsUiAction.FetchCustomerForUpdating -> {
+                    val updatedAction = action.copy(
+                        onSuccess = { customer ->
+                            onNavigateToEditCustomer(customer)
+                        }
+                    )
+                    viewModel.handleAction(updatedAction)
+                }
+
+
                 else -> viewModel.handleAction(action)
             }
         },
@@ -394,6 +406,10 @@ fun CompanyDetailsScreenContent(
             ReservationsList(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                 reservations = reservations,
+                isEditProfileEnabled = true,
+                onEditProfile = {
+                    onAction(CompanyDetailsUiAction.FetchCustomerForUpdating(it))
+                },
                 isAddEnabled = false,
                 onArchiveReservation = { reservationId ->
                     onAction(CompanyDetailsUiAction.ArchiveReservation(reservationId))

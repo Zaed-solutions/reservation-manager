@@ -4,9 +4,9 @@ import com.zaed.reservationmanager.data.model.Customer
 import kotlinx.coroutines.flow.Flow
 
 interface CustomerRepository {
-    fun createCustomer(customer: Customer): Flow<Result<String>>
-    fun updateCustomer(customer: Customer): Flow<Result<Unit>>
-    fun deleteCustomer(customerId: String): Flow<Result<Unit>>
+    fun createCustomer(customer: Customer): Flow<Result<Boolean>>
+    fun updateCustomer(customer: Customer): Flow<Result<Boolean>>
+    fun deleteCustomer(customerId: String): Flow<Result<Boolean>>
     fun getCustomers(): Flow<Result<List<Customer>>>
     suspend fun getCustomerByNumber(number: String): Result<Customer>
     suspend fun getCustomerById(id: String): Result<Customer>
