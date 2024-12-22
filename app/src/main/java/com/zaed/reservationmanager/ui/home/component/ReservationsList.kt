@@ -39,6 +39,8 @@ fun ReservationsList(
     onDeleteReservation: (reservationId: String) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
+    onEditProfile: (String) -> Unit = {},
+    isEditProfileEnabled: Boolean,
     onEditReservation: (reservation: Reservation) -> Unit = {},
     onSendConfirmationToCustomer: (reservationId: String) -> Unit = {},
     onSendDriverInfoToClient: (reservationId: String) -> Unit = { },
@@ -116,6 +118,10 @@ fun ReservationsList(
                                 },
                                 onSendConfirmationToCustomer = {
                                     onSendConfirmationToCustomer(reservation.id)
+                                },
+                                isEditProfileEnabled = isEditProfileEnabled,
+                                onEditProfile = {
+                                    onEditProfile(reservation.clientId)
                                 }
                             )
                         }
@@ -168,7 +174,8 @@ private fun Preview() {
         )
         ReservationsList(
             modifier = Modifier.padding(16.dp),
-            reservations = emptyList()
+            reservations = emptyList(),
+            isEditProfileEnabled = false
         )
     }
 }

@@ -81,8 +81,10 @@ class CustomerRemoteDataSourceImpl(
 
     override fun updateCustomer(customer: Customer): Flow<Result<Boolean>> = callbackFlow {
         try {
+            Log.d(TAG, "updateCustomer: called")
             val reservations = firestore.collection(RESERVATION_COLLECTION)
                 .whereEqualTo("clientId", customer.id).get().await()
+            Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
             firestore.collection(CUSTOMER_COLLECTION)
                 .where(
                     Filter.and(
@@ -92,6 +94,7 @@ class CustomerRemoteDataSourceImpl(
                 ).get()
                 .addOnSuccessListener { data ->
                     if(data.isEmpty) {
+                        Log.d(TAG, "updateCustomer: data: $data")
                         val batch = firestore.batch()
                         val customerRef =
                             firestore.collection(CUSTOMER_COLLECTION).document(customer.id)
@@ -106,17 +109,22 @@ class CustomerRemoteDataSourceImpl(
                         }
 
                         batch.commit().addOnSuccessListener {
+                            Log.d(TAG, "updateCustomer: batch success")
                             trySend(Result.success(true))
                         }.addOnFailureListener { e ->
+                            Log.d(TAG, "updateCustomer: batch failure")
                             trySend(Result.failure(e))
                         }
                     } else {
+                        Log.d(TAG, "updateCustomer: phone number already in use")
                         trySend(Result.success(false))
                     }
                 }.addOnFailureListener { e ->
+                    Log.d(TAG, "updateCustomer: error: $e")
                     trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
+            Log.d(TAG, "updateCustomer: exception: $e")
             trySend(Result.failure(e))
         }
         awaitClose { }

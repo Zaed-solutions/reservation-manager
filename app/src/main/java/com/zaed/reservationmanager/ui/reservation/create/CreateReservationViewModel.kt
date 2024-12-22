@@ -299,13 +299,6 @@ class CreateReservationViewModel(
             ).collect { result ->
                 result.onSuccess { data ->
                     Log.d(TAG, "createCustomer: success")
-                    _uiState.update {
-                        it.copy(
-                            customer = it.customer.copy(
-                                id = data
-                            )
-                        )
-                    }
                     createReservations()
                 }.onFailure {
                     Log.d(TAG, "createNewCustomer: failed to create customer${it.message}")

@@ -25,6 +25,7 @@ class CreateCustomerViewModel(
     val uiState = _uiState.asStateFlow()
 
     fun init(initialCustomer: Customer) {
+        Log.d(TAG, "init: $initialCustomer")
         _uiState.update {
             it.copy(isNew = initialCustomer.id.isBlank(), customer = initialCustomer)
         }
@@ -44,7 +45,7 @@ class CreateCustomerViewModel(
         }
     }
 
-    private fun addClient() {
+    private fun onSubmit() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(loading = true)
@@ -77,9 +78,12 @@ class CreateCustomerViewModel(
     }
 
     private fun updateClient() {
+        Log.d(TAG, "updateClient: called: ${uiState.value.customer}")
         viewModelScope.launch(Dispatchers.IO) {
             repository.updateCustomer(uiState.value.customer).collect { result ->
+                Log.d(TAG, "updateClient: $result")
                 result.onSuccess { data ->
+                    Log.d(TAG, "updateClient: success: $data")
                     if(data){
                         _uiState.update { oldState ->
                             oldState.copy(successStatus = true, loading = false)
@@ -109,6 +113,7 @@ class CreateCustomerViewModel(
     }
 
     private fun createClient() {
+        Log.d(TAG, "createClient: called: ${uiState.value.customer}")
         viewModelScope.launch(Dispatchers.IO) {
             repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds))
                 .collect { result ->
@@ -195,7 +200,7 @@ class CreateCustomerViewModel(
 
     fun handleAction(action: CreateCustomerUiAction) {
         when (action) {
-            CreateCustomerUiAction.AddClient -> addClient()
+            CreateCustomerUiAction.SubmitClient -> onSubmit()
             is CreateCustomerUiAction.UpdateCountry -> updateCountryOfResidence(action.country)
             is CreateCustomerUiAction.UpdateEmail -> updateEmail(action.email)
             is CreateCustomerUiAction.UpdateName -> updateClientName(action.name)

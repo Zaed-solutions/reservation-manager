@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.ui.company.details
 
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 
 sealed interface CompanyDetailsUiAction {
@@ -16,6 +17,7 @@ sealed interface CompanyDetailsUiAction {
         CompanyDetailsUiAction
 
     data class SendReservationConfirmation(val reservationId: String) : CompanyDetailsUiAction
+    data class FetchCustomerForUpdating(val customerId: String, val onSuccess: (Customer) -> Unit = {}) : CompanyDetailsUiAction
     data class ReservationConfirmationSent(val reservationId: String) : CompanyDetailsUiAction
     data class SendReservationInfo(val reservationId: String) : CompanyDetailsUiAction
     data class ReservationInfoSent(val reservationId: String) : CompanyDetailsUiAction

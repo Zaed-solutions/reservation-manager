@@ -168,6 +168,9 @@ fun NavigationHost(
                 onNavigateToCompanyDetails = { companyId, companyType ->
                     navController.navigate(Route.CompanyDetailsRoute(companyId, companyType))
                 },
+                onNavigateToEditCustomer = {
+                    navController.navigate(Route.AddCustomerRoute(it))
+                },
             )
         }
         composable<Route.CustomerDetailsRoute> { backStackEntry ->

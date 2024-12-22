@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
+import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 class CompanyDetailsViewModel(
     private val reservationRepo: ReservationRepository,
     private val companyRepo: CompanyRepository,
+    private val customerRepo: CustomerRepository,
     private val employeeRepo: EmployeeRepository,
     private val menuDataStore: MenuDataStore
 ) : ViewModel() {
@@ -146,12 +149,21 @@ class CompanyDetailsViewModel(
     fun handleAction(action: CompanyDetailsUiAction) {
         when (action) {
             is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
-            is CompanyDetailsUiAction.OnEditReservation -> editReservation(action.reservation, action.onSuccess)
+            is CompanyDetailsUiAction.OnEditReservation -> editReservation(
+                action.reservation,
+                action.onSuccess
+            )
+
             is CompanyDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CompanyDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
             is CompanyDetailsUiAction.ReservationInfoSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)
+            )
+
+            is CompanyDetailsUiAction.FetchCustomerForUpdating -> fetchCustomer(
+                action.customerId,
+                action.onSuccess
             )
 
             is CompanyDetailsUiAction.ReservationConfirmationSent -> updateReservation(
@@ -172,6 +184,17 @@ class CompanyDetailsViewModel(
             }
 
             else -> Unit
+        }
+    }
+
+    private fun fetchCustomer(customerId: String, onSuccess: (Customer) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            customerRepo.getCustomerById(customerId).onSuccess {
+                onSuccess(it)
+            }.onFailure { e ->
+                Log.e(TAG, "fetchCustomer: failed to fetch customer: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 
@@ -224,7 +247,7 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun editReservation(reservation: Reservation, onSuccess: ()-> Unit) {
+    private fun editReservation(reservation: Reservation, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
