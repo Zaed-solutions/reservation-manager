@@ -127,7 +127,6 @@ fun CompanyDetailsScreen(
                         headers = headers,
                         isTravelCompany = companyType == CompanyType.TRAVEL,
                         isTourismCompany = companyType == CompanyType.TOURISM,
-                        isAllRides = companyType == CompanyType.TRAVEL_AND_TOURISM
                     )
                     scope.launch {
                         if (file != null) {

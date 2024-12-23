@@ -228,4 +228,5 @@
     <string name="profile">Profile</string>
     <string name="customer_deleted_successfully">Customer deleted successfully!</string>
     <string name="customer_has_reservations_and_cannot_be_deleted">Customer has reservations and cannot be deleted!</string>
+    <string name="sar">%1$s SAR</string>
 </resources>

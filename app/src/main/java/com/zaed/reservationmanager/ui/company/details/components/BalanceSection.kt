@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,14 +26,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.CompanyBalance
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatMoney
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun BalanceSection(
     modifier: Modifier = Modifier,
+    companyType: CompanyType = CompanyType.TOURISM,
     balance: CompanyBalance = CompanyBalance(),
 ) {
+    val totalBalance = remember(balance){
+        when(companyType) {
+            CompanyType.TOURISM -> balance.totalSelling - balance.totalCollected
+            CompanyType.TRAVEL -> balance.totalBuying - balance.totalCollected
+        }
+    }
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -45,19 +56,16 @@ fun BalanceSection(
             Text(
                 text = stringResource(R.string.total_balance),
                 style = MaterialTheme.typography.titleMedium,
-                fontSize = 14.sp,
-                lineHeight = 19.sp,
                 modifier = Modifier.weight(1f),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = (balance.totalCollected - balance.totalBuying).formatMoney(),
-                style = MaterialTheme.typography.headlineMedium,
-                fontSize = 24.sp,
-                lineHeight = 33.sp,
+                text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(totalBalance)),
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
+        /*
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,6 +95,7 @@ fun BalanceSection(
                 )
             }
         }
+         */
     }
 }
 
@@ -146,15 +155,16 @@ fun FadedVerticalDivider(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, locale = "ar")
 @Composable
 private fun Preview() {
     ReservationManagerTheme {
         BalanceSection(
             modifier = Modifier.padding(16.dp),
+            companyType = CompanyType.TOURISM,
             balance = CompanyBalance(
-                totalBuying = 2500.0,
-                totalSelling = 2000.0,
+                totalBuying = 3500.0,
+                totalSelling = 2500.0,
                 totalCollected = 2000.0
             )
         )

@@ -48,6 +48,8 @@ import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ReservationItem(
@@ -276,7 +278,7 @@ fun ReservationItem(
                     )
                 }
                 Text(
-                    text = (reservation.buyingPrice - reservation.sellingPrice).formatMoney(),
+                    text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.sellingPrice - reservation.buyingPrice)),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

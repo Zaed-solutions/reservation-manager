@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import android.util.Log
 import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
@@ -265,6 +266,7 @@ class ReservationRemoteDataSourceImpl(
             val totalCollected =
                 (totalCollectedResult.get(AggregateField.sum("collectedAmount")) as? Double)
                     ?: 0.0
+            Log.d("CompanyBalance", "getCompanyBalance: $totalBuying $totalSelling $totalCollected")
             Result.success(
                 CompanyBalance(
                     totalBuying = totalBuying,
