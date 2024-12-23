@@ -12,26 +12,28 @@ object PhoneUtil {
         onSuccess: () -> Unit = {},
         onFailure: () -> Unit
     ) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("https://wa.me/${phoneNumber}?text=${Uri.encode(message)}")
+        val uri = Uri.parse("https://wa.me/$phoneNumber?text=${Uri.encode(message)}")
+
+        val whatsappIntent = Intent(Intent.ACTION_VIEW).apply {
+            data = uri
+            setPackage("com.whatsapp")
         }
-        if (intent.resolveActivity(context.packageManager) != null) {
-            val chooser = Intent.createChooser(intent, "Choose WhatsApp version")
-            context.startActivity(chooser)
+        val whatsappBusinessIntent = Intent(Intent.ACTION_VIEW).apply {
+            data = uri
+            setPackage("com.whatsapp.w4b")
+        }
+
+        val resolveInfos = listOf(whatsappIntent, whatsappBusinessIntent).mapNotNull {
+            if (it.resolveActivity(context.packageManager) != null) it else null
+        }
+
+        if (resolveInfos.isNotEmpty()) {
+            val chooserIntent = Intent.createChooser(resolveInfos[0], "Choose WhatsApp version")
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, resolveInfos.subList(1, resolveInfos.size).toTypedArray())
+            context.startActivity(chooserIntent)
             onSuccess()
         } else {
             onFailure()
-        }
-    }
-
-    fun messageNumber(context: Context, phoneNumber: String, onFailure: () -> Unit) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse("https://wa.me/${phoneNumber}")
-        }
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            onFailure
         }
     }
 }
