@@ -359,6 +359,11 @@ fun ReservationItem(
                     )
 
                     DetailRow(
+                        label = stringResource(R.string.flight_number),
+                        value = reservation.flightNumber
+                    )
+
+                    DetailRow(
                         label = stringResource(R.string.selling_price),
                         value = reservation.sellingPrice.formatMoney(),
                     )

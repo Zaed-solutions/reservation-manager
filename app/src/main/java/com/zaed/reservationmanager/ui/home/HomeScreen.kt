@@ -40,6 +40,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -393,7 +394,12 @@ fun HomeScreenContent(
     }
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Hidden || !isEditReservationBottomSheetVisible
+        }
+    )
     val filePicker =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.let { fileUri ->
@@ -735,9 +741,7 @@ fun HomeScreenContent(
                 ModalBottomSheet(
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize(),
-                    onDismissRequest = {
-                        isEditReservationBottomSheetVisible = false
-                    },
+                    onDismissRequest = {},
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -816,7 +820,6 @@ fun HomeScreenContent(
                         isConfirmDeleteDialogVisible = false
                         selectedItemId = ""
                     },
-                    sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
                         label = stringResource(id = R.string.reservation),

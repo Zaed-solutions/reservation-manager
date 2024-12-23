@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -325,7 +326,12 @@ fun CompanyDetailsScreenContent(
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
     }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Hidden || !isEditReservationBottomSheetVisible
+        }
+    )
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -452,10 +458,7 @@ fun CompanyDetailsScreenContent(
             )
             AnimatedVisibility(isEditReservationBottomSheetVisible) {
                 ModalBottomSheet(
-                    onDismissRequest = {
-                        isEditReservationBottomSheetVisible = false
-                        selectedReservation = Reservation()
-                    },
+                    onDismissRequest = {},
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -506,7 +509,6 @@ fun CompanyDetailsScreenContent(
                         isConfirmDeleteDialogVisible = false
                         selectedReservation = Reservation()
                     },
-                    sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
                         label = stringResource(
