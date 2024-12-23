@@ -411,7 +411,7 @@ fun ReservationItem(
                                 )
                             }
 
-                            if (reservation.driver.isNotBlank()) {
+                            if (reservation.travelCompany.isNotBlank()) {
                                 Button(
                                     enabled = !reservation.sentToDriverCompany,
                                     onClick = { onSendInfoToTravelCompany() },

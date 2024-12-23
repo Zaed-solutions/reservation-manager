@@ -124,7 +124,7 @@ fun CustomerDetailScreen(
                         context.getString(
                             R.string.reservation_details_message,
                             reservation.clientName,
-                            reservation.date.formatEpochSecondsToMessageDateTime(),
+                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                             reservation.driver,
                             reservation.driverPhoneNumber
                         )
@@ -153,7 +153,7 @@ fun CustomerDetailScreen(
                         context.getString(
                             R.string.confirmation_message,
                             reservation.clientName,
-                            reservation.date.formatEpochSecondsToMessageDateTime()
+                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
                         )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
@@ -180,7 +180,7 @@ fun CustomerDetailScreen(
                         R.string.transportation_details,
                         reservation.clientName,
                         reservation.clientPhone,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date+ reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
                         reservation.endLocation,

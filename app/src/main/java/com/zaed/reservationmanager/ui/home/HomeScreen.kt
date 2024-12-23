@@ -264,7 +264,11 @@ fun HomeScreen(
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(R.string.confirmation_message, reservation.clientName, reservation.date.formatEpochSecondsToMessageDateTime())
+                        context.getString(
+                            R.string.confirmation_message,
+                            reservation.clientName,
+                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
+                        )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -286,7 +290,7 @@ fun HomeScreen(
                     val messageText = context.getString(
                         R.string.reservation_details_message,
                         reservation.clientName,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -312,7 +316,7 @@ fun HomeScreen(
                         R.string.transportation_details,
                         reservation.clientName,
                         reservation.clientPhone,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
                         reservation.endLocation,
