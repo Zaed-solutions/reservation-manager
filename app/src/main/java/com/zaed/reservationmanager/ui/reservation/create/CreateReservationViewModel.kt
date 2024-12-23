@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 class CreateReservationViewModel(
     private val companyRepository: CompanyRepository,
@@ -295,10 +296,19 @@ class CreateReservationViewModel(
     private fun createCustomer() {
         viewModelScope.launch {
             customerRepository.createCustomer(
-                uiState.value.customer
+                uiState.value.customer.copy(
+                    createdAtEpochSeconds = Clock.System.now().epochSeconds
+                )
             ).collect { result ->
                 result.onSuccess { data ->
                     Log.d(TAG, "createCustomer: success")
+                    _uiState.update {
+                        it.copy(
+                            customer = it.customer.copy(
+                                id = data.second
+                            )
+                        )
+                    }
                     createReservations()
                 }.onFailure {
                     Log.d(TAG, "createNewCustomer: failed to create customer${it.message}")
