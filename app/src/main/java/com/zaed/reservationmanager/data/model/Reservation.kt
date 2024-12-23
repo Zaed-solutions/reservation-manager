@@ -38,5 +38,6 @@ data class Reservation(
     val sentConfirmToCustomer: Boolean = false,
     val sentDriverInfoToCustomer: Boolean = false,
     val sentToDriverCompany: Boolean = false,
+    val sentThanksToCustomer: Boolean = false,
     val archived: Boolean = false
 )

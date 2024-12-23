@@ -277,6 +277,31 @@ fun CompanyDetailsScreen(
                     )
                 }
 
+                is CompanyDetailsUiAction.SendThanksMessageToCustomer -> {
+                    val reservation = state.reservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.thanks_message,
+                        reservation.clientName
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(
+                                CompanyDetailsUiAction.ThanksMessageSent(
+                                    action.reservationId
+                                )
+                            )
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
                 is CompanyDetailsUiAction.FetchCustomerForUpdating -> {
                     val updatedAction = action.copy(
                         onSuccess = { customer ->
@@ -456,6 +481,11 @@ fun CompanyDetailsScreenContent(
                 onSendDriverInfoToClient = {
                     onAction(
                         CompanyDetailsUiAction.SendReservationInfo(it)
+                    )
+                },
+                onSendThanksMessageToCustomer = {
+                    onAction(
+                        CompanyDetailsUiAction.SendThanksMessageToCustomer(it)
                     )
                 }
             )

@@ -166,6 +166,10 @@ class HomeViewModel(
                 action.reservationId,
                 mapOf("sentToDriverCompany" to true)
             )
+            is HomeUiAction.ThanksMessageSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentThanksToCustomer" to true)
+            )
 
             is HomeUiAction.UpdateCountryFilter -> filterData(
                 countryFilter = action.countryFilter

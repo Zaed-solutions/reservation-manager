@@ -176,6 +176,11 @@ class CompanyDetailsViewModel(
                 mapOf("sentToDriverCompany" to true)
             )
 
+            is CompanyDetailsUiAction.ThanksMessageSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentThanksToCustomer" to true)
+            )
+
             is CompanyDetailsUiAction.ArchiveReservation -> {
                 updateReservation(
                     action.reservationId,

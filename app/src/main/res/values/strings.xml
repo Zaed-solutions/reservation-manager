@@ -230,4 +230,7 @@
     <string name="customer_has_reservations_and_cannot_be_deleted">Customer has reservations and cannot be deleted!</string>
     <string name="sar">%1$s SAR</string>
     <string name="flight_number">Flight Number</string>
+    <string name="thanks_message">Dear %1$s,\nThank you for choosing our transport services.\nWe are pleased to have been of service to you\nand appreciate your trust in us.\nWe look forward to serving you again\non your future travels.\n\nBest regards,\nThe Travelers Transport Services Team</string>
+    <string name="thanks_message_sent">Thank you message sent</string>
+    <string name="send_thanks_message_to_customer">Send thank you message to customer</string>
 </resources>

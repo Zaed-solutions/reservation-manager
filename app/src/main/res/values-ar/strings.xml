@@ -233,4 +233,9 @@
     <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>
     <string name="sar">%1$s ر.س.</string>
     <string name="flight_number">رقم رحلة الطيران</string>
+    <string name="thanks_message">
+        أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وأعذرونا ع القصور\nإن شاء الله يكون لنا فرصة…\nنخدمكم بزيارتكم القادمة\n\nالمسافرون لخدمات النقل،،،
+    </string>
+    <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
+    <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
 </resources>

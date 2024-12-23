@@ -343,6 +343,28 @@ fun HomeScreen(
                     )
                 }
 
+                is HomeUiAction.SendThanksMessageToCustomer -> {
+                    val reservation =
+                        state.displayedReservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.thanks_message,
+                        reservation.clientName
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(HomeUiAction.ThanksMessageSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
                 is HomeUiAction.FetchCustomerForUpdating -> {
                     val customer = state.customers.first { it.id == action.customerId }
                     onNavigateToEditCustomer(customer)
@@ -734,6 +756,9 @@ fun HomeScreenContent(
                                 },
                                 onSendConfirmationToCustomer = { reservationId: String ->
                                     onAction(HomeUiAction.SendConfirmationToClient(reservationId))
+                                },
+                                onSendThanksMessageToCustomer =  {
+                                    onAction(HomeUiAction.SendThanksMessageToCustomer(it))
                                 }
                             )
                         }
