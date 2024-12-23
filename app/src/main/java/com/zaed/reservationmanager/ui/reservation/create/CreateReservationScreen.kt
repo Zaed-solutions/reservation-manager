@@ -15,6 +15,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
@@ -207,7 +208,8 @@ private fun CreateReservationScreenContent(
                 ModalBottomSheet(
                     modifier = Modifier.fillMaxSize(),
                     sheetState = bottomSheetState,
-                    onDismissRequest = {}
+                    onDismissRequest = {},
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
