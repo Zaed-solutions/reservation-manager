@@ -18,7 +18,7 @@ class CustomerRemoteDataSourceImpl(
         private val RESERVATION_COLLECTION = "reservations"
     }
 
-    override fun createCustomer(customer: Customer): Flow<Result<Boolean>> = callbackFlow {
+    override fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> = callbackFlow {
         Log.d(TAG, "createCustomer: $customer")
         try {
             firestore.collection(CUSTOMER_COLLECTION)
@@ -27,12 +27,12 @@ class CustomerRemoteDataSourceImpl(
                     if (data.isEmpty) {
                         val document = firestore.collection(CUSTOMER_COLLECTION).document()
                         document.set(customer.copy(id = document.id)).addOnSuccessListener {
-                            trySend(Result.success(true))
+                            trySend(Result.success(true to document.id))
                         }.addOnFailureListener { e ->
                             trySend(Result.failure(e))
                         }
                     } else {
-                        trySend(Result.success(false))
+                        trySend(Result.success(false to ""))
                     }
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))

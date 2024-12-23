@@ -20,7 +20,9 @@ sealed interface CompanyDetailsUiAction {
     data class FetchCustomerForUpdating(val customerId: String, val onSuccess: (Customer) -> Unit = {}) : CompanyDetailsUiAction
     data class ReservationConfirmationSent(val reservationId: String) : CompanyDetailsUiAction
     data class SendReservationInfo(val reservationId: String) : CompanyDetailsUiAction
+    data class SendThanksMessageToCustomer(val reservationId: String) : CompanyDetailsUiAction
     data class ReservationInfoSent(val reservationId: String) : CompanyDetailsUiAction
+    data class ThanksMessageSent(val reservationId: String) : CompanyDetailsUiAction
     data class SendReservationInfoToTravelCompany(val reservationId: String) :
         CompanyDetailsUiAction
 

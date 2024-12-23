@@ -29,6 +29,8 @@ sealed interface HomeUiAction {
     data class SendDriverInfoToClient(val reservationId: String) : HomeUiAction
     data class SendConfirmationToClient(val reservationId: String) : HomeUiAction
     data class SendReservationInfoToTravelCompany(val reservationId: String) : HomeUiAction
+    data class SendThanksMessageToCustomer(val reservationId: String) : HomeUiAction
+    data class ThanksMessageSent(val reservationId: String) : HomeUiAction
     data class FetchEmployees(val companyId: String) : HomeUiAction
     data class FetchDrivers(val companyId: String) : HomeUiAction
     data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction

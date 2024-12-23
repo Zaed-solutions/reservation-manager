@@ -48,6 +48,8 @@ import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatMoney
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ReservationItem(
@@ -60,6 +62,7 @@ fun ReservationItem(
     onSendDriverInfoToClient: () -> Unit = {},
     onSendInfoToTravelCompany: () -> Unit = {},
     onSendConfirmationToCustomer: () -> Unit = {},
+    onSendThanksToCustomer: () -> Unit = {},
     onReservationClicked: () -> Unit = {},
     onEditReservation: () -> Unit = {},
     onEditProfile: () -> Unit = {},
@@ -276,7 +279,7 @@ fun ReservationItem(
                     )
                 }
                 Text(
-                    text = (reservation.buyingPrice - reservation.sellingPrice).formatMoney(),
+                    text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.sellingPrice - reservation.buyingPrice)),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -357,6 +360,11 @@ fun ReservationItem(
                     )
 
                     DetailRow(
+                        label = stringResource(R.string.flight_number),
+                        value = reservation.flightNumber
+                    )
+
+                    DetailRow(
                         label = stringResource(R.string.selling_price),
                         value = reservation.sellingPrice.formatMoney(),
                     )
@@ -411,7 +419,7 @@ fun ReservationItem(
                                 )
                             }
 
-                            if (reservation.driver.isNotBlank()) {
+                            if (reservation.travelCompany.isNotBlank()) {
                                 Button(
                                     enabled = !reservation.sentToDriverCompany,
                                     onClick = { onSendInfoToTravelCompany() },
@@ -470,6 +478,37 @@ fun ReservationItem(
                                             R.string.driver_information_sent
                                         else
                                             R.string.send_info_to_client
+                                    )
+                                )
+                            }
+                            Button(
+                                enabled = !reservation.sentThanksToCustomer,
+                                onClick = { onSendThanksToCustomer() },
+                                contentPadding = PaddingValues(
+                                    horizontal = 16.dp,
+                                    vertical = 8.dp
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Icon(
+                                    imageVector = if (reservation.sentThanksToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
+                                    contentDescription = null,
+                                    tint = if (reservation.sentThanksToCustomer)
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    else
+                                        MaterialTheme.colorScheme.onPrimary
+                                )
+                                Text(
+                                    modifier = Modifier.padding(start = 8.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = stringResource(
+                                        if (reservation.sentThanksToCustomer)
+                                            R.string.thanks_message_sent
+                                        else
+                                            R.string.send_thanks_message_to_customer
                                     )
                                 )
                             }

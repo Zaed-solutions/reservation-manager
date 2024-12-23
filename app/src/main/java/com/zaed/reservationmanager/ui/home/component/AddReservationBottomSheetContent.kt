@@ -82,6 +82,19 @@ fun AddReservationBottomSheetContent(
                 )
             }
         )
+        TitledTextField(
+            title = stringResource(R.string.flight_number),
+            initialValue = reservation.flightNumber,
+            onValueChanged = { newText ->
+                reservation = reservation.copy(
+                    flightNumber = newText
+                )
+            },
+            isOptional = true,
+            isError = false,
+            errorMessageRes = reservationError.messageRes,
+            keyboardType = KeyboardType.Text
+        )
         TitledDropDownTextField(
             title = stringResource(R.string.tourism_company),
             selectedValue = reservation.tourismCompany,

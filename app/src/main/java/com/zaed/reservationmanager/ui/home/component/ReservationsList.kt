@@ -45,6 +45,7 @@ fun ReservationsList(
     onSendConfirmationToCustomer: (reservationId: String) -> Unit = {},
     onSendDriverInfoToClient: (reservationId: String) -> Unit = { },
     onSendInfoToTravelCompany: (reservationId: String) -> Unit = {},
+    onSendThanksMessageToCustomer: (reservationId: String) -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -118,6 +119,9 @@ fun ReservationsList(
                                 },
                                 onSendConfirmationToCustomer = {
                                     onSendConfirmationToCustomer(reservation.id)
+                                },
+                                onSendThanksToCustomer = {
+                                    onSendThanksMessageToCustomer(reservation.id)
                                 },
                                 isEditProfileEnabled = isEditProfileEnabled,
                                 onEditProfile = {

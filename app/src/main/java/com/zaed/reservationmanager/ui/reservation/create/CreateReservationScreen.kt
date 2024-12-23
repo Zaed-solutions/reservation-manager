@@ -15,7 +15,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -115,7 +117,12 @@ private fun CreateReservationScreenContent(
     onAction: (CreateReservationUiAction) -> Unit,
 ) {
     var isAddReservationSheetVisible by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Hidden || !isAddReservationSheetVisible
+        }
+    )
     val nestedScrollConnection = rememberNestedScrollInteropConnection()
     Scaffold(
         modifier = modifier,
@@ -201,9 +208,8 @@ private fun CreateReservationScreenContent(
                 ModalBottomSheet(
                     modifier = Modifier.fillMaxSize(),
                     sheetState = bottomSheetState,
-                    onDismissRequest = {
-                        isAddReservationSheetVisible = false
-                    }
+                    onDismissRequest = {},
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),

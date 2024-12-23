@@ -4,7 +4,7 @@ import com.zaed.reservationmanager.data.model.Customer
 import kotlinx.coroutines.flow.Flow
 
 interface CustomerRemoteDataSource {
-    fun createCustomer(customer: Customer): Flow<Result<Boolean>>
+    fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>>
     fun updateCustomer(customer: Customer): Flow<Result<Boolean>>
     fun deleteCustomer(customerId: String): Flow<Result<Boolean>>
     fun getCustomers(): Flow<Result<List<Customer>>>

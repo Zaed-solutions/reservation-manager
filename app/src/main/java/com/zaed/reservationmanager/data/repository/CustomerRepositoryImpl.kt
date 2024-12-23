@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class CustomerRepositoryImpl(
     private val remoteSource: CustomerRemoteDataSource
 ) : CustomerRepository {
-    override fun createCustomer(customer: Customer): Flow<Result<Boolean>> {
+    override fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> {
         return remoteSource.createCustomer(customer)
     }
 

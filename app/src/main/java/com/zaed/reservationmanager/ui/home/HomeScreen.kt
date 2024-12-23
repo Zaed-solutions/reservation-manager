@@ -37,9 +37,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -98,6 +100,8 @@ import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @Composable
@@ -264,7 +268,11 @@ fun HomeScreen(
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(R.string.confirmation_message, reservation.clientName, reservation.date.formatEpochSecondsToMessageDateTime())
+                        context.getString(
+                            R.string.confirmation_message,
+                            reservation.clientName,
+                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
+                        )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -286,7 +294,7 @@ fun HomeScreen(
                     val messageText = context.getString(
                         R.string.reservation_details_message,
                         reservation.clientName,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -312,12 +320,13 @@ fun HomeScreen(
                         R.string.transportation_details,
                         reservation.clientName,
                         reservation.clientPhone,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
+                        reservation.flightNumber,
                         reservation.endLocation,
-                        reservation.buyingPrice.toInt().toString(),
-                        reservation.collectedAmount.toInt().toString(),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.buyingPrice)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.collectedAmount)),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(
@@ -326,6 +335,28 @@ fun HomeScreen(
                         message = messageText,
                         onSuccess = {
                             viewModel.handleAction(HomeUiAction.OnInfoSentToTravelCompany(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
+                is HomeUiAction.SendThanksMessageToCustomer -> {
+                    val reservation =
+                        state.displayedReservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.thanks_message,
+                        reservation.clientName
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(HomeUiAction.ThanksMessageSent(action.reservationId))
                         },
                         onFailure = {
                             scope.launch {
@@ -389,7 +420,12 @@ fun HomeScreenContent(
     }
     var isDateRangePickerVisible by remember { mutableStateOf(false) }
     var isFixedDatePickerVisible by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Hidden || !isEditReservationBottomSheetVisible
+        }
+    )
     val filePicker =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.let { fileUri ->
@@ -479,7 +515,7 @@ fun HomeScreenContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (pagerState.currentPage == 0) {
+                    if (pagerState.currentPage == 1) {
                         onAction(HomeUiAction.AddCustomer)
                     } else {
                         onAction(HomeUiAction.AddReservation)
@@ -642,6 +678,9 @@ fun HomeScreenContent(
                     }
 
                     0 -> {
+                        val totalEarnings = remember(reservations){
+                            reservations.sumOf { it.sellingPrice - it.buyingPrice }
+                        }
                         Column(
                             modifier = Modifier
                                 .padding(top = 8.dp)
@@ -679,6 +718,16 @@ fun HomeScreenContent(
                                         selectedTimeFilter.date.formatEpochSecondsToDate()
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                            if(selectedTimeFilter !is TimeFilter.All){
+                                Text(
+                                    text  = stringResource(
+                                        R.string.reservation_count_total_earnings,
+                                        reservations.size,
+                                        totalEarnings.formatMoney()
+                                    ),
+
                                 )
                             }
                             ReservationsList(
@@ -721,6 +770,9 @@ fun HomeScreenContent(
                                 },
                                 onSendConfirmationToCustomer = { reservationId: String ->
                                     onAction(HomeUiAction.SendConfirmationToClient(reservationId))
+                                },
+                                onSendThanksMessageToCustomer =  {
+                                    onAction(HomeUiAction.SendThanksMessageToCustomer(it))
                                 }
                             )
                         }
@@ -731,9 +783,9 @@ fun HomeScreenContent(
                 ModalBottomSheet(
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize(),
-                    onDismissRequest = {
-                        isEditReservationBottomSheetVisible = false
-                    },
+                    onDismissRequest = {},
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
+
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -812,7 +864,6 @@ fun HomeScreenContent(
                         isConfirmDeleteDialogVisible = false
                         selectedItemId = ""
                     },
-                    sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
                         label = stringResource(id = R.string.reservation),

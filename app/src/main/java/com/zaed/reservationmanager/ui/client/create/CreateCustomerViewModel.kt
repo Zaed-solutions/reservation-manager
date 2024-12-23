@@ -118,7 +118,7 @@ class CreateCustomerViewModel(
             repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds))
                 .collect { result ->
                     result.onSuccess { data ->
-                        if(data){
+                        if(data.first){
                             _uiState.update { oldState ->
                                 oldState.copy(successStatus = true, loading = false)
                             }

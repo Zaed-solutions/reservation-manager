@@ -1,15 +1,14 @@
 package com.zaed.reservationmanager.ui.util
 
 import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
-import kotlin.math.abs
 
-fun Double.formatMoney(isExpense: Boolean = false, padding: Int = 0): String {
-    val formatter = NumberFormat.getCurrencyInstance(Locale.US).apply {
+fun Double.formatMoney(padding: Int = 0): String {
+    val formatter = NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
         minimumFractionDigits = padding
         maximumFractionDigits = padding
     }
-    val amount = abs(this)
-    val formattedAmount = formatter.format(amount)
-    return (if (isExpense) "-" else "+") + formattedAmount
+    val formattedAmount = formatter.format(this)
+    return formattedAmount
 }

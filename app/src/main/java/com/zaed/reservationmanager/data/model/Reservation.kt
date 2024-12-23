@@ -27,6 +27,7 @@ data class Reservation(
     val driver: String = "",
     val driverPhoneNumber: String = "",
     val driverId: String = "",
+    val flightNumber: String = "",
     val car: String = "",
     val peopleCount: Int = 1,
     val carCount: Int = 1,
@@ -37,5 +38,6 @@ data class Reservation(
     val sentConfirmToCustomer: Boolean = false,
     val sentDriverInfoToCustomer: Boolean = false,
     val sentToDriverCompany: Boolean = false,
+    val sentThanksToCustomer: Boolean = false,
     val archived: Boolean = false
 )

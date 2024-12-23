@@ -21,7 +21,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -65,6 +67,8 @@ import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun CompanyDetailsScreen(
@@ -127,7 +131,6 @@ fun CompanyDetailsScreen(
                         headers = headers,
                         isTravelCompany = companyType == CompanyType.TRAVEL,
                         isTourismCompany = companyType == CompanyType.TOURISM,
-                        isAllRides = companyType == CompanyType.TRAVEL_AND_TOURISM
                     )
                     scope.launch {
                         if (file != null) {
@@ -195,7 +198,7 @@ fun CompanyDetailsScreen(
                     val messageText = context.getString(
                         R.string.reservation_details_message,
                         reservation.clientName,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -217,7 +220,11 @@ fun CompanyDetailsScreen(
                 is CompanyDetailsUiAction.SendReservationConfirmation -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(R.string.confirmation_message, reservation.clientName, reservation.date.formatEpochSecondsToMessageDateTime())
+                        context.getString(
+                            R.string.confirmation_message,
+                            reservation.clientName,
+                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
+                        )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -243,12 +250,13 @@ fun CompanyDetailsScreen(
                         R.string.transportation_details,
                         reservation.clientName,
                         reservation.clientPhone,
-                        reservation.date.formatEpochSecondsToMessageDateTime(),
+                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
+                        reservation.flightNumber,
                         reservation.endLocation,
-                        reservation.buyingPrice.toInt().toString(),
-                        reservation.collectedAmount.toInt().toString(),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.buyingPrice)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.collectedAmount)),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(
@@ -258,6 +266,31 @@ fun CompanyDetailsScreen(
                         onSuccess = {
                             viewModel.handleAction(
                                 CompanyDetailsUiAction.ReservationInfoToTravelCompanySent(
+                                    action.reservationId
+                                )
+                            )
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
+                is CompanyDetailsUiAction.SendThanksMessageToCustomer -> {
+                    val reservation = state.reservations.first { it.id == action.reservationId }
+                    val messageText = context.getString(
+                        R.string.thanks_message,
+                        reservation.clientName
+                    )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(
+                                CompanyDetailsUiAction.ThanksMessageSent(
                                     action.reservationId
                                 )
                             )
@@ -322,7 +355,12 @@ fun CompanyDetailsScreenContent(
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
     }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Hidden || !isEditReservationBottomSheetVisible
+        }
+    )
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackBarHostState) },
@@ -445,16 +483,20 @@ fun CompanyDetailsScreenContent(
                     onAction(
                         CompanyDetailsUiAction.SendReservationInfo(it)
                     )
+                },
+                onSendThanksMessageToCustomer = {
+                    onAction(
+                        CompanyDetailsUiAction.SendThanksMessageToCustomer(it)
+                    )
                 }
             )
             AnimatedVisibility(isEditReservationBottomSheetVisible) {
                 ModalBottomSheet(
-                    onDismissRequest = {
-                        isEditReservationBottomSheetVisible = false
-                        selectedReservation = Reservation()
-                    },
+                    onDismissRequest = {},
                     sheetState = bottomSheetState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
+
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -503,7 +545,6 @@ fun CompanyDetailsScreenContent(
                         isConfirmDeleteDialogVisible = false
                         selectedReservation = Reservation()
                     },
-                    sheetState = rememberModalBottomSheetState()
                 ) {
                     ConfirmDeleteDialog(
                         label = stringResource(
