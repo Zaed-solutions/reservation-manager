@@ -725,6 +725,16 @@ fun HomeScreenContent(
                                     text  = stringResource(
                                         R.string.reservation_count_total_earnings,
                                         reservations.size,
+                                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(totalEarnings))
+                                    ),
+
+                                )
+                            }
+                            if(selectedTimeFilter !is TimeFilter.All){
+                                Text(
+                                    text  = stringResource(
+                                        R.string.reservation_count_total_earnings,
+                                        reservations.size,
                                         totalEarnings.formatMoney()
                                     ),
 
