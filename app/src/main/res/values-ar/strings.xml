@@ -238,4 +238,5 @@
     </string>
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
+    <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | مجموع ربح الحجوزات: %2$s</string>
 </resources>

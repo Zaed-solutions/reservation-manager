@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.ui.client.details
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetDefaults
+import androidx.compose.material3.ModalBottomSheetDefaults.properties
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
@@ -363,7 +367,8 @@ private fun CustomerDetailScreenContent(
                 ModalBottomSheet(
                     onDismissRequest = {},
                     modifier = Modifier.fillMaxSize(),
-                    sheetState = bottomSheetState
+                    sheetState = bottomSheetState,
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),

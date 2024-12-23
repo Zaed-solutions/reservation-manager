@@ -37,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -677,6 +678,9 @@ fun HomeScreenContent(
                     }
 
                     0 -> {
+                        val totalEarnings = remember(reservations){
+                            reservations.sumOf { it.sellingPrice - it.buyingPrice }
+                        }
                         Column(
                             modifier = Modifier
                                 .padding(top = 8.dp)
@@ -714,6 +718,16 @@ fun HomeScreenContent(
                                         selectedTimeFilter.date.formatEpochSecondsToDate()
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
+                                )
+                            }
+                            if(selectedTimeFilter !is TimeFilter.All){
+                                Text(
+                                    text  = stringResource(
+                                        R.string.reservation_count_total_earnings,
+                                        reservations.size,
+                                        totalEarnings.formatMoney()
+                                    ),
+
                                 )
                             }
                             ReservationsList(
@@ -770,6 +784,8 @@ fun HomeScreenContent(
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize(),
                     onDismissRequest = {},
+                    properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
+
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),

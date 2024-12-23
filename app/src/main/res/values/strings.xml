@@ -233,4 +233,5 @@
     <string name="thanks_message">Dear %1$s,\nThank you for choosing our transport services.\nWe are pleased to have been of service to you\nand appreciate your trust in us.\nWe look forward to serving you again\non your future travels.\n\nBest regards,\nThe Travelers Transport Services Team</string>
     <string name="thanks_message_sent">Thank you message sent</string>
     <string name="send_thanks_message_to_customer">Send thank you message to customer</string>
+    <string name="reservation_count_total_earnings">Reservation Count: %1$s  | Total Earnings: %2$s</string>
 </resources>
