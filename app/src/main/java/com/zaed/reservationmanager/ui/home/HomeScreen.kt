@@ -730,16 +730,7 @@ fun HomeScreenContent(
 
                                 )
                             }
-                            if(selectedTimeFilter !is TimeFilter.All){
-                                Text(
-                                    text  = stringResource(
-                                        R.string.reservation_count_total_earnings,
-                                        reservations.size,
-                                        totalEarnings.formatMoney()
-                                    ),
 
-                                )
-                            }
                             ReservationsList(
                                 reservations = reservations,
                                 onAddReservation = {},
