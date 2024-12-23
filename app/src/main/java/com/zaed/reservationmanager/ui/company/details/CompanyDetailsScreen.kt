@@ -66,6 +66,8 @@ import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun CompanyDetailsScreen(
@@ -250,9 +252,10 @@ fun CompanyDetailsScreen(
                         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
                         reservation.startLocation,
+                        reservation.flightNumber,
                         reservation.endLocation,
-                        reservation.buyingPrice.toInt().toString(),
-                        reservation.collectedAmount.toInt().toString(),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.buyingPrice)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.collectedAmount)),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(

@@ -132,7 +132,7 @@
 
     <string name="reservation_details_message">Mr/Mrs\ %1$s\nDate and time of transportation:\n%2$s\nYou will be served by\nCaptain\ %3$s\nTheir phone number is %4$s\nHave a safe trip, God willing.\n\nAl-Mosaferoon Transportation Services،،،</string>
 
-    <string name="transportation_details">- Customer Name: %1$s\n- Customer Phone Number: %2$s\n- Date: %3$s\n- Car: %4$s\n- Start Location: %5$s\n- End Location: %6$s\n- Reservation Cost: %7$s\n- Collected Payment: %8$s\n- Notes: \n%9$s\n\nAl-Mosaferoon Transportation Services،،،</string>
+    <string name="transportation_details">- Customer Name: %1$s\n- Customer Phone Number: %2$s\n- Date: %3$s\n- Car: %4$s\n- Start Location: %5$s\n- Flight Number: %6$s\n- End Location: %7$s\n- Reservation Cost: %8$s\n- Collected Payment: %9$s\n- Notes: \n%10$s\n\nAl-Mosaferoon Transportation Services،،،</string>
 
     <string name="employees">Employees</string>
     <string name="customers">Customers</string>
