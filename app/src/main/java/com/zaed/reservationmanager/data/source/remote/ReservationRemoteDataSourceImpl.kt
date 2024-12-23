@@ -15,6 +15,7 @@ import kotlinx.coroutines.tasks.await
 class ReservationRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : ReservationRemoteDataSource {
+    private val TAG = "ReservationRemoteDataSource"
     private val RESERVATION_COLLECTION = "reservations"
     override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
         callbackFlow {
@@ -44,7 +45,6 @@ class ReservationRemoteDataSourceImpl(
                             trySend(Result.failure(it))
                         }
                     }
-
             } catch (e: Exception) {
                 trySend(Result.failure(e))
             }
@@ -71,7 +71,8 @@ class ReservationRemoteDataSourceImpl(
                         reservations.forEach { reservation ->
                             val reservationRef =
                                 firestore.collection(RESERVATION_COLLECTION).document()
-                            batch.set(reservationRef, reservation.copy(id = reservationRef.id, reservationNumber = reservationNumber++))
+                            reservationNumber++
+                            batch.set(reservationRef, reservation.copy(id = reservationRef.id, reservationNumber = reservationNumber))
                         }
                         batch.commit().addOnSuccessListener {
                             trySend(Result.success(Unit))

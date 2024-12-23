@@ -514,7 +514,7 @@ fun HomeScreenContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (pagerState.currentPage == 0) {
+                    if (pagerState.currentPage == 1) {
                         onAction(HomeUiAction.AddCustomer)
                     } else {
                         onAction(HomeUiAction.AddReservation)
