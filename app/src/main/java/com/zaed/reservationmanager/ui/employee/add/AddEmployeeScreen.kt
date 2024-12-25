@@ -188,7 +188,7 @@ private fun AddEmployeeScreenContent(
                 isOptional = false,
                 isError = error in listOf(
                     AddEmployeeUiError.NAME_IS_REQUIRED,
-                    AddEmployeeUiError.NAME_IS_ALREADY_USED
+                    AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED
                 ),
                 errorMessageRes = error.messageRes
             )
@@ -249,7 +249,8 @@ private fun AddEmployeeScreenContent(
                 isOptional = false,
                 isError = error in listOf(
                     AddEmployeeUiError.PHONE_NUMBER_IS_INVALID,
-                    AddEmployeeUiError.PHONE_NUMBER_IS_REQUIRED
+                    AddEmployeeUiError.PHONE_NUMBER_IS_REQUIRED,
+                    AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED,
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone

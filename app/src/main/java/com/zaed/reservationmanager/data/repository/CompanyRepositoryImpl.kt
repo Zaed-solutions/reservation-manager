@@ -11,7 +11,7 @@ class CompanyRepositoryImpl(
         return remoteSource.createCompany(company)
     }
 
-    override fun updateCompany(company: Company): Flow<Result<Unit>> {
+    override fun updateCompany(company: Company): Flow<Result<Boolean>> {
         return remoteSource.updateCompany(company)
     }
 

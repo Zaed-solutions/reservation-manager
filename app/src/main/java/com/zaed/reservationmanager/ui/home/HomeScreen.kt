@@ -95,6 +95,7 @@ import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
 import com.zaed.reservationmanager.ui.util.formatMoney
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
@@ -706,8 +707,8 @@ fun HomeScreenContent(
                                 Text(
                                     text = stringResource(
                                         R.string.selected_range_place,
-                                        selectedTimeFilter.startDate.formatEpochSecondsToDate(),
-                                        selectedTimeFilter.endDate.formatEpochSecondsToDate()
+                                        selectedTimeFilter.startDate.formatEpochSecondsToMonthlyDate(),
+                                        selectedTimeFilter.endDate.formatEpochSecondsToMonthlyDate()
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
                                 )

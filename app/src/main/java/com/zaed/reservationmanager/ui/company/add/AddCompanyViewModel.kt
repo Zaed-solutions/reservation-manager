@@ -82,8 +82,12 @@ class AddCompanyViewModel(
     private fun updateCompany() {
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.updateCompany(uiState.value.company).collect { result ->
-                result.onSuccess {
-                    _uiState.update { it.copy(isFinished = true) }
+                result.onSuccess { isUpdated ->
+                    if(isUpdated){
+                        _uiState.update { it.copy(isFinished = true) }
+                    } else {
+                        _uiState.update { it.copy(error = AddCompanyUiError.PHONE_IS_ALREADY_USED) }
+                    }
                 }.onFailure { error ->
                     Log.e(TAG, "onSave: ${error.message}")
                     error.printStackTrace()
@@ -92,7 +96,7 @@ class AddCompanyViewModel(
         }
     }
 
-    private suspend fun createCompany() {
+    private fun createCompany() {
         Log.d(TAG, "createCompany: ${uiState.value.company}")
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.createCompany(
@@ -104,7 +108,7 @@ class AddCompanyViewModel(
                     if (isCreated) {
                         _uiState.update { it.copy(isFinished = true) }
                     } else {
-                        _uiState.update { it.copy(error = AddCompanyUiError.NAME_IS_ALREADY_USED) }
+                        _uiState.update { it.copy(error = AddCompanyUiError.PHONE_IS_ALREADY_USED) }
                     }
                 }.onFailure { error ->
                     Log.e(TAG, "onSave: ${error.message}")

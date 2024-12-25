@@ -8,6 +8,7 @@ import com.zaed.reservationmanager.data.model.EmployeeType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class EmployeeRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
@@ -15,6 +16,8 @@ class EmployeeRemoteDataSourceImpl(
     companion object {
         private val TAG = "EmployeeRemoteDataSource"
         private val EMPLOYEE_COLLECTION = "employees"
+        private val RESERVATION_COLLECTION = "reservations"
+
     }
 
     override fun createEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow {
@@ -46,11 +49,53 @@ class EmployeeRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun updateEmployee(employee: Employee): Flow<Result<Unit>> = callbackFlow {
+    override fun updateEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(EMPLOYEE_COLLECTION).document(employee.id).set(employee)
-                .addOnSuccessListener {
-                    trySend(Result.success(Unit))
+            val reservations = firestore
+                .collection(RESERVATION_COLLECTION)
+                .where(
+                    Filter.or(
+                        Filter.equalTo("driverId", employee.id),
+                        Filter.equalTo("tourismEmployeeId", employee.id)
+                    )
+                ).get().await()
+            firestore.collection(EMPLOYEE_COLLECTION)
+                .where(
+                    Filter.and(
+                        Filter.equalTo("phoneNumber1", employee.phoneNumber1),
+                        Filter.notEqualTo("id", employee.id)
+                    )
+                )
+                .get()
+                .addOnSuccessListener { data ->
+                    if (data.isEmpty) {
+                        val batch = firestore.batch()
+                        val employeeRef =
+                            firestore.collection(EMPLOYEE_COLLECTION).document(employee.id)
+                        batch.set(employeeRef, employee)
+                        val updates = when (employee.position) {
+                            EmployeeType.DRIVER.name -> mapOf(
+                                "driver" to employee.name,
+                                "driverPhoneNumber" to employee.phoneNumber1
+                            )
+
+                            else -> mapOf(
+                                "tourismEmployee" to employee.name,
+                                "tourismEmployeePhone" to employee.phoneNumber1
+                            )
+                        }
+                        reservations.forEach {
+                            batch.update(it.reference, updates)
+                        }
+
+                        batch.commit().addOnSuccessListener {
+                            trySend(Result.success(true))
+                        }.addOnFailureListener { e ->
+                            trySend(Result.failure(e))
+                        }
+                    } else {
+                        trySend(Result.success(false))
+                    }
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))
                 }

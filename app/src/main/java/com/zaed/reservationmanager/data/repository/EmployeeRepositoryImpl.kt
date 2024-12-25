@@ -11,7 +11,7 @@ class EmployeeRepositoryImpl(
         return remoteSource.createEmployee(employee)
     }
 
-    override fun updateEmployee(employee: Employee): Flow<Result<Unit>> {
+    override fun updateEmployee(employee: Employee): Flow<Result<Boolean>> {
         return remoteSource.updateEmployee(employee)
     }
 

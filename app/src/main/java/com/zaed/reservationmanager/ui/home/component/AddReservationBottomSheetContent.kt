@@ -103,7 +103,10 @@ fun AddReservationBottomSheetContent(
                 reservation = reservation.copy(
                     tourismCompany = company.name,
                     tourismCompanyPhone = company.phoneNumber,
-                    tourismCompanyId = company.id
+                    tourismCompanyId = company.id,
+                    tourismEmployeePhone = "",
+                    tourismEmployeeId = "",
+                    tourismEmployee = ""
                 )
                 onFetchEmployees(company.id)
             },
@@ -145,7 +148,10 @@ fun AddReservationBottomSheetContent(
                 reservation = reservation.copy(
                     travelCompany = company.name,
                     travelCompanyPhone = company.phoneNumber,
-                    travelCompanyId = company.id
+                    travelCompanyId = company.id,
+                    driverId = "",
+                    driver = "",
+                    driverPhoneNumber = ""
                 )
                 onFetchDrivers(company.id)
             },

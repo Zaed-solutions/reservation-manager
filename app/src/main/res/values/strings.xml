@@ -2,7 +2,7 @@
     <string name="app_name">Al-Mosaferoon</string>
     <string name="name">Name</string>
     <string name="name_is_required">Name is required</string>
-    <string name="a_company_with_name_already_exists">A company with this name already exists</string>
+    <string name="a_company_with_phone_number_already_exists">A company with this phone number already exists</string>
     <string name="email">Email</string>
     <string name="email_is_invalid">Invalid email</string>
     <string name="fax_number">Fax Number</string>
@@ -44,7 +44,7 @@
     <string name="nationality">Nationality</string>
     <string name="country_of_residence">Residence Country</string>
     <string name="atleast_one_phone_number_is_required">Atleast one phone number is required</string>
-    <string name="an_employee_with_name_already_exists">An employee with this name already exists</string>
+    <string name="an_employee_with_name_already_exists">An employee with this name pr phone number already exists</string>
     <string name="add_employee">Add New Employee</string>
     <string name="update_employee">Update Employee</string>
     <string name="company">Company</string>
