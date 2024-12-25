@@ -250,6 +250,7 @@ fun CompanyDetailsScreen(
                         reservation.clientPhone,
                         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
+                        reservation.carCount, // New field
                         reservation.startLocation,
                         reservation.flightNumber,
                         reservation.endLocation,
