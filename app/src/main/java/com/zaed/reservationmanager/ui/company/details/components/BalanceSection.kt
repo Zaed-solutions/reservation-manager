@@ -103,7 +103,7 @@ fun BalanceSection(
 fun IncomeExpenseCardSection(
     modifier: Modifier = Modifier,
     title: String,
-    amount: Double
+    amount: Int
 ) {
     Column(
         modifier = modifier,

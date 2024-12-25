@@ -59,10 +59,8 @@ import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDi
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
-import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
-import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsToExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
-import com.zaed.reservationmanager.ui.util.formatMoney
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -126,7 +124,7 @@ fun CompanyDetailsScreen(
                             context.getString(R.string.balance),
                         )
                     }
-                    val file = state.reservations.exportReservationsAsCSV(
+                    val file = state.reservations.exportReservationsToExcel(
                         context = context,
                         headers = headers,
                         isTravelCompany = companyType == CompanyType.TRAVEL,
@@ -252,6 +250,7 @@ fun CompanyDetailsScreen(
                         reservation.clientPhone,
                         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
+                        reservation.carCount, // New field
                         reservation.startLocation,
                         reservation.flightNumber,
                         reservation.endLocation,

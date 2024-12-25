@@ -3,7 +3,6 @@ package com.zaed.reservationmanager.ui.home
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -89,13 +88,10 @@ import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
-import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsAsCSV
-import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromCSV
+import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsToExcel
 import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
-import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
-import com.zaed.reservationmanager.ui.util.formatMoney
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -193,7 +189,7 @@ fun HomeScreen(
                 }
 
                 HomeUiAction.ExportReservationsAsCsv -> {
-                    val file = state.displayedReservations.exportReservationsAsCSV(
+                    val file = state.displayedReservations.exportReservationsToExcel(
                         context = context,
                         isAllRides = true,
                         headers = listOf(
@@ -322,6 +318,7 @@ fun HomeScreen(
                         reservation.clientPhone,
                         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
                         reservation.car,
+                        reservation.carCount, // New field
                         reservation.startLocation,
                         reservation.flightNumber,
                         reservation.endLocation,
@@ -471,7 +468,7 @@ fun HomeScreenContent(
                         ) {
                             DropdownMenuItem(
                                 onClick = {
-                                    if (pagerState.currentPage == 0) {
+                                    if (pagerState.currentPage == 1) {
                                         onAction(HomeUiAction.ExportCustomersAsCsv)
                                     } else {
                                         onAction(HomeUiAction.ExportReservationsAsCsv)
@@ -538,7 +535,8 @@ fun HomeScreenContent(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = {
-                    onAction(HomeUiAction.UpdateSearchQuery(it))
+                    val data =if(it.startsWith("+")) it.replace(" ","") else it
+                    onAction(HomeUiAction.UpdateSearchQuery(data))
                 },
                 placeholder = { Text(stringResource(R.string.smart_search)) },
                 modifier = Modifier
