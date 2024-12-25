@@ -203,7 +203,10 @@ fun NewClientDataEntryScreenContent(
             TitledTextField2(
                 title = stringResource(R.string.phone_number),
                 value = customer.phoneNumber,
-                onValueChanged = { newText -> action(CreateCustomerUiAction.UpdateNumber(newText)) },
+                onValueChanged = { newText ->
+                    val data =
+                    action(CreateCustomerUiAction.UpdateNumber(newText))
+                },
                 isOptional = false,
                 isError = error in listOf(
                     ClientUIError.PHONE_NUMBER_IS_REQUIRED,

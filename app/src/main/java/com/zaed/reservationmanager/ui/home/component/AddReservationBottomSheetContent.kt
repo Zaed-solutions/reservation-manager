@@ -243,7 +243,7 @@ fun AddReservationBottomSheetContent(
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(
-                        sellingPrice = newText.toDouble()
+                        sellingPrice = newText.toInt()
                     )
                 }
             },
@@ -258,7 +258,7 @@ fun AddReservationBottomSheetContent(
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                     reservation = reservation.copy(
-                        buyingPrice = newText.toDouble()
+                        buyingPrice = newText.toInt()
                     )
                 }
             },
@@ -273,7 +273,7 @@ fun AddReservationBottomSheetContent(
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(
-                        collectedAmount = newText.toDouble()
+                        collectedAmount = newText.toInt()
                     )
                 }
             },
