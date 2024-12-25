@@ -439,7 +439,8 @@ fun CompanyDetailsScreenContent(
             )
             BalanceSection(
                 modifier = Modifier.padding(top = 16.dp),
-                balance = balance
+                balance = balance,
+                companyType = company.type
             )
             ReservationsList(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
