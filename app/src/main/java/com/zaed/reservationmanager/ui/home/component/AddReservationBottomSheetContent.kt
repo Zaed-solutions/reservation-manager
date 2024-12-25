@@ -233,11 +233,11 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.selling_price),
-            initialValue = if (reservation.sellingPrice == 0.0) "" else reservation.sellingPrice.toString(),
+            initialValue = if (reservation.sellingPrice == 0) "" else reservation.sellingPrice.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(
-                        sellingPrice = newText.toDouble()
+                        sellingPrice = newText.toInt()
                     )
                 }
             },
@@ -248,11 +248,11 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.buying_price),
-            initialValue = if (reservation.buyingPrice == 0.0) "" else reservation.buyingPrice.toString(),
+            initialValue = if (reservation.buyingPrice == 0) "" else reservation.buyingPrice.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                     reservation = reservation.copy(
-                        buyingPrice = newText.toDouble()
+                        buyingPrice = newText.toInt()
                     )
                 }
             },
@@ -263,11 +263,11 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.collection_price),
-            initialValue = if (reservation.collectedAmount == 0.0) "" else reservation.collectedAmount.toString(),
+            initialValue = if (reservation.collectedAmount == 0) "" else reservation.collectedAmount.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(
-                        collectedAmount = newText.toDouble()
+                        collectedAmount = newText.toInt()
                     )
                 }
             },

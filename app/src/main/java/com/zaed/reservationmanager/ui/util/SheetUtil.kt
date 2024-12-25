@@ -215,20 +215,20 @@ object SheetUtil {
                 row.createCell(columnIndex++).setCellValue(reservation.clientName)
 
                 if (!isTravelCompany) {
-                    row.createCell(columnIndex++).setCellValue(reservation.sellingPrice)
+                    row.createCell(columnIndex++).setCellValue(reservation.sellingPrice.toDouble())
                 }
                 if (!isTourismCompany) {
-                    row.createCell(columnIndex++).setCellValue(reservation.buyingPrice)
+                    row.createCell(columnIndex++).setCellValue(reservation.buyingPrice.toDouble())
                 }
 
-                row.createCell(columnIndex++).setCellValue(reservation.collectedAmount)
+                row.createCell(columnIndex++).setCellValue(reservation.collectedAmount.toDouble())
                 row.createCell(columnIndex).setCellValue(
                     when {
                         isAllRides -> reservation.sellingPrice - reservation.buyingPrice
                         isTourismCompany -> reservation.sellingPrice - reservation.collectedAmount
                         isTravelCompany -> reservation.buyingPrice - reservation.collectedAmount
                         else -> 0.0
-                    }
+                    }.toDouble()
                 )
             }
 
@@ -238,17 +238,17 @@ object SheetUtil {
             totalsRow.createCell(columnIndex++).setCellValue("Total")
             repeat(3) { totalsRow.createCell(columnIndex++) } // Empty cells
 
-            val totalSelling = this.sumOf { it.sellingPrice }
-            val totalBuying = this.sumOf { it.buyingPrice }
-            val totalCollected = this.sumOf { it.collectedAmount }
+            val totalSelling = this.sumOf { it.sellingPrice }.toDouble()
+            val totalBuying = this.sumOf { it.buyingPrice }.toDouble()
+            val totalCollected = this.sumOf { it.collectedAmount }.toDouble()
             val totalBalance = this.sumOf {
                 when {
                     isAllRides -> it.sellingPrice - it.buyingPrice
                     isTourismCompany -> it.sellingPrice - it.collectedAmount
                     isTravelCompany -> it.buyingPrice - it.collectedAmount
-                    else -> 0.0
+                    else -> 0
                 }
-            }
+            }.toDouble()
 
             if (!isTravelCompany) {
                 totalsRow.createCell(columnIndex++).setCellValue(totalSelling)

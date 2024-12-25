@@ -570,10 +570,10 @@ private fun Preview() {
                 travelCompany = "Gawhara Travel Company",
                 startLocation = "Gadda",
                 endLocation = "Riyadh",
-                buyingPrice = 0.1,
+                buyingPrice = 1,
                 driverPhoneNumber = "0000000000000",
-                sellingPrice = 2.3,
-                collectedAmount = 4.5,
+                sellingPrice = 2,
+                collectedAmount = 4,
                 note = "unum unum n unum ",
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true
