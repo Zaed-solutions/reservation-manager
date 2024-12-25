@@ -250,7 +250,7 @@ fun AddReservationBottomSheetContent(
             isOptional = false,
             isError = reservationError == ReservationError.SELLING_PRICE_IS_REQUIRED,
             errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Number
         )
         TitledTextField(
             title = stringResource(R.string.buying_price),
@@ -265,7 +265,7 @@ fun AddReservationBottomSheetContent(
             isOptional = true,
             isError = reservationError == ReservationError.BUYING_PRICE_IS_REQUIRED,
             errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Number
         )
         TitledTextField(
             title = stringResource(R.string.collection_price),
@@ -280,7 +280,7 @@ fun AddReservationBottomSheetContent(
             isOptional = true,
             isError = false,
             errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Number
         )
         TitledTextField(
             title = stringResource(R.string.notes),
