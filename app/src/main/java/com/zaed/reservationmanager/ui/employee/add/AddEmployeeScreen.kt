@@ -248,7 +248,7 @@ private fun AddEmployeeScreenContent(
                 },
                 isOptional = false,
                 isError = error in listOf(
-                    AddEmployeeUiError.PHONE_NUMBER_IS_INVALID,
+                    AddEmployeeUiError.PHONE_NUMBER_1_IS_INVALID,
                     AddEmployeeUiError.PHONE_NUMBER_IS_REQUIRED,
                     AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED,
                 ),
@@ -263,7 +263,7 @@ private fun AddEmployeeScreenContent(
                     onAction(AddEmployeeUiAction.OnPhoneNumber2Changed(phoneNumber))
                 },
                 isOptional = true,
-                isError = error == AddEmployeeUiError.PHONE_NUMBER_IS_INVALID,
+                isError = error == AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID,
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )

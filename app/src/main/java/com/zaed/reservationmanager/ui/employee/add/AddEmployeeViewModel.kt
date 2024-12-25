@@ -105,14 +105,14 @@ class AddEmployeeViewModel(
                     return@launch
                 }
                 if (!InputValidator.isPhoneNumberValid(employee.phoneNumber1)) {
-                    _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_IS_INVALID) }
+                    _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_1_IS_INVALID) }
                     return@launch
                 }
                 if (employee.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(
                         employee.phoneNumber2
                     )
                 ) {
-                    _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_IS_INVALID) }
+                    _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = AddEmployeeUiError.NONE) }
