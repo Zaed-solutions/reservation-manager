@@ -16,6 +16,7 @@ class CompanyRemoteDataSourceImpl(
     companion object {
         private val TAG = "CompanyRemoteDataSource"
         private val COMPANY_COLLECTION = "companies"
+        private val EMPLOYEE_COLLECTION = "employees"
         private val RESERVATION_COLLECTION = "reservations"
     }
 
@@ -53,6 +54,9 @@ class CompanyRemoteDataSourceImpl(
                         Filter.equalTo("travelCompanyId", company.id)
                     )
                 ).get().await()
+            val employees = firestore.collection(EMPLOYEE_COLLECTION)
+                .whereEqualTo("companyId", company.id)
+                .get().await()
             Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
             firestore.collection(COMPANY_COLLECTION)
                 .where(
@@ -68,7 +72,7 @@ class CompanyRemoteDataSourceImpl(
                         val companyRef =
                             firestore.collection(COMPANY_COLLECTION).document(company.id)
                         batch.set(companyRef, company)
-                        val updates = when (company.type) {
+                        val reservationUpdates = when (company.type) {
                             CompanyType.TOURISM -> mapOf(
                                 "tourismCompany" to company.name,
                                 "tourismCompanyPhone" to company.phoneNumber
@@ -80,7 +84,10 @@ class CompanyRemoteDataSourceImpl(
                             )
                         }
                         reservations.forEach {
-                            batch.update(it.reference, updates)
+                            batch.update(it.reference, reservationUpdates)
+                        }
+                        employees.forEach{
+                            batch.update(it.reference, mapOf("company" to company.name))
                         }
 
                         batch.commit().addOnSuccessListener {
