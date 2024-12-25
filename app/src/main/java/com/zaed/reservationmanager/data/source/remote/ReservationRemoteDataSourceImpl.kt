@@ -72,7 +72,13 @@ class ReservationRemoteDataSourceImpl(
                             val reservationRef =
                                 firestore.collection(RESERVATION_COLLECTION).document()
                             reservationNumber++
-                            batch.set(reservationRef, reservation.copy(id = reservationRef.id, reservationNumber = reservationNumber))
+                            batch.set(
+                                reservationRef,
+                                reservation.copy(
+                                    id = reservationRef.id,
+                                    reservationNumber = reservationNumber
+                                )
+                            )
                         }
                         batch.commit().addOnSuccessListener {
                             trySend(Result.success(Unit))
@@ -109,12 +115,7 @@ class ReservationRemoteDataSourceImpl(
         callbackFlow {
             try {
                 firestore.collection(RESERVATION_COLLECTION)
-                    .where(
-                        Filter.and(
-                            Filter.equalTo("clientId", customerId),
-                            Filter.equalTo("archived", false)
-                        )
-                    )
+                    .whereEqualTo("clientId", customerId)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
                             trySend(Result.failure(error))
@@ -201,12 +202,9 @@ class ReservationRemoteDataSourceImpl(
             try {
                 firestore.collection(RESERVATION_COLLECTION)
                     .where(
-                        Filter.and(
-                            Filter.or(
-                                Filter.equalTo("tourismCompanyId", companyId),
-                                Filter.equalTo("travelCompanyId", companyId)
-                            ),
-                            Filter.equalTo("archived", false)
+                        Filter.or(
+                            Filter.equalTo("tourismCompanyId", companyId),
+                            Filter.equalTo("travelCompanyId", companyId)
                         )
                     )
                     .addSnapshotListener { data, error ->
@@ -248,12 +246,9 @@ class ReservationRemoteDataSourceImpl(
     ): Result<CompanyBalance> =
         try {
             val query = firestore.collection(RESERVATION_COLLECTION).where(
-                Filter.and(
-                    Filter.or(
-                        Filter.equalTo("tourismCompanyId", companyId),
-                        Filter.equalTo("travelCompanyId", companyId)
-                    ),
-                    Filter.equalTo("archived", false)
+                Filter.or(
+                    Filter.equalTo("tourismCompanyId", companyId),
+                    Filter.equalTo("travelCompanyId", companyId)
                 )
             )
             val totalBuyingResult = query.aggregate(AggregateField.sum("buyingPrice"))
@@ -270,7 +265,10 @@ class ReservationRemoteDataSourceImpl(
             val totalCollected =
                 (totalCollectedResult.get(AggregateField.sum("collectedAmount")) as? Double)
                     ?: 0.0
-            Log.d("CompanyBalance", "getCompanyBalance: $companyId $totalBuying $totalSelling $totalCollected")
+            Log.d(
+                "CompanyBalance",
+                "getCompanyBalance: $companyId $totalBuying $totalSelling $totalCollected"
+            )
             Result.success(
                 CompanyBalance(
                     totalBuying = totalBuying,

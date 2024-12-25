@@ -117,7 +117,10 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchBalance(companyId: String, companyType: CompanyType) {
+    private fun fetchBalance(
+        companyId: String = uiState.value.company.id,
+        companyType: CompanyType= uiState.value.company.type
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getCompanyBalance(companyId, companyType).onSuccess {
                 _uiState.update { oldState ->
@@ -257,6 +260,7 @@ class CompanyDetailsViewModel(
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
+                    fetchBalance()
                     onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
@@ -272,9 +276,7 @@ class CompanyDetailsViewModel(
             reservationRepo.deleteReservation(reservationId).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "deleteReservation: success")
-                    _uiState.update { oldState ->
-                        oldState.copy(reservations = oldState.reservations.filter { it.id != reservationId })
-                    }
+                    fetchBalance()
                 }.onFailure { e ->
                     Log.e(TAG, "deleteReservation: failed to delete: ${e.message}")
                     e.printStackTrace()
