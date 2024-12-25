@@ -3,7 +3,7 @@
     <string name="app_name">المسافرون</string>
     <string name="name">الاسم</string>
     <string name="name_is_required">الاسم مطلوب</string>
-    <string name="a_company_with_name_already_exists">شركة بهذا الاسم موجودة بالفعل</string>
+    <string name="a_company_with_phone_number_already_exists">شركة بنفس رقم الجوال موجودة بالفعل</string>
     <string name="email">البريد الإلكتروني</string>
     <string name="email_is_invalid">البريد الإلكتروني غير صالح</string>
     <string name="fax_number">رقم الفاكس</string>
@@ -45,7 +45,7 @@
     <string name="nationality">الجنسية</string>
     <string name="country_of_residence">بلد الإقامة</string>
     <string name="atleast_one_phone_number_is_required">يجب إضافة رقم جوال واحد على الأقل</string>
-    <string name="an_employee_with_name_already_exists">موظف بهذا الاسم موجود بالفعل</string>
+    <string name="an_employee_with_name_already_exists">موظف بهذا الاسم أو رقم الجوال موجود بالفعل</string>
     <string name="add_employee">إضافة موظف جديد</string>
     <string name="update_employee">تحديث الموظف</string>
     <string name="company">الشركة</string>
@@ -172,7 +172,7 @@
     <string name="tomorrow">الغد</string>
     <string name="from_today_onwards">بداية من اليوم</string>
     <string name="selected_range">فترة محددة</string>
-    <string name="selected_range_place">الفترة المحددة\" %1$s - %2$s</string>
+    <string name="selected_range_place">الفترة من %1$s إلى %2$s</string>
     <string name="selected_date_place">التاريخ المحدد: %1$s</string>
     <string name="customer_name">اسم العميل</string>
     <string name="company_phone">جوال الشركة</string>
@@ -238,5 +238,5 @@
     </string>
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
-    <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | مجموع ربح الحجوزات: %2$s</string>
+    <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | إجمالي الربح: %2$s</string>
 </resources>

@@ -168,10 +168,7 @@ private fun AddCompanyScreenContent(
                     onAction(AddCompanyUiAction.OnNameChanged(it))
                 },
                 isOptional = false,
-                isError = error in listOf(
-                    AddCompanyUiError.NAME_IS_REQUIRED,
-                    AddCompanyUiError.NAME_IS_ALREADY_USED
-                ),
+                isError = error == AddCompanyUiError.NAME_IS_REQUIRED,
                 errorMessageRes = error.messageRes
             )
             //type
@@ -205,7 +202,10 @@ private fun AddCompanyScreenContent(
                     onAction(AddCompanyUiAction.OnPhoneNumberChanged(phoneNumber))
                 },
                 isOptional = true,
-                isError = error == AddCompanyUiError.PHONE_NUMBER_IS_INVALID,
+                isError = error in listOf(
+                    AddCompanyUiError.PHONE_NUMBER_IS_INVALID,
+                    AddCompanyUiError.PHONE_IS_ALREADY_USED,
+                ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )

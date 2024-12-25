@@ -1,11 +1,14 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import android.util.Log
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class CompanyRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
@@ -13,11 +16,14 @@ class CompanyRemoteDataSourceImpl(
     companion object {
         private val TAG = "CompanyRemoteDataSource"
         private val COMPANY_COLLECTION = "companies"
+        private val RESERVATION_COLLECTION = "reservations"
     }
 
     override fun createCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).whereEqualTo("name", company.name).get()
+            firestore.collection(COMPANY_COLLECTION)
+                .whereEqualTo("phoneNumber", company.phoneNumber)
+                .get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
                         val document = firestore.collection(COMPANY_COLLECTION).document()
@@ -38,18 +44,60 @@ class CompanyRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun updateCompany(company: Company): Flow<Result<Unit>> = callbackFlow {
+    override fun updateCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).document(company.id).set(company)
-                .addOnSuccessListener {
-                    trySend(Result.success(Unit))
+            val reservations = firestore.collection(RESERVATION_COLLECTION)
+                .where(
+                    Filter.or(
+                        Filter.equalTo("tourismCompanyId", company.id),
+                        Filter.equalTo("travelCompanyId", company.id)
+                    )
+                ).get().await()
+            Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
+            firestore.collection(COMPANY_COLLECTION)
+                .where(
+                    Filter.and(
+                        Filter.equalTo("phoneNumber", company.phoneNumber),
+                        Filter.notEqualTo("id", company.id)
+                    )
+                )
+                .get()
+                .addOnSuccessListener { data ->
+                    if (data.isEmpty) {
+                        val batch = firestore.batch()
+                        val companyRef =
+                            firestore.collection(COMPANY_COLLECTION).document(company.id)
+                        batch.set(companyRef, company)
+                        val updates = when (company.type) {
+                            CompanyType.TOURISM -> mapOf(
+                                "tourismCompany" to company.name,
+                                "tourismCompanyPhone" to company.phoneNumber
+                            )
+
+                            CompanyType.TRAVEL -> mapOf(
+                                "travelCompany" to company.name,
+                                "travelCompanyPhone" to company.phoneNumber
+                            )
+                        }
+                        reservations.forEach {
+                            batch.update(it.reference, updates)
+                        }
+
+                        batch.commit().addOnSuccessListener {
+                            trySend(Result.success(true))
+                        }.addOnFailureListener { e ->
+                            trySend(Result.failure(e))
+                        }
+                    } else {
+                        trySend(Result.success(false))
+                    }
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
-        awaitClose { }
+        awaitClose {}
     }
 
     override fun deleteCompany(companyId: String): Flow<Result<Unit>> = callbackFlow {

@@ -103,7 +103,10 @@ fun AddReservationBottomSheetContent(
                 reservation = reservation.copy(
                     tourismCompany = company.name,
                     tourismCompanyPhone = company.phoneNumber,
-                    tourismCompanyId = company.id
+                    tourismCompanyId = company.id,
+                    tourismEmployeePhone = "",
+                    tourismEmployeeId = "",
+                    tourismEmployee = ""
                 )
                 onFetchEmployees(company.id)
             },
@@ -145,7 +148,10 @@ fun AddReservationBottomSheetContent(
                 reservation = reservation.copy(
                     travelCompany = company.name,
                     travelCompanyPhone = company.phoneNumber,
-                    travelCompanyId = company.id
+                    travelCompanyId = company.id,
+                    driverId = "",
+                    driver = "",
+                    driverPhoneNumber = ""
                 )
                 onFetchDrivers(company.id)
             },
@@ -233,7 +239,7 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.selling_price),
-            initialValue = if (reservation.sellingPrice == 0) "" else reservation.sellingPrice.toString(),
+            initialValue = reservation.sellingPrice.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(
@@ -248,7 +254,7 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.buying_price),
-            initialValue = if (reservation.buyingPrice == 0) "" else reservation.buyingPrice.toString(),
+            initialValue = reservation.buyingPrice.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
                     reservation = reservation.copy(
@@ -263,7 +269,7 @@ fun AddReservationBottomSheetContent(
         )
         TitledTextField(
             title = stringResource(R.string.collection_price),
-            initialValue = if (reservation.collectedAmount == 0) "" else reservation.collectedAmount.toString(),
+            initialValue = reservation.collectedAmount.toString(),
             onValueChanged = { newText ->
                 if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
                     reservation = reservation.copy(

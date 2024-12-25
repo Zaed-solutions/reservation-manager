@@ -12,6 +12,13 @@ fun Long.formatEpochSecondsToDate(): String {
     return dateTime.format(formatter)
 }
 
+fun Long.formatEpochSecondsToMonthlyDate(): String {
+    val dateTime =
+        java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
+    return dateTime.format(formatter)
+}
+
 fun Long.formatEpochSecondsToDateTime(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
