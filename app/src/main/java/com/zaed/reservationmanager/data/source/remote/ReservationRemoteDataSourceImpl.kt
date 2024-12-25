@@ -248,9 +248,12 @@ class ReservationRemoteDataSourceImpl(
     ): Result<CompanyBalance> =
         try {
             val query = firestore.collection(RESERVATION_COLLECTION).where(
-                Filter.or(
-                    Filter.equalTo("tourismCompanyId", companyId),
-                    Filter.equalTo("travelCompanyId", companyId)
+                Filter.and(
+                    Filter.or(
+                        Filter.equalTo("tourismCompanyId", companyId),
+                        Filter.equalTo("travelCompanyId", companyId)
+                    ),
+                    Filter.equalTo("archived", false)
                 )
             )
             val totalBuyingResult = query.aggregate(AggregateField.sum("buyingPrice"))
@@ -267,7 +270,7 @@ class ReservationRemoteDataSourceImpl(
             val totalCollected =
                 (totalCollectedResult.get(AggregateField.sum("collectedAmount")) as? Double)
                     ?: 0.0
-            Log.d("CompanyBalance", "getCompanyBalance: $totalBuying $totalSelling $totalCollected")
+            Log.d("CompanyBalance", "getCompanyBalance: $companyId $totalBuying $totalSelling $totalCollected")
             Result.success(
                 CompanyBalance(
                     totalBuying = totalBuying,
