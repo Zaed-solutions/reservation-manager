@@ -535,7 +535,8 @@ fun HomeScreenContent(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = {
-                    onAction(HomeUiAction.UpdateSearchQuery(it))
+                    val data =if(it.startsWith("+")) it.replace(" ","") else it
+                    onAction(HomeUiAction.UpdateSearchQuery(data))
                 },
                 placeholder = { Text(stringResource(R.string.smart_search)) },
                 modifier = Modifier
