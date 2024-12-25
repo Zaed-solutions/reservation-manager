@@ -184,7 +184,7 @@ object SheetUtil {
         return null
     }
 
-    fun List<Reservation>.exportReservationsAsCSV(
+    fun List<Reservation>.exportReservationsToExcel(
         context: Context,
         headers: List<String>,
         isAllRides: Boolean = false,
@@ -192,7 +192,52 @@ object SheetUtil {
         isTravelCompany: Boolean = false
     ): File? {
         try {
-            val fileName = "Reservations_${Date()}.csv"
+            // Create a new workbook and sheet
+            val workbook = XSSFWorkbook()
+            val sheet = workbook.createSheet("Reservations")
+
+            // Create a header row
+            val headerRow = sheet.createRow(0)
+            headers.forEachIndexed { index, header ->
+                val cell = headerRow.createCell(index)
+                cell.setCellValue(header)
+            }
+
+            // Populate rows with reservation data
+            this.forEachIndexed { rowIndex, reservation ->
+                val row = sheet.createRow(rowIndex + 1)
+                var columnIndex = 0
+
+                row.createCell(columnIndex++)
+                    .setCellValue(reservation.date.formatEpochSecondsToDateTime())
+                row.createCell(columnIndex++).setCellValue(reservation.type)
+                row.createCell(columnIndex++).setCellValue(reservation.car)
+                row.createCell(columnIndex++).setCellValue(reservation.clientName)
+
+                if (!isTravelCompany) {
+                    row.createCell(columnIndex++).setCellValue(reservation.sellingPrice)
+                }
+                if (!isTourismCompany) {
+                    row.createCell(columnIndex++).setCellValue(reservation.buyingPrice)
+                }
+
+                row.createCell(columnIndex++).setCellValue(reservation.collectedAmount)
+                row.createCell(columnIndex).setCellValue(
+                    when {
+                        isAllRides -> reservation.sellingPrice - reservation.buyingPrice
+                        isTourismCompany -> reservation.sellingPrice - reservation.collectedAmount
+                        isTravelCompany -> reservation.buyingPrice - reservation.collectedAmount
+                        else -> 0.0
+                    }
+                )
+            }
+
+            // Add a totals row at the end
+            val totalsRow = sheet.createRow(this.size + 1)
+            var columnIndex = 0
+            totalsRow.createCell(columnIndex++).setCellValue("Total")
+            repeat(3) { totalsRow.createCell(columnIndex++) } // Empty cells
+
             val totalSelling = this.sumOf { it.sellingPrice }
             val totalBuying = this.sumOf { it.buyingPrice }
             val totalCollected = this.sumOf { it.collectedAmount }
@@ -204,59 +249,29 @@ object SheetUtil {
                     else -> 0.0
                 }
             }
-            val workbook = XSSFWorkbook()
-            val sheet = workbook.createSheet("Reservations")
 
-            val headerRow = sheet.createRow(0)
-            headers.forEachIndexed { index, header ->
-                val cell = headerRow.createCell(index)
-                cell.setCellValue(header)
-            }
-            this.forEachIndexed { index, ride ->
-                val row: Row = sheet.createRow(index + 1)
-                var columnIndex = 0
-                row.createCell(columnIndex++).setCellValue(ride.date.formatEpochSecondsToDateTime())
-                row.createCell(columnIndex++).setCellValue(ride.type)
-                row.createCell(columnIndex++).setCellValue(ride.car)
-                row.createCell(columnIndex++).setCellValue(ride.clientName)
-                if (!isTravelCompany) {
-                    row.createCell(columnIndex++).setCellValue(ride.sellingPrice)
-                }
-                if (!isTourismCompany) {
-                    row.createCell(columnIndex++).setCellValue(ride.buyingPrice)
-                }
-                row.createCell(columnIndex++).setCellValue(ride.collectedAmount)
-                row.createCell(columnIndex).setCellValue(
-                    when {
-                        isAllRides -> ride.sellingPrice - ride.buyingPrice
-                        isTourismCompany -> ride.sellingPrice - ride.collectedAmount
-                        isTravelCompany -> ride.buyingPrice - ride.collectedAmount
-                        else -> 0.0
-                    }
-                )
-            }
-            val row = sheet.createRow(this.size + 1)
-            var columnIndex = 0
-            row.createCell(columnIndex++).setCellValue("Total")
-            repeat(3) {
-                row.createCell(columnIndex++).setCellValue("")
-            }
             if (!isTravelCompany) {
-                row.createCell(columnIndex++).setCellValue(totalSelling)
+                totalsRow.createCell(columnIndex++).setCellValue(totalSelling)
             }
             if (!isTourismCompany) {
-                row.createCell(columnIndex++).setCellValue(totalBuying)
+                totalsRow.createCell(columnIndex++).setCellValue(totalBuying)
             }
-            row.createCell(columnIndex++).setCellValue(totalCollected)
-            row.createCell(columnIndex).setCellValue(totalBalance)
+            totalsRow.createCell(columnIndex++).setCellValue(totalCollected)
+            totalsRow.createCell(columnIndex).setCellValue(totalBalance)
+
+            // Create a file in the external storage directory
+            val fileName = "Reservations_${System.currentTimeMillis()}.xlsx"
             val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName)
+
+            // Write the workbook to the file
             FileOutputStream(file).use { outputStream ->
                 workbook.write(outputStream)
             }
+
             workbook.close()
-            return file
+            return file // Return the generated file
         } catch (e: Exception) {
-            Log.e("SheetUtil", "exportRidesAsCsv: ${e.message}")
+            Log.e("SheetUtil", "exportReservationsToExcel: ${e.message}")
             e.printStackTrace()
             return null
         }
