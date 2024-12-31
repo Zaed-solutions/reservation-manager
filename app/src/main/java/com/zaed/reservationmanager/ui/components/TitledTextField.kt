@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import kotlin.Int.Companion.MAX_VALUE
 
 @Composable
 fun TitledTextField(
@@ -45,7 +46,7 @@ fun TitledTextField(
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isReadOnly: Boolean = false,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
 ) {
     var value by remember { mutableStateOf(initialValue) }
     Column(
@@ -113,12 +114,13 @@ fun TitledTextField2(
     onValueChanged: (String) -> Unit = {},
     isOptional: Boolean = true,
     isError: Boolean = false,
+    maxLines: Int = 1,
     errorMessageRes: Int = 0,
-    keyboardType: KeyboardType = KeyboardType.Unspecified,
+    keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
 ) {
     Column(
         modifier = modifier
@@ -131,12 +133,13 @@ fun TitledTextField2(
             style = MaterialTheme.typography.titleMedium,
         )
         OutlinedTextField(
-            singleLine = true,
-            value = value,
+            singleLine = maxLines == 1,
+            value = if(keyboardType == KeyboardType.Number && value==0.toString()) "" else value,
             enabled = isEnabled,
             onValueChange = {
                 onValueChanged(if(keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
             },
+            maxLines=maxLines,
             readOnly = isReadOnly,
             shape = MaterialTheme.shapes.small,
             isError = isError,
