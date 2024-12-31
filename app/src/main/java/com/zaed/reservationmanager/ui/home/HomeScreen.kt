@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.core.text.isDigitsOnly
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
@@ -324,8 +325,8 @@ fun HomeScreen(
                         reservation.startLocation,
                         reservation.flightNumber,
                         reservation.endLocation,
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.buyingPrice)),
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.collectedAmount)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(
@@ -537,7 +538,7 @@ fun HomeScreenContent(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = {
-                    val data =if(it.startsWith("+")) it.replace(" ","") else it
+                    val data =if(it.matches(Regex("[+\\d\\s]+"))) it.replace(" ","") else it
                     onAction(HomeUiAction.UpdateSearchQuery(data))
                 },
                 placeholder = { Text(stringResource(R.string.smart_search)) },
@@ -679,7 +680,7 @@ fun HomeScreenContent(
 
                     0 -> {
                         val totalEarnings = remember(reservations){
-                            reservations.sumOf { it.sellingPrice - it.buyingPrice }
+                            reservations.sumOf { it.tourismRidePrice - it.travelRidePrice }
                         }
                         Column(
                             modifier = Modifier

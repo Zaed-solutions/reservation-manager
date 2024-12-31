@@ -237,51 +237,51 @@ fun AddReservationBottomSheetContent(
             errorMessageRes = reservationError.messageRes,
             keyboardType = KeyboardType.Text
         )
-        TitledTextField(
-            title = stringResource(R.string.selling_price),
-            initialValue = reservation.sellingPrice.toString(),
-            onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
-                    reservation = reservation.copy(
-                        sellingPrice = newText.toInt()
-                    )
-                }
-            },
-            isOptional = false,
-            isError = reservationError == ReservationError.SELLING_PRICE_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Number
-        )
-        TitledTextField(
-            title = stringResource(R.string.buying_price),
-            initialValue = reservation.buyingPrice.toString(),
-            onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                    reservation = reservation.copy(
-                        buyingPrice = newText.toInt()
-                    )
-                }
-            },
-            isOptional = true,
-            isError = reservationError == ReservationError.BUYING_PRICE_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Number
-        )
-        TitledTextField(
-            title = stringResource(R.string.collection_price),
-            initialValue = reservation.collectedAmount.toString(),
-            onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
-                    reservation = reservation.copy(
-                        collectedAmount = newText.toInt()
-                    )
-                }
-            },
-            isOptional = true,
-            isError = false,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Number
-        )
+//        TitledTextField(
+//            title = stringResource(R.string.selling_price),
+//            initialValue = reservation.sellingPrice.toString(),
+//            onValueChanged = { newText ->
+//                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
+//                    reservation = reservation.copy(
+//                        sellingPrice = newText.toInt()
+//                    )
+//                }
+//            },
+//            isOptional = false,
+//            isError = reservationError == ReservationError.SELLING_PRICE_IS_REQUIRED,
+//            errorMessageRes = reservationError.messageRes,
+//            keyboardType = KeyboardType.Number
+//        )
+//        TitledTextField(
+//            title = stringResource(R.string.buying_price),
+//            initialValue = reservation.buyingPrice.toString(),
+//            onValueChanged = { newText ->
+//                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+//                    reservation = reservation.copy(
+//                        buyingPrice = newText.toInt()
+//                    )
+//                }
+//            },
+//            isOptional = true,
+//            isError = reservationError == ReservationError.BUYING_PRICE_IS_REQUIRED,
+//            errorMessageRes = reservationError.messageRes,
+//            keyboardType = KeyboardType.Number
+//        )
+//        TitledTextField(
+//            title = stringResource(R.string.collection_price),
+//            initialValue = reservation.collectedAmount.toString(),
+//            onValueChanged = { newText ->
+//                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
+//                    reservation = reservation.copy(
+//                        collectedAmount = newText.toInt()
+//                    )
+//                }
+//            },
+//            isOptional = true,
+//            isError = false,
+//            errorMessageRes = reservationError.messageRes,
+//            keyboardType = KeyboardType.Number
+//        )
         TitledTextField(
             title = stringResource(R.string.notes),
             initialValue = reservation.note,

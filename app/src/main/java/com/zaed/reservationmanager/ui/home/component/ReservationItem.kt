@@ -278,12 +278,13 @@ fun ReservationItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Text(
-                    text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.sellingPrice - reservation.buyingPrice)),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                //TODO: add profit
+//                Text(
+//                    text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.sellingPrice - reservation.buyingPrice)),
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    fontWeight = FontWeight.Bold,
+//                    color = MaterialTheme.colorScheme.primary
+//                )
             }
 
             AnimatedVisibility(visible = isExpanded) {
@@ -363,20 +364,20 @@ fun ReservationItem(
                         label = stringResource(R.string.flight_number),
                         value = reservation.flightNumber
                     )
-
-                    DetailRow(
-                        label = stringResource(R.string.selling_price),
-                        value = reservation.sellingPrice.formatMoney(),
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.buying_price),
-                        value = reservation.buyingPrice.formatMoney(),
-                    )
-
-                    DetailRow(
-                        label = stringResource(R.string.collected_price),
-                        value = reservation.collectedAmount.formatMoney(),
-                    )
+                    //TODO: add profit
+//                    DetailRow(
+//                        label = stringResource(R.string.selling_price),
+//                        value = reservation.sellingPrice.formatMoney(),
+//                    )
+//                    DetailRow(
+//                        label = stringResource(R.string.buying_price),
+//                        value = reservation.buyingPrice.formatMoney(),
+//                    )
+//
+//                    DetailRow(
+//                        label = stringResource(R.string.collected_price),
+//                        value = reservation.collectedAmount.formatMoney(),
+//                    )
                     DetailRow(
                         label = stringResource(R.string.notes),
                         value = reservation.note,
@@ -570,10 +571,10 @@ private fun Preview() {
                 travelCompany = "Gawhara Travel Company",
                 startLocation = "Gadda",
                 endLocation = "Riyadh",
-                buyingPrice = 1,
+//                buyingPrice = 1,
                 driverPhoneNumber = "0000000000000",
-                sellingPrice = 2,
-                collectedAmount = 4,
+//                sellingPrice = 2,
+//                collectedAmount = 4,
                 note = "unum unum n unum ",
                 sentDriverInfoToCustomer = false,
                 sentToDriverCompany = true

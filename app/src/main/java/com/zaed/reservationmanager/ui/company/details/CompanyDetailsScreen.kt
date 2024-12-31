@@ -254,8 +254,8 @@ fun CompanyDetailsScreen(
                         reservation.startLocation,
                         reservation.flightNumber,
                         reservation.endLocation,
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.buyingPrice)),
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.collectedAmount)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
+                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
                         reservation.note
                     )
                     PhoneUtil.sendWhatsappMessage(

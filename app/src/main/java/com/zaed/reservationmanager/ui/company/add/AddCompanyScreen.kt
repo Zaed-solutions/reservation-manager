@@ -201,7 +201,7 @@ private fun AddCompanyScreenContent(
                 onValueChanged = { phoneNumber ->
                     onAction(AddCompanyUiAction.OnPhoneNumberChanged(phoneNumber))
                 },
-                isOptional = true,
+                isOptional = false,
                 isError = error in listOf(
                     AddCompanyUiError.PHONE_NUMBER_IS_INVALID,
                     AddCompanyUiError.PHONE_IS_ALREADY_USED,
