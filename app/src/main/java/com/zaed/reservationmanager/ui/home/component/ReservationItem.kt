@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Check
@@ -22,9 +23,12 @@ import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -39,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +53,6 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
-import com.zaed.reservationmanager.ui.util.formatMoney
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -244,7 +249,9 @@ fun ReservationItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
@@ -278,13 +285,16 @@ fun ReservationItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                //TODO: add profit
-//                Text(
-//                    text = stringResource(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.sellingPrice - reservation.buyingPrice)),
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    fontWeight = FontWeight.Bold,
-//                    color = MaterialTheme.colorScheme.primary
-//                )
+                Text(
+                    text = stringResource(
+                        R.string.sar,
+                        NumberFormat.getInstance(Locale.getDefault())
+                            .format((reservation.tourismRidePrice - reservation.travelRidePrice))
+                    ),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
             AnimatedVisibility(visible = isExpanded) {
@@ -364,20 +374,209 @@ fun ReservationItem(
                         label = stringResource(R.string.flight_number),
                         value = reservation.flightNumber
                     )
-                    //TODO: add profit
-//                    DetailRow(
-//                        label = stringResource(R.string.selling_price),
-//                        value = reservation.sellingPrice.formatMoney(),
-//                    )
-//                    DetailRow(
-//                        label = stringResource(R.string.buying_price),
-//                        value = reservation.buyingPrice.formatMoney(),
-//                    )
-//
-//                    DetailRow(
-//                        label = stringResource(R.string.collected_price),
-//                        value = reservation.collectedAmount.formatMoney(),
-//                    )
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = stringResource(R.string.tourism_company_account),
+                                textStyle = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.weight(2f),
+                                onValueChange = {},
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false
+                            )
+                            OutlinedTextField(
+                                value = reservation.tourismCompany.ifBlank { stringResource(R.string.direct_customer) },
+                                modifier = Modifier.weight(1f),
+                                textStyle = MaterialTheme.typography.bodySmall,
+                                onValueChange = {},
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            OutlinedTextField(
+                                modifier = Modifier.weight(1f),
+                                value = if (reservation.tourismRidePrice == 0) "" else reservation.tourismRidePrice.toString(),
+                                onValueChange = {},
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.ride2),
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                        alpha = 0.5f
+                                    ),
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Default
+                                ),
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false
+                            )
+                            OutlinedTextField(
+                                modifier = Modifier.weight(1f),
+                                value = if (reservation.tourismCollectedAmount == 0) "" else reservation.tourismCollectedAmount.toString(),
+                                onValueChange = {},
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.collecting),
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                        alpha = 0.5f
+                                    ),
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Default
+                                ),
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false
+                            )
+                            OutlinedTextField(
+                                modifier = Modifier.weight(1f),
+                                value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
+                                onValueChange = {},
+                                label = {
+                                    Text(
+                                        text = stringResource(R.string.quota),
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                        alpha = 0.5f
+                                    ),
+                                ),
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Default
+                                ),
+                                singleLine = true,
+                                readOnly = true,
+                                enabled = false
+                            )
+
+                        }
+                    }
+                    HorizontalDivider()
+                    AnimatedVisibility(visible = reservation.travelCompany.isNotBlank()) {
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                OutlinedTextField(
+                                    value = stringResource(R.string.travel_company_account),
+                                    textStyle = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.weight(2f),
+                                    onValueChange = {},
+                                    singleLine = true,
+                                    readOnly = true,
+                                    enabled = false
+                                )
+                                OutlinedTextField(
+                                    value = reservation.travelCompany,
+                                    modifier = Modifier.weight(1f),
+                                    textStyle = MaterialTheme.typography.bodySmall,
+                                    onValueChange = {},
+                                    singleLine = true,
+                                    readOnly = true,
+                                    enabled = false
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier.weight(1f),
+                                    value = if (reservation.travelRidePrice == 0) "" else reservation.travelRidePrice.toString(),
+                                    onValueChange = {},
+                                    label = {
+                                        Text(
+                                            text = stringResource(R.string.ride2),
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                            alpha = 0.5f
+                                        ),
+                                    ),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Default
+                                    ),
+                                    singleLine = true,
+                                    readOnly = true,
+                                    enabled = false
+                                )
+                                OutlinedTextField(
+                                    modifier = Modifier.weight(1f),
+                                    value = if (reservation.travelCollectedAmount == 0) "" else reservation.travelCollectedAmount.toString(),
+                                    onValueChange = {},
+                                    label = {
+                                        Text(
+                                            text = stringResource(R.string.collecting),
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                            alpha = 0.5f
+                                        ),
+                                    ),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Default
+                                    ),
+                                    singleLine = true,
+                                    readOnly = true,
+                                    enabled = false
+                                )
+                                OutlinedTextField(
+                                    modifier = Modifier.weight(1f),
+                                    value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
+                                    onValueChange = {},
+                                    label = {
+                                        Text(
+                                            text = stringResource(R.string.quota),
+                                            style = MaterialTheme.typography.bodySmall,
+                                        )
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
+                                            alpha = 0.5f
+                                        ),
+                                    ),
+                                    keyboardOptions = KeyboardOptions.Default.copy(
+                                        keyboardType = KeyboardType.Number,
+                                        imeAction = ImeAction.Default
+                                    ),
+                                    singleLine = true,
+                                    readOnly = true,
+                                    enabled = false
+                                )
+
+                            }
+                        }
+                    }
                     DetailRow(
                         label = stringResource(R.string.notes),
                         value = reservation.note,

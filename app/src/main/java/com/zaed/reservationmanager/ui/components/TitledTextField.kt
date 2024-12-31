@@ -45,7 +45,7 @@ fun TitledTextField(
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isReadOnly: Boolean = false,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
 ) {
     var value by remember { mutableStateOf(initialValue) }
     Column(
@@ -63,7 +63,7 @@ fun TitledTextField(
             value = value,
             enabled = isEnabled,
             onValueChange = {
-                value = if(keyboardType == KeyboardType.Phone) it.replace(" ", "") else it
+                value = if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it
                 onValueChanged(value)
             },
             readOnly = isReadOnly,
@@ -113,12 +113,15 @@ fun TitledTextField2(
     onValueChanged: (String) -> Unit = {},
     isOptional: Boolean = true,
     isError: Boolean = false,
+    maxLines: Int = 1,
     errorMessageRes: Int = 0,
-    keyboardType: KeyboardType = KeyboardType.Unspecified,
+    keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Default,
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    withTitle: Boolean = true,
+    label: String = ""
 ) {
     Column(
         modifier = modifier
@@ -126,17 +129,26 @@ fun TitledTextField2(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = title + if (isOptional) "" else " *",
-            style = MaterialTheme.typography.titleMedium,
-        )
+        if (withTitle) {
+            Text(
+                text = title + if (isOptional) "" else " *",
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
         OutlinedTextField(
-            singleLine = true,
-            value = value,
+            singleLine = maxLines == 1,
+            value = if (keyboardType == KeyboardType.Number && value == 0.toString()) "" else value,
             enabled = isEnabled,
             onValueChange = {
-                onValueChanged(if(keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
+                onValueChanged(if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
             },
+            label = {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            maxLines = maxLines,
             readOnly = isReadOnly,
             shape = MaterialTheme.shapes.small,
             isError = isError,

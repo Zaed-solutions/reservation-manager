@@ -155,7 +155,11 @@ fun NavigationHost(
             )
         }
         composable<Route.CreateReservationRoute> {
-            CreateReservationScreen(navigateBack = { navController.popBackStack() }
+            CreateReservationScreen(
+                navigateBack = { navController.popBackStack() },
+                navigateToCustomerDetailsScreen = {
+                    navController.navigate(Route.CustomerDetailsRoute(it))
+                }
             )
         }
 

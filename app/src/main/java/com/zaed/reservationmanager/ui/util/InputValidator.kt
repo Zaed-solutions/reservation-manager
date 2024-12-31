@@ -47,9 +47,8 @@ object InputValidator {
             ReservationError.START_LOCATION_IS_REQUIRED
         } else if (reservation.endLocation.isBlank()) {
             ReservationError.END_LOCATION_IS_REQUIRED
-            //TODO
-//        } else if (reservation.sellingPrice == 0) {
-//            ReservationError.SELLING_PRICE_IS_REQUIRED
+        } else if (reservation.tourismRidePrice == 0) {
+            ReservationError.RIDE_PRICE_IS_REQUIRED
         } else {
             null
         }

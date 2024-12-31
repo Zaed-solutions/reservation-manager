@@ -98,7 +98,7 @@ class CustomerDetailsViewModel(
             reservationRepo.getReservationByCustomerId(customerId).collect { result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(reservations = data.sortedByDescending { it.date })
+                        oldState.copy(reservations = data.sortedBy { it.date })
                     }
                 }.onFailure {
                     Log.e(TAG, "fetchCustomerReservations: failed")
