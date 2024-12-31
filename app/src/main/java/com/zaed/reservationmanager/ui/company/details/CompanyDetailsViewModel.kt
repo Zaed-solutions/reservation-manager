@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.company.details
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
@@ -35,12 +36,28 @@ class CompanyDetailsViewModel(
 
     fun init(companyId: String, companyType: CompanyType) {
         fetchCompany(companyId)
-        fetchBalance(companyId, companyType)
+        fetchPayments(companyId)
+        fetchCompanyBalance(companyId, companyType)
         fetchReservations(companyId)
         fetchReservationTypes()
         fetchCarTypes()
         fetchTravelCompanies()
         fetchTourismCompanies()
+    }
+
+    private fun fetchPayments(companyId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.getCompanyPayments(companyId).collect { result ->
+                result.onSuccess { payments ->
+                    _uiState.update { oldState ->
+                        oldState.copy(payments = payments)
+                    }
+                }.onFailure { e ->
+                    Log.e(TAG, "fetchPayments: failed to fetch payments: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun fetchReservationTypes() {
@@ -101,6 +118,20 @@ class CompanyDetailsViewModel(
         }
     }
 
+    private fun fetchCompanyBalance(companyId: String = uiState.value.company.id, companyType: CompanyType = uiState.value.company.type) {
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.getCompanyBalance(companyId, companyType).onSuccess {
+                _uiState.update { oldState ->
+                    oldState.copy(balance = it)
+                }
+                Log.d(TAG, "fetchBalance: $it")
+            }.onFailure { e ->
+                Log.e(TAG, "fetchBalance: failed to fetch balance: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun fetchReservations(companyId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservationsByCompanyId(companyId).collect { result ->
@@ -113,23 +144,6 @@ class CompanyDetailsViewModel(
                     Log.e(TAG, "fetchReservations: failed to fetch reservations: ${e.message}")
                     e.printStackTrace()
                 }
-            }
-        }
-    }
-
-    private fun fetchBalance(
-        companyId: String = uiState.value.company.id,
-        companyType: CompanyType= uiState.value.company.type
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            reservationRepo.getCompanyBalance(companyId, companyType).onSuccess {
-                _uiState.update { oldState ->
-                    oldState.copy(balance = it)
-                }
-                Log.d(TAG, "fetchBalance: $it")
-            }.onFailure { e ->
-                Log.e(TAG, "fetchBalance: failed to fetch balance: ${e.message}")
-                e.printStackTrace()
             }
         }
     }
@@ -191,7 +205,52 @@ class CompanyDetailsViewModel(
                 )
             }
 
+            is CompanyDetailsUiAction.OnAddPayment -> addPayment(action.payment, action.onSuccess)
+
+            is CompanyDetailsUiAction.OnUpdatePayment -> updatePayment(action.payment, action.onSuccess)
+
+            is CompanyDetailsUiAction.OnDeletePayment -> deletePayment(
+                action.paymentId,
+                action.onSuccess
+            )
+
             else -> Unit
+        }
+    }
+
+    private fun addPayment(payment: CompanyPayment, onSuccess: () -> Unit) {
+        viewModelScope.launch (Dispatchers.IO){
+            companyRepo.addPayment(payment.copy(companyId = uiState.value.company.id, companyName = uiState.value.company.name)).onSuccess {
+                onSuccess()
+                fetchCompanyBalance()
+            }.onFailure { e ->
+                Log.e(TAG, "addPayment: failed to add payment: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun updatePayment(payment: CompanyPayment, onSuccess: () -> Unit) {
+        viewModelScope.launch (Dispatchers.IO){
+            companyRepo.editPayment(payment).onSuccess {
+                onSuccess()
+                fetchCompanyBalance()
+            }.onFailure { e ->
+                Log.e(TAG, "updatePayment: failed to update payment: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun deletePayment(paymentId: String, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            companyRepo.deletePayment(paymentId).onSuccess {
+                onSuccess()
+                fetchCompanyBalance()
+            }.onFailure { e ->
+                Log.e(TAG, "deletePayment: failed to delete payment: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 
@@ -199,6 +258,7 @@ class CompanyDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             customerRepo.getCustomerById(customerId).onSuccess {
                 onSuccess(it)
+                fetchCompanyBalance()
             }.onFailure { e ->
                 Log.e(TAG, "fetchCustomer: failed to fetch customer: ${e.message}")
                 e.printStackTrace()
@@ -213,6 +273,7 @@ class CompanyDetailsViewModel(
                 updates
             ).collect { result ->
                 result.onSuccess {
+                    fetchCompanyBalance()
                     Log.d(TAG, "sendInfoToTravelCompany: success")
                 }.onFailure { e ->
                     Log.e(
@@ -260,7 +321,6 @@ class CompanyDetailsViewModel(
             reservationRepo.updateReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "updateReservations: success")
-                    fetchBalance()
                     onSuccess()
                 }.onFailure { e ->
                     Log.e(TAG, "updateReservations: failed to update reservation: ${e.message}")
@@ -276,7 +336,7 @@ class CompanyDetailsViewModel(
             reservationRepo.deleteReservation(reservationId).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "deleteReservation: success")
-                    fetchBalance()
+                    fetchCompanyBalance()
                 }.onFailure { e ->
                     Log.e(TAG, "deleteReservation: failed to delete: ${e.message}")
                     e.printStackTrace()

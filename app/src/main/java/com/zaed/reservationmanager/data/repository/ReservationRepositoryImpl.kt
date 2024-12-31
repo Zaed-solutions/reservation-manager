@@ -45,13 +45,6 @@ class ReservationRepositoryImpl(
         return remoteDataSource.getReservations()
     }
 
-    override suspend fun getCompanyBalance(
-        companyId: String,
-        companyType: CompanyType
-    ): Result<CompanyBalance> {
-        return remoteDataSource.getCompanyBalance(companyId)
-    }
-
     override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getReservationsByCompanyId(companyId)
     }

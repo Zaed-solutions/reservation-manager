@@ -28,7 +28,8 @@ fun DatePickerFieldToModal(
     modifier: Modifier = Modifier,
     initialValue: Long = 0L,
     onDateSelected: (Long?) -> Unit = {},
-    errorMessage: ReservationError
+    isError: Boolean = false,
+    errorMessageRes: Int
 ) {
     var selectedDate by remember { mutableLongStateOf(initialValue) }
     var showModal by remember { mutableStateOf(false) }
@@ -41,10 +42,10 @@ fun DatePickerFieldToModal(
         trailingIcon = {
             Icon(Icons.Default.DateRange, contentDescription = "Select date")
         },
-        isError = errorMessage == ReservationError.DATE_IS_REQUIRED,
+        isError = isError,
         supportingText = {
-            if (errorMessage == ReservationError.DATE_IS_REQUIRED) {
-                Text(stringResource(errorMessage.messageRes))
+            if (isError) {
+                Text(stringResource(errorMessageRes))
             }
         },
         modifier = modifier

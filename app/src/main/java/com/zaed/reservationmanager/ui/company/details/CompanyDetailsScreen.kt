@@ -10,23 +10,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -38,23 +45,31 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyBalance
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.company.details.components.AddPaymentBottomSheetContent
 import com.zaed.reservationmanager.ui.company.details.components.BalanceSection
 import com.zaed.reservationmanager.ui.company.details.components.CompanyDetailsHeader
+import com.zaed.reservationmanager.ui.company.details.components.PaymentsList
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
@@ -316,11 +331,18 @@ fun CompanyDetailsScreen(
             }
         },
         company = state.company,
-        balance = state.balance,
         reservations = state.reservations,
         snackBarHostState = snackbarHostState,
         scope = scope,
-        context = context
+        context = context,
+        balance = state.balance,
+        reservationTypes = state.reservationTypes,
+        cars = state.cars,
+        tourismCompanies = state.tourismCompanies,
+        employees = state.employees,
+        travelCompanies = state.travelCompanies,
+        drivers = state.drivers,
+        payments = state.payments,
     )
 }
 
@@ -330,6 +352,7 @@ fun CompanyDetailsScreenContent(
     modifier: Modifier = Modifier,
     onAction: (CompanyDetailsUiAction) -> Unit,
     company: Company = Company(),
+    balance: CompanyBalance = CompanyBalance(),
     reservationTypes: List<String> = emptyList(),
     cars: List<String> = emptyList(),
     tourismCompanies: List<Company> = emptyList(),
@@ -338,12 +361,18 @@ fun CompanyDetailsScreenContent(
     drivers: List<Employee> = emptyList(),
     snackBarHostState: SnackbarHostState,
     reservations: List<Reservation> = emptyList(),
-    balance: CompanyBalance = CompanyBalance(),
+    payments: List<CompanyPayment> = emptyList(),
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
 ) {
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
+    }
+    var isAddPaymentDialogVisible by remember {
+        mutableStateOf(false)
+    }
+    var selectedPayment by remember{
+        mutableStateOf(CompanyPayment())
     }
     var isEditReservationBottomSheetVisible by remember {
         mutableStateOf(false)
@@ -351,6 +380,10 @@ fun CompanyDetailsScreenContent(
     var selectedReservation by remember {
         mutableStateOf(Reservation())
     }
+    var isReservation by remember {
+        mutableStateOf(true)
+    }
+    val pagerState = rememberPagerState(pageCount = { 2 })
     var isOptionsMenuVisible by remember {
         mutableStateOf(false)
     }
@@ -409,22 +442,23 @@ fun CompanyDetailsScreenContent(
                                     )
                                 },
                             )
-//                            DropdownMenuItem(
-//                                onClick = {
-//                                    onExportCustomersAsPDF()
-//                                    isOptionsMenuVisible = false
-//                                },
-//                                text = {
-//                                    Text(
-//                                        text = stringResource(R.string.export_as_pdf),
-//                                    )
-//                                },
-//                            )
                         }
                     }
                 }
             )
         },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    isAddPaymentDialogVisible = true
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null
+                )
+            }
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -442,54 +476,126 @@ fun CompanyDetailsScreenContent(
                 balance = balance,
                 companyType = company.type
             )
-            ReservationsList(
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                reservations = reservations,
-                isEditProfileEnabled = true,
-                onEditProfile = {
-                    onAction(CompanyDetailsUiAction.FetchCustomerForUpdating(it))
-                },
-                isAddEnabled = false,
-                onArchiveReservation = { reservationId ->
-                    onAction(CompanyDetailsUiAction.ArchiveReservation(reservationId))
-                },
-                onDeleteReservation = {
-                    selectedReservation = Reservation(id = it)
-                    isConfirmDeleteDialogVisible = true
-                },
-                onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
-                onMessagePhoneNumber = {
-                    onAction(
-                        CompanyDetailsUiAction.OnMessagePhoneNumber(
-                            it
-                        )
-                    )
-                },
-                onEditReservation = {
-                    selectedReservation = it
-                    isEditReservationBottomSheetVisible = true
-                },
-                onSendConfirmationToCustomer = {
-                    onAction(
-                        CompanyDetailsUiAction.SendReservationConfirmation(it)
-                    )
-                },
-                onSendInfoToTravelCompany = {
-                    onAction(
-                        CompanyDetailsUiAction.SendReservationInfoToTravelCompany(it)
-                    )
-                },
-                onSendDriverInfoToClient = {
-                    onAction(
-                        CompanyDetailsUiAction.SendReservationInfo(it)
-                    )
-                },
-                onSendThanksMessageToCustomer = {
-                    onAction(
-                        CompanyDetailsUiAction.SendThanksMessageToCustomer(it)
+            PrimaryTabRow(
+                selectedTabIndex = pagerState.currentPage,
+                indicator = {
+                    TabRowDefaults.PrimaryIndicator(
+                        modifier = Modifier
+                            .run {
+                                if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                                    scale(-1f, 1f)
+                                else
+                                    this
+                            }
+                            .tabIndicatorOffset(pagerState.currentPage, true),
+                        width = Dp.Unspecified,
                     )
                 }
-            )
+            ) {
+                Tab(
+                    selected = pagerState.currentPage == 0,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(0)
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.reservations),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+                Tab(
+                    selected = pagerState.currentPage == 1,
+                    onClick = {
+                        scope.launch {
+                            pagerState.animateScrollToPage(1)
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.payments),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                )
+            }
+            HorizontalPager(
+                state = pagerState
+            ) { page ->
+                when (page) {
+                    0 -> {
+                        ReservationsList(
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
+                            reservations = reservations,
+                            isHeaderVisible = false,
+                            isEditProfileEnabled = true,
+                            onEditProfile = {
+                                onAction(CompanyDetailsUiAction.FetchCustomerForUpdating(it))
+                            },
+                            isAddEnabled = false,
+                            onArchiveReservation = { reservationId ->
+                                onAction(CompanyDetailsUiAction.ArchiveReservation(reservationId))
+                            },
+                            onDeleteReservation = {
+                                selectedReservation = Reservation(id = it)
+                                isReservation = true
+                                isConfirmDeleteDialogVisible = true
+                            },
+                            onCopyPhoneNumber = { onAction(CompanyDetailsUiAction.OnCopyPhoneNumber(it)) },
+                            onMessagePhoneNumber = {
+                                onAction(
+                                    CompanyDetailsUiAction.OnMessagePhoneNumber(
+                                        it
+                                    )
+                                )
+                            },
+                            onEditReservation = {
+                                selectedReservation = it
+                                isEditReservationBottomSheetVisible = true
+                            },
+                            onSendConfirmationToCustomer = {
+                                onAction(
+                                    CompanyDetailsUiAction.SendReservationConfirmation(it)
+                                )
+                            },
+                            onSendInfoToTravelCompany = {
+                                onAction(
+                                    CompanyDetailsUiAction.SendReservationInfoToTravelCompany(it)
+                                )
+                            },
+                            onSendDriverInfoToClient = {
+                                onAction(
+                                    CompanyDetailsUiAction.SendReservationInfo(it)
+                                )
+                            },
+                            onSendThanksMessageToCustomer = {
+                                onAction(
+                                    CompanyDetailsUiAction.SendThanksMessageToCustomer(it)
+                                )
+                            }
+                        )
+                    }
+
+                    1 -> {
+                        PaymentsList(
+                            payments = payments,
+                            onEditPayment = {
+                                selectedPayment = it
+                                isAddPaymentDialogVisible = true
+                            },
+                            onDeletePayment = {
+                                selectedPayment = it
+                                isReservation = false
+                                isConfirmDeleteDialogVisible = true
+                            }
+                        )
+                    }
+                }
+            }
             AnimatedVisibility(isEditReservationBottomSheetVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {},
@@ -539,6 +645,57 @@ fun CompanyDetailsScreenContent(
                     )
                 }
             }
+            AnimatedVisibility(isAddPaymentDialogVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isAddPaymentDialogVisible = false
+                        selectedPayment = CompanyPayment()
+                    }
+                ) {
+                    AddPaymentBottomSheetContent(
+                        modifier = Modifier.fillMaxWidth(),
+                        initialPayment = selectedPayment,
+                        onSavePayment = { payment ->
+                            isAddPaymentDialogVisible = false
+                            onAction(
+                                if(payment.id.isBlank()){
+                                    CompanyDetailsUiAction.OnAddPayment(
+                                        payment = payment,
+                                        onSuccess = {
+                                            snackBarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.payment_added_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedPayment = CompanyPayment()
+                                                }
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    CompanyDetailsUiAction.OnUpdatePayment(
+                                        payment = payment,
+                                        onSuccess = {
+                                            snackBarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.payment_updated_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedPayment = CompanyPayment()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        },
+                        onDismiss = {
+                            isAddPaymentDialogVisible = false
+                            selectedPayment = CompanyPayment()
+                        }
+                    )
+                }
+            }
             AnimatedVisibility(isConfirmDeleteDialogVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {
@@ -548,17 +705,34 @@ fun CompanyDetailsScreenContent(
                 ) {
                     ConfirmDeleteDialog(
                         label = stringResource(
-                            id = R.string.reservation
+                            id = if(isReservation) R.string.reservation else R.string.payment
                         ),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
                             selectedReservation = Reservation()
+                            selectedPayment = CompanyPayment()
                         },
                         onConfirm = {
-                            onAction(
-                                CompanyDetailsUiAction.OnDeleteReservation(selectedReservation.id)
-                            )
                             isConfirmDeleteDialogVisible = false
+                            onAction(
+                                if(isReservation){
+                                    CompanyDetailsUiAction.OnDeleteReservation(selectedReservation.id)
+                                } else {
+                                    CompanyDetailsUiAction.OnDeletePayment(
+                                        paymentId = selectedPayment.id,
+                                        onSuccess = {
+                                            snackBarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.payment_deleted_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedPayment = CompanyPayment()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
                             selectedReservation = Reservation()
                         }
                     )

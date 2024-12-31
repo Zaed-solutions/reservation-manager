@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,8 +38,8 @@ fun BalanceSection(
 ) {
     val totalBalance = remember(balance){
         when(companyType) {
-            CompanyType.TOURISM -> balance.totalSelling - balance.totalCollected
-            CompanyType.TRAVEL -> balance.totalBuying - balance.totalCollected
+            CompanyType.TOURISM -> balance.totalRidePrice - balance.totalCollected - balance.totalPayment
+            CompanyType.TRAVEL -> balance.totalRidePrice - balance.totalCollected - balance.totalPayment
         }
     }
     Column(
@@ -163,8 +161,7 @@ private fun Preview() {
             modifier = Modifier.padding(16.dp),
             companyType = CompanyType.TOURISM,
             balance = CompanyBalance(
-                totalBuying = 3500.0,
-                totalSelling = 2500.0,
+                totalRidePrice = 3500.0,
                 totalCollected = 2000.0
             )
         )

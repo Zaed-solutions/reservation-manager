@@ -1,6 +1,9 @@
 package com.zaed.reservationmanager.data.repository
 
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyBalance
+import com.zaed.reservationmanager.data.model.CompanyPayment
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.source.remote.CompanyRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -37,5 +40,28 @@ class CompanyRepositoryImpl(
 
     override fun getCompaniesNames(isDriver: Boolean): Flow<Result<List<String>>> {
         return remoteSource.getCompaniesNames(isDriver)
+    }
+
+    override suspend fun getCompanyBalance(
+        companyId: String,
+        companyType: CompanyType
+    ): Result<CompanyBalance> {
+        return remoteSource.getCompanyBalance(companyId, companyType)
+    }
+
+    override fun getCompanyPayments(companyId: String): Flow<Result<List<CompanyPayment>>> {
+        return remoteSource.getCompanyPayments(companyId)
+    }
+
+    override suspend fun addPayment(payment: CompanyPayment): Result<Boolean> {
+        return remoteSource.addPayment(payment)
+    }
+
+    override suspend fun editPayment(payment: CompanyPayment): Result<Boolean> {
+        return remoteSource.editPayment(payment)
+    }
+
+    override suspend fun deletePayment(paymentId: String): Result<Boolean> {
+        return remoteSource.deletePayment(paymentId)
     }
 }

@@ -13,7 +13,6 @@ interface ReservationRemoteDataSource {
     fun getReservations(): Flow<Result<List<Reservation>>>
     fun updateReservation(reservationId: String, updates: Map<String, Any>): Flow<Result<Boolean>>
     fun updateReservation(reservation: Reservation): Flow<Result<Boolean>>
-    suspend fun getCompanyBalance(companyId: String): Result<CompanyBalance>
     fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>>
     fun getArchivedReservations(): Flow<Result<List<Reservation>>>
 }

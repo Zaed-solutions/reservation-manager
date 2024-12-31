@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.company.details
 
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
@@ -30,4 +31,7 @@ sealed interface CompanyDetailsUiAction {
         CompanyDetailsUiAction
     data class ArchiveReservation(val reservationId: String) :
         CompanyDetailsUiAction
+    data class OnAddPayment(val payment: CompanyPayment, val onSuccess: () -> Unit): CompanyDetailsUiAction
+    data class OnUpdatePayment(val payment: CompanyPayment, val onSuccess: () -> Unit): CompanyDetailsUiAction
+    data class OnDeletePayment(val paymentId: String, val onSuccess: () -> Unit): CompanyDetailsUiAction
 }

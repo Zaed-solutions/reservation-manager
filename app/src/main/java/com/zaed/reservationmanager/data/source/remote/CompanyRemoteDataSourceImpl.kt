@@ -1,9 +1,13 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import android.util.Log
+import com.google.firebase.firestore.AggregateField
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyBalance
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +20,7 @@ class CompanyRemoteDataSourceImpl(
     companion object {
         private val TAG = "CompanyRemoteDataSource"
         private val COMPANY_COLLECTION = "companies"
+        private val COMPANY_PAYMENT_COLLECTION = "payments"
         private val EMPLOYEE_COLLECTION = "employees"
         private val RESERVATION_COLLECTION = "reservations"
     }
@@ -123,13 +128,14 @@ class CompanyRemoteDataSourceImpl(
 
     override fun getCompanyById(companyId: String): Flow<Result<Company>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).document(companyId).get()
-                .addOnSuccessListener { data ->
-                    val company = data.toObject(Company::class.java)
-                    trySend(Result.success(company ?: Company()))
-                }.addOnFailureListener { error ->
+            firestore.collection(COMPANY_COLLECTION).document(companyId).addSnapshotListener { data, error ->
+                if (error != null) {
                     trySend(Result.failure(error))
+                } else {
+                    val company = data?.toObject(Company::class.java) ?: Company()
+                    trySend(Result.success(company))
                 }
+            }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -193,4 +199,98 @@ class CompanyRemoteDataSourceImpl(
         }
         awaitClose { }
     }
+
+    override suspend fun getCompanyBalance(
+        companyId: String,
+        companyType: CompanyType
+    ): Result<CompanyBalance> {
+        return try {
+            val reservationQuery = firestore.collection(RESERVATION_COLLECTION).where(
+                Filter.or(
+                    Filter.equalTo("tourismCompanyId", companyId),
+                    Filter.equalTo("travelCompanyId", companyId)
+                )
+            )
+            val paymentQuery = firestore.collection(COMPANY_PAYMENT_COLLECTION).whereEqualTo("companyId", companyId)
+            val totalRidePriceResult = reservationQuery.aggregate(AggregateField.sum(if(companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice"))
+                .get(AggregateSource.SERVER).await()
+            val totalCollectedResult = reservationQuery.aggregate(AggregateField.sum(if(companyType == CompanyType.TOURISM)"tourismCollectedAmount" else "travelCollectedAmount"))
+                .get(AggregateSource.SERVER).await()
+            val totalPaymentResult =  paymentQuery.aggregate(AggregateField.sum("amount"))
+                .get(AggregateSource.SERVER).await()
+
+            val totalRidePrice =
+                (totalRidePriceResult.get(
+                    AggregateField.sum(
+                        if(companyType == CompanyType.TOURISM)
+                            "tourismRidePrice"
+                        else
+                            "travelRidePrice"
+                    )) as? Double) ?: 0.0
+            val totalCollected =
+                (totalCollectedResult.get(AggregateField.sum(if(companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount")) as? Double)
+                    ?: 0.0
+            val totalPayment = (totalPaymentResult.get(AggregateField.sum("amount")) as? Double) ?: 0.0
+            Log.d(
+                "CompanyBalance",
+                "getCompanyBalance: $companyId $totalRidePrice $totalCollected"
+            )
+            Result.success(
+                CompanyBalance(
+                    totalRidePrice = totalRidePrice,
+                    totalPayment = totalPayment,
+                    totalCollected = totalCollected
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    override fun getCompanyPayments(companyId: String): Flow<Result<List<CompanyPayment>>> = callbackFlow {
+        try {
+            firestore.collection(COMPANY_PAYMENT_COLLECTION).whereEqualTo("companyId", companyId)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val payments = value?.toObjects(CompanyPayment::class.java) ?: emptyList()
+                        trySend(Result.success(payments))
+                    }
+                }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose { }
+    }
+
+    override suspend fun addPayment(payment: CompanyPayment): Result<Boolean> {
+        return try {
+            val document =firestore.collection(COMPANY_PAYMENT_COLLECTION).document()
+            document.set(payment.copy(id = document.id)).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun editPayment(payment: CompanyPayment): Result<Boolean> {
+        return try {
+            firestore.collection(COMPANY_PAYMENT_COLLECTION).document(payment.id).set(payment).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun deletePayment(paymentId: String): Result<Boolean> {
+        return try {
+            firestore.collection(COMPANY_PAYMENT_COLLECTION).document(paymentId).delete().await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

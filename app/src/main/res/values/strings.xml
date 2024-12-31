@@ -234,4 +234,16 @@
     <string name="thanks_message_sent">Thank you message sent</string>
     <string name="send_thanks_message_to_customer">Send thank you message to customer</string>
     <string name="reservation_count_total_earnings">Reservation Count: %1$s  | Total Earnings: %2$s</string>
+    <string name="payment_updated_successfully">Payment updated successfully</string>
+    <string name="payment_added_successfully">Payment added successfully</string>
+    <string name="payment">Payment</string>
+    <string name="payment_deleted_successfully">Payemnt deleted successfully</string>
+    <string name="company_reservations">Company Reservations</string>
+    <string name="payments">Payments</string>
+    <string name="description_is_required">Description is required</string>
+    <string name="amount_is_required">Amount is required</string>
+    <string name="description">Description</string>
+    <string name="amount">Amount</string>
+    <string name="no_payments_added">No payments added</string>
+    <string name="save_payment">Save Payment</string>
 </resources>

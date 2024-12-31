@@ -240,44 +240,4 @@ class ReservationRemoteDataSourceImpl(
         }
         awaitClose { }
     }
-
-    override suspend fun getCompanyBalance(
-        companyId: String
-    ): Result<CompanyBalance> =
-        try {
-            val query = firestore.collection(RESERVATION_COLLECTION).where(
-                Filter.or(
-                    Filter.equalTo("tourismCompanyId", companyId),
-                    Filter.equalTo("travelCompanyId", companyId)
-                )
-            )
-            val totalBuyingResult = query.aggregate(AggregateField.sum("buyingPrice"))
-                .get(AggregateSource.SERVER).await()
-            val totalSellingResult = query.aggregate(AggregateField.sum("sellingPrice"))
-                .get(AggregateSource.SERVER).await()
-            val totalCollectedResult = query.aggregate(AggregateField.sum("collectedAmount"))
-                .get(AggregateSource.SERVER).await()
-
-            val totalBuying =
-                (totalBuyingResult.get(AggregateField.sum("buyingPrice")) as? Double) ?: 0.0
-            val totalSelling =
-                (totalSellingResult.get(AggregateField.sum("sellingPrice")) as? Double) ?: 0.0
-            val totalCollected =
-                (totalCollectedResult.get(AggregateField.sum("collectedAmount")) as? Double)
-                    ?: 0.0
-            Log.d(
-                "CompanyBalance",
-                "getCompanyBalance: $companyId $totalBuying $totalSelling $totalCollected"
-            )
-            Result.success(
-                CompanyBalance(
-                    totalBuying = totalBuying,
-                    totalSelling = totalSelling,
-                    totalCollected = totalCollected
-                )
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Result.failure(e)
-        }
 }
