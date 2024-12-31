@@ -239,4 +239,10 @@
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
     <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | إجمالي الربح: %2$s</string>
+    <string name="ride2">المشوار</string>
+    <string name="collecting">التحصيل</string>
+    <string name="quota">الرصيد</string>
+    <string name="tourism_company_account">حساب شركة السياحة</string>
+    <string name="travel_company_account">حساب شركة النقل</string>
+    <string name="direct_customer">عميل مباشر</string>
 </resources>

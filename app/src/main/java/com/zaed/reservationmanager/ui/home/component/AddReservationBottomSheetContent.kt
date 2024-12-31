@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
@@ -36,6 +39,7 @@ import com.zaed.reservationmanager.ui.components.TitledTextField2
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.reservation.create.component.DatePickerFieldToModal
 import com.zaed.reservationmanager.ui.reservation.create.component.TimePickerFieldToModal
+import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.InputValidator
 
 @Composable
@@ -67,6 +71,8 @@ fun AddReservationBottomSheetContent(
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
+
+        //Date
         DatePickerFieldToModal(
             initialValue = initialReservation.date,
             errorMessage = reservationError,
@@ -76,6 +82,7 @@ fun AddReservationBottomSheetContent(
                 )
             }
         )
+        //Time
         TimePickerFieldToModal(
             initialValue = initialReservation.time,
             errorMessage = reservationError,
@@ -85,6 +92,7 @@ fun AddReservationBottomSheetContent(
                 )
             }
         )
+        //Flight Number
         TitledTextField2(
             title = stringResource(R.string.flight_number),
             value = reservation.flightNumber,
@@ -98,6 +106,7 @@ fun AddReservationBottomSheetContent(
             errorMessageRes = reservationError.messageRes,
             keyboardType = KeyboardType.Text
         )
+        //tourism company
         TitledDropDownTextField(
             title = stringResource(R.string.tourism_company),
             selectedValue = reservation.tourismCompany,
@@ -127,6 +136,7 @@ fun AddReservationBottomSheetContent(
             isOptional = true,
             options = tourismCompanies.map { it.name },
         )
+        //employee name
         TitledDropDownTextField(
             title = stringResource(R.string.employee_name),
             selectedValue = reservation.tourismEmployee,
@@ -149,6 +159,7 @@ fun AddReservationBottomSheetContent(
             isOptional = true,
             options = employees.map { it.name },
         )
+        //reservation type
         TitledDropDownTextField(
             title = stringResource(R.string.reservation_type),
             selectedValue = reservation.type,
@@ -164,6 +175,228 @@ fun AddReservationBottomSheetContent(
             errorMessageRes = reservationError.messageRes,
             options = types,
         )
+        // Car type
+        TitledDropDownTextField(
+            title = stringResource(R.string.car),
+            selectedValue = reservation.car,
+            onValueChanged = { index ->
+                if (index == -1) {
+                    reservation = reservation.copy(
+                        car = ""
+                    )
+                } else {
+                    reservation = reservation.copy(
+                        car = cars[index]
+                    )
+                }
+            },
+            isOptional = true,
+            isError = reservationError == ReservationError.CAR_IS_REQUIRED,
+            errorMessageRes = reservationError.messageRes,
+            options = cars,
+        )
+        //People count
+        TitledDropDownTextField(
+            title = stringResource(R.string.people_count),
+            selectedValue = reservation.peopleCount.toString(),
+            onValueChanged = { index ->
+                if (index == -1) {
+                    reservation = reservation.copy(
+                        peopleCount = 1
+                    )
+                } else {
+                    reservation = reservation.copy(
+                        peopleCount = peopleCounter[index]
+                    )
+                }
+            },
+            isOptional = true,
+            options = peopleCounter.map { it.toString() },
+        )
+        // Car count
+        AnimatedVisibility(visible = reservation.car.isNotBlank()) {
+            TitledDropDownTextField(
+                title = stringResource(R.string.car_count),
+                selectedValue = reservation.carCount.toString(),
+                onValueChanged = { index ->
+                    if (index == -1) {
+                        reservation = reservation.copy(
+                            carCount = 1
+                        )
+                    } else {
+                        reservation = reservation.copy(
+                            carCount = index + 1
+                        )
+                    }
+                },
+                options = (1..10).map { it.toString() },
+                isOptional = true,
+                isError = false,
+                errorMessageRes = reservationError.messageRes,
+            )
+        }
+        // Start location
+        TitledTextField2(
+            title = stringResource(R.string.start_location),
+            value = reservation.startLocation,
+            onValueChanged = { newText ->
+                reservation = reservation.copy(
+                    startLocation = newText
+                )
+                Log.d("AddReservationBottomSheet", "AddReservationBottomSheetContent: $newText")
+            },
+            isOptional = false,
+            isError = reservationError == ReservationError.START_LOCATION_IS_REQUIRED,
+            errorMessageRes = reservationError.messageRes,
+            keyboardType = KeyboardType.Text
+        )
+        // End Location
+        TitledTextField2(
+            title = stringResource(R.string.end_location),
+            value = reservation.endLocation,
+            onValueChanged = { newText ->
+                reservation = reservation.copy(
+                    endLocation = newText
+                )
+            },
+            isOptional = false,
+            isError = reservationError == ReservationError.END_LOCATION_IS_REQUIRED,
+            errorMessageRes = reservationError.messageRes,
+            keyboardType = KeyboardType.Text
+        )
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = stringResource(R.string.tourism_company_account),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(2f),
+                    onValueChange = {},
+                    singleLine = true,
+                    readOnly = true,
+                    enabled = false
+                )
+                OutlinedTextField(
+                    value = reservation.tourismCompany.ifEmpty { stringResource(R.string.direct_customer) },
+                    modifier = Modifier.weight(1f),
+                    textStyle = MaterialTheme.typography.bodySmall,
+                    onValueChange = {},
+                    singleLine = true,
+                    readOnly = true,
+                    enabled = false
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = if (reservation.tourismRidePrice == 0) "" else reservation.tourismRidePrice.toString(),
+                    onValueChange = { newText ->
+                        if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                            reservation = reservation.copy(
+                                tourismRidePrice = newText.toInt()
+                            )
+                        } else {
+                            reservation = reservation.copy(
+                                tourismRidePrice = 0
+                            )
+                        }
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.ride2),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
+                    supportingText = {
+                        if (reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED) {
+                            Text(
+                                text = stringResource(id = reservationError.messageRes),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Default
+                    ),
+                    singleLine = true,
+                )
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = if (reservation.tourismCollectedAmount == 0) "" else reservation.tourismCollectedAmount.toString(),
+                    onValueChange = { newText ->
+                        if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                            reservation = reservation.copy(
+                                tourismCollectedAmount = newText.toInt()
+                            )
+                        } else {
+                            reservation = reservation.copy(
+                                tourismCollectedAmount = 0
+                            )
+                        }
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.collecting),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
+                    supportingText = {
+                        if (reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED) {
+                            Text(
+                                text = stringResource(id = reservationError.messageRes),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Default
+                    ),
+                    singleLine = true,
+                )
+                OutlinedTextField(
+                    modifier = Modifier.weight(1f),
+                    value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
+                    onValueChange = {},
+                    label = {
+                        Text(
+                            text = stringResource(R.string.quota),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Default
+                    ),
+                    supportingText = {},
+                    singleLine = true,
+                    readOnly = true,
+                    enabled = false
+                )
+
+            }
+        }
+
         TitledDropDownTextField(
             title = stringResource(R.string.travel_company),
             selectedValue = reservation.travelCompany,
@@ -215,185 +448,140 @@ fun AddReservationBottomSheetContent(
             isOptional = true,
             options = drivers.map { it.name },
         )
-        TitledDropDownTextField(
-            title = stringResource(R.string.car),
-            selectedValue = reservation.car,
-            onValueChanged = { index ->
-                if (index == -1) {
-                    reservation = reservation.copy(
-                        car = ""
-                    )
-                } else {
-                    reservation = reservation.copy(
-                        car = cars[index]
-                    )
-                }
-            },
-            isOptional = true,
-            isError = reservationError == ReservationError.CAR_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            options = cars,
-        )
-        TitledDropDownTextField(
-            title = stringResource(R.string.people_count),
-            selectedValue = reservation.peopleCount.toString(),
-            onValueChanged = { index ->
-                if (index == -1) {
-                    reservation = reservation.copy(
-                        peopleCount = 1
-                    )
-                } else {
-                    reservation = reservation.copy(
-                        peopleCount = peopleCounter[index]
-                    )
-                }
-            },
-            isOptional = true,
-            options = peopleCounter.map { it.toString() },
-        )
-        AnimatedVisibility(visible = reservation.car.isNotBlank()) {
-            TitledDropDownTextField(
-                title = stringResource(R.string.car_count),
-                selectedValue = reservation.carCount.toString(),
-                onValueChanged = { index ->
-                    if (index == -1) {
-                        reservation = reservation.copy(
-                            carCount = 1
-                        )
-                    } else {
-                        reservation = reservation.copy(
-                            carCount = index + 1
-                        )
-                    }
-                },
-                options = (1..10).map { it.toString() },
-                isOptional = true,
-                isError = false,
-                errorMessageRes = reservationError.messageRes,
-            )
-        }
-        TitledTextField2(
-            title = stringResource(R.string.start_location),
-            value = reservation.startLocation,
-            onValueChanged = { newText ->
-                reservation = reservation.copy(
-                    startLocation = newText
-                )
-                Log.d("AddReservationBottomSheet", "AddReservationBottomSheetContent: $newText")
-            },
-            isOptional = false,
-            isError = reservationError == ReservationError.START_LOCATION_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Text
-        )
-        TitledTextField2(
-            title = stringResource(R.string.end_location),
-            value = reservation.endLocation,
-            onValueChanged = { newText ->
-                reservation = reservation.copy(
-                    endLocation = newText
-                )
-            },
-            isOptional = false,
-            isError = reservationError == ReservationError.END_LOCATION_IS_REQUIRED,
-            errorMessageRes = reservationError.messageRes,
-            keyboardType = KeyboardType.Text
-        )
-        AnimatedVisibility(visible = reservation.tourismCompany.isNotBlank()) {
-            Column {
-                TitledTextField2(
-                    title = "Tourism Ride Price",
-                    value = reservation.tourismRidePrice.toString(),
-                    onValueChanged = { newText ->
-                        if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
-                            reservation = reservation.copy(
-                                tourismRidePrice = newText.toInt()
-                            )
-                        }
-                    },
-                    isOptional = false,
-                    isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number
-                )
-                TitledTextField2(
-                    title = "Tourism Collected Amount",
-                    value = reservation.tourismCollectedAmount.toString(),
-                    onValueChanged = { newText ->
-                        if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                            reservation = reservation.copy(
-                                tourismCollectedAmount = newText.toInt()
-                            )
-                        }
-                    },
-                    isOptional = true,
-                    isError = reservationError == ReservationError.COLLECTING_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number
-                )
-                TitledTextField2(
-                    title = "Tourism Company Quota",
-                    value = (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
-                    isOptional = true,
-                    isError = reservationError == ReservationError.COLLECTING_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number
-                )
-            }
-        }
         AnimatedVisibility(visible = reservation.travelCompany.isNotBlank()) {
             Column {
-                TitledTextField2(
-                    title = "Travel Ride Price",
-                    value = reservation.travelRidePrice.toString(),
-                    onValueChanged = { newText ->
-                        if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                            reservation = reservation.copy(
-                                travelRidePrice = newText.toInt()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = stringResource(R.string.travel_company_account),
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.weight(2f),
+                        onValueChange = {},
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false
+                    )
+                    OutlinedTextField(
+                        value = reservation.travelCompany,
+                        modifier = Modifier.weight(1f),
+                        textStyle = MaterialTheme.typography.bodySmall,
+                        onValueChange = {},
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier.weight(1f),
+                        value = if (reservation.travelRidePrice == 0) "" else reservation.travelRidePrice.toString(),
+                        onValueChange = { newText ->
+                            if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                                reservation = reservation.copy(
+                                    travelRidePrice = newText.toInt()
+                                )
+                            } else {
+                                reservation = reservation.copy(
+                                    travelRidePrice = 0
+                                )
+                            }
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(R.string.ride2),
+                                style = MaterialTheme.typography.bodySmall,
                             )
-                        } else {
-                            reservation = reservation.copy(
-                                travelRidePrice = 0
+                        },
+                        isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
+                        supportingText = {
+                            if (reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED) {
+                                Text(
+                                    text = stringResource(id = reservationError.messageRes),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Default
+                        ),
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.weight(1f),
+                        value = if (reservation.travelCollectedAmount == 0) "" else reservation.travelCollectedAmount.toString(),
+                        onValueChange = { newText ->
+                            if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
+                                reservation = reservation.copy(
+                                    travelCollectedAmount = newText.toInt()
+                                )
+                            } else {
+                                reservation = reservation.copy(
+                                    travelCollectedAmount = 0
+                                )
+                            }
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(R.string.collecting),
+                                style = MaterialTheme.typography.bodySmall,
                             )
-                        }
-                    },
-                    isOptional = false,
-                    isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number
-                )
-                TitledTextField2(
-                    title = "Travel Collected Amount",
-                    value = reservation.travelCollectedAmount.toString(),
-                    onValueChanged = { newText ->
-                        if (newText.matches(Regex("^\\d+\\.?\\d*\$"))) { // Accepts digits and an optional decimal point
-                            reservation = reservation.copy(
-                                travelCollectedAmount = newText.toInt()
+                        },
+                        isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
+                        supportingText = {
+                            if (reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED) {
+                                Text(
+                                    text = stringResource(id = reservationError.messageRes),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Default
+                        ),
+                        singleLine = true,
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.weight(1f),
+                        value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
+                        onValueChange = {},
+                        label = {
+                            Text(
+                                text = stringResource(R.string.quota),
+                                style = MaterialTheme.typography.bodySmall,
                             )
-                        } else {
-                            reservation = reservation.copy(
-                                travelCollectedAmount = 0
-                            )
-                        }
-                    },
-                    isOptional = true,
-                    isError = reservationError == ReservationError.COLLECTING_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number
-                )
-                TitledTextField2(
-                    title = "Travel Company Quota",
-                    value = (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
-                    isOptional = true,
-                    isError = reservationError == ReservationError.COLLECTING_PRICE_IS_REQUIRED,
-                    errorMessageRes = reservationError.messageRes,
-                    keyboardType = KeyboardType.Number,
-                    isEnabled = false,
-                    isReadOnly = true
-                )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Default
+                        ),
+                        supportingText = {},
+                        singleLine = true,
+                        readOnly = true,
+                        enabled = false
+                    )
+
+                }
             }
         }
-
         TitledTextField2(
             title = stringResource(R.string.notes),
             value = reservation.note,
@@ -444,5 +632,17 @@ fun AddReservationBottomSheetContent(
                 Text(stringResource(R.string.save_ride))
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+private fun AddReservationBottomSheetPreview() {
+    ReservationManagerTheme {
+        AddReservationBottomSheetContent(
+            initialReservation = Reservation(
+                tourismCompany = "00"
+            )
+        )
     }
 }

@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
-import kotlin.Int.Companion.MAX_VALUE
 
 @Composable
 fun TitledTextField(
@@ -64,7 +63,7 @@ fun TitledTextField(
             value = value,
             enabled = isEnabled,
             onValueChange = {
-                value = if(keyboardType == KeyboardType.Phone) it.replace(" ", "") else it
+                value = if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it
                 onValueChanged(value)
             },
             readOnly = isReadOnly,
@@ -121,6 +120,8 @@ fun TitledTextField2(
     isEnabled: Boolean = true,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isReadOnly: Boolean = false,
+    withTitle: Boolean = true,
+    label: String = ""
 ) {
     Column(
         modifier = modifier
@@ -128,18 +129,26 @@ fun TitledTextField2(
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = title + if (isOptional) "" else " *",
-            style = MaterialTheme.typography.titleMedium,
-        )
+        if (withTitle) {
+            Text(
+                text = title + if (isOptional) "" else " *",
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
         OutlinedTextField(
             singleLine = maxLines == 1,
-            value = if(keyboardType == KeyboardType.Number && value==0.toString()) "" else value,
+            value = if (keyboardType == KeyboardType.Number && value == 0.toString()) "" else value,
             enabled = isEnabled,
             onValueChange = {
-                onValueChanged(if(keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
+                onValueChanged(if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
             },
-            maxLines=maxLines,
+            label = {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            maxLines = maxLines,
             readOnly = isReadOnly,
             shape = MaterialTheme.shapes.small,
             isError = isError,
