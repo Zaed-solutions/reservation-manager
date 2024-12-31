@@ -677,6 +677,12 @@ fun HomeScreenContent(
                                     onAction(
                                         HomeUiAction.OnEditCustomerClicked(customer)
                                     )
+                                },
+                                onMessagePhoneNumber = { phoneNumber ->
+                                    onAction(HomeUiAction.OnMessagePhoneNumber(phoneNumber))
+                                },
+                                onCopyPhoneNumber = { phoneNumber ->
+                                    onAction(HomeUiAction.OnCopyPhoneNumber(phoneNumber))
                                 }
                             )
                         }

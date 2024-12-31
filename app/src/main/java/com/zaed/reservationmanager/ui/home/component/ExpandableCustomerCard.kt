@@ -1,7 +1,9 @@
 package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,13 +41,15 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableCustomerCard(
     customer: Customer,
     onViewDetailsClicked: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
-    onEditClicked: () -> Unit = {}
+    onEditClicked: () -> Unit = {},
+    onMessagePhoneNumber: () -> Unit = {},
+    onCopyPhoneNumber: () -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -76,7 +80,11 @@ fun ExpandableCustomerCard(
                     text = customer.phoneNumber.takeIf { it.length <= 15 }
                         ?: "${customer.phoneNumber.take(15)}...",
                     style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.combinedClickable(
+                        onClick = { onMessagePhoneNumber() },
+                        onLongClick = { onCopyPhoneNumber() }
+                    )
                 )
 
             }

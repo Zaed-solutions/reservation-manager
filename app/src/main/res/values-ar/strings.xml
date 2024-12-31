@@ -245,4 +245,22 @@
     <string name="tourism_company_account">حساب شركة السياحة</string>
     <string name="travel_company_account">حساب شركة النقل</string>
     <string name="direct_customer">عميل مباشر</string>
+    <string name="payment_updated_successfully">تم تحديث الدفع بنجاح</string>
+    <string name="payment_added_successfully">تم إضافة الدفع بنجاح</string>
+    <string name="payment">الدفع</string>
+    <string name="payment_deleted_successfully">تم حذف الدفع بنجاح</string>
+    <string name="company_reservations">حجوزات الشركة</string>
+    <string name="payments">المدفوعات</string>
+    <string name="description_is_required">الوصف مطلوب</string>
+    <string name="amount_is_required">المبلغ مطلوب</string>
+    <string name="description">الوصف</string>
+    <string name="amount">المبلغ</string>
+    <string name="no_payments_added">لا توجد مدفوعات مضافة</string>
+    <string name="save_payment">حفظ الدفع</string>
+    <string name="tourism_ride_price">سعر رحلة السياحة</string>
+    <string name="tourism_collected_amount">المبلغ المحصل للسياحة</string>
+    <string name="tourism_balance">رصيد السياحة</string>
+    <string name="travel_ride_price">سعر رحلة السفر</string>
+    <string name="travel_collected_amount">المبلغ المحصل للسفر</string>
+    <string name="travel_company_balance">رصيد شركة السفر</string>
 </resources>

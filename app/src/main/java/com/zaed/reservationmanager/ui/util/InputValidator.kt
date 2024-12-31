@@ -1,13 +1,27 @@
 package com.zaed.reservationmanager.ui.util
 
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Message
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.company.details.components.PaymentError
 import com.zaed.reservationmanager.ui.messages.components.MessageError
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import kotlinx.datetime.Clock
 
 object InputValidator {
+    fun validatePayment(payment: CompanyPayment): PaymentError? {
+        return if (payment.amount == 0.0) {
+            PaymentError.AMOUNT_IS_REQUIRED
+        } else if (payment.createdAtEpochSeconds == 0L) {
+            PaymentError.DATE_IS_REQUIRED
+        } else if (payment.description.isBlank()) {
+            PaymentError.DESCRIPTION_IS_REQUIRED
+        } else {
+            null
+        }
+    }
+
     fun isEmailValid(email: String): Boolean {
         val emailRegex = Regex(
         """^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"""

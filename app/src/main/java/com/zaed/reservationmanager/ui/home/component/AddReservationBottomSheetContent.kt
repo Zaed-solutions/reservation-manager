@@ -75,7 +75,8 @@ fun AddReservationBottomSheetContent(
         //Date
         DatePickerFieldToModal(
             initialValue = initialReservation.date,
-            errorMessage = reservationError,
+            isError = reservationError == ReservationError.DATE_IS_REQUIRED,
+            errorMessageRes = reservationError.messageRes,
             onDateSelected = { newDate ->
                 reservation = reservation.copy(
                     date = newDate ?: 0L
