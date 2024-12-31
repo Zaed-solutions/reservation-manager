@@ -76,7 +76,7 @@ fun ReservationItem(
     isEditProfileEnabled: Boolean = true,
 ) {
     var isExpanded by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     var isOptionMenuVisible by remember {
         mutableStateOf(false)
