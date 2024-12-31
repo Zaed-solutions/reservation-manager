@@ -109,7 +109,7 @@
     <string name="driver_is_required">السائق مطلوب</string>
     <string name="start_location_is_required">بداية الحركة مطلوبة</string>
     <string name="end_location_is_required">نهاية الحركة مطلوبة</string>
-    <string name="buying_price_is_required">سعر الشراء مطلوب</string>
+    <string name="buying_price_is_required">مبلغ التحصيل مطلوب</string>
     <string name="save_reservation">حفظ الحجز</string>
     <string name="drivers">السائقين</string>
     <string name="buying_price">سعر الشراء</string>
@@ -149,7 +149,7 @@
     <string name="total_earnings">إجمالي الأرباح</string>
     <string name="total_balance">الرصيد العام:</string>
     <string name="reservation_number">رقم الحجز</string>
-    <string name="selling_price_is_required">سعر البيع مطلوب</string>
+    <string name="selling_price_is_required">سعر المشوار مطلوب</string>
     <string name="travel_company_phone_number_is_not_set">رقم جوال شركة النقل غير مسجل</string>
     <string name="save_changes">حفظ التغييرات</string>
     <string name="drop_down_lists">تحديث القوائم المنسدلة</string>
@@ -232,11 +232,17 @@
     <string name="customer_deleted_successfully">تم حذف العميل بنجاح</string>
     <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>
     <string name="sar">%1$s ر.س.</string>
-    <string name="flight_number">رقم رحلة الطيران</string>
+    <string name="flight_number">رقم الرحلة</string>
     <string name="thanks_message">
         أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وأعذرونا ع القصور\nإن شاء الله يكون لنا فرصة…\nنخدمكم بزيارتكم القادمة\n\nالمسافرون لخدمات النقل،،،
     </string>
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
     <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | إجمالي الربح: %2$s</string>
+    <string name="ride2">المشوار</string>
+    <string name="collecting">التحصيل</string>
+    <string name="quota">الرصيد</string>
+    <string name="tourism_company_account">حساب شركة السياحة</string>
+    <string name="travel_company_account">حساب شركة النقل</string>
+    <string name="direct_customer">عميل مباشر</string>
 </resources>

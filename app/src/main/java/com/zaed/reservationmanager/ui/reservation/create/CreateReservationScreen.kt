@@ -56,7 +56,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CreateReservationScreen(
     viewModel: CreateReservationViewModel = koinViewModel(),
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToCustomerDetailsScreen : (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -69,7 +70,8 @@ fun CreateReservationScreen(
                 durationMillis = 1500L,
                 scope = scope,
                 onFinished = {
-                    navigateBack()
+                    navigateToCustomerDetailsScreen(state.customer.id)
+//                    navigateBack()
                 }
             )
         }

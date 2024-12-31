@@ -202,61 +202,24 @@ object SheetUtil {
                 val cell = headerRow.createCell(index)
                 cell.setCellValue(header)
             }
-            //TODO add more headers
-//            this.forEachIndexed { rowIndex, reservation ->
-//                val row = sheet.createRow(rowIndex + 1)
-//                var columnIndex = 0
-//
-//                row.createCell(columnIndex++)
-//                    .setCellValue(reservation.date.formatEpochSecondsToDateTime())
-//                row.createCell(columnIndex++).setCellValue(reservation.type)
-//                row.createCell(columnIndex++).setCellValue(reservation.car)
-//                row.createCell(columnIndex++).setCellValue(reservation.clientName)
+            this.forEachIndexed { rowIndex, reservation ->
+                val row = sheet.createRow(rowIndex + 1)
+                var columnIndex = 0
 
-//                if (!isTravelCompany) {
-//                    row.createCell(columnIndex++).setCellValue(reservation.sellingPrice.toDouble())
-//                }
-//                if (!isTourismCompany) {
-//                    row.createCell(columnIndex++).setCellValue(reservation.buyingPrice.toDouble())
-//                }
-//
-//                row.createCell(columnIndex++).setCellValue(reservation.collectedAmount.toDouble())
-//                row.createCell(columnIndex).setCellValue(
-//                    when {
-//                        isAllRides -> reservation.sellingPrice - reservation.buyingPrice
-//                        isTourismCompany -> reservation.sellingPrice - reservation.collectedAmount
-//                        isTravelCompany -> reservation.buyingPrice - reservation.collectedAmount
-//                        else -> 0.0
-//                    }.toDouble()
-//                )
-//            }
-//
-//            // Add a totals row at the end
-//            val totalsRow = sheet.createRow(this.size + 1)
-//            var columnIndex = 0
-//            totalsRow.createCell(columnIndex++).setCellValue("Total")
-//            repeat(3) { totalsRow.createCell(columnIndex++) } // Empty cells
-//
-//            val totalSelling = this.sumOf { it.sellingPrice }.toDouble()
-//            val totalBuying = this.sumOf { it.buyingPrice }.toDouble()
-//            val totalCollected = this.sumOf { it.collectedAmount }.toDouble()
-//            val totalBalance = this.sumOf {
-//                when {
-//                    isAllRides -> it.sellingPrice - it.buyingPrice
-//                    isTourismCompany -> it.sellingPrice - it.collectedAmount
-//                    isTravelCompany -> it.buyingPrice - it.collectedAmount
-//                    else -> 0
-//                }
-//            }.toDouble()
-//
-//            if (!isTravelCompany) {
-//                totalsRow.createCell(columnIndex++).setCellValue(totalSelling)
-//            }
-//            if (!isTourismCompany) {
-//                totalsRow.createCell(columnIndex++).setCellValue(totalBuying)
-//            }
-//            totalsRow.createCell(columnIndex++).setCellValue(totalCollected)
-//            totalsRow.createCell(columnIndex).setCellValue(totalBalance)
+                row.createCell(columnIndex++)
+                    .setCellValue(reservation.date.formatEpochSecondsToDateTime())
+                row.createCell(columnIndex++).setCellValue(reservation.type)
+                row.createCell(columnIndex++).setCellValue(reservation.car)
+                row.createCell(columnIndex++).setCellValue(reservation.clientName)
+                row.createCell(columnIndex++).setCellValue(reservation.tourismCompany)
+                row.createCell(columnIndex++).setCellValue(reservation.tourismRidePrice.toString())
+                row.createCell(columnIndex++).setCellValue(reservation.tourismCollectedAmount.toString())
+                row.createCell(columnIndex++).setCellValue((reservation.tourismRidePrice-reservation.tourismCollectedAmount).toString())
+                row.createCell(columnIndex++).setCellValue(reservation.travelCompany)
+                row.createCell(columnIndex++).setCellValue(reservation.travelRidePrice.toString())
+                row.createCell(columnIndex++).setCellValue(reservation.travelCollectedAmount.toString())
+                row.createCell(columnIndex++).setCellValue((reservation.travelRidePrice-reservation.travelCollectedAmount).toString())
+            }
 
             // Create a file in the external storage directory
             val fileName = "Reservations_${System.currentTimeMillis()}.xlsx"

@@ -108,7 +108,7 @@
     <string name="driver_is_required">Driver is required</string>
     <string name="start_location_is_required">Start location is required</string>
     <string name="end_location_is_required">End Location is required</string>
-    <string name="buying_price_is_required">Buying price is required</string>
+    <string name="buying_price_is_required">Collecting price is required</string>
     <string name="save_reservation">Save Reservation</string>
     <string name="drivers">Drivers</string>
     <string name="buying_price">Buying Price</string>
@@ -147,7 +147,7 @@
     <string name="total_earnings">Total Earnings</string>
     <string name="total_balance">Total Balance:</string>
     <string name="reservation_number">Reservation Number</string>
-    <string name="selling_price_is_required">Selling price is required</string>
+    <string name="selling_price_is_required">Ride price is required</string>
     <string name="travel_company_phone_number_is_not_set">Travel company phone number is not set</string>
     <string name="save_changes">Save Changes</string>
     <string name="drop_down_lists"> Update Drop Down Lists</string>
@@ -246,4 +246,16 @@
     <string name="amount">Amount</string>
     <string name="no_payments_added">No payments added</string>
     <string name="save_payment">Save Payment</string>
+    <string name="ride2">Ride</string>
+    <string name="collecting">Collecting</string>
+    <string name="quota">Quota</string>
+    <string name="tourism_company_account">Tourism Company Account</string>
+    <string name="travel_company_account">Travel Company Account</string>
+    <string name="direct_customer">Direct Customer</string>
+    <string name="tourism_ride_price">tourism ride price</string>
+    <string name="tourism_collected_amount">tourism collected amount</string>
+    <string name="tourism_balance">tourism_balance</string>
+    <string name="travel_ride_price">travel ride price</string>
+    <string name="travel_collected_amount">travel_collected_amount</string>
+    <string name="travel_company_balance">travel company balance</string>
 </resources>

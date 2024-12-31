@@ -200,10 +200,14 @@ fun HomeScreen(
                             context.getString(R.string.type),
                             context.getString(R.string.car),
                             context.getString(R.string.client_name),
-                            context.getString(R.string.selling_price),
-                            context.getString(R.string.buying_price),
-                            context.getString(R.string.collected_price),
-                            context.getString(R.string.balance)
+                            context.getString(R.string.tourism_company),
+                            context.getString(R.string.tourism_ride_price),
+                            context.getString(R.string.tourism_collected_amount),
+                            context.getString(R.string.tourism_balance),
+                            context.getString(R.string.travel_company),
+                            context.getString(R.string.travel_ride_price),
+                            context.getString(R.string.travel_collected_amount),
+                            context.getString(R.string.travel_company_balance)
                         )
                     )
                     scope.launch {
