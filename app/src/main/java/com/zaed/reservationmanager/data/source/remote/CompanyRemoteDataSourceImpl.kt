@@ -211,6 +211,10 @@ class CompanyRemoteDataSourceImpl(
                     Filter.equalTo("travelCompanyId", companyId)
                 )
             )
+            val reservationSnapshot = reservationQuery.get().await()
+            reservationSnapshot.documents.forEach { document ->
+                Log.d("ReservationDocument", document.data.toString())
+            }
             val paymentQuery = firestore.collection(COMPANY_PAYMENT_COLLECTION).whereEqualTo("companyId", companyId)
             val totalRidePriceResult = reservationQuery.aggregate(AggregateField.sum(if(companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice"))
                 .get(AggregateSource.SERVER).await()
@@ -219,27 +223,19 @@ class CompanyRemoteDataSourceImpl(
             val totalPaymentResult =  paymentQuery.aggregate(AggregateField.sum("amount"))
                 .get(AggregateSource.SERVER).await()
 
-            val totalRidePrice =
-                (totalRidePriceResult.get(
-                    AggregateField.sum(
-                        if(companyType == CompanyType.TOURISM)
-                            "tourismRidePrice"
-                        else
-                            "travelRidePrice"
-                    )) as? Double) ?: 0.0
-            val totalCollected =
-                (totalCollectedResult.get(AggregateField.sum(if(companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount")) as? Double)
-                    ?: 0.0
-            val totalPayment = (totalPaymentResult.get(AggregateField.sum("amount")) as? Double) ?: 0.0
+            val totalRidePrice = (totalRidePriceResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice")) as? Number)?.toDouble() ?: 0.0
+
+            val totalCollected = (totalCollectedResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount")) as? Number)?.toDouble() ?: 0.0
+            val totalPayment = (totalPaymentResult.get(AggregateField.sum("amount")) as? Number)?.toDouble() ?: 0.0
             Log.d(
                 "CompanyBalance",
-                "getCompanyBalance: $companyId $totalRidePrice $totalCollected"
+                "getCompanyBalance: $companyId $companyType totalRidePrice=$totalRidePrice, totalCollected=$totalCollected, totalPayment=$totalPayment"
             )
             Result.success(
                 CompanyBalance(
                     totalRidePrice = totalRidePrice,
-                    totalPayment = totalPayment,
-                    totalCollected = totalCollected
+                    totalCollected = totalCollected,
+                    totalPayment = totalPayment
                 )
             )
         } catch (e: Exception) {

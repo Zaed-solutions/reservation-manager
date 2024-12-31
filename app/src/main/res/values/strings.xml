@@ -234,6 +234,12 @@
     <string name="thanks_message_sent">Thank you message sent</string>
     <string name="send_thanks_message_to_customer">Send thank you message to customer</string>
     <string name="reservation_count_total_earnings">Reservation Count: %1$s  | Total Earnings: %2$s</string>
+    <string name="ride2">Ride</string>
+    <string name="collecting">Collecting</string>
+    <string name="quota">Quota</string>
+    <string name="tourism_company_account">Tourism Company Account</string>
+    <string name="travel_company_account">Travel Company Account</string>
+    <string name="direct_customer">Direct Customer</string>
     <string name="payment_updated_successfully">Payment updated successfully</string>
     <string name="payment_added_successfully">Payment added successfully</string>
     <string name="payment">Payment</string>
@@ -246,12 +252,6 @@
     <string name="amount">Amount</string>
     <string name="no_payments_added">No payments added</string>
     <string name="save_payment">Save Payment</string>
-    <string name="ride2">Ride</string>
-    <string name="collecting">Collecting</string>
-    <string name="quota">Quota</string>
-    <string name="tourism_company_account">Tourism Company Account</string>
-    <string name="travel_company_account">Travel Company Account</string>
-    <string name="direct_customer">Direct Customer</string>
     <string name="tourism_ride_price">tourism ride price</string>
     <string name="tourism_collected_amount">tourism collected amount</string>
     <string name="tourism_balance">tourism_balance</string>
