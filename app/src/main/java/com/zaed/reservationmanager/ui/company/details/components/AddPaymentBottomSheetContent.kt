@@ -49,9 +49,9 @@ fun AddPaymentBottomSheetContent(
     ) {
         TitledTextField(
             title = stringResource(R.string.amount),
-            initialValue = payment.amount.toString(),
+            initialValue =if (payment.amount == 0.0) "" else payment.amount.toString(),
             onValueChanged = { newText ->
-                if (newText.isNotBlank() && newText.matches(Regex("^\\d+\\.?\\d*\$"))) {
+                if (newText.toDoubleOrNull() != null) {
                     payment = payment.copy(
                         amount = newText.toDouble()
                     )

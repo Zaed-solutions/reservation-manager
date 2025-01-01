@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.ui.home.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -41,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -51,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.components.CustomOutlinedTextField
+import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 import java.text.NumberFormat
@@ -374,102 +379,97 @@ fun ReservationItem(
                         label = stringResource(R.string.flight_number),
                         value = reservation.flightNumber
                     )
+
                     Column {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            OutlinedTextField(
-                                value = stringResource(R.string.tourism_company_account),
-                                textStyle = MaterialTheme.typography.bodySmall,
+                            Surface(
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+
+                                ),
                                 modifier = Modifier.weight(2f),
-                                onValueChange = {},
-                                singleLine = true,
-                                readOnly = true,
-                                enabled = false
-                            )
-                            OutlinedTextField(
-                                value = reservation.tourismCompany.ifBlank { stringResource(R.string.direct_customer) },
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = 8.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.tourism_company_account),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
+                            Surface(
+                                border = BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                ),
                                 modifier = Modifier.weight(1f),
-                                textStyle = MaterialTheme.typography.bodySmall,
-                                onValueChange = {},
-                                singleLine = true,
-                                readOnly = true,
-                                enabled = false
-                            )
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(topEnd = 8.dp)
+
+                            ) {
+                                Text(
+                                    text = reservation.tourismCompany.ifEmpty { stringResource(R.string.direct_customer) },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
                         }
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().padding(top=8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            OutlinedTextField(
+
+                            CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
                                 value = if (reservation.tourismRidePrice == 0) "" else reservation.tourismRidePrice.toString(),
-                                onValueChange = {},
-                                label = {
-                                    Text(
-                                        text = stringResource(R.string.ride2),
-                                        style = MaterialTheme.typography.bodySmall,
-                                    )
-                                },
+                                onValueChanged = {},
+                                label = stringResource(R.string.ride2),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                        alpha = 0.5f
-                                    ),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                 ),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number,
                                     imeAction = ImeAction.Default
                                 ),
+                                shape = RoundedCornerShape(bottomStart = 8.dp),
                                 singleLine = true,
                                 readOnly = true,
-                                enabled = false
+                                enabled = false,
                             )
-                            OutlinedTextField(
+                            CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
                                 value = if (reservation.tourismCollectedAmount == 0) "" else reservation.tourismCollectedAmount.toString(),
-                                onValueChange = {},
-                                label = {
-                                    Text(
-                                        text = stringResource(R.string.collecting),
-                                        style = MaterialTheme.typography.bodySmall,
-                                    )
-                                },
+                                onValueChanged = { },
+                                label = stringResource(R.string.collecting),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                        alpha = 0.5f
-                                    ),
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                 ),
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Default
-                                ),
+                                shape = RoundedCornerShape(0.dp),
                                 singleLine = true,
                                 readOnly = true,
-                                enabled = false
+                                enabled = false,
                             )
-                            OutlinedTextField(
+                            CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
                                 value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
-                                onValueChange = {},
-                                label = {
-                                    Text(
-                                        text = stringResource(R.string.quota),
-                                        style = MaterialTheme.typography.bodySmall,
-                                    )
-                                },
+                                onValueChanged = {},
+                                shape = RoundedCornerShape(bottomEnd = 8.dp),
+                                label =stringResource(R.string.quota),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                        alpha = 0.5f
-                                    ),
-                                ),
-                                keyboardOptions = KeyboardOptions.Default.copy(
-                                    keyboardType = KeyboardType.Number,
-                                    imeAction = ImeAction.Default
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                 ),
                                 singleLine = true,
                                 readOnly = true,
-                                enabled = false
+                                enabled = false,
+                                isError = false,
                             )
 
                         }
@@ -481,102 +481,94 @@ fun ReservationItem(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                OutlinedTextField(
-                                    value = stringResource(R.string.travel_company_account),
-                                    textStyle = MaterialTheme.typography.bodySmall,
+                                Surface(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    ),
                                     modifier = Modifier.weight(2f),
-                                    onValueChange = {},
-                                    singleLine = true,
-                                    readOnly = true,
-                                    enabled = false
-                                )
-                                OutlinedTextField(
-                                    value = reservation.travelCompany,
+                                    color = Color.Transparent,
+                                    shape = RoundedCornerShape(topStart = 8.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.travel_company_account),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                }
+                                Surface(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    ),
                                     modifier = Modifier.weight(1f),
-                                    textStyle = MaterialTheme.typography.bodySmall,
-                                    onValueChange = {},
-                                    singleLine = true,
-                                    readOnly = true,
-                                    enabled = false
-                                )
+                                    color = Color.Transparent,
+                                    shape = RoundedCornerShape(topEnd = 8.dp)
+                                ) {
+                                    Text(
+                                        text = reservation.travelCompany,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                }
                             }
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(top=8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
                                     value = if (reservation.travelRidePrice == 0) "" else reservation.travelRidePrice.toString(),
-                                    onValueChange = {},
-                                    label = {
-                                        Text(
-                                            text = stringResource(R.string.ride2),
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    },
+                                    onValueChanged = {},
+                                    label = stringResource(R.string.ride2),
+
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                            alpha = 0.5f
-                                        ),
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     ),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Default
-                                    ),
+
+                                    shape = RoundedCornerShape(bottomStart = 8.dp),
                                     singleLine = true,
                                     readOnly = true,
-                                    enabled = false
+                                    enabled = false,
                                 )
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
                                     value = if (reservation.travelCollectedAmount == 0) "" else reservation.travelCollectedAmount.toString(),
-                                    onValueChange = {},
-                                    label = {
-                                        Text(
-                                            text = stringResource(R.string.collecting),
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    },
+                                    onValueChanged = {},
+                                    label = stringResource(R.string.collecting),
+
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                            alpha = 0.5f
-                                        ),
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     ),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Default
-                                    ),
+
+                                    shape = RoundedCornerShape(0.dp),
                                     singleLine = true,
+                                    enabled = false,
                                     readOnly = true,
-                                    enabled = false
                                 )
-                                OutlinedTextField(
+                                CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
                                     value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
-                                    onValueChange = {},
-                                    label = {
-                                        Text(
-                                            text = stringResource(R.string.quota),
-                                            style = MaterialTheme.typography.bodySmall,
-                                        )
-                                    },
+                                    onValueChanged = {},
+                                    shape = RoundedCornerShape(bottomEnd = 8.dp),
+                                    label =stringResource(R.string.quota),
                                     colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(
-                                            alpha = 0.5f
-                                        ),
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                                     ),
-                                    keyboardOptions = KeyboardOptions.Default.copy(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = ImeAction.Default
-                                    ),
+
+                                    supportingText = {},
                                     singleLine = true,
                                     readOnly = true,
-                                    enabled = false
+                                    enabled = false,
+                                    isError = false,
                                 )
 
                             }
-                        }
-                    }
+                        }                    }
                     DetailRow(
                         label = stringResource(R.string.notes),
                         value = reservation.note,
