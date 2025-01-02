@@ -172,8 +172,8 @@
     <string name="tomorrow">الغد</string>
     <string name="from_today_onwards">بداية من اليوم</string>
     <string name="selected_range">فترة محددة</string>
-    <string name="selected_range_place">الفترة من %1$s إلى %2$s</string>
-    <string name="selected_date_place">التاريخ المحدد: %1$s</string>
+    <string name="selected_range_place">حجوزات الفترة من %1$s إلى %2$s</string>
+    <string name="selected_date_place">حجوزات %1$s</string>
     <string name="customer_name">اسم العميل</string>
     <string name="company_phone">جوال الشركة</string>
     <string name="reservation_details_arrow"><![CDATA[تفاصيل الحجز >]]></string>

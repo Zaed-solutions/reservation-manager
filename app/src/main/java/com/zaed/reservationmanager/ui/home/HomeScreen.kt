@@ -95,6 +95,7 @@ import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
 import com.zaed.reservationmanager.ui.util.formatMoney
+import com.zaed.reservationmanager.ui.util.getDate
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -722,11 +723,11 @@ fun HomeScreenContent(
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
-                            } else if (selectedTimeFilter is TimeFilter.FixedDate) {
+                            } else if(selectedTimeFilter !is TimeFilter.TodayOnwards && selectedTimeFilter !is TimeFilter.All){
                                 Text(
                                     text = stringResource(
                                         R.string.selected_date_place,
-                                        selectedTimeFilter.date.formatEpochSecondsToDate()
+                                        selectedTimeFilter.getDate()
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
