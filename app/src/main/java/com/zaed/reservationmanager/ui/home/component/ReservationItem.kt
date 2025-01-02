@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -558,8 +559,11 @@ fun ReservationItem(
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
                             Button(
-                                enabled = !reservation.sentConfirmToCustomer,
                                 onClick = { onSendConfirmationToCustomer() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentConfirmToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentConfirmToCustomer) ButtonDefaults.buttonElevation() else null,
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
@@ -579,6 +583,7 @@ fun ReservationItem(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    color = if (reservation.sentConfirmToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(
                                         if (reservation.sentConfirmToCustomer)
@@ -591,10 +596,13 @@ fun ReservationItem(
 
                             if (reservation.travelCompany.isNotBlank()) {
                                 Button(
-                                    enabled = !reservation.sentToDriverCompany,
                                     onClick = { onSendInfoToTravelCompany() },
                                     modifier = Modifier
                                         .fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (!reservation.sentToDriverCompany) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                    ),
+                                    elevation = if (!reservation.sentToDriverCompany) ButtonDefaults.buttonElevation() else null,
                                     contentPadding = PaddingValues(
                                         horizontal = 16.dp,
                                         vertical = 8.dp
@@ -609,6 +617,7 @@ fun ReservationItem(
                                         modifier = Modifier.padding(start = 8.dp),
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 1,
+                                        color = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                         overflow = TextOverflow.Ellipsis,
                                         text = stringResource(
                                             if (reservation.sentToDriverCompany)
@@ -621,14 +630,17 @@ fun ReservationItem(
                             }
 
                             Button(
-                                enabled = !reservation.sentDriverInfoToCustomer,
                                 onClick = { onSendDriverInfoToClient() },
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
                                 ),
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentDriverInfoToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentDriverInfoToCustomer) ButtonDefaults.buttonElevation() else null,
                             ) {
                                 Icon(
                                     imageVector = if (reservation.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
@@ -642,6 +654,7 @@ fun ReservationItem(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    color = if (reservation.sentDriverInfoToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(
                                         if (reservation.sentDriverInfoToCustomer)
@@ -652,14 +665,17 @@ fun ReservationItem(
                                 )
                             }
                             Button(
-                                enabled = !reservation.sentThanksToCustomer,
                                 onClick = { onSendThanksToCustomer() },
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
                                 ),
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentThanksToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentThanksToCustomer) ButtonDefaults.buttonElevation() else null,
                             ) {
                                 Icon(
                                     imageVector = if (reservation.sentThanksToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
@@ -672,6 +688,7 @@ fun ReservationItem(
                                 Text(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
+                                    color = if (reservation.sentThanksToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(
