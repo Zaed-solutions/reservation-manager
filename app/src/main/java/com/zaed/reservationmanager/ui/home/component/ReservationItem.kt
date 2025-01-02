@@ -429,12 +429,9 @@ fun ReservationItem(
 
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if (reservation.tourismRidePrice == 0) "" else reservation.tourismRidePrice.toString(),
+                                value = reservation.tourismRidePrice.toString(),
                                 onValueChanged = {},
                                 label = stringResource(R.string.ride2),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number,
                                     imeAction = ImeAction.Default
@@ -446,12 +443,9 @@ fun ReservationItem(
                             )
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if (reservation.tourismCollectedAmount == 0) "" else reservation.tourismCollectedAmount.toString(),
+                                value = reservation.tourismCollectedAmount.toString(),
                                 onValueChanged = { },
                                 label = stringResource(R.string.collecting),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 shape = RoundedCornerShape(0.dp),
                                 singleLine = true,
                                 readOnly = true,
@@ -459,13 +453,10 @@ fun ReservationItem(
                             )
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
+                                value = (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
                                 onValueChanged = {},
                                 shape = RoundedCornerShape(bottomEnd = 8.dp),
                                 label =stringResource(R.string.quota),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 singleLine = true,
                                 readOnly = true,
                                 enabled = false,
@@ -522,14 +513,9 @@ fun ReservationItem(
                             ) {
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if (reservation.travelRidePrice == 0) "" else reservation.travelRidePrice.toString(),
+                                    value = reservation.travelRidePrice.toString(),
                                     onValueChanged = {},
                                     label = stringResource(R.string.ride2),
-
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     shape = RoundedCornerShape(bottomStart = 8.dp),
                                     singleLine = true,
                                     readOnly = true,
@@ -537,14 +523,9 @@ fun ReservationItem(
                                 )
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if (reservation.travelCollectedAmount == 0) "" else reservation.travelCollectedAmount.toString(),
+                                    value = reservation.travelCollectedAmount.toString(),
                                     onValueChanged = {},
                                     label = stringResource(R.string.collecting),
-
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     shape = RoundedCornerShape(0.dp),
                                     singleLine = true,
                                     enabled = false,
@@ -552,14 +533,10 @@ fun ReservationItem(
                                 )
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
+                                    value = (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
                                     onValueChanged = {},
                                     shape = RoundedCornerShape(bottomEnd = 8.dp),
                                     label =stringResource(R.string.quota),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     supportingText = {},
                                     singleLine = true,
                                     readOnly = true,
@@ -568,7 +545,8 @@ fun ReservationItem(
                                 )
 
                             }
-                        }                    }
+                        }
+                    }
                     DetailRow(
                         label = stringResource(R.string.notes),
                         value = reservation.note,

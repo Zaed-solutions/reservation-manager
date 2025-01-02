@@ -61,8 +61,6 @@ object InputValidator {
             ReservationError.START_LOCATION_IS_REQUIRED
         } else if (reservation.endLocation.isBlank()) {
             ReservationError.END_LOCATION_IS_REQUIRED
-        } else if (reservation.tourismRidePrice == 0) {
-            ReservationError.RIDE_PRICE_IS_REQUIRED
         } else {
             null
         }

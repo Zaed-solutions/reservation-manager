@@ -28,9 +28,9 @@ fun CustomOutlinedTextField(
     value: String = "",
     onValueChanged: (String) -> Unit = {},
     label: String = "",
+    placeholder: String = "",
     isError: Boolean = false,
     supportingText: @Composable () -> Unit = {},
-    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     shape: Shape = RectangleShape,
     singleLine: Boolean = true,
@@ -46,7 +46,8 @@ fun CustomOutlinedTextField(
         onValueChange = onValueChanged,
         textStyle = MaterialTheme.typography.bodyMedium.copy(
             color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-        ),        keyboardOptions = keyboardOptions,
+        ),
+        keyboardOptions = keyboardOptions,
         modifier = modifier.height(if(isError)50.dp else 35.dp),
 
         interactionSource = interactionSource,
@@ -59,6 +60,12 @@ fun CustomOutlinedTextField(
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             },
             innerTextField = innerTextField,
