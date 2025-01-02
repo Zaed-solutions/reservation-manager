@@ -129,15 +129,13 @@
     <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
     <string name="collected_price">سعر التحصيل</string>
     <string name="selling_price">سعر البيع</string>
-    <string name="confirmation_message">**أ/ %1$s\nمحجوز لكم مواصلات بتاريخ\n%2$s\nسيتم التواصل معكم قبل سفركم\nوإرسال تفاصيل حركة النقل\n\nالمـسافرون لخدمات النقل،،،**</string>
+    <string name="confirmation_message">*أ/ %1$s*\n*محجوز لكم مواصلات بتاريخ*\n%2$s\n*سيتم التواصل معكم قبل سفركم*\n*وإرسال تفاصيل حركة النقل*\n\n*المـسافرون لخدمات النقل،،،*</string>
 
 
-    <string name="reservation_details_message">
-    **أ/ %1$s\nتاريخ الحركة الخاصة بكم:\n%2$s\nنوع السيارة: %3$s\nيتشرف بخدمتكم…\nكابتن/ %4$s\nجواله/ %5$s\nرحلة موفقة بإذن الله\n\nالمسافرون لخدمات النقل،،،**
-</string>
-    <string name="transportation_details">
-    - إسم الضيف: %1$s\n- جوال الضيف: %2$s\n- التاريخ: %3$s\n- نوع السيارة: عدد %5$d %4$s\n- بداية الرحلة: %6$s\n- رقم الرحلة: %7$s\n- نهاية الرحلة: %8$s\n- سعر المشوار: %9$s\n- مبلغ التحصيل: %10$s\n- ملاحظات:\n%11$s\n\n\n%12$s
-</string>
+    <string name="reservation_details_message">*أ/ %1$s*\n*تاريخ الحركة الخاصة بكم:*\n%2$s\n*نوع السيارة: %3$s*\n*يتشرف بخدمتكم…*\n*كابتن/ %4$s*\n*جواله/ %5$s*\n*رحلة موفقة بإذن الله*\n\n*المسافرون لخدمات النقل،،،*</string>
+
+    <string name="transportation_details">*إسم الضيف: %1$s*\n*جوال الضيف: %2$s*\n*التاريخ: %3$s*\n*نوع السيارة: عدد %5$d %4$s*\n*بداية الرحلة: %6$s*\n*رقم الرحلة: %7$s*\n*نهاية الرحلة: %8$s*\n*سعر المشوار: %9$s*\n*مبلغ التحصيل: %10$s*\n*ملاحظات:*\n%11$s\n\n*%12$s*</string>
+
     <string name="positive_trip_balance">حساب المشوار عندي %1$d ريال</string>
     <string name="negative_trip_balance">عمولة المشوار %1$d ريال</string>
     <string name="employees">الموظفون</string>

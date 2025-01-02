@@ -20,11 +20,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Message
-import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledTextField
-import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.util.InputValidator
-import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
 @Composable
 fun AddMessageBottomSheetContent(

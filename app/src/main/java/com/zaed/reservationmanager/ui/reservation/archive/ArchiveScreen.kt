@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.ui.home.HomeUiAction
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import kotlinx.coroutines.launch

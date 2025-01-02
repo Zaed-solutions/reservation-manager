@@ -70,7 +70,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.core.text.isDigitsOnly
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
@@ -85,6 +84,7 @@ import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 import com.zaed.reservationmanager.ui.home.component.TimeFiltersChips
+import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
@@ -909,41 +909,4 @@ fun CustomerListScreenPreview() {
     ReservationManagerTheme {
         HomeScreenContent()
     }
-}
-fun getTransportationDetailsMessage(
-    context: Context,
-    reservation: Reservation,
-    isArabic: Boolean = Locale.getDefault().language == "ar"
-): String {
-    val difference = reservation.travelRidePrice - reservation.travelCollectedAmount
-
-    val additionalMessageResId = if (difference > 0) {
-        R.string.positive_trip_balance
-    } else {
-        R.string.negative_trip_balance
-    }
-
-    val additionalMessage = context.getString(additionalMessageResId, kotlin.math.abs(difference))
-
-    val mainMessageResId = if (isArabic) {
-        R.string.transportation_details
-    } else {
-        R.string.transportation_details
-    }
-
-    return context.getString(
-        mainMessageResId,
-        reservation.clientName,
-        reservation.clientPhone,
-        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-        reservation.car,
-        reservation.carCount, // New field
-        reservation.startLocation,
-        reservation.flightNumber,
-        reservation.endLocation,
-        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
-        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
-        reservation.note,
-        additionalMessage // %12$s
-    )
 }

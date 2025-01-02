@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
