@@ -72,7 +72,7 @@ fun AddPaymentBottomSheetContent(
             initialValue =  payment.description,
             onValueChanged = { newText ->
                 payment = payment.copy(
-                    description = newText
+                    description = newText.trim()
                 )
             },
             isOptional = true,

@@ -161,7 +161,7 @@ class CreateCustomerViewModel(
     private fun updateEmail(email: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(email = email)
+                customer = oldState.customer.copy(email = email.trim())
             )
         }
     }
@@ -169,14 +169,14 @@ class CreateCustomerViewModel(
     private fun updateMobile1(mobile1: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(phoneNumber1 = mobile1)
+                customer = oldState.customer.copy(phoneNumber1 = mobile1.trim())
             )
         }
     }
     private fun updateMobile2(mobile2: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(phoneNumber2 = mobile2)
+                customer = oldState.customer.copy(phoneNumber2 = mobile2.trim())
             )
         }
     }
@@ -184,7 +184,7 @@ class CreateCustomerViewModel(
     private fun updateCountryOfResidence(residenceCountry: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(residenceCountry = residenceCountry)
+                customer = oldState.customer.copy(residenceCountry = residenceCountry.trim())
             )
         }
     }
@@ -192,7 +192,7 @@ class CreateCustomerViewModel(
     private fun updateNationality(nationality: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(nationality = nationality)
+                customer = oldState.customer.copy(nationality = nationality.trim())
             )
         }
     }
@@ -200,14 +200,14 @@ class CreateCustomerViewModel(
     private fun updateClientName(name: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(name = name)
+                customer = oldState.customer.copy(name = name.trim())
             )
         }
     }
     private fun updateMobile(city: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(city = city)
+                customer = oldState.customer.copy(city = city.trim())
             )
         }
     }
