@@ -159,7 +159,7 @@
     <string name="customer_details">تفاصيل العميل</string>
     <string name="phonenumber_is_blank">رقم الجوال فارغ</string>
     <string name="copied_to_clipboard">تم النسخ إلى الحافظة</string>
-    <string name="export_as_csv">تصدير كـ CSV</string>
+    <string name="export_as_csv">تصدير كـ Excel</string>
     <string name="export_as_pdf">تصدير كـ PDF</string>
     <string name="customers_list">قائمة العملاء</string>
     <string name="customers_list_for_country">قائمة العملاء لدولة: %1$s</string>
@@ -167,8 +167,8 @@
     <string name="error_exporting_pdf">حدث خطأ أثناء تصدير الـ PDF!</string>
     <string name="open">فتح</string>
     <string name="no_pdf_viewer_found">لم يتم العثور على عارض PDF!</string>
-    <string name="no_csv_viewer_found">لم يتم العثور على عارض CSV!</string>
-    <string name="error_exporting_csv">حدث خطأ أثناء تصدير الـ CSV!</string>
+    <string name="no_csv_viewer_found">لم يتم العثور على عارض Excel!</string>
+    <string name="error_exporting_csv">حدث خطأ أثناء تصدير الـ Excel!</string>
     <string name="today">اليوم</string>
     <string name="yesterday">الأمس</string>
     <string name="tomorrow">الغد</string>
@@ -180,7 +180,7 @@
     <string name="company_phone">جوال الشركة</string>
     <string name="reservation_details_arrow"><![CDATA[تفاصيل الحجز >]]></string>
     <string name="smart_search">البحث الذكي</string>
-    <string name="csv_saved_at">تم حفظ الـ CSV في %1$s</string>
+    <string name="csv_saved_at">تم حفظ الـ Excel في %1$s</string>
     <string name="dd_mm_yyyy">يوم / شهر / سنة</string>
     <string name="balance">الرصيد</string>
     <string name="dismiss">الغاء</string>
@@ -267,4 +267,5 @@
     <string name="travel_company_balance">رصيد شركة السفر</string>
     <string name="city">المدينة</string>
     <string name="phone_number_is_blank">رقم الجوال فارغ</string>
+    <string name="import_customers_from_excel">استخراج العملاء من ملف Excel</string>
 </resources>

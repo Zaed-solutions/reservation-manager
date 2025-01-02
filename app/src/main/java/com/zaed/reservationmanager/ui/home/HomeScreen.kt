@@ -499,7 +499,7 @@ fun HomeScreenContent(
                                 },
                                 text = {
                                     Text(
-                                        text = "Import Customers from Excel",
+                                        text = stringResource(R.string.import_customers_from_excel),
                                     )
                                 },
                             )
