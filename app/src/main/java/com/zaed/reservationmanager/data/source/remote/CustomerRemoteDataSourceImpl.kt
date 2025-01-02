@@ -22,7 +22,7 @@ class CustomerRemoteDataSourceImpl(
         Log.d(TAG, "createCustomer: $customer")
         try {
             firestore.collection(CUSTOMER_COLLECTION)
-                .whereEqualTo("phoneNumber", customer.phoneNumber1).get()
+                .whereEqualTo("phoneNumber1", customer.phoneNumber1).get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
                         val document = firestore.collection(CUSTOMER_COLLECTION).document()

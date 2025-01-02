@@ -15,8 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -130,7 +128,7 @@ fun AddReservationBottomSheetContent(
                     val company = tourismCompanies[index]
                     reservation = reservation.copy(
                         tourismCompany = company.name,
-                        tourismCompanyPhone = company.phoneNumber,
+                        tourismCompanyPhone = company.phoneNumber1,
                         tourismCompanyId = company.id,
                         tourismEmployeePhone = "",
                         tourismEmployeeId = "",
@@ -422,7 +420,7 @@ fun AddReservationBottomSheetContent(
                     val company = travelCompanies[index]
                     reservation = reservation.copy(
                         travelCompany = company.name,
-                        travelCompanyPhone = company.phoneNumber,
+                        travelCompanyPhone = company.phoneNumber1,
                         travelCompanyId = company.id,
                         driverId = "",
                         driver = "",

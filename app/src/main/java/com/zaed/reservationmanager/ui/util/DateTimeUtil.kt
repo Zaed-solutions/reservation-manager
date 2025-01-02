@@ -10,7 +10,9 @@ import java.util.Locale
 fun Long.formatEpochSecondsToDate(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
-    val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
     return dateTime.format(formatter)
 }
 fun TimeFilter.getDate(): String {
@@ -25,21 +27,27 @@ fun TimeFilter.getDate(): String {
     val locale = Locale.getDefault()
     val isArabic = locale.language == "ar"
     val formatterPattern = if (isArabic) "EEEE dd/MMMM/yyyy'\u0645'" else "EEEE dd/MMMM/yyyy"
-    val formatter = DateTimeFormatter.ofPattern(formatterPattern, locale)
+    val formatter = DateTimeFormatter.ofPattern(formatterPattern, locale).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
     return dateTime.format(formatter)
 }
 
 fun Long.formatEpochSecondsToMonthlyDate(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
-    val formatter = DateTimeFormatter.ofPattern("dd/MMMM", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("dd/MMMM", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
     return dateTime.format(formatter)
 }
 
 fun Long.formatEpochSecondsToDateTime(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
-    val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy, hh:mm a", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy, hh:mm a", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
     return dateTime.format(formatter)
 }
 fun Long.formatEpochSecondsToMessageDateTime(): String {

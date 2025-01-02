@@ -229,7 +229,7 @@ fun NewClientDataEntryScreenContent(
                 onValueChanged = { newText ->
                         action(CreateCustomerUiAction.UpdateNumber2(newText))
                 },
-                isOptional = false,
+                isOptional = true,
                 keyboardType = KeyboardType.Phone
             )
             TitledTextField2(

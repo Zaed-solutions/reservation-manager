@@ -649,7 +649,7 @@ fun HomeScreenContent(
                                 Text(
                                     text = stringResource(
                                         R.string.customers_count_is_customers,
-                                        customers.size
+                                        NumberFormat.getInstance(Locale.getDefault()).format(customers.size)
                                     ),
                                     modifier = Modifier.padding(start = 8.dp,top = 8.dp)
                                 )
@@ -728,7 +728,7 @@ fun HomeScreenContent(
                                 Text(
                                     text  = stringResource(
                                         R.string.reservation_count_total_earnings,
-                                        reservations.size,
+                                        NumberFormat.getInstance(Locale.getDefault()).format(reservations.size),
                                         context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(totalEarnings))
                                     ),
 

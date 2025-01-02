@@ -8,7 +8,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -16,7 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -28,7 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +47,7 @@ import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.ui.company.display.components.CompaniesList
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.PhoneUtil
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,6 +61,10 @@ fun CompaniesScreen(
     onNavigateToAddCompany: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     CompaniesScreenContent(
         modifier = modifier,
         onAction = { action ->
@@ -63,11 +77,48 @@ fun CompaniesScreen(
 
                 is CompaniesUiAction.OnEditCompanyClicked -> onNavigateToEditCompany(action.company)
                 CompaniesUiAction.OnAddCompanyClicked -> onNavigateToAddCompany()
+                is CompaniesUiAction.OnCopyPhoneNumber -> {
+                    if (action.phoneNumber.isNotBlank()) {
+                        clipboardManager.setText(AnnotatedString(action.phoneNumber))
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.number_copied_to_clipboard),
+                                withDismissAction = true
+                            )
+                        }
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(context.getString(R.string.phone_number_is_blank))
+                        }
+                    }
+                }
+
+                is CompaniesUiAction.OnMessagePhoneNumber -> {
+                    if (action.phoneNumber.isNotBlank()) {
+                        PhoneUtil.sendWhatsappMessage(
+                            context = context,
+                            phoneNumber = action.phoneNumber,
+                            message = "",
+                            onFailure = {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                                }
+                            }
+                        )
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(context.getString(R.string.phone_number_is_blank))
+                        }
+                    }
+                }
+
                 else -> viewModel.handleAction(action)
             }
         },
-        tourismCompanies = state.tourismCompanies,
-        travelCompanies = state.travelCompanies,
+        searchQuery = state.searchQuery,
+        tourismCompanies = state.displayTourismCompanies,
+        travelCompanies = state.displayTravelCompanies,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -76,8 +127,10 @@ fun CompaniesScreen(
 private fun CompaniesScreenContent(
     modifier: Modifier = Modifier,
     onAction: (CompaniesUiAction) -> Unit = {},
+    searchQuery: String = "",
     tourismCompanies: List<Company> = emptyList(),
-    travelCompanies: List<Company> = emptyList()
+    travelCompanies: List<Company> = emptyList(),
+    snackbarHostState: SnackbarHostState? = null,
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { CompanyType.entries.size })
@@ -89,6 +142,7 @@ private fun CompaniesScreenContent(
     }
     Scaffold(
         modifier = modifier,
+        snackbarHost = { snackbarHostState?.let { SnackbarHost(it) } },
         floatingActionButton = {
             FloatingActionButton(onClick = { onAction(CompaniesUiAction.OnAddCompanyClicked) }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null)
@@ -120,7 +174,42 @@ private fun CompaniesScreenContent(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            TabRow(selectedTabIndex = pagerState.currentPage) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    val data = if (it.matches(Regex("[+\\d\\s]+"))) it.replace(" ", "") else it
+                    onAction(CompaniesUiAction.UpdateSearchQuery(data))
+                },
+                placeholder = { Text(stringResource(R.string.smart_search)) },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                onAction(CompaniesUiAction.UpdateSearchQuery(""))
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
+            )
+            TabRow(
+                modifier = Modifier.padding(top = 16.dp),
+                selectedTabIndex = pagerState.currentPage
+            ) {
                 CompanyType.entries.take(2).forEach { companyType ->
                     Tab(
                         selected = pagerState.currentPage == companyType.ordinal,
@@ -159,7 +248,9 @@ private fun CompaniesScreenContent(
                             },
                             onEditCompany = { companyId ->
                                 onAction(CompaniesUiAction.OnEditCompanyClicked(companyId))
-                            }
+                            },
+                            onCopyPhone = { onAction(CompaniesUiAction.OnCopyPhoneNumber(it)) },
+                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) }
                         )
                     }
 
@@ -180,7 +271,9 @@ private fun CompaniesScreenContent(
                             },
                             onEditCompany = { company ->
                                 onAction(CompaniesUiAction.OnEditCompanyClicked(company))
-                            }
+                            },
+                            onCopyPhone = { onAction(CompaniesUiAction.OnCopyPhoneNumber(it)) },
+                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) }
                         )
                     }
                 }
@@ -220,7 +313,7 @@ private fun CompaniesScreenContentPreview() {
             id = "1",
             name = "Company 1",
             country = "Egypt",
-            phoneNumber = "+01012345678",
+            phoneNumber1 = "+01012345678",
             faxNumber = "+1234567890",
             email = "company-1@test.com"
         ),
@@ -228,7 +321,7 @@ private fun CompaniesScreenContentPreview() {
             id = "2",
             name = "Company 2",
             country = "Egypt",
-            phoneNumber = "+01012345678",
+            phoneNumber1 = "+01012345678",
             faxNumber = "+1234567890",
             email = "company-2@test.com"
         ),

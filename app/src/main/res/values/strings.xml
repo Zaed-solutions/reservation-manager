@@ -264,4 +264,5 @@
     <string name="travel_collected_amount">travel_collected_amount</string>
     <string name="travel_company_balance">travel company balance</string>
     <string name="city">City</string>
+    <string name="phone_number_is_blank">Phone number is blank!</string>
 </resources>

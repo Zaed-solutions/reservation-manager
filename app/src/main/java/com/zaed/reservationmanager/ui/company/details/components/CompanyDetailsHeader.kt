@@ -37,10 +37,16 @@ fun CompanyDetailsHeader(
             value = company.country,
         )
         DetailRow(
-            label = stringResource(R.string.phone_number),
-            value = company.phoneNumber,
-            onClick = { onMessagePhone(company.phoneNumber) },
-            onLongClick = { onCopyPhone(company.phoneNumber) },
+            label = stringResource(R.string.phone_number_1),
+            value = company.phoneNumber1,
+            onClick = { onMessagePhone(company.phoneNumber1) },
+            onLongClick = { onCopyPhone(company.phoneNumber1) },
+        )
+        DetailRow(
+            label = stringResource(R.string.phone_number_2),
+            value = company.phoneNumber2,
+            onClick = { onMessagePhone(company.phoneNumber2) },
+            onLongClick = { onCopyPhone(company.phoneNumber2) },
         )
         DetailRow(
             label = stringResource(R.string.email),
@@ -61,7 +67,7 @@ private fun Preview() {
         val company = Company(
             name = "شركة الجوهرة للنقل السياحي",
             country = "Saudi Arabia",
-            phoneNumber = "123456789",
+            phoneNumber1 = "123456789",
             email = "email@test.com",
             faxNumber = "123456789",
         )

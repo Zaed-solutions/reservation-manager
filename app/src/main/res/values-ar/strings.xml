@@ -267,4 +267,6 @@
     <string name="travel_ride_price">سعر رحلة السفر</string>
     <string name="travel_collected_amount">المبلغ المحصل للسفر</string>
     <string name="travel_company_balance">رصيد شركة السفر</string>
+    <string name="city">المدينة</string>
+    <string name="phone_number_is_blank">رقم الجوال فارغ</string>
 </resources>

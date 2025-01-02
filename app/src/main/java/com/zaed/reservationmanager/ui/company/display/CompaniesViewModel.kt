@@ -26,11 +26,15 @@ class CompaniesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.getCompanies().collect { result ->
                 result.onSuccess { data ->
+                    val tourismCompanies = data.filter { it.type == CompanyType.TOURISM }
+                    val travelCompanies = data.filter { it.type == CompanyType.TRAVEL }
                     _uiState.update { oldState ->
                         oldState.copy(
                             isLoading = false,
-                            tourismCompanies = data.filter { it.type != CompanyType.TRAVEL },
-                            travelCompanies = data.filter { it.type != CompanyType.TOURISM },
+                            tourismCompanies = tourismCompanies,
+                            displayTourismCompanies = tourismCompanies,
+                            travelCompanies = travelCompanies,
+                            displayTravelCompanies = travelCompanies
                         )
                     }
                 }.onFailure { error ->
@@ -44,7 +48,57 @@ class CompaniesViewModel(
     fun handleAction(action: CompaniesUiAction) {
         when (action) {
             is CompaniesUiAction.OnDeleteCompanyConfirmed -> deleteCompany(action.companyId)
+            is CompaniesUiAction.UpdateSearchQuery -> filterData(action.query)
             else -> Unit
+        }
+    }
+
+    private fun filterData(
+        searchQuery: String = uiState.value.searchQuery
+    ) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    searchQuery = searchQuery
+                )
+            }
+        }
+        if (searchQuery.isBlank()) {
+            Log.d(TAG, "filterData: searchQuery is blank and timeFilter is All")
+            _uiState.update {
+                it.copy(
+                    displayTourismCompanies = it.tourismCompanies,
+                    displayTravelCompanies = it.travelCompanies
+                )
+            }
+        } else {
+            Log.d(TAG, "filterData: timeFilter is All")
+            val filteredTourismCompanies = uiState.value.tourismCompanies.filter { company ->
+                listOf(
+                    company.name,
+                    company.country,
+                    company.phoneNumber1,
+                    company.phoneNumber2
+                ).any { value ->
+                    value.contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredTravelCompanies = uiState.value.travelCompanies.filter { company ->
+                listOf(
+                    company.name,
+                    company.country,
+                    company.phoneNumber1,
+                    company.phoneNumber2,
+                ).any { value ->
+                    value.contains(searchQuery, ignoreCase = true)
+                }
+            }
+            _uiState.update { oldState ->
+                oldState.copy(
+                    displayTourismCompanies = filteredTourismCompanies,
+                    displayTravelCompanies = filteredTravelCompanies
+                )
+            }
         }
     }
 
