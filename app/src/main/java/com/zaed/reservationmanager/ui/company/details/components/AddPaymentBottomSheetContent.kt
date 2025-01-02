@@ -46,7 +46,11 @@ fun AddPaymentBottomSheetContent(
             title = stringResource(R.string.amount),
             initialValue =if (payment.amount == 0.0) "" else payment.amount.toString(),
             onValueChanged = { newText ->
-                if (newText.toDoubleOrNull() != null) {
+                if(newText.isBlank()){
+                    payment = payment.copy(
+                        amount = 0.0
+                    )
+                } else if (newText.toDoubleOrNull() != null) {
                     payment = payment.copy(
                         amount = newText.toDouble()
                     )
@@ -72,7 +76,7 @@ fun AddPaymentBottomSheetContent(
             initialValue =  payment.description,
             onValueChanged = { newText ->
                 payment = payment.copy(
-                    description = newText.trim()
+                    description = newText
                 )
             },
             isOptional = true,

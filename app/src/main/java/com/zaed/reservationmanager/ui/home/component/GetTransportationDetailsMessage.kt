@@ -18,6 +18,14 @@ fun getTransportationDetailsMessage(
     } else {
         R.string.negative_trip_balance
     }
+    val flightNumber = if (reservation.flightNumber.isBlank()) {
+        ""
+    } else {
+        context.getString(
+            R.string.flight_number_placeholder,
+            reservation.flightNumber
+        )
+    }
 
     val additionalMessage = context.getString(additionalMessageResId, kotlin.math.abs(difference))
     return context.getString(
@@ -28,7 +36,7 @@ fun getTransportationDetailsMessage(
         reservation.car,
         reservation.carCount, // New field
         reservation.startLocation,
-        reservation.flightNumber,
+        flightNumber,
         reservation.endLocation,
         context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
         context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),

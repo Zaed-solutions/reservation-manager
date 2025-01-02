@@ -73,7 +73,7 @@ class AddEmployeeViewModel(
     private fun updateCity(city: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(city = city.trim()))
+                oldState.copy(employee = oldState.employee.copy(city = city))
             }
         }
     }
@@ -81,7 +81,7 @@ class AddEmployeeViewModel(
     private fun updateNationality(nationality: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(nationality = nationality.trim()))
+                oldState.copy(employee = oldState.employee.copy(nationality = nationality))
             }
         }
     }
@@ -89,7 +89,7 @@ class AddEmployeeViewModel(
     private fun updateEmail(email: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(email = email.trim()))
+                oldState.copy(employee = oldState.employee.copy(email = email))
             }
         }
     }
@@ -174,14 +174,14 @@ class AddEmployeeViewModel(
 
     private fun updatePosition(position: String) {
         _uiState.update {
-            it.copy(employee = it.employee.copy(position = position.trim()))
+            it.copy(employee = it.employee.copy(position = position))
         }
     }
 
     private fun updatePhoneNumber1(phoneNumber: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(phoneNumber1 = phoneNumber.trim()))
+                oldState.copy(employee = oldState.employee.copy(phoneNumber1 = phoneNumber))
             }
         }
     }
@@ -189,7 +189,7 @@ class AddEmployeeViewModel(
     private fun updatePhoneNumber2(phoneNumber: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(phoneNumber2 = phoneNumber.trim()))
+                oldState.copy(employee = oldState.employee.copy(phoneNumber2 = phoneNumber))
             }
         }
     }
@@ -197,7 +197,7 @@ class AddEmployeeViewModel(
     private fun updateName(name: String) {
         viewModelScope.launch {
             _uiState.update { oldState ->
-                oldState.copy(employee = oldState.employee.copy(name = name.trim()))
+                oldState.copy(employee = oldState.employee.copy(name = name))
             }
         }
     }
@@ -206,7 +206,7 @@ class AddEmployeeViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(
-                    employee = oldState.employee.copy(company = company.name.trim(), companyId = company.id)
+                    employee = oldState.employee.copy(company = company.name, companyId = company.id)
                 )
             }
         }

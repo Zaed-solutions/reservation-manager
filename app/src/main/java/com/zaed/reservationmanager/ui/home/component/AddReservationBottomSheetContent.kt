@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -168,12 +167,11 @@ fun AddReservationBottomSheetContent(
         TitledDropDownTextField(
             title = stringResource(R.string.reservation_type),
             selectedValue = reservation.type,
+            isClearEnabled = false,
             onValueChanged = { index ->
-                if (index != -1) {
-                    reservation = reservation.copy(
-                        type = types[index]
-                    )
-                }
+                reservation = reservation.copy(
+                    type = types[index]
+                )
             },
             isOptional = false,
             isError = reservationError == ReservationError.TYPE_IS_REQUIRED,
@@ -185,15 +183,9 @@ fun AddReservationBottomSheetContent(
             title = stringResource(R.string.car),
             selectedValue = reservation.car,
             onValueChanged = { index ->
-                if (index == -1) {
-                    reservation = reservation.copy(
-                        car = ""
-                    )
-                } else {
-                    reservation = reservation.copy(
-                        car = cars[index]
-                    )
-                }
+                reservation = reservation.copy(
+                    car = cars.getOrNull(index) ?: ""
+                )
             },
             isOptional = true,
             isError = reservationError == ReservationError.CAR_IS_REQUIRED,
@@ -205,15 +197,9 @@ fun AddReservationBottomSheetContent(
             title = stringResource(R.string.people_count),
             selectedValue = reservation.peopleCount.toString(),
             onValueChanged = { index ->
-                if (index == -1) {
-                    reservation = reservation.copy(
-                        peopleCount = 1
-                    )
-                } else {
-                    reservation = reservation.copy(
-                        peopleCount = peopleCounter[index]
-                    )
-                }
+                reservation = reservation.copy(
+                    peopleCount = peopleCounter.getOrNull(index) ?: 1
+                )
             },
             isOptional = true,
             options = peopleCounter.map { it.toString() },
@@ -224,15 +210,9 @@ fun AddReservationBottomSheetContent(
                 title = stringResource(R.string.car_count),
                 selectedValue = reservation.carCount.toString(),
                 onValueChanged = { index ->
-                    if (index == -1) {
-                        reservation = reservation.copy(
-                            carCount = 1
-                        )
-                    } else {
-                        reservation = reservation.copy(
-                            carCount = index + 1
-                        )
-                    }
+                    reservation = reservation.copy(
+                        carCount = if(index == -1) 1 else index + 1
+                    )
                 },
                 options = (1..10).map { it.toString() },
                 isOptional = true,
@@ -310,7 +290,9 @@ fun AddReservationBottomSheetContent(
                 }
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top=8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
 //                    horizontalArrangement = Arrangement.Center
             ) {
@@ -387,7 +369,7 @@ fun AddReservationBottomSheetContent(
                     value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
                     onValueChanged = {},
                     shape = RoundedCornerShape(bottomEnd = 8.dp),
-                    label =stringResource(R.string.quota),
+                    label = stringResource(R.string.quota),
                     placeholder = "0",
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
@@ -497,7 +479,9 @@ fun AddReservationBottomSheetContent(
                     }
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top=8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CustomOutlinedTextField(

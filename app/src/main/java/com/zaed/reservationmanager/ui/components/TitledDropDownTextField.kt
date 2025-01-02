@@ -41,7 +41,8 @@ fun TitledDropDownTextField(
     isOptional: Boolean = true,
     isError: Boolean = false,
     errorMessageRes: Int = 0,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    isClearEnabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
     Column(
@@ -67,7 +68,7 @@ fun TitledDropDownTextField(
                 value = selectedValue,
                 onValueChange = {},
                 trailingIcon = {
-                    if (selectedValue.isBlank())
+                    if (selectedValue.isBlank() || !isClearEnabled)
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     else
                         IconButton(onClick = { onValueChanged(-1) }) {

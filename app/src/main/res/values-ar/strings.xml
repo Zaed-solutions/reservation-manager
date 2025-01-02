@@ -133,8 +133,8 @@
 
     <string name="reservation_details_message">أ/ %1$s\nتاريخ الحركة الخاصة بكم:\n%2$s\nنوع السيارة: %3$s\nيتشرف بخدمتكم…\nكابتن/ %4$s\nجواله/ %5$s\nرحلة موفقة بإذن الله\n\nالمسافرون لخدمات النقل،،،</string>
 
-    <string name="transportation_details">إسم الضيف: %1$s\nجوال الضيف: %2$s\nالتاريخ: %3$s\nنوع السيارة: عدد %5$d %4$s\nبداية الرحلة: %6$s\nرقم الرحلة: %7$s\nنهاية الرحلة: %8$s\nسعر المشوار: %9$s\nمبلغ التحصيل: %10$s\nملاحظات:\n%11$s\n\n*%12$s*</string>
-
+    <string name="transportation_details">إسم الضيف: %1$s\nجوال الضيف: %2$s\nالتاريخ: %3$s\nنوع السيارة: عدد %5$d %4$s\nبداية الرحلة: %6$s\n%7$sنهاية الرحلة: %8$s\nسعر المشوار: %9$s\nمبلغ التحصيل: %10$s\nملاحظات:\n%11$s\n\n*%12$s*</string>
+    <string name="flight_number_placeholder">\nرقم الرحلة: %1$s</string>
     <string name="positive_trip_balance">حساب المشوار عندي %1$d ريال</string>
     <string name="negative_trip_balance">عمولة المشوار %1$d ريال</string>
     <string name="employees">الموظفون</string>
@@ -234,7 +234,7 @@
     <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>
     <string name="sar">%1$s ر.س.</string>
     <string name="flight_number">رقم الرحلة</string>
-    <string name="thanks_message">أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وأعذرونا ع القصور\nإن شاء الله يكون لنا فرصة…\nنخدمكم بزيارتكم القادمة\n\nالمسافرون لخدمات النقل،،،</string>
+    <string name="thanks_message">أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وأعذرونا على القصور\nإن شاء الله تكون لنا فرصة…\nنخدمكم بزيارتكم القادمة\n\nالمسافرون لخدمات النقل،،،</string>
 
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>

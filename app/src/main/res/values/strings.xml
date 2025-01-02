@@ -134,8 +134,9 @@
     Mr./Ms. %1$s\nYour trip details:\n%2$s\nCar type: %3$s\nAt your service…\nCaptain: %4$s\nPhone: %5$s\nHave a safe trip!\n\nTravelers Transportation Services,
 </string>
     <string name="transportation_details">
-    - Guest name: %1$s\n- Guest phone: %2$s\n- Date: %3$s\n- Car type: %4$s, count: %5$d\n- Trip start: %6$s\n- Trip number: %7$s\n- Trip end: %8$s\n- Trip price: %9$s\n- Collected amount: %10$s\n- Notes:\n%11$s\n\nTravelers Transportation Services,\n%12$s
+    - Guest name: %1$s\n- Guest phone: %2$s\n- Date: %3$s\n- Car type: %4$s, count: %5$d\n- Trip start: %6$s%7$s\n- Trip end: %8$s\n- Trip price: %9$s\n- Collected amount: %10$s\n- Notes:\n%11$s\n\nTravelers Transportation Services,\n%12$s
 </string>
+    <string name="flight_number_placeholder">\n- Flight Number: %1$s</string>
     <string name="positive_trip_balance">The trip balance is %1$d SAR</string>
     <string name="negative_trip_balance">The trip commission is %1$d SAR</string>
 
