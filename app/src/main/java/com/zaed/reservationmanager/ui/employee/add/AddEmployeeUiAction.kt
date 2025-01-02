@@ -12,4 +12,5 @@ sealed interface AddEmployeeUiAction {
     data class OnEmailChanged(val email: String) : AddEmployeeUiAction
     data class OnPhoneNumber1Changed(val phoneNumber: String) : AddEmployeeUiAction
     data class OnPhoneNumber2Changed(val phoneNumber: String) : AddEmployeeUiAction
+    data class OnCityChanged(val city: String) : AddEmployeeUiAction
 }

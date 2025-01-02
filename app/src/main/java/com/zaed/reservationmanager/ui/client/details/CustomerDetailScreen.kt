@@ -132,6 +132,7 @@ fun CustomerDetailScreen(
                             R.string.reservation_details_message,
                             reservation.clientName,
                             (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
+                            reservation.car,
                             reservation.driver,
                             reservation.driverPhoneNumber
                         )

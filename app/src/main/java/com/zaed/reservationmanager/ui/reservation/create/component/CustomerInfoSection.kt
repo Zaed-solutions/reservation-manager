@@ -3,7 +3,6 @@ package com.zaed.reservationmanager.ui.reservation.create.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.runtime.Composable
@@ -40,7 +39,7 @@ fun CustomerInfoSection(
     ) {
         TitledTextField2(
             title = stringResource(R.string.client_phone),
-            value = customer.phoneNumber,
+            value = customer.phoneNumber1,
             onValueChanged = { phoneNumber ->
                 onUpdatePhoneNumber(phoneNumber)
             },

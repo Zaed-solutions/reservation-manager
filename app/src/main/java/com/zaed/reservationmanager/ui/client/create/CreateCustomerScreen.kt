@@ -201,11 +201,18 @@ fun NewClientDataEntryScreenContent(
                 options = countries
             )
             TitledTextField2(
-                title = stringResource(R.string.phone_number),
-                value = customer.phoneNumber,
+                title = stringResource(R.string.city),
+                value = customer.city,
                 onValueChanged = { newText ->
-                    val data =
-                    action(CreateCustomerUiAction.UpdateNumber(newText))
+                        action(CreateCustomerUiAction.UpdateCity(newText))
+                },
+                isOptional = true,
+            )
+            TitledTextField2(
+                title = stringResource(R.string.phone_number_1),
+                value = customer.phoneNumber1,
+                onValueChanged = { newText ->
+                    action(CreateCustomerUiAction.UpdateNumber1(newText))
                 },
                 isOptional = false,
                 isError = error in listOf(
@@ -214,6 +221,15 @@ fun NewClientDataEntryScreenContent(
                     ClientUIError.PHONE_NUMBER_IS_INVALID
                 ),
                 errorMessageRes = error.messageRes,
+                keyboardType = KeyboardType.Phone
+            )
+            TitledTextField2(
+                title = stringResource(R.string.phone_number_2),
+                value = customer.phoneNumber2,
+                onValueChanged = { newText ->
+                        action(CreateCustomerUiAction.UpdateNumber2(newText))
+                },
+                isOptional = false,
                 keyboardType = KeyboardType.Phone
             )
             TitledTextField2(

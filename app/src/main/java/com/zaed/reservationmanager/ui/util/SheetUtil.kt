@@ -17,7 +17,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.Date
 
 object SheetUtil {
 
@@ -52,7 +51,7 @@ object SheetUtil {
                         name = name,
                         nationality = nationality,
                         residenceCountry = residenceCountry,
-                        phoneNumber = phoneNumber,
+                        phoneNumber1 = phoneNumber,
                         email = email
                     )
                     customers.add(customer)
@@ -97,11 +96,11 @@ object SheetUtil {
                         name = name,
                         nationality = nationality,
                         residenceCountry = residenceCountry,
-                        phoneNumber = phoneNumber,
+                        phoneNumber1 = phoneNumber,
                         email = email
                     )
                     if(customer.validate()){
-                        customers[customer.phoneNumber] = customer
+                        customers[customer.phoneNumber1] = customer
                     }else {
                         Log.d("ImportUtil", "importCustomersFromExcel:Invalid Customer")
                     }
@@ -161,7 +160,7 @@ object SheetUtil {
                 row.createCell(0).setCellValue(customer.name)
                 row.createCell(1).setCellValue(customer.nationality)
                 row.createCell(2).setCellValue(customer.residenceCountry)
-                row.createCell(3).setCellValue(customer.phoneNumber)
+                row.createCell(3).setCellValue(customer.phoneNumber1)
                 row.createCell(4).setCellValue(customer.email)
             }
 

@@ -214,6 +214,15 @@ private fun AddEmployeeScreenContent(
                     isError = error == AddEmployeeUiError.NATIONALITY_IS_REQUIRED,
                     errorMessageRes = error.messageRes
                 )
+                //city
+                TitledTextField(
+                    title = stringResource(id = R.string.city),
+                    initialValue = initialEmployee.city,
+                    onValueChanged = { nationality ->
+                        onAction(AddEmployeeUiAction.OnCityChanged(nationality))
+                    },
+                    isOptional = true,
+                )
             } else {
                 //position
                 TitledTextField(

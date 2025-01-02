@@ -1,15 +1,19 @@
 package com.zaed.reservationmanager.ui.driver
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -18,6 +22,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +32,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.driver.components.EmployeeListWithTitle
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.PhoneUtil
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -42,9 +52,12 @@ fun DriverListScreen(
     onShowNavDrawer: () -> Unit,
     onNavigateToAddDriver: () -> Unit,
     onNavigateToEditDriver: (Employee) -> Unit,
-    onNavigateToEmployeeDetails: (String) -> Unit
+    onNavigateToEmployeeDetails: (String) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+
     DriverListWithScreenContent(
         drivers = state.drivers,
         onShowNavDrawer = onShowNavDrawer,
@@ -55,6 +68,20 @@ fun DriverListScreen(
         },
         onDeleteEmployee = {
             viewModel.deleteEmployee(it)
+        },
+        onMessagePhone = {
+            PhoneUtil.sendWhatsappMessage(
+                context = context,
+                phoneNumber = it,
+                message = "",
+                onFailure = {
+                    Toast.makeText(context, context.getString(R.string.whatsapp_is_not_installed), Toast.LENGTH_SHORT).show()
+                }
+            )
+        },
+        onCopyPhone = {
+            clipboardManager.setText(AnnotatedString(it))
+            Toast.makeText(context, context.getString(R.string.number_copied_to_clipboard), Toast.LENGTH_SHORT).show()
         }
     )
 }
@@ -67,7 +94,9 @@ fun DriverListWithScreenContent(
     onNavigateToAddDriver: () -> Unit = {},
     onNavigateToEmployeeDetails: (String) -> Unit = {},
     onEditEmployee: (Employee) -> Unit = {},
-    onDeleteEmployee: (String) -> Unit = {}
+    onDeleteEmployee: (String) -> Unit = {},
+    onMessagePhone: (String) -> Unit = {},
+    onCopyPhone: (String) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -104,6 +133,53 @@ fun DriverListWithScreenContent(
         ) {
             var selected by remember { mutableStateOf("") }
             val companiesList = drivers.map { it.company }.distinct()
+            var searchQuery by remember { mutableStateOf("") }
+            val filteredDriver = drivers.filter { driver ->
+                listOf(
+                    driver.name,
+                    driver.phoneNumber1,
+                    driver.phoneNumber2,
+                    driver.city,
+                    driver.nationality
+                ).any { value ->
+                    value.contains(searchQuery, ignoreCase = true)
+                }
+            }.sortedBy { customer -> customer.name }
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    val data =if(it.matches(Regex("[+\\d\\s]+"))) it.replace(" ","") else it
+//                    onAction(HomeUiAction.UpdateSearchQuery(data))
+                    searchQuery = data
+
+                },
+                placeholder = { Text(stringResource(R.string.smart_search)) },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+//                                onAction(HomeUiAction.UpdateSearchQuery(""))
+                                searchQuery = ""
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.large
+            )
             LazyRow {
                 items(companiesList) { country ->
                     FilterChip(
@@ -134,13 +210,15 @@ fun DriverListWithScreenContent(
                 }
             }
             EmployeeListWithTitle(
-                employees = if (selected == "") drivers else drivers.filter { it.company == selected },
+                employees = if (selected == "") filteredDriver else filteredDriver.filter { it.company == selected },
                 isDriver = true,
                 onEmployeeDetailsClicked = { employeeId ->
                     onNavigateToEmployeeDetails(employeeId)
                 },
                 onDeleteEmployee = onDeleteEmployee,
-                onEditEmployee = onEditEmployee
+                onEditEmployee = onEditEmployee,
+                onMessagePhone =onMessagePhone ,
+                onCopyPhone = onCopyPhone
             )
         }
     }

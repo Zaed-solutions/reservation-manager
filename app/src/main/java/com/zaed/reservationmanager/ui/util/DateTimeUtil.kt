@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.util
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DecimalStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 
@@ -44,6 +45,8 @@ fun Long.formatEpochSecondsToDateTime(): String {
 fun Long.formatEpochSecondsToMessageDateTime(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
-    val formatter = DateTimeFormatter.ofPattern("d MMM, hh:mm a", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("d MMM, hh:mm a", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
     return dateTime.format(formatter)
 }

@@ -1,7 +1,8 @@
 package com.zaed.reservationmanager.ui.driver.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -39,13 +40,16 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.home.component.DetailRow
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableEmployeeCard(
     employee: Employee,
     isDriver: Boolean = false,
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {},
-    onEmployeeDetailsClicked: () -> Unit = {}
+    onEmployeeDetailsClicked: () -> Unit = {},
+    onMessagePhone: (String) -> Unit = {},
+    onCopyPhone: (String) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -76,7 +80,12 @@ fun ExpandableEmployeeCard(
                     text = employee.phoneNumber1.takeIf { it.length <= 15 }
                         ?: "${employee.phoneNumber1.take(15)}...",
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .combinedClickable(
+                            onClick = { onMessagePhone(employee.phoneNumber1) },
+                            onLongClick = { onCopyPhone(employee.phoneNumber1) }
+                        )
                 )
 
             }
@@ -94,6 +103,11 @@ fun ExpandableEmployeeCard(
                             value = employee.nationality,
                             style = MaterialTheme.typography.bodyMedium
                         )
+                        DetailRow(
+                            label = stringResource(R.string.city),
+                            value = employee.city,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     } else {
                         DetailRow(
                             label = stringResource(R.string.position),
@@ -104,7 +118,9 @@ fun ExpandableEmployeeCard(
                     DetailRow(
                         label = stringResource(R.string.phone_number_2),
                         value = employee.phoneNumber2,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        onClick = { onMessagePhone(employee.phoneNumber2) },
+                        onLongClick = { onCopyPhone(employee.phoneNumber2) }
                     )
                     DetailRow(
                         label = stringResource(R.string.email),
