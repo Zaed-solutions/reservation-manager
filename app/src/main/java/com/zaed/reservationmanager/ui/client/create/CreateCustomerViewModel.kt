@@ -55,11 +55,11 @@ class CreateCustomerViewModel(
                     _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED) }
                     return@launch
                 }
-                if (customer.phoneNumber.isBlank()) {
+                if (customer.phoneNumber1.isBlank()) {
                     _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED) }
                     return@launch
                 }
-                if (!InputValidator.isPhoneNumberValid(customer.phoneNumber)) {
+                if (!InputValidator.isPhoneNumberValid(customer.phoneNumber1)) {
                     _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_INVALID) }
                     return@launch
                 }
@@ -166,10 +166,17 @@ class CreateCustomerViewModel(
         }
     }
 
-    private fun updateMobile(mobile: String) {
+    private fun updateMobile1(mobile1: String) {
         _uiState.update { oldState ->
             oldState.copy(
-                customer = oldState.customer.copy(phoneNumber = mobile)
+                customer = oldState.customer.copy(phoneNumber1 = mobile1)
+            )
+        }
+    }
+    private fun updateMobile2(mobile2: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(phoneNumber2 = mobile2)
             )
         }
     }
@@ -197,7 +204,13 @@ class CreateCustomerViewModel(
             )
         }
     }
-
+    private fun updateMobile(city: String) {
+        _uiState.update { oldState ->
+            oldState.copy(
+                customer = oldState.customer.copy(city = city)
+            )
+        }
+    }
     fun handleAction(action: CreateCustomerUiAction) {
         when (action) {
             CreateCustomerUiAction.SubmitClient -> onSubmit()
@@ -205,7 +218,11 @@ class CreateCustomerViewModel(
             is CreateCustomerUiAction.UpdateEmail -> updateEmail(action.email)
             is CreateCustomerUiAction.UpdateName -> updateClientName(action.name)
             is CreateCustomerUiAction.UpdateNationality -> updateNationality(action.nationality)
-            is CreateCustomerUiAction.UpdateNumber -> updateMobile(action.number)
+            is CreateCustomerUiAction.UpdateNumber1 -> updateMobile1(action.number)
+            is CreateCustomerUiAction.UpdateNumber2 -> updateMobile2(action.number)
+            is CreateCustomerUiAction.UpdateCity -> updateMobile(action.city)
         }
     }
+
+
 }

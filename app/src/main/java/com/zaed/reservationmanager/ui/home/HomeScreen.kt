@@ -298,6 +298,7 @@ fun HomeScreen(
                         R.string.reservation_details_message,
                         reservation.clientName,
                         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
+                        reservation.car,
                         reservation.driver,
                         reservation.driverPhoneNumber
                     )
@@ -319,20 +320,11 @@ fun HomeScreen(
                 is HomeUiAction.SendReservationInfoToTravelCompany -> {
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
-                        R.string.transportation_details,
-                        reservation.clientName,
-                        reservation.clientPhone,
-                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-                        reservation.car,
-                        reservation.carCount, // New field
-                        reservation.startLocation,
-                        reservation.flightNumber,
-                        reservation.endLocation,
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
-                        reservation.note
-                    )
+                    val messageText =
+                        getTransportationDetailsMessage(
+                            context = context,
+                            reservation = reservation
+                        )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.travelCompanyPhone,
@@ -916,4 +908,41 @@ fun CustomerListScreenPreview() {
     ReservationManagerTheme {
         HomeScreenContent()
     }
+}
+fun getTransportationDetailsMessage(
+    context: Context,
+    reservation: Reservation,
+    isArabic: Boolean = Locale.getDefault().language == "ar"
+): String {
+    val difference = reservation.travelRidePrice - reservation.travelCollectedAmount
+
+    val additionalMessageResId = if (difference > 0) {
+        R.string.positive_trip_balance
+    } else {
+        R.string.negative_trip_balance
+    }
+
+    val additionalMessage = context.getString(additionalMessageResId, kotlin.math.abs(difference))
+
+    val mainMessageResId = if (isArabic) {
+        R.string.transportation_details
+    } else {
+        R.string.transportation_details
+    }
+
+    return context.getString(
+        mainMessageResId,
+        reservation.clientName,
+        reservation.clientPhone,
+        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
+        reservation.car,
+        reservation.carCount, // New field
+        reservation.startLocation,
+        reservation.flightNumber,
+        reservation.endLocation,
+        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
+        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
+        reservation.note,
+        additionalMessage // %12$s
+    )
 }

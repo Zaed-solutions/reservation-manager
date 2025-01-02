@@ -9,7 +9,9 @@ data class Customer(
     val name: String = "",
     val nationality: String = "",
     val residenceCountry: String = "",
-    val phoneNumber: String = "",
+    val city :String ="",
+    val phoneNumber1: String = "",
+    val phoneNumber2: String = "",
     val email: String = "",
     val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
 )

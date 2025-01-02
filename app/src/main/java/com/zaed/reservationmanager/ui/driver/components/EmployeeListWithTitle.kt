@@ -15,7 +15,9 @@ fun EmployeeListWithTitle(
     isDriver: Boolean = false,
     onEmployeeDetailsClicked: (String) -> Unit,
     onDeleteEmployee: (String) -> Unit,
-    onEditEmployee: (Employee) -> Unit
+    onEditEmployee: (Employee) -> Unit,
+    onMessagePhone: (String) -> Unit = {},
+    onCopyPhone: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -33,7 +35,9 @@ fun EmployeeListWithTitle(
                 },
                 onEmployeeDetailsClicked = {
                     onEmployeeDetailsClicked(employee.id)
-                }
+                },
+                onMessagePhone = onMessagePhone,
+                onCopyPhone = onCopyPhone
             )
         }
     }

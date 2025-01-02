@@ -13,6 +13,7 @@ data class Employee(
     val phoneNumber1: String = "",
     val phoneNumber2: String = "",
     val nationality: String = "",
+    val city : String = "",
     val email: String = "",
     val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
 )

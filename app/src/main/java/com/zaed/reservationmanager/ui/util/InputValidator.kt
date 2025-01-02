@@ -7,7 +7,6 @@ import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.details.components.PaymentError
 import com.zaed.reservationmanager.ui.messages.components.MessageError
 import com.zaed.reservationmanager.ui.reservation.create.ReservationError
-import kotlinx.datetime.Clock
 
 object InputValidator {
     fun validatePayment(payment: CompanyPayment): PaymentError? {
@@ -34,7 +33,7 @@ object InputValidator {
             false
         } else if (email.isNotBlank() && !isEmailValid(email)) {
             false
-        }else if (phoneNumber.isBlank() || !isPhoneNumberValid(phoneNumber)) {
+        }else if (phoneNumber1.isBlank() || !isPhoneNumberValid(phoneNumber1)) {
             false
         }else if(residenceCountry.isBlank()) {
             false

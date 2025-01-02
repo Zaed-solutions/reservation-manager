@@ -64,8 +64,17 @@ class AddEmployeeViewModel(
             is AddEmployeeUiAction.OnPositionChanged -> updatePosition(action.position)
             is AddEmployeeUiAction.OnEmailChanged -> updateEmail(action.email)
             is AddEmployeeUiAction.OnUpdateNationality -> updateNationality(action.nationality)
+            is AddEmployeeUiAction.OnCityChanged -> updateCity(action.city)
             AddEmployeeUiAction.OnSaveClicked -> onSave()
             else -> Unit
+        }
+    }
+
+    private fun updateCity(city: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(employee = oldState.employee.copy(city = city))
+            }
         }
     }
 
