@@ -200,8 +200,8 @@ class HomeViewModel(
             val newCustomers = mutableListOf<Customer>()
 
             customers.forEach {newCustomer ->
-                if (uiState.value.customers.any { it.phoneNumber == newCustomer.phoneNumber }) {
-                    val existingCustomer = uiState.value.customers.first { it.phoneNumber == newCustomer.phoneNumber }
+                if (uiState.value.customers.any { it.phoneNumber1 == newCustomer.phoneNumber1 }) {
+                    val existingCustomer = uiState.value.customers.first { it.phoneNumber1 == newCustomer.phoneNumber1 }
                     existingCustomers.add(newCustomer.copy(id = existingCustomer.id))
                 } else {
                     newCustomers.add(newCustomer)
@@ -267,7 +267,7 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber
+                        customer.phoneNumber1
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
@@ -281,7 +281,7 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber
+                        customer.phoneNumber1
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
@@ -295,7 +295,7 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber
+                        customer.phoneNumber1
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter

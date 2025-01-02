@@ -41,7 +41,7 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDateTime
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableCustomerCard(
     customer: Customer,
@@ -77,8 +77,8 @@ fun ExpandableCustomerCard(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = customer.phoneNumber.takeIf { it.length <= 15 }
-                        ?: "${customer.phoneNumber.take(15)}...",
+                    text = customer.phoneNumber1.takeIf { it.length <= 15 }
+                        ?: "${customer.phoneNumber1.take(15)}...",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.End,
                     modifier = Modifier.combinedClickable(
@@ -104,6 +104,16 @@ fun ExpandableCustomerCard(
                     DetailRow(
                         label = stringResource(R.string.residence_country),
                         value = customer.residenceCountry,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.city),
+                        value = customer.city,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.phone_number_2),
+                        value = customer.phoneNumber2,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(

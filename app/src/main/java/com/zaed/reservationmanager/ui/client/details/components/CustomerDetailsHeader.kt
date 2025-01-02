@@ -40,10 +40,20 @@ fun CustomerDetailsHeader(
             value = customer.residenceCountry,
         )
         DetailRow(
-            label = stringResource(R.string.phone_number),
-            value = customer.phoneNumber,
-            onClick = { onMessagePhone(customer.phoneNumber) },
-            onLongClick = { onCopyPhone(customer.phoneNumber) },
+            label = stringResource(R.string.city),
+            value = customer.city,
+        )
+        DetailRow(
+            label = stringResource(R.string.phone_number_1),
+            value = customer.phoneNumber1,
+            onClick = { onMessagePhone(customer.phoneNumber1) },
+            onLongClick = { onCopyPhone(customer.phoneNumber1) },
+        )
+        DetailRow(
+            label = stringResource(R.string.phone_number_2),
+            value = customer.phoneNumber2,
+            onClick = { onMessagePhone(customer.phoneNumber2) },
+            onLongClick = { onCopyPhone(customer.phoneNumber2) },
         )
         DetailRow(
             label = stringResource(R.string.email),
@@ -62,7 +72,7 @@ private fun Preview() {
                 name = "John Doe",
                 nationality = "American",
                 residenceCountry = "United States",
-                phoneNumber = "+1234567890",
+                phoneNumber1 = "+1234567890",
                 email = "test@test.com"
             )
         )

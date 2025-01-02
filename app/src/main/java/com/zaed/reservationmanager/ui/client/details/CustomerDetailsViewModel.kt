@@ -230,7 +230,7 @@ class CustomerDetailsViewModel(
                     clientId = customer.id,
                     clientName = customer.name,
                     clientCountry = customer.residenceCountry,
-                    clientPhone = customer.phoneNumber
+                    clientPhone = customer.phoneNumber1
                 )
             ).collect { result ->
                 result.onSuccess {

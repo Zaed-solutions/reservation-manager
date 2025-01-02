@@ -158,7 +158,7 @@ class CreateReservationViewModel(
             _uiState.update {
                 it.copy(
                     customer = it.customer.copy(
-                        phoneNumber = phone,
+                        phoneNumber1 = phone,
                     ),
                     isNewCustomer = if(phone.isBlank()) null else it.isNewCustomer
                 )
@@ -225,11 +225,11 @@ class CreateReservationViewModel(
                         _uiState.update { it.copy(reservationError = ReservationError.CUSTOMER_NAME_IS_REQUIRED) }
                         return@launch
                     }
-                    if (customer.phoneNumber.isBlank()) {
+                    if (customer.phoneNumber1.isBlank()) {
                         _uiState.update { it.copy(reservationError = ReservationError.CUSTOMER_PHONE_IS_REQUIRED) }
                         return@launch
                     }
-                    if (!InputValidator.isPhoneNumberValid(customer.phoneNumber)) {
+                    if (!InputValidator.isPhoneNumberValid(customer.phoneNumber1)) {
                         _uiState.update { it.copy(reservationError = ReservationError.CUSTOMER_PHONE_IS_INVALID) }
                         return@launch
                     }
@@ -252,7 +252,7 @@ class CreateReservationViewModel(
             val reservations = uiState.value.reservations.map {
                 it.copy(
                     clientName = customer.name,
-                    clientPhone = customer.phoneNumber,
+                    clientPhone = customer.phoneNumber1,
                     clientCountry = customer.residenceCountry,
                     clientId = customer.id
                 )
@@ -346,7 +346,7 @@ class CreateReservationViewModel(
 
     private fun fetchCustomerByNumber() {
         viewModelScope.launch {
-            customerRepository.getCustomerByNumber(uiState.value.customer.phoneNumber)
+            customerRepository.getCustomerByNumber(uiState.value.customer.phoneNumber1)
                 .onSuccess { customer ->
                     Log.d(TAG, "fetchCustomerByNumber: $customer")
                     _uiState.update { oldState ->

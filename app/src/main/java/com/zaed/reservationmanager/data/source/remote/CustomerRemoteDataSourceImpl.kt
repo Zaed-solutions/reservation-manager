@@ -22,7 +22,7 @@ class CustomerRemoteDataSourceImpl(
         Log.d(TAG, "createCustomer: $customer")
         try {
             firestore.collection(CUSTOMER_COLLECTION)
-                .whereEqualTo("phoneNumber", customer.phoneNumber).get()
+                .whereEqualTo("phoneNumber", customer.phoneNumber1).get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
                         val document = firestore.collection(CUSTOMER_COLLECTION).document()
@@ -88,7 +88,7 @@ class CustomerRemoteDataSourceImpl(
             firestore.collection(CUSTOMER_COLLECTION)
                 .where(
                     Filter.and(
-                        Filter.equalTo("phoneNumber", customer.phoneNumber),
+                        Filter.equalTo("phoneNumber", customer.phoneNumber1),
                         Filter.notEqualTo("id", customer.id),
                     )
                 ).get()
@@ -101,7 +101,7 @@ class CustomerRemoteDataSourceImpl(
                         batch.set(customerRef, customer)
                         val updates = mapOf(
                             "clientName" to customer.name,
-                            "clientPhone" to customer.phoneNumber,
+                            "clientPhone" to customer.phoneNumber1,
                             "clientCountry" to customer.residenceCountry
                         )
                         reservations.forEach {
@@ -192,8 +192,8 @@ class CustomerRemoteDataSourceImpl(
                 if(customer.name.isNotBlank()) {
                     map["name"] = customer.name
                 }
-                if(customer.phoneNumber.isNotBlank()) {
-                    map["phoneNumber"] = customer.phoneNumber
+                if(customer.phoneNumber1.isNotBlank()) {
+                    map["phoneNumber"] = customer.phoneNumber1
                 }
                 if(customer.residenceCountry.isNotBlank()) {
                     map["residenceCountry"] = customer.residenceCountry
@@ -210,7 +210,7 @@ class CustomerRemoteDataSourceImpl(
                 val reservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("clientId",  customer.id).get().await()
                 val updates = mapOf(
                     "clientName" to customer.name,
-                    "clientPhone" to customer.phoneNumber,
+                    "clientPhone" to customer.phoneNumber1,
                     "clientCountry" to customer.residenceCountry
                 )
                 reservations.forEach{
