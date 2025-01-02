@@ -48,16 +48,14 @@ object SheetUtil {
 
                     // Create a Customer object
                     val customer = Customer(
-                        name = name,
-                        nationality = nationality,
-                        residenceCountry = residenceCountry,
-                        phoneNumber1 = phoneNumber,
-                        email = email
+                        name = name.trim(),
+                        nationality = nationality.trim(),
+                        residenceCountry = residenceCountry.trim(),
+                        phoneNumber1 = phoneNumber.trim(),
+                        email = email.trim()
                     )
                     customers.add(customer)
                 }
-
-                // Return the imported customers through the callback
                 onImportCompleted(customers)
             } ?: Log.e("ImportUtil", "Failed to open input stream")
         } catch (e: Exception) {

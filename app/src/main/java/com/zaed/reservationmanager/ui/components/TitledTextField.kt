@@ -64,7 +64,7 @@ fun TitledTextField(
             enabled = isEnabled,
             onValueChange = {
                 value = if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it
-                onValueChanged(value)
+                onValueChanged(value.trim())
             },
             readOnly = isReadOnly,
             shape = MaterialTheme.shapes.small,
@@ -140,7 +140,7 @@ fun TitledTextField2(
             value = if (keyboardType == KeyboardType.Number && value == 0.toString()) "" else value,
             enabled = isEnabled,
             onValueChange = {
-                onValueChanged(if (keyboardType == KeyboardType.Phone) it.replace(" ", "") else it)
+                onValueChanged(if (keyboardType == KeyboardType.Phone) it.replace(" ", "").trim() else it.trim())
             },
             label = {
                 Text(
