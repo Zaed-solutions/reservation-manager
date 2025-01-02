@@ -197,7 +197,7 @@ private fun AddEmployeeScreenContent(
                 title = stringResource(R.string.company),
                 selectedValue = currentEmployee.company,
                 onValueChanged = { index ->
-                    onAction(AddEmployeeUiAction.OnCompanyChanged(companies.getOrElse(index) { Company() }))
+                    onAction(AddEmployeeUiAction.OnCompanyChanged(companies.getOrNull(index)?:Company()))
                 },
                 isOptional = false,
                 options = companies.map { it.name },

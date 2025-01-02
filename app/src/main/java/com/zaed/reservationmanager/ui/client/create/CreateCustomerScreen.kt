@@ -183,7 +183,7 @@ fun NewClientDataEntryScreenContent(
                 onValueChanged = { index ->
                     action(
                         CreateCustomerUiAction.UpdateNationality(
-                            nationalities[index]
+                            nationalities.getOrNull(index)?: ""
                         )
                     )
                 },
@@ -195,7 +195,7 @@ fun NewClientDataEntryScreenContent(
             TitledDropDownTextField(
                 title = stringResource(R.string.country_of_residence),
                 selectedValue = customer.residenceCountry,
-                onValueChanged = { index -> action(CreateCustomerUiAction.UpdateCountry(countries[index])) },
+                onValueChanged = { index -> action(CreateCustomerUiAction.UpdateCountry(countries.getOrNull(index)?:"")) },
                 isOptional = false,
                 errorMessageRes = R.string.country_is_required,
                 options = countries

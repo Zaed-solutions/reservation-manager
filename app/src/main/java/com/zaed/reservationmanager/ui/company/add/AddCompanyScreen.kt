@@ -172,21 +172,23 @@ private fun AddCompanyScreenContent(
                 errorMessageRes = error.messageRes
             )
             //type
-            TitledDropDownTextField(
-                title = stringResource(R.string.type),
-                selectedValue = stringResource(id = company.type.displayNameRes),
-                onValueChanged = { index ->
-                    onAction(AddCompanyUiAction.OnTypeChanged(index))
-                },
-                isOptional = true,
-                options = CompanyType.entries.map { stringResource(id = it.displayNameRes) },
-            )
+            if(initialCompany.id.isBlank()){
+                TitledDropDownTextField(
+                    title = stringResource(R.string.type),
+                    isClearEnabled = false,
+                    selectedValue = stringResource(id = company.type.displayNameRes),
+                    onValueChanged = { index ->
+                        onAction(AddCompanyUiAction.OnTypeChanged(index))
+                    },
+                    isOptional = true,
+                    options = CompanyType.entries.map { stringResource(id = it.displayNameRes) },
+                )
+            }
             //country
             TitledDropDownTextField(
                 title = stringResource(R.string.country),
                 onValueChanged = { index ->
-
-                    onAction(AddCompanyUiAction.OnCountryChanged(countryList[index]))
+                    onAction(AddCompanyUiAction.OnCountryChanged(countryList.getOrNull(index)?:""))
                 },
                 options = countryList,
                 selectedValue = company.country,

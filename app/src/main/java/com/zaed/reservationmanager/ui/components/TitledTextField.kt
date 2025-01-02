@@ -91,6 +91,7 @@ fun TitledTextField(
             trailingIcon = {
                 AnimatedVisibility(visible = value.isNotBlank()) {
                     IconButton(onClick = {
+                        value = ""
                         onValueChanged("")
                     }) {
                         Icon(

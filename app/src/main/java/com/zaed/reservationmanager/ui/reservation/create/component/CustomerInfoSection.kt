@@ -78,7 +78,7 @@ fun CustomerInfoSection(
                             title = stringResource(R.string.nationality),
                             selectedValue = customer.nationality,
                             onValueChanged = { index ->
-                                onUpdateNationality(countries[index])
+                                onUpdateNationality(countries.getOrNull(index) ?: "")
                             },
                             isOptional = true,
                             options = countries,
@@ -87,7 +87,7 @@ fun CustomerInfoSection(
                             title = stringResource(R.string.residence_country),
                             selectedValue = customer.residenceCountry,
                             onValueChanged = { index ->
-                                onUpdateCountry(countries[index])
+                                onUpdateCountry(countries.getOrNull(index) ?: "")
                             },
                             isOptional = false,
                             options = countries,
