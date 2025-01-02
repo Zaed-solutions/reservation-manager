@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Whatsapp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -427,12 +428,9 @@ fun ReservationItem(
 
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if (reservation.tourismRidePrice == 0) "" else reservation.tourismRidePrice.toString(),
+                                value = reservation.tourismRidePrice.toString(),
                                 onValueChanged = {},
                                 label = stringResource(R.string.ride2),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 keyboardOptions = KeyboardOptions.Default.copy(
                                     keyboardType = KeyboardType.Number,
                                     imeAction = ImeAction.Default
@@ -444,12 +442,9 @@ fun ReservationItem(
                             )
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if (reservation.tourismCollectedAmount == 0) "" else reservation.tourismCollectedAmount.toString(),
+                                value = reservation.tourismCollectedAmount.toString(),
                                 onValueChanged = { },
                                 label = stringResource(R.string.collecting),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 shape = RoundedCornerShape(0.dp),
                                 singleLine = true,
                                 readOnly = true,
@@ -457,13 +452,10 @@ fun ReservationItem(
                             )
                             CustomOutlinedTextField(
                                 modifier = Modifier.weight(1f),
-                                value = if ((reservation.tourismRidePrice - reservation.tourismCollectedAmount) == 0) "" else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
+                                value = (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString(),
                                 onValueChanged = {},
                                 shape = RoundedCornerShape(bottomEnd = 8.dp),
                                 label =stringResource(R.string.quota),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                ),
                                 singleLine = true,
                                 readOnly = true,
                                 enabled = false,
@@ -520,14 +512,9 @@ fun ReservationItem(
                             ) {
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if (reservation.travelRidePrice == 0) "" else reservation.travelRidePrice.toString(),
+                                    value = reservation.travelRidePrice.toString(),
                                     onValueChanged = {},
                                     label = stringResource(R.string.ride2),
-
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     shape = RoundedCornerShape(bottomStart = 8.dp),
                                     singleLine = true,
                                     readOnly = true,
@@ -535,14 +522,9 @@ fun ReservationItem(
                                 )
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if (reservation.travelCollectedAmount == 0) "" else reservation.travelCollectedAmount.toString(),
+                                    value = reservation.travelCollectedAmount.toString(),
                                     onValueChanged = {},
                                     label = stringResource(R.string.collecting),
-
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     shape = RoundedCornerShape(0.dp),
                                     singleLine = true,
                                     enabled = false,
@@ -550,14 +532,10 @@ fun ReservationItem(
                                 )
                                 CustomOutlinedTextField(
                                     modifier = Modifier.weight(1f),
-                                    value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
+                                    value = (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
                                     onValueChanged = {},
                                     shape = RoundedCornerShape(bottomEnd = 8.dp),
                                     label =stringResource(R.string.quota),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                                    ),
-
                                     supportingText = {},
                                     singleLine = true,
                                     readOnly = true,
@@ -566,7 +544,8 @@ fun ReservationItem(
                                 )
 
                             }
-                        }                    }
+                        }
+                    }
                     DetailRow(
                         label = stringResource(R.string.notes),
                         value = reservation.note,
@@ -578,8 +557,11 @@ fun ReservationItem(
                             modifier = Modifier.padding(top = 8.dp)
                         ) {
                             Button(
-                                enabled = !reservation.sentConfirmToCustomer,
                                 onClick = { onSendConfirmationToCustomer() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentConfirmToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentConfirmToCustomer) ButtonDefaults.buttonElevation() else null,
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
@@ -599,6 +581,7 @@ fun ReservationItem(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    color = if (reservation.sentConfirmToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(
                                         if (reservation.sentConfirmToCustomer)
@@ -611,10 +594,13 @@ fun ReservationItem(
 
                             if (reservation.travelCompany.isNotBlank()) {
                                 Button(
-                                    enabled = !reservation.sentToDriverCompany,
                                     onClick = { onSendInfoToTravelCompany() },
                                     modifier = Modifier
                                         .fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (!reservation.sentToDriverCompany) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                    ),
+                                    elevation = if (!reservation.sentToDriverCompany) ButtonDefaults.buttonElevation() else null,
                                     contentPadding = PaddingValues(
                                         horizontal = 16.dp,
                                         vertical = 8.dp
@@ -629,6 +615,7 @@ fun ReservationItem(
                                         modifier = Modifier.padding(start = 8.dp),
                                         style = MaterialTheme.typography.bodyMedium,
                                         maxLines = 1,
+                                        color = if (reservation.sentToDriverCompany) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                         overflow = TextOverflow.Ellipsis,
                                         text = stringResource(
                                             if (reservation.sentToDriverCompany)
@@ -641,14 +628,17 @@ fun ReservationItem(
                             }
 
                             Button(
-                                enabled = !reservation.sentDriverInfoToCustomer,
                                 onClick = { onSendDriverInfoToClient() },
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
                                 ),
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentDriverInfoToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentDriverInfoToCustomer) ButtonDefaults.buttonElevation() else null,
                             ) {
                                 Icon(
                                     imageVector = if (reservation.sentDriverInfoToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
@@ -662,6 +652,7 @@ fun ReservationItem(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
+                                    color = if (reservation.sentDriverInfoToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(
                                         if (reservation.sentDriverInfoToCustomer)
@@ -672,14 +663,17 @@ fun ReservationItem(
                                 )
                             }
                             Button(
-                                enabled = !reservation.sentThanksToCustomer,
                                 onClick = { onSendThanksToCustomer() },
                                 contentPadding = PaddingValues(
                                     horizontal = 16.dp,
                                     vertical = 8.dp
                                 ),
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (!reservation.sentThanksToCustomer) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                                ),
+                                elevation = if (!reservation.sentThanksToCustomer) ButtonDefaults.buttonElevation() else null,
                             ) {
                                 Icon(
                                     imageVector = if (reservation.sentThanksToCustomer) Icons.Default.Check else Icons.Default.Whatsapp,
@@ -692,6 +686,7 @@ fun ReservationItem(
                                 Text(
                                     modifier = Modifier.padding(start = 8.dp),
                                     maxLines = 1,
+                                    color = if (reservation.sentThanksToCustomer) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onPrimary,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.bodyMedium,
                                     text = stringResource(

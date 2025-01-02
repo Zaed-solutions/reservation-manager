@@ -129,7 +129,7 @@ fun AddReservationBottomSheetContent(
                     val company = tourismCompanies[index]
                     reservation = reservation.copy(
                         tourismCompany = company.name,
-                        tourismCompanyPhone = company.phoneNumber,
+                        tourismCompanyPhone = company.phoneNumber1,
                         tourismCompanyId = company.id,
                         tourismEmployeePhone = "",
                         tourismEmployeeId = "",
@@ -329,6 +329,7 @@ fun AddReservationBottomSheetContent(
                             )
                         }
                     },
+                    placeholder = "0",
                     label = stringResource(R.string.ride2),
                     isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
                     supportingText = {
@@ -340,9 +341,6 @@ fun AddReservationBottomSheetContent(
                             )
                         }
                     },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                    ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Default
@@ -365,6 +363,7 @@ fun AddReservationBottomSheetContent(
                         }
                     },
                     label = stringResource(R.string.collecting),
+                    placeholder = "0",
                     isError = reservationError == ReservationError.RIDE_PRICE_IS_REQUIRED,
 
                     supportingText = {
@@ -376,9 +375,6 @@ fun AddReservationBottomSheetContent(
                             )
                         }
                     },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                    ),
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Default
@@ -392,9 +388,7 @@ fun AddReservationBottomSheetContent(
                     onValueChanged = {},
                     shape = RoundedCornerShape(bottomEnd = 8.dp),
                     label =stringResource(R.string.quota),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                    ),
+                    placeholder = "0",
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Default
@@ -427,7 +421,7 @@ fun AddReservationBottomSheetContent(
                     val company = travelCompanies[index]
                     reservation = reservation.copy(
                         travelCompany = company.name,
-                        travelCompanyPhone = company.phoneNumber,
+                        travelCompanyPhone = company.phoneNumber1,
                         travelCompanyId = company.id,
                         driverId = "",
                         driver = "",
@@ -531,9 +525,7 @@ fun AddReservationBottomSheetContent(
                                 )
                             }
                         },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        ),
+                        placeholder = "0",
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Default
@@ -566,9 +558,7 @@ fun AddReservationBottomSheetContent(
                                 )
                             }
                         },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        ),
+                        placeholder = "0",
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Default
@@ -581,10 +571,8 @@ fun AddReservationBottomSheetContent(
                         value = if ((reservation.travelRidePrice - reservation.travelCollectedAmount) == 0) "" else (reservation.travelRidePrice - reservation.travelCollectedAmount).toString(),
                         onValueChanged = {},
                         shape = RoundedCornerShape(bottomEnd = 8.dp),
-                        label =stringResource(R.string.quota),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        ),
+                        label = stringResource(R.string.quota),
+                        placeholder = "0",
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Default

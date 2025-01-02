@@ -38,7 +38,8 @@ class AddCompanyViewModel(
             is AddCompanyUiAction.OnEmailChanged -> onUpdateEmail(action.email)
             is AddCompanyUiAction.OnFaxNumberChanged -> onUpdateFaxNumber(action.faxNumber)
             is AddCompanyUiAction.OnNameChanged -> onUpdateName(action.name)
-            is AddCompanyUiAction.OnPhoneNumberChanged -> onUpdatePhoneNumber(action.phoneNumber)
+            is AddCompanyUiAction.OnPhoneNumber1Changed -> onUpdatePhoneNumber1(action.phoneNumber)
+            is AddCompanyUiAction.OnPhoneNumber2Changed -> onUpdatePhoneNumber2(action.phoneNumber)
             AddCompanyUiAction.OnSaveClicked -> onSave()
             is AddCompanyUiAction.OnTypeChanged -> onUpdateType(action.index)
             else -> Unit
@@ -65,8 +66,8 @@ class AddCompanyViewModel(
                     _uiState.update { it.copy(error = AddCompanyUiError.FAX_NUMBER_IS_INVALID) }
                     return@launch
                 }
-                if (company.phoneNumber.isNotBlank() && !InputValidator.isPhoneNumberValid(company.phoneNumber)) {
-                    _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_IS_INVALID) }
+                if (company.phoneNumber1.isNotBlank() && !InputValidator.isPhoneNumberValid(company.phoneNumber1)) {
+                    _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_1_IS_INVALID) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = AddCompanyUiError.NONE) }
@@ -131,9 +132,15 @@ class AddCompanyViewModel(
         }
     }
 
-    private fun onUpdatePhoneNumber(phoneNumber: String) {
+    private fun onUpdatePhoneNumber1(phoneNumber: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(phoneNumber = phoneNumber)) }
+            _uiState.update { it.copy(company = it.company.copy(phoneNumber1 = phoneNumber)) }
+        }
+    }
+
+    private fun onUpdatePhoneNumber2(phoneNumber: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(company = it.company.copy(phoneNumber2 = phoneNumber)) }
         }
     }
 

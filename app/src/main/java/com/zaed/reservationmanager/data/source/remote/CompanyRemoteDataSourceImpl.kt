@@ -28,7 +28,7 @@ class CompanyRemoteDataSourceImpl(
     override fun createCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
         try {
             firestore.collection(COMPANY_COLLECTION)
-                .whereEqualTo("phoneNumber", company.phoneNumber)
+                .whereEqualTo("phoneNumber1", company.phoneNumber1)
                 .get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
@@ -66,7 +66,7 @@ class CompanyRemoteDataSourceImpl(
             firestore.collection(COMPANY_COLLECTION)
                 .where(
                     Filter.and(
-                        Filter.equalTo("phoneNumber", company.phoneNumber),
+                        Filter.equalTo("phoneNumber1", company.phoneNumber1),
                         Filter.notEqualTo("id", company.id)
                     )
                 )
@@ -80,12 +80,12 @@ class CompanyRemoteDataSourceImpl(
                         val reservationUpdates = when (company.type) {
                             CompanyType.TOURISM -> mapOf(
                                 "tourismCompany" to company.name,
-                                "tourismCompanyPhone" to company.phoneNumber
+                                "tourismCompanyPhone" to company.phoneNumber1
                             )
 
                             CompanyType.TRAVEL -> mapOf(
                                 "travelCompany" to company.name,
-                                "travelCompanyPhone" to company.phoneNumber
+                                "travelCompanyPhone" to company.phoneNumber1
                             )
                         }
                         reservations.forEach {
@@ -144,7 +144,9 @@ class CompanyRemoteDataSourceImpl(
 
     override fun getCompanies(): Flow<Result<List<Company>>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).addSnapshotListener { value, error ->
+            firestore.collection(COMPANY_COLLECTION)
+                .orderBy("name")
+                .addSnapshotListener { value, error ->
                 if (error != null) {
                     trySend(Result.failure(error))
                 } else {

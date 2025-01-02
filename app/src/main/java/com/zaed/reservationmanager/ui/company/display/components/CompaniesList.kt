@@ -19,7 +19,9 @@ fun CompaniesList(
     companies: List<Company> = emptyList(),
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ -> },
     onDeleteCompany: (companyId: String) -> Unit = {},
-    onEditCompany: (company: Company) -> Unit = {}
+    onEditCompany: (company: Company) -> Unit = {},
+    onCopyPhone: (String) -> Unit = {},
+    onMessagePhone: (String) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -41,6 +43,12 @@ fun CompaniesList(
                 },
                 onEditCompany = {
                     onEditCompany(company)
+                },
+                onCopyPhone = {
+                    onCopyPhone(it)
+                },
+                onMessagePhone = {
+                    onMessagePhone(it)
                 }
             )
         }
@@ -56,7 +64,7 @@ private fun CompaniesListPreview() {
                 id = "1",
                 name = "Company 1",
                 country = "Egypt",
-                phoneNumber = "+01012345678",
+                phoneNumber1 = "+01012345678",
                 faxNumber = "+1234567890",
                 email = "company-1@test.com"
             ),
@@ -64,7 +72,7 @@ private fun CompaniesListPreview() {
                 id = "2",
                 name = "Company 2",
                 country = "Egypt",
-                phoneNumber = "+01012345678",
+                phoneNumber1 = "+01012345678",
                 faxNumber = "+1234567890",
                 email = "company-2@test.com"
             ),

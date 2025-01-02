@@ -194,17 +194,31 @@ private fun AddCompanyScreenContent(
                 isError = error == AddCompanyUiError.COUNTRY_IS_REQUIRED,
                 errorMessageRes = error.messageRes
             )
-            //phone number
+            //phone number 1
             TitledTextField(
-                title = stringResource(R.string.phone_number),
-                initialValue = initialCompany.phoneNumber,
+                title = stringResource(R.string.phone_number_1),
+                initialValue = initialCompany.phoneNumber1,
                 onValueChanged = { phoneNumber ->
-                    onAction(AddCompanyUiAction.OnPhoneNumberChanged(phoneNumber))
+                    onAction(AddCompanyUiAction.OnPhoneNumber1Changed(phoneNumber))
                 },
                 isOptional = false,
                 isError = error in listOf(
-                    AddCompanyUiError.PHONE_NUMBER_IS_INVALID,
+                    AddCompanyUiError.PHONE_NUMBER_1_IS_INVALID,
                     AddCompanyUiError.PHONE_IS_ALREADY_USED,
+                ),
+                errorMessageRes = error.messageRes,
+                keyboardType = KeyboardType.Phone
+            )
+            //phone number 2
+            TitledTextField(
+                title = stringResource(R.string.phone_number_2),
+                initialValue = initialCompany.phoneNumber2,
+                onValueChanged = { phoneNumber ->
+                    onAction(AddCompanyUiAction.OnPhoneNumber2Changed(phoneNumber))
+                },
+                isOptional = true,
+                isError = error in listOf(
+                    AddCompanyUiError.PHONE_NUMBER_2_IS_INVALID,
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone

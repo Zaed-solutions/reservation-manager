@@ -11,4 +11,7 @@ sealed interface CompaniesUiAction {
 
     data class OnDeleteCompanyConfirmed(val companyId: String) : CompaniesUiAction
     data class OnEditCompanyClicked(val company: Company) : CompaniesUiAction
+    data class UpdateSearchQuery(val query: String) : CompaniesUiAction
+    data class OnCopyPhoneNumber(val phoneNumber: String) : CompaniesUiAction
+    data class OnMessagePhoneNumber(val phoneNumber: String) : CompaniesUiAction
 }

@@ -10,5 +10,6 @@ enum class AddCompanyUiError(@StringRes val messageRes: Int) {
     PHONE_IS_ALREADY_USED(R.string.a_company_with_phone_number_already_exists),
     EMAIL_IS_INVALID(R.string.email_is_invalid),
     FAX_NUMBER_IS_INVALID(R.string.invalid_fax_number),
-    PHONE_NUMBER_IS_INVALID(R.string.invalid_phone_number),
+    PHONE_NUMBER_1_IS_INVALID(R.string.invalid_phone_number),
+    PHONE_NUMBER_2_IS_INVALID(R.string.invalid_phone_number),
 }

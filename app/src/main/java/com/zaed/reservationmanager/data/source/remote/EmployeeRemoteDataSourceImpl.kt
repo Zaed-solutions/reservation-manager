@@ -27,7 +27,7 @@ class EmployeeRemoteDataSourceImpl(
                 .where(
                     Filter.or(
                         Filter.equalTo("name", employee.name),
-                        Filter.equalTo("phoneNumber", employee.phoneNumber1)
+                        Filter.equalTo("phoneNumber1", employee.phoneNumber1)
                     )
                 ).get().addOnSuccessListener { data ->
                     if (data.isEmpty) {

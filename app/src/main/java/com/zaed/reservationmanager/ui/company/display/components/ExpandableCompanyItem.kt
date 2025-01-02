@@ -2,7 +2,9 @@ package com.zaed.reservationmanager.ui.company.display.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,13 +40,16 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.ui.home.component.DetailRow
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableCompanyItem(
     modifier: Modifier = Modifier,
     company: Company = Company(),
     onCompanyDetailsClicked: () -> Unit = {},
     onDeleteCompany: () -> Unit = {},
-    onEditCompany: () -> Unit = {}
+    onEditCompany: () -> Unit = {},
+    onCopyPhone: (String) -> Unit = {},
+    onMessagePhone: (String) -> Unit = {},
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -69,12 +74,20 @@ fun ExpandableCompanyItem(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = company.name,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.combinedClickable(
+                        onClick = {
+                            onMessagePhone(company.phoneNumber1)
+                        },
+                        onLongClick = {
+                            onCopyPhone(company.phoneNumber1)
+                        }
+                    ),
                 )
                 Text(
                     text = company.country,
@@ -90,18 +103,27 @@ fun ExpandableCompanyItem(
                     horizontalAlignment = Alignment.Start,
                 ) {
                     DetailRow(
-                        label = stringResource(R.string.phone_number),
-                        value = company.phoneNumber,
+                        label = stringResource(R.string.phone_number_1),
+                        value = company.phoneNumber1,
+                        style = MaterialTheme.typography.bodyMedium,
+                        onClick = { onMessagePhone(company.phoneNumber1) },
+                        onLongClick = { onCopyPhone(company.phoneNumber1) },
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.phone_number_2),
+                        value = company.phoneNumber2,
+                        style = MaterialTheme.typography.bodyMedium,
+                        onClick = { onMessagePhone(company.phoneNumber2) },
+                        onLongClick = { onCopyPhone(company.phoneNumber2) },
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.email),
+                        value = company.email,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
                         label = stringResource(R.string.fax_number),
                         value = company.faxNumber,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    DetailRow(
-                        label = stringResource(R.string.email),
-                        value = company.email,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
@@ -177,7 +199,7 @@ private fun ExpandableCompanyItemPreview() {
             company = Company(
                 name = "Company Name",
                 country = "Country",
-                phoneNumber = "123456789",
+                phoneNumber1 = "123456789",
                 faxNumber = "123456789",
                 email = "company-name@test.com"
             ),
