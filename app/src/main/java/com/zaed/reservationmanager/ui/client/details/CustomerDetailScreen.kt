@@ -204,7 +204,7 @@ fun CustomerDetailScreen(
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText = context.getString(
                         R.string.thanks_message,
-                        reservation.clientName
+                        reservation.clientName.trim()
                     )
                     PhoneUtil.sendWhatsappMessage(
                         context = context,

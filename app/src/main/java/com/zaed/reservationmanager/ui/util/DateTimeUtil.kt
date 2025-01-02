@@ -56,5 +56,5 @@ fun Long.formatEpochSecondsToMessageDateTime(): String {
     val formatter = DateTimeFormatter.ofPattern("d MMM, hh:mm a", Locale.getDefault()).withDecimalStyle(
         DecimalStyle.of(Locale.getDefault())
     )
-    return dateTime.format(formatter)
+    return "*${dateTime.format(formatter)}*"
 }
