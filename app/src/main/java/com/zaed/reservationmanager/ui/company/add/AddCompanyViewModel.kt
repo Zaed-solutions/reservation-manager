@@ -134,37 +134,37 @@ class AddCompanyViewModel(
 
     private fun onUpdatePhoneNumber1(phoneNumber: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(phoneNumber1 = phoneNumber.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(phoneNumber1 = phoneNumber)) }
         }
     }
 
     private fun onUpdatePhoneNumber2(phoneNumber: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(phoneNumber2 = phoneNumber.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(phoneNumber2 = phoneNumber)) }
         }
     }
 
     private fun onUpdateName(name: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(name = name.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(name = name)) }
         }
     }
 
     private fun onUpdateFaxNumber(faxNumber: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(faxNumber = faxNumber.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(faxNumber = faxNumber)) }
         }
     }
 
     private fun onUpdateEmail(email: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(email = email.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(email = email)) }
         }
     }
 
     private fun onUpdateCountry(country: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(company = it.company.copy(country = country.trim())) }
+            _uiState.update { it.copy(company = it.company.copy(country = country)) }
         }
     }
 }

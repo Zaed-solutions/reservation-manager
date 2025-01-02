@@ -56,7 +56,7 @@ fun AddMessageBottomSheetContent(
             title = stringResource(R.string.message),
             initialValue = initialMessage.message,
             onValueChanged = { messageText ->
-                message = message.copy(message = messageText.trim())
+                message = message.copy(message = messageText)
             },
             isOptional = false,
             isError = messageError == MessageError.MESSAGE_IS_REQUIRED,
