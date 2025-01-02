@@ -1,6 +1,5 @@
 package com.zaed.reservationmanager.data.source.remote
 
-import com.zaed.reservationmanager.data.model.CompanyBalance
 import com.zaed.reservationmanager.data.model.Reservation
 import kotlinx.coroutines.flow.Flow
 

@@ -1,7 +1,6 @@
 package com.zaed.reservationmanager.ui.client.details
 
 import android.content.Context
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetDefaults
-import androidx.compose.material3.ModalBottomSheetDefaults.properties
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
@@ -49,14 +46,13 @@ import com.zaed.reservationmanager.ui.client.details.components.CustomerDetailsH
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
+import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun CustomerDetailScreen(
@@ -184,20 +180,7 @@ fun CustomerDetailScreen(
 
                 is CustomerDetailsUiAction.SendReservationInfoToTravelCompany -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
-                        R.string.transportation_details,
-                        reservation.clientName,
-                        reservation.clientPhone,
-                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-                        reservation.car,
-                        reservation.carCount, // New field
-                        reservation.startLocation,
-                        reservation.flightNumber,
-                        reservation.endLocation,
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
-                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
-                        reservation.note
-                    )
+                    val messageText = getTransportationDetailsMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.travelCompanyPhone,
