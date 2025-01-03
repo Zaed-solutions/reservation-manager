@@ -101,19 +101,7 @@ fun NewClientDataEntryScreenContent(
     countries: List<String> = emptyList(),
     isLoading: Boolean = false,
     onBackClicked: () -> Unit = {},
-    context: Context = LocalContext.current
 ) {
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(error) {
-        if (error != ClientUIError.NONE) {
-            val errorString = context.getString(error.messageRes)
-            scope.launch {
-                snackbarHostState.showSnackbar(
-                    message = errorString
-                )
-            }
-        }
-    }
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackbarHostState)
@@ -218,7 +206,7 @@ fun NewClientDataEntryScreenContent(
                 isError = error in listOf(
                     ClientUIError.PHONE_NUMBER_IS_REQUIRED,
                     ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
-                    ClientUIError.PHONE_NUMBER_IS_INVALID
+                    ClientUIError.PHONE_NUMBER_1_IS_INVALID
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
@@ -229,6 +217,8 @@ fun NewClientDataEntryScreenContent(
                 onValueChanged = { newText ->
                         action(CreateCustomerUiAction.UpdateNumber2(newText))
                 },
+                isError = (error in listOf(ClientUIError.PHONE_NUMBER_2_IS_INVALID, ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS)) && customer.phoneNumber2.isNotBlank(),
+                errorMessageRes = error.messageRes,
                 isOptional = true,
                 keyboardType = KeyboardType.Phone
             )

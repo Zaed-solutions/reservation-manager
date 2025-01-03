@@ -108,7 +108,6 @@ private fun AddCompanyScreenContent(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
@@ -221,6 +220,7 @@ private fun AddCompanyScreenContent(
                 isOptional = true,
                 isError = error in listOf(
                     AddCompanyUiError.PHONE_NUMBER_2_IS_INVALID,
+                    AddCompanyUiError.PHONE_IS_ALREADY_USED
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone

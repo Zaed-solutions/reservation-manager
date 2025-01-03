@@ -52,19 +52,23 @@ class CreateCustomerViewModel(
             }
             with(uiState.value) {
                 if (customer.name.isBlank()) {
-                    _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED) }
+                    _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED, loading = false) }
                     return@launch
                 }
                 if (customer.phoneNumber1.isBlank()) {
-                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED) }
+                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED, loading = false) }
                     return@launch
                 }
                 if (!InputValidator.isPhoneNumberValid(customer.phoneNumber1)) {
-                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_INVALID) }
+                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_1_IS_INVALID, loading = false) }
+                    return@launch
+                }
+                if (customer.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(customer.phoneNumber2)) {
+                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_2_IS_INVALID, loading = false) }
                     return@launch
                 }
                 if (customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)) {
-                    _uiState.update { it.copy(error = ClientUIError.EMAIL_IS_INVALID) }
+                    _uiState.update { it.copy(error = ClientUIError.EMAIL_IS_INVALID, loading = false) }
                     return@launch
                 }
                 _uiState.update { it.copy(error = ClientUIError.NONE) }

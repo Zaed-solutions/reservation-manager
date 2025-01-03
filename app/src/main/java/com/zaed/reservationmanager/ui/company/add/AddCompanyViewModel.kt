@@ -70,6 +70,10 @@ class AddCompanyViewModel(
                     _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_1_IS_INVALID) }
                     return@launch
                 }
+                if (company.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(company.phoneNumber2)) {
+                    _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_2_IS_INVALID) }
+                    return@launch
+                }
                 _uiState.update { it.copy(error = AddCompanyUiError.NONE) }
             }
             if (uiState.value.isNew) {

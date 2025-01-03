@@ -22,13 +22,24 @@ class EmployeeRemoteDataSourceImpl(
 
     override fun createEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow {
         try {
+            val filter = if (employee.phoneNumber2.isNotBlank()) {
+                Filter.or(
+                    Filter.equalTo("name", employee.name),
+                    Filter.or(
+                        Filter.inArray("phoneNumber1", listOf(employee.phoneNumber1, employee.phoneNumber2)),
+                        Filter.inArray("phoneNumber2", listOf(employee.phoneNumber2, employee.phoneNumber1))
+                    )
+                )
+            } else {
+                Filter.or(
+                    Filter.equalTo("name", employee.name),
+                    Filter.equalTo("phoneNumber1", employee.phoneNumber1)
+                )
+            }
             firestore
                 .collection(EMPLOYEE_COLLECTION)
                 .where(
-                    Filter.or(
-                        Filter.equalTo("name", employee.name),
-                        Filter.equalTo("phoneNumber1", employee.phoneNumber1)
-                    )
+                    filter
                 ).get().addOnSuccessListener { data ->
                     if (data.isEmpty) {
                         val document = firestore.collection(EMPLOYEE_COLLECTION).document()
@@ -59,13 +70,22 @@ class EmployeeRemoteDataSourceImpl(
                         Filter.equalTo("tourismEmployeeId", employee.id)
                     )
                 ).get().await()
-            firestore.collection(EMPLOYEE_COLLECTION)
-                .where(
-                    Filter.and(
-                        Filter.equalTo("phoneNumber1", employee.phoneNumber1),
-                        Filter.notEqualTo("id", employee.id)
-                    )
+            val filter = if (employee.phoneNumber2.isNotBlank()) {
+                Filter.and(
+                    Filter.or(
+                        Filter.inArray("phoneNumber1", listOf(employee.phoneNumber1, employee.phoneNumber2)),
+                        Filter.inArray("phoneNumber2", listOf(employee.phoneNumber2, employee.phoneNumber1))
+                    ),
+                    Filter.notEqualTo("id", employee.id),
                 )
+            } else {
+                Filter.and(
+                    Filter.equalTo("phoneNumber1", employee.phoneNumber1),
+                    Filter.notEqualTo("id", employee.id),
+                )
+            }
+            firestore.collection(EMPLOYEE_COLLECTION)
+                .where(filter)
                 .get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {

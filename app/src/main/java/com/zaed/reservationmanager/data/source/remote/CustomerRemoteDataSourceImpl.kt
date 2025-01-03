@@ -18,30 +18,41 @@ class CustomerRemoteDataSourceImpl(
         private val RESERVATION_COLLECTION = "reservations"
     }
 
-    override fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> = callbackFlow {
-        Log.d(TAG, "createCustomer: $customer")
-        try {
-            firestore.collection(CUSTOMER_COLLECTION)
-                .whereEqualTo("phoneNumber1", customer.phoneNumber1).get()
-                .addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        val document = firestore.collection(CUSTOMER_COLLECTION).document()
-                        document.set(customer.copy(id = document.id)).addOnSuccessListener {
-                            trySend(Result.success(true to document.id))
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
-                        }
-                    } else {
-                        trySend(Result.success(false to ""))
-                    }
-                }.addOnFailureListener { e ->
-                    trySend(Result.failure(e))
+    override fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> =
+        callbackFlow {
+            Log.d(TAG, "createCustomer: $customer")
+            try {
+                val filter = if (customer.phoneNumber2.isNotBlank()) {
+                    Filter.or(
+                        Filter.inArray("phoneNumber1", listOf(customer.phoneNumber1, customer.phoneNumber2)),
+                        Filter.inArray("phoneNumber2",  listOf(customer.phoneNumber1, customer.phoneNumber2))
+                    )
+                } else {
+                    Filter.equalTo("phoneNumber1", customer.phoneNumber1)
                 }
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
+                firestore.collection(CUSTOMER_COLLECTION)
+                    .where(
+                        filter
+                    ).get()
+                    .addOnSuccessListener { data ->
+                        if (data.isEmpty) {
+                            val document = firestore.collection(CUSTOMER_COLLECTION).document()
+                            document.set(customer.copy(id = document.id)).addOnSuccessListener {
+                                trySend(Result.success(true to document.id))
+                            }.addOnFailureListener { e ->
+                                trySend(Result.failure(e))
+                            }
+                        } else {
+                            trySend(Result.success(false to ""))
+                        }
+                    }.addOnFailureListener { e ->
+                        trySend(Result.failure(e))
+                    }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     override suspend fun getCustomerByNumber(number: String): Result<Customer> {
         return try {
@@ -85,15 +96,26 @@ class CustomerRemoteDataSourceImpl(
             val reservations = firestore.collection(RESERVATION_COLLECTION)
                 .whereEqualTo("clientId", customer.id).get().await()
             Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
+            val filter = if (customer.phoneNumber2.isNotBlank()) {
+                Filter.and(
+                    Filter.or(
+                        Filter.inArray("phoneNumber1", listOf(customer.phoneNumber1, customer.phoneNumber2)),
+                        Filter.inArray("phoneNumber2",  listOf(customer.phoneNumber1, customer.phoneNumber2))
+                    ),
+                    Filter.notEqualTo("id", customer.id),
+                )
+            } else {
+                Filter.and(
+                    Filter.equalTo("phoneNumber1", customer.phoneNumber1),
+                    Filter.notEqualTo("id", customer.id),
+                )
+            }
             firestore.collection(CUSTOMER_COLLECTION)
                 .where(
-                    Filter.and(
-                        Filter.equalTo("phoneNumber", customer.phoneNumber1),
-                        Filter.notEqualTo("id", customer.id),
-                    )
+                    filter
                 ).get()
                 .addOnSuccessListener { data ->
-                    if(data.isEmpty) {
+                    if (data.isEmpty) {
                         Log.d(TAG, "updateCustomer: data: $data")
                         val batch = firestore.batch()
                         val customerRef =
@@ -132,8 +154,10 @@ class CustomerRemoteDataSourceImpl(
 
     override fun deleteCustomer(customerId: String): Flow<Result<Boolean>> = callbackFlow {
         try {
-            val reservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("clientId", customerId).get().await()
-            if(reservations.isEmpty){
+            val reservations =
+                firestore.collection(RESERVATION_COLLECTION).whereEqualTo("clientId", customerId)
+                    .get().await()
+            if (reservations.isEmpty) {
                 firestore.collection(CUSTOMER_COLLECTION).document(customerId).delete()
                     .addOnSuccessListener {
                         trySend(Result.success(true))
@@ -184,18 +208,18 @@ class CustomerRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun updateCustomers(customers: List<Customer>): Flow<Result<Unit>>  = callbackFlow {
+    override fun updateCustomers(customers: List<Customer>): Flow<Result<Unit>> = callbackFlow {
         try {
             val batch = firestore.batch()
             customers.forEach { customer ->
-                val map = mutableMapOf<String,Any>()
-                if(customer.name.isNotBlank()) {
+                val map = mutableMapOf<String, Any>()
+                if (customer.name.isNotBlank()) {
                     map["name"] = customer.name
                 }
-                if(customer.phoneNumber1.isNotBlank()) {
+                if (customer.phoneNumber1.isNotBlank()) {
                     map["phoneNumber"] = customer.phoneNumber1
                 }
-                if(customer.residenceCountry.isNotBlank()) {
+                if (customer.residenceCountry.isNotBlank()) {
                     map["residenceCountry"] = customer.residenceCountry
                 }
                 if (customer.email.isNotBlank()) {
@@ -207,13 +231,14 @@ class CustomerRemoteDataSourceImpl(
                 val customerRef =
                     firestore.collection(CUSTOMER_COLLECTION).document(customer.id)
                 batch.update(customerRef, map)
-                val reservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("clientId",  customer.id).get().await()
+                val reservations = firestore.collection(RESERVATION_COLLECTION)
+                    .whereEqualTo("clientId", customer.id).get().await()
                 val updates = mapOf(
                     "clientName" to customer.name,
                     "clientPhone" to customer.phoneNumber1,
                     "clientCountry" to customer.residenceCountry
                 )
-                reservations.forEach{
+                reservations.forEach {
                     batch.update(it.reference, updates)
                 }
             }

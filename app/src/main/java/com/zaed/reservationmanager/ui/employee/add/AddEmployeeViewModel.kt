@@ -136,17 +136,22 @@ class AddEmployeeViewModel(
 
     private fun updateEmployee() {
         viewModelScope.launch(Dispatchers.IO) {
-            employeeRepo.updateEmployee(uiState.value.employee).collect { result ->
-                result.onSuccess { isUpdated ->
-                    if(isUpdated){
-                        _uiState.update { it.copy(isFinished = true) }
-                    } else {
-                        _uiState.update { it.copy(error = AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED) }
+            try {
+                employeeRepo.updateEmployee(uiState.value.employee).collect { result ->
+                    result.onSuccess { isUpdated ->
+                        if (isUpdated) {
+                            _uiState.update { it.copy(isFinished = true) }
+                        } else {
+                            _uiState.update { it.copy(error = AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED) }
+                        }
+                    }.onFailure { error ->
+                        Log.e(TAG, "updateCompany: ${error.message}")
+                        error.printStackTrace()
                     }
-                }.onFailure { error ->
-                    Log.e(TAG, "updateCompany: ${error.message}")
-                    error.printStackTrace()
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "updateCompany: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
