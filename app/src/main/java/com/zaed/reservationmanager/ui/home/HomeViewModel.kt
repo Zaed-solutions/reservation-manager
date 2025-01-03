@@ -326,6 +326,22 @@ class HomeViewModel(
                         displayedReservations = filteredReservations,
                     )
                 }
+            } else if (searchQuery.startsWith("#")) {
+                Log.d(TAG, "filterData: searching for reservation number: $searchQuery")
+                val filteredReservations = mutableListOf<Reservation>().apply{
+                    uiState.value.reservations.firstOrNull { reservation ->
+                        reservation.reservationNumber == (searchQuery.substringAfter("#").toLongOrNull()
+                            ?: -1)
+                    }?.let {
+                       this.add(it)
+                    }
+                }
+                _uiState.update { oldState ->
+                    oldState.copy(
+                        displayedReservations = filteredReservations,
+                        timeFilter = TimeFilter.All
+                    )
+                }
             } else if (timeFilter == TimeFilter.All) {
                 Log.d(TAG, "filterData: timeFilter is All")
                 val filteredReservations = uiState.value.reservations.filter { reservation ->
