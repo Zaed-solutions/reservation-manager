@@ -27,8 +27,16 @@ class CompanyRemoteDataSourceImpl(
 
     override fun createCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
         try {
+            val filter = if (company.phoneNumber2.isNotBlank()) {
+                Filter.or(
+                    Filter.inArray("phoneNumber1", listOf(company.phoneNumber1, company.phoneNumber2)),
+                    Filter.inArray("phoneNumber2",  listOf(company.phoneNumber1, company.phoneNumber2))
+                )
+            } else {
+                Filter.equalTo("phoneNumber1", company.phoneNumber1)
+            }
             firestore.collection(COMPANY_COLLECTION)
-                .whereEqualTo("phoneNumber1", company.phoneNumber1)
+                .where(filter)
                 .get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {
@@ -63,13 +71,22 @@ class CompanyRemoteDataSourceImpl(
                 .whereEqualTo("companyId", company.id)
                 .get().await()
             Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
-            firestore.collection(COMPANY_COLLECTION)
-                .where(
-                    Filter.and(
-                        Filter.equalTo("phoneNumber1", company.phoneNumber1),
-                        Filter.notEqualTo("id", company.id)
-                    )
+            val filter = if (company.phoneNumber2.isNotBlank()) {
+                Filter.and(
+                    Filter.or(
+                        Filter.inArray("phoneNumber1", listOf(company.phoneNumber1, company.phoneNumber2)),
+                        Filter.inArray("phoneNumber2", listOf(company.phoneNumber1, company.phoneNumber2)),
+                    ),
+                    Filter.notEqualTo("id", company.id),
                 )
+            } else {
+                Filter.and(
+                    Filter.equalTo("phoneNumber1", company.phoneNumber1),
+                    Filter.notEqualTo("id", company.id),
+                )
+            }
+            firestore.collection(COMPANY_COLLECTION)
+                .where(filter)
                 .get()
                 .addOnSuccessListener { data ->
                     if (data.isEmpty) {

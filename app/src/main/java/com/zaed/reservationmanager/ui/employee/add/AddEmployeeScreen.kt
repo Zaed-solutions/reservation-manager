@@ -119,7 +119,6 @@ private fun AddEmployeeScreenContent(
     companies: List<Company> = emptyList()
 ) {
     Scaffold(
-        modifier = modifier.imePadding(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             val title = if (isDriver && isNew) {
@@ -272,7 +271,7 @@ private fun AddEmployeeScreenContent(
                     onAction(AddEmployeeUiAction.OnPhoneNumber2Changed(phoneNumber))
                 },
                 isOptional = true,
-                isError = error == AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID,
+                isError = error in listOf(AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID, AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )
