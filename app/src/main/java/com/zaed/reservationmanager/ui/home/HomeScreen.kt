@@ -18,11 +18,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -77,6 +81,8 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
+import com.zaed.reservationmanager.ui.components.FabItem
+import com.zaed.reservationmanager.ui.components.MultiFloatingActionButton
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
@@ -510,17 +516,36 @@ fun HomeScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (pagerState.currentPage == 1) {
-                        onAction(HomeUiAction.AddCustomer)
-                    } else {
-                        onAction(HomeUiAction.AddReservation)
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            val fabItems = remember{
+                listOf(
+                    FabItem(
+                        icon = Icons.AutoMirrored.Filled.Assignment,
+                        label = context.getString(R.string.create_report),
+                        onFabItemClicked = {
+                            /*TODO*/
+                        }
+                    ),
+                    FabItem(
+                        icon = Icons.Default.PersonAddAlt1,
+                        label = context.getString(R.string.add_customer),
+                        onFabItemClicked = {
+                            onAction(HomeUiAction.AddCustomer)
+                        }
+                    ),
+                    FabItem(
+                        icon = Icons.Default.DirectionsCar,
+                        label = context.getString(R.string.add_reservation),
+                        onFabItemClicked = {
+                            onAction(HomeUiAction.AddReservation)
+                        }
+                    ),
+                )
             }
+            MultiFloatingActionButton(
+                fabIcon = Icons.Default.Add,
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                items = fabItems
+            )
         }
     ) { paddingValues ->
         Column(

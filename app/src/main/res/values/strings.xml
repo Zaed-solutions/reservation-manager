@@ -267,4 +267,7 @@
     <string name="city">City</string>
     <string name="phone_number_is_blank">Phone number is blank!</string>
     <string name="import_customers_from_excel">Import Customers from Excel</string>
+    <string name="create_report">Create Report</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="add_reservation">Add Reservation</string>
 </resources>
