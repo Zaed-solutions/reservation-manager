@@ -264,4 +264,24 @@
     <string name="city">المدينة</string>
     <string name="phone_number_is_blank">رقم الجوال فارغ</string>
     <string name="import_customers_from_excel">استخراج العملاء من ملف Excel</string>
+    <string name="create_report">إنشاء تقرير</string>
+    <string name="add_customer">إضافة عميل</string>
+    <string name="add_reservation">إضافة حجز</string>
+    <string name="report_type">نوع التقرير</string>
+    <string name="company_account">حساب الشركة</string>
+    <string name="company_arrival">وصولات الشركة</string>
+    <string name="all_arivals">جميع الوصولات</string>
+    <string name="none">لا شيء</string>
+    <string name="company_type">نوع الشركة</string>
+    <string name="open_balance">الرصيد المفتوح</string>
+    <string name="export">تصدير</string>
+    <string name="all">الكل</string>
+    <string name="certain_car">سيارة معينة</string>
+    <string name="account_type">نوع الحساب</string>
+    <string name="share">مشاركة</string>
+    <string name="no_apps_found_to_share_file">لم يتم العثور على تطبيقات لمشاركة هذا الملف</string>
+    <string name="company_arrival_report_placeholder">تقرير الوصول للشركة - %1$s - %2$s</string>
+    <string name="all_arrival_report_placeholder">تقرير جميع الوصولات - %1$s</string>
+    <string name="company_account_report_placeholder">تقرير حساب الشركة - %1$s - %2$s</string>
+
 </resources>

@@ -20,7 +20,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Done
@@ -34,7 +33,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -94,10 +92,10 @@ import com.zaed.reservationmanager.ui.home.component.TimeFiltersChips
 import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.FileUtil
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
-import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForAllReservations
-import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyReservations
+import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals
 import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
@@ -171,25 +169,16 @@ fun HomeScreen(
                                 actionLabel = context.getString(R.string.open)
                             ).let { result ->
                                 if (result == SnackbarResult.ActionPerformed) {
-                                    try {
-                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            val fileUri: Uri = FileProvider.getUriForFile(
-                                                context,
-                                                "${context.packageName}.fileprovider",
-                                                file
-                                            )
-                                            setDataAndType(fileUri, "text/csv")
-                                            flags =
-                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    FileUtil.openFile(
+                                        context = context,
+                                        file = file,
+                                        type = "text/csv",
+                                        onFailure = {
+                                            scope.launch{
+                                                snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
+                                            }
                                         }
-                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(openFileIntent)
-                                        } else {
-                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
-                                        }
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
+                                    )
                                 }
                             }
                         } else {
@@ -199,7 +188,7 @@ fun HomeScreen(
                 }
 
                 HomeUiAction.ExportReservationsAsCsv -> {
-                    val file = generatePaginatedArabicPdfReportForCompanyReservations(context, state.displayedReservations)
+                    val file = generatePaginatedArabicPdfReportForCompanyArrivals(context, state.displayedReservations)
 //                        context = context,
 //                        isAllRides = true,
 //                        headers = listOf(
@@ -224,29 +213,20 @@ fun HomeScreen(
                                 actionLabel = context.getString(R.string.open)
                             ).let { result ->
                                 if (result == SnackbarResult.ActionPerformed) {
-                                    try {
-                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            val fileUri: Uri = FileProvider.getUriForFile(
-                                                context,
-                                                "${context.packageName}.fileprovider",
-                                                file
-                                            )
-                                            setDataAndType(fileUri, "application/pdf")
-                                            flags =
-                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    FileUtil.openFile(
+                                        context = context,
+                                        file = file,
+                                        type = "application/pdf",
+                                        onFailure = {
+                                            scope.launch{
+                                                snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
+                                            }
                                         }
-                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(openFileIntent)
-                                        } else {
-                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
-                                        }
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
+                                    )
                                 }
                             }
                         } else {
-                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_csv))
+                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_pdf))
                         }
                     }
                 }
@@ -372,6 +352,32 @@ fun HomeScreen(
                 is HomeUiAction.FetchCustomerForUpdating -> {
                     val customer = state.customers.first { it.id == action.customerId }
                     onNavigateToEditCustomer(customer)
+                }
+                
+                is HomeUiAction.ShareFile -> {
+                    FileUtil.shareFile(
+                        context = context,
+                        file = action.file,
+                        type = action.type,
+                        onFailure = {
+                            scope.launch{
+                                snackbarHostState.showSnackbar(context.getString(R.string.no_apps_found_to_share_file))
+                            }
+                        }
+                    )
+                }
+
+                is HomeUiAction.OpenFile -> {
+                    FileUtil.openFile(
+                        context = context,
+                        file = action.file,
+                        type = action.type,
+                        onFailure = {
+                            scope.launch{
+                                snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
+                            }
+                        }
+                    )
                 }
 
                 else -> viewModel.handleAction(action)
@@ -911,6 +917,12 @@ fun HomeScreenContent(
                                     onSuccess = onSuccess
                                 )
                             )
+                        },
+                        onShareFile = {
+                            onAction(HomeUiAction.ShareFile(it, "application/pdf"))
+                        },
+                        onOpenFile = {
+                            onAction(HomeUiAction.OpenFile(it, "application/pdf"))
                         }
                     )
                 }

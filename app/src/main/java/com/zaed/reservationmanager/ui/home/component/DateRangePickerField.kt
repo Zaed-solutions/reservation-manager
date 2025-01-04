@@ -51,7 +51,7 @@ fun DateRangePickerField(
 
     if (showModal) {
         DateRangePickerModal(onDateRangeSelected = {
-            selectedDateRange = it as Pair<Long, Long>
+            selectedDateRange = Pair((it.first?:0)/1000L, (it.second ?:0) / 1000L)
             onDateRangeSelected(it)
             showModal = false
         }, onDismiss = { showModal = false })

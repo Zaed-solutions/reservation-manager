@@ -18,8 +18,8 @@ fun convertSecondsToString(seconds: Long): String {
 }
 
 fun convertRangeToString(range: Pair<Long?, Long?>): String {
-    val fromDateTime = java.time.Instant.ofEpochSecond((range.first?:0)/1000L).atZone(ZoneId.of("UTC")).toLocalDateTime()
-    val toDateTime = java.time.Instant.ofEpochSecond((range.second?:0)/1000L).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val fromDateTime = java.time.Instant.ofEpochSecond((range.first?:0)).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val toDateTime = java.time.Instant.ofEpochSecond((range.second?:0)).atZone(ZoneId.of("UTC")).toLocalDateTime()
     val formatter = DateTimeFormatter.ofPattern("dd/MMMM", Locale.getDefault()).withDecimalStyle(
         DecimalStyle.of(Locale.getDefault())
     )

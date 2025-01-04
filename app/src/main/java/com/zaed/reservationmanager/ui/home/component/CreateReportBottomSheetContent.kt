@@ -15,9 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,7 +40,10 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
+import com.zaed.reservationmanager.ui.reservation.create.component.convertRangeToString
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
+import com.zaed.reservationmanager.ui.util.SheetUtil
+import java.io.File
 
 
 @Composable
@@ -46,12 +53,15 @@ fun CreateReportBottomSheetContent(
     travelCompanies: List<Company> = emptyList(),
     cars: List<String> = emptyList(),
     onFetchReservations: (report: Report, onSuccess: (List<Reservation>) -> Unit) -> Unit,
-    onDismiss: () -> Unit
-) {
+    onDismiss: () -> Unit,
+    onShareFile: (File) -> Unit,
+    onOpenFile: (File) -> Unit,
+    ) {
     val context = LocalContext.current
     var report by remember {
         mutableStateOf(Report())
     }
+    var generatedFile by remember { mutableStateOf<File?>(null) }
     var isSelectCompanyTypeVisible by remember { mutableStateOf(false) }
     var isSelectCompanyVisible by remember { mutableStateOf(false) }
     var isSelectCompanyAccountTypeVisible by remember { mutableStateOf(false) }
@@ -72,13 +82,70 @@ fun CreateReportBottomSheetContent(
             when{
                 state.first -> {
                     Box (
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 200.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 200.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(modifier = Modifier.size(36.dp))
                     }
                 }
-                state.second -> {}
+                state.second -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        if(generatedFile == null) {
+                            Text(
+                                text = stringResource(id = R.string.no_reservations_added),
+                                style = MaterialTheme.typography.headlineMedium,
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(id = R.string.create_report),
+                                style = MaterialTheme.typography.headlineMedium,
+                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp, top = 24.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    onClick = { generatedFile?.let{ onShareFile(it) } },
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Share,
+                                        contentDescription = null
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        text = stringResource(id = R.string.share)
+                                    )
+                                }
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    onClick = {
+                                        generatedFile?.let{ onOpenFile(generatedFile!!)}
+                                    },
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.FileOpen,
+                                        contentDescription = null
+                                    )
+                                    Text(
+                                        modifier = Modifier.padding(start = 4.dp),
+                                        text = stringResource(id = R.string.open)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
                 else -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -264,8 +331,72 @@ fun CreateReportBottomSheetContent(
                                     onFetchReservations(
                                         report
                                     ) { reservations ->
-                                        isLoading = false
-                                        /*TODO*/
+                                        if(reservations.isNotEmpty()) {
+                                            when (report.type) {
+                                                ReportType.COMPANY_ACCOUNT -> {
+                                                    val filteredReservation =
+                                                        if (report.companyAccountType == CompanyAccountType.OPEN_BALANCE) {
+                                                            reservations.filter {
+                                                                if (report.company.type == CompanyType.TRAVEL)
+                                                                    it.travelRidePrice != it.travelCollectedAmount
+                                                                else
+                                                                    it.tourismRidePrice != it.tourismCollectedAmount
+                                                            }
+                                                        } else {
+                                                            reservations
+                                                        }
+                                                    SheetUtil.generatePaginatedArabicPdfReportForCompanyAccount(
+                                                        context = context,
+                                                        reservations = filteredReservation,
+                                                        companyType = report.company.type,
+                                                        title = context.getString(
+                                                            R.string.company_account_report_placeholder,
+                                                            report.company.name,
+                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                        ),
+                                                    )?.let { pdfFile ->
+                                                        isLoaded = true
+                                                        isLoading = false
+                                                        generatedFile = pdfFile
+                                                    }
+                                                }
+
+                                                ReportType.COMPANY_ARRIVAL -> {
+                                                    SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals(
+                                                        context = context,
+                                                        reservations = reservations,
+                                                        companyType = report.company.type,
+                                                        title = context.getString(
+                                                            R.string.company_arrival_report_placeholder,
+                                                            report.company.name,
+                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                        ),
+                                                    )?.let { pdfFile ->
+                                                        isLoaded = true
+                                                        isLoading = false
+                                                        generatedFile = pdfFile
+                                                    }
+                                                }
+
+                                                else -> {
+                                                    SheetUtil.generatePaginatedArabicPdfReportForAllArrivals(
+                                                        context = context,
+                                                        reservations = reservations,
+                                                        title = context.getString(
+                                                            R.string.all_arrival_report_placeholder,
+                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                        ),
+                                                    )?.let { pdfFile ->
+                                                        isLoaded = true
+                                                        isLoading = false
+                                                        generatedFile = pdfFile
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            isLoaded = true
+                                            isLoading = false
+                                        }
                                     }
                                 },
                                 shape = RoundedCornerShape(12.dp)
