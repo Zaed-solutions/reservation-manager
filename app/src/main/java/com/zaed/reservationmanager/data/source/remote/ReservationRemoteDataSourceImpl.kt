@@ -2,7 +2,9 @@ package com.zaed.reservationmanager.data.source.remote
 
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -234,5 +236,34 @@ class ReservationRemoteDataSourceImpl(
             trySend(Result.failure(e))
         }
         awaitClose { }
+    }
+
+    override fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>> = callbackFlow {
+        try{
+            var query: Query = firestore.collection(RESERVATION_COLLECTION)
+            if (report.company.id.isNotBlank()) {
+                query = query.whereEqualTo("companyId", report.company.id)
+            }
+            if (report.car.isNotBlank()) {
+                query = query.whereEqualTo("car", report.car)
+            }
+            if (report.fromEpochSeconds != 0L) {
+                query = query.whereGreaterThanOrEqualTo("date", report.fromEpochSeconds)
+            }
+            if(report.toEpochSeconds != 0L) {
+                query = query.whereLessThanOrEqualTo("date", report.toEpochSeconds)
+            }
+            query.addSnapshotListener { task, error ->
+                if (error != null) {
+                    trySend(Result.failure(error))
+                } else {
+                    val reservations = task?.toObjects(Reservation::class.java)
+                    trySend(Result.success(reservations ?: emptyList()))
+                }
+            }
+        } catch (e: Exception) {
+            trySend(Result.failure(e))
+        }
+        awaitClose {  }
     }
 }

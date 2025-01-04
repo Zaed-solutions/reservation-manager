@@ -84,6 +84,7 @@ import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDi
 import com.zaed.reservationmanager.ui.components.FabItem
 import com.zaed.reservationmanager.ui.components.MultiFloatingActionButton
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.CreateReportBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
 import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
@@ -415,6 +416,9 @@ fun HomeScreenContent(
     var isConfirmDeleteDialogVisible by remember {
         mutableStateOf(false)
     }
+    var isReportsBottomSheetVisible by remember {
+        mutableStateOf(false)
+    }
     var selectedItemId by remember {
         mutableStateOf("")
     }
@@ -522,7 +526,7 @@ fun HomeScreenContent(
                         icon = Icons.AutoMirrored.Filled.Assignment,
                         label = context.getString(R.string.create_report),
                         onFabItemClicked = {
-                            /*TODO*/
+                            isReportsBottomSheetVisible = true
                         }
                     ),
                     FabItem(
@@ -543,7 +547,7 @@ fun HomeScreenContent(
             }
             MultiFloatingActionButton(
                 fabIcon = Icons.Default.Add,
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                 items = fabItems
             )
         }
@@ -815,7 +819,6 @@ fun HomeScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     onDismissRequest = {},
                     properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
-
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -887,6 +890,31 @@ fun HomeScreenContent(
                     },
                     onDismiss = { isFixedDatePickerVisible = false }
                 )
+            }
+            AnimatedVisibility(isReportsBottomSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isReportsBottomSheetVisible = false
+                    },
+                    sheetState = bottomSheetState,
+                ) {
+                    CreateReportBottomSheetContent(
+                        tourismCompanies = tourismCompanies,
+                        travelCompanies = travelCompanies,
+                        cars = cars,
+                        onDismiss = {
+                            isReportsBottomSheetVisible = false
+                        },
+                        onFetchReservations = { report, onSuccess ->
+                            onAction(
+                                HomeUiAction.FetchReservationsForReport(
+                                    report = report,
+                                    onSuccess = onSuccess
+                                )
+                            )
+                        }
+                    )
+                }
             }
             AnimatedVisibility(isConfirmDeleteDialogVisible) {
                 ModalBottomSheet(

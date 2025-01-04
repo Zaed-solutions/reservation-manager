@@ -270,4 +270,15 @@
     <string name="create_report">Create Report</string>
     <string name="add_customer">Add Customer</string>
     <string name="add_reservation">Add Reservation</string>
+    <string name="report_type">Report type</string>
+    <string name="company_account">Company Account</string>
+    <string name="company_arrival">Company Arrivals</string>
+    <string name="all_arivals">All Arrivals</string>
+    <string name="none" />
+    <string name="company_type">Company Type</string>
+    <string name="open_balance">Open Balance</string>
+    <string name="export">Export</string>
+    <string name="all">All</string>
+    <string name="certain_car">Certain Car</string>
+    <string name="account_type">Account Type</string>
 </resources>

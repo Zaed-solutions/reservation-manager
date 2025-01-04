@@ -140,20 +140,17 @@ fun MultiFloatingActionButton(
                         stateTransition = stateTransition,
                         stateChange = stateChange,
                         showLabel = showLabels,
-                        backgroundColor = backgroundColor
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                 }
                 FloatingActionButton(
                     shape = CircleShape,
-                    containerColor = backgroundColor,
                     onClick = {
                         stateChange()
                     }) {
                     Icon(
                         imageVector = fabIcon,
                         contentDescription = null,
-                        tint = contentColorFor(backgroundColor),
                         modifier = Modifier.rotate(rotation)
                     )
                 }
@@ -169,7 +166,6 @@ fun MultiFloatingActionButton(
 fun SmallFloatingActionButtonRow(
     item: FabItem,
     showLabel: Boolean,
-    backgroundColor: Color,
     stateTransition: Transition<MultiFabState>,
     stateChange: () -> Unit
 ) {
@@ -211,8 +207,6 @@ fun SmallFloatingActionButtonRow(
                 item.onFabItemClicked()
                 stateChange()
             },
-            containerColor = backgroundColor,
-            contentColor = Color.White
         ) {
             Icon(
                 imageVector = item.icon,

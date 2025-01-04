@@ -10,6 +10,7 @@ import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
+import com.zaed.reservationmanager.ui.home.component.Report
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
@@ -191,9 +192,28 @@ class HomeViewModel(
                     )
                 )
             }
+
+            is HomeUiAction.FetchReservationsForReport -> fetchReportReservations(action.report, action.onSuccess)
+
             else -> Unit
         }
     }
+
+    private fun fetchReportReservations(report: Report, onSuccess: (List<Reservation>) -> Unit) {
+        Log.d("ReportTest", "fetchReportReservations: called in vm")
+        viewModelScope.launch (Dispatchers.IO){
+            reservationRepo.fetchReportReservations(report).collect{ result ->
+                result.onSuccess { data ->
+                    Log.d("ReportTest", "fetchReportReservations: success ${data.size}")
+                    onSuccess(data)
+                }.onFailure { e ->
+                    Log.e("ReportTest", "fetchReportReservations: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
     private fun handleImportedCustomer(customers: List<Customer>) {
         viewModelScope.launch(Dispatchers.Default) {
             val existingCustomers = mutableListOf<Customer>()
