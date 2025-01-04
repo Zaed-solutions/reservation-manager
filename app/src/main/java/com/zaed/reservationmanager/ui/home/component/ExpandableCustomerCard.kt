@@ -49,8 +49,8 @@ fun ExpandableCustomerCard(
     onViewDetailsClicked: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
     onEditClicked: () -> Unit = {},
-    onMessagePhoneNumber: () -> Unit = {},
-    onCopyPhoneNumber: () -> Unit = {},
+    onMessagePhoneNumber: (String) -> Unit = {},
+    onCopyPhoneNumber: (String) -> Unit = {},
     onSaveToContacts : () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -84,8 +84,8 @@ fun ExpandableCustomerCard(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.End,
                     modifier = Modifier.combinedClickable(
-                        onClick = { onMessagePhoneNumber() },
-                        onLongClick = { onCopyPhoneNumber() }
+                        onClick = { onMessagePhoneNumber(customer.phoneNumber1) },
+                        onLongClick = { onCopyPhoneNumber(customer.phoneNumber1) }
                     )
                 )
 
@@ -116,7 +116,9 @@ fun ExpandableCustomerCard(
                     DetailRow(
                         label = stringResource(R.string.phone_number_2),
                         value = customer.phoneNumber2,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        onClick = { onMessagePhoneNumber(customer.phoneNumber2) },
+                        onLongClick = { onCopyPhoneNumber(customer.phoneNumber2) }
                     )
                     DetailRow(
                         label = stringResource(R.string.email),

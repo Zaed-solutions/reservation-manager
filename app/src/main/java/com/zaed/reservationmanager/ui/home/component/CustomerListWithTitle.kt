@@ -36,10 +36,10 @@ fun CustomerListWithTitle(
                     onEditCustomer(customer)
                 },
                 onMessagePhoneNumber = {
-                    onMessagePhoneNumber(customer.phoneNumber1)
+                    onMessagePhoneNumber(it)
                 },
                 onCopyPhoneNumber = {
-                    onCopyPhoneNumber(customer.phoneNumber1)
+                    onCopyPhoneNumber(it)
                 },
                 onSaveToContacts = {
                     onSaveToContacts(customer)

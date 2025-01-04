@@ -287,7 +287,8 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber1
+                        customer.phoneNumber1,
+                        customer.phoneNumber2
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
@@ -301,7 +302,8 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber1
+                        customer.phoneNumber1,
+                        customer.phoneNumber2
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
@@ -315,7 +317,8 @@ class HomeViewModel(
                 val filteredCustomers = uiState.value.customers.filter { customer ->
                     listOf(
                         customer.name,
-                        customer.phoneNumber1
+                        customer.phoneNumber1,
+                        customer.phoneNumber2
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
