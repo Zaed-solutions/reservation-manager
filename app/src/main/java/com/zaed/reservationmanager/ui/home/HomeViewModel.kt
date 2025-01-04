@@ -200,7 +200,7 @@ class HomeViewModel(
     }
 
     private fun fetchReportReservations(report: Report, onSuccess: (List<Reservation>) -> Unit) {
-        Log.d("ReportTest", "fetchReportReservations: called in vm")
+        Log.d("ReportTest", "fetchReportReservations: called in vm: $report")
         viewModelScope.launch (Dispatchers.IO){
             reservationRepo.fetchReportReservations(report).collect{ result ->
                 result.onSuccess { data ->

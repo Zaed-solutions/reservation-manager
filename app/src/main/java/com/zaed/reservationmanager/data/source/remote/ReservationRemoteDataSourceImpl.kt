@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.data.source.remote
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.channels.awaitClose
@@ -242,7 +243,11 @@ class ReservationRemoteDataSourceImpl(
         try{
             var query: Query = firestore.collection(RESERVATION_COLLECTION)
             if (report.company.id.isNotBlank()) {
-                query = query.whereEqualTo("companyId", report.company.id)
+                if(report.company.type == CompanyType.TOURISM) {
+                    query = query.whereEqualTo("tourismCompanyId", report.company.id)
+                } else {
+                    query = query.whereEqualTo("travelCompanyId", report.company.id)
+                }
             }
             if (report.car.isNotBlank()) {
                 query = query.whereEqualTo("car", report.car)

@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 enum class MultiFabState {
@@ -112,16 +114,21 @@ fun MultiFloatingActionButton(
                     targetValue = targetRadiusDp.value,
                     animationSpec = tween(durationMillis = 200)
                 )
+                val layoutDirection = LocalLayoutDirection.current
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer {
-                            scaleX = 2.2f
-                            scaleY = 2.1f
+                            this.scaleX = 2.2f
+                            this.scaleY = 2.1f
                         }
                 ) {
                     val animatedRadiusPx = with(density) { animatedRadiusDp.dp.toPx() }
-                    translate(150f, top = 300f) {
+                    val horizontalPosition = when (layoutDirection) {
+                        LayoutDirection.Ltr -> 150f
+                        LayoutDirection.Rtl -> -150f
+                    }
+                    translate(horizontalPosition, top = 300f) {
                         scale(5f) {}
                         drawCircle(backgroundColor, radius = animatedRadiusPx, alpha = 0.6f)
                     }

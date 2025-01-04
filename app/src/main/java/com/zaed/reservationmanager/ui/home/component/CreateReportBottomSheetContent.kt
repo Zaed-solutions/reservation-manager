@@ -99,6 +99,7 @@ fun CreateReportBottomSheetContent(
                             Text(
                                 text = stringResource(id = R.string.no_reservations_added),
                                 style = MaterialTheme.typography.headlineMedium,
+                                modifier = Modifier.padding(horizontal = 32.dp)
                             )
                         } else {
                             Text(
@@ -251,7 +252,7 @@ fun CreateReportBottomSheetContent(
                                 isClearEnabled = false,
                                 options = CarType.entries.map { stringResource(it.stringRes) },
                                 selectedValue = report.carType?.let { stringResource(it.stringRes) } ?: "",
-                                title = stringResource(id = R.string.car),
+                                title = stringResource(id = R.string.car_filter),
                                 onValueChanged = { index ->
                                     val selectedType = CarType.entries[index]
                                     report = report.copy(carType = selectedType)

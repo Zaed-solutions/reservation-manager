@@ -529,7 +529,6 @@ object SheetUtil {
         headerPaint.textSize = fontSize
         headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
         headerPaint.textAlign = Paint.Align.CENTER
-        headerPaint.color = android.graphics.Color.WHITE
 
         val footerPaint = Paint()
         footerPaint.textSize = fontSize
@@ -552,7 +551,7 @@ object SheetUtil {
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.BLACK
+        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnWidths = listOf(
@@ -783,7 +782,7 @@ object SheetUtil {
     fun generatePaginatedArabicPdfReportForCompanyAccount(
         context: Context,
         reservations: List<Reservation>,
-        fileName: String = "تقرير جميع الوصول",
+        fileName: String = "تقرير حساب الشركة",
         title : String = "تقرير",
         companyType: CompanyType = CompanyType.TRAVEL
     ): File? {
@@ -801,8 +800,8 @@ object SheetUtil {
             "الرصيد"
         )
         // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
+        val pageWidth = 595 //842 A4 width in points
+        val pageHeight = 842 //595 A4 height in points
         val cellHeight = 20f
         val fontSize = 12f
         val titleFontSize = 16f
@@ -816,7 +815,6 @@ object SheetUtil {
         headerPaint.textSize = fontSize
         headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
         headerPaint.textAlign = Paint.Align.CENTER
-        headerPaint.color = android.graphics.Color.WHITE
 
         val footerPaint = Paint()
         footerPaint.textSize = fontSize
@@ -839,7 +837,7 @@ object SheetUtil {
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.BLACK
+        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnWidths = listOf(
