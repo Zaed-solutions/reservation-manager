@@ -14,4 +14,5 @@ sealed interface CompaniesUiAction {
     data class UpdateSearchQuery(val query: String) : CompaniesUiAction
     data class OnCopyPhoneNumber(val phoneNumber: String) : CompaniesUiAction
     data class OnMessagePhoneNumber(val phoneNumber: String) : CompaniesUiAction
+    data class OnSaveToContacts(val company: Company) : CompaniesUiAction
 }

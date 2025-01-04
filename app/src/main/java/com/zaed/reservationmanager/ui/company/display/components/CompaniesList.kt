@@ -22,6 +22,7 @@ fun CompaniesList(
     onEditCompany: (company: Company) -> Unit = {},
     onCopyPhone: (String) -> Unit = {},
     onMessagePhone: (String) -> Unit = {},
+    onSaveToContacts: (company: Company) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -49,6 +50,9 @@ fun CompaniesList(
                 },
                 onMessagePhone = {
                     onMessagePhone(it)
+                },
+                onSaveToContacts = {
+                    onSaveToContacts(company)
                 }
             )
         }

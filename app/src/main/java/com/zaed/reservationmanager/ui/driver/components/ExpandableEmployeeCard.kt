@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -50,6 +51,7 @@ fun ExpandableEmployeeCard(
     onEmployeeDetailsClicked: () -> Unit = {},
     onMessagePhone: (String) -> Unit = {},
     onCopyPhone: (String) -> Unit = {},
+    onSaveToContacts: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -149,6 +151,21 @@ fun ExpandableEmployeeCard(
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = stringResource(R.string.edit),
+                                modifier = Modifier.wrapContentWidth()
+                            )
+                        }
+                        TextButton(
+                            contentPadding = PaddingValues(0.dp),
+                            onClick = onSaveToContacts,
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Contacts,
+                                contentDescription = null,
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = stringResource(R.string.save),
                                 modifier = Modifier.wrapContentWidth()
                             )
                         }

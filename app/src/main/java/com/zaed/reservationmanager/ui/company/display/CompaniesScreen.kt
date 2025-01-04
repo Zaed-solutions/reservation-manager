@@ -111,6 +111,9 @@ fun CompaniesScreen(
                         }
                     }
                 }
+                is CompaniesUiAction.OnSaveToContacts->{
+                    PhoneUtil.saveToContacts(context, action.company.name,action.company.phoneNumber1,action.company.phoneNumber2,action.company.email)
+                }
 
                 else -> viewModel.handleAction(action)
             }
@@ -250,7 +253,8 @@ private fun CompaniesScreenContent(
                                 onAction(CompaniesUiAction.OnEditCompanyClicked(companyId))
                             },
                             onCopyPhone = { onAction(CompaniesUiAction.OnCopyPhoneNumber(it)) },
-                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) }
+                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) },
+                            onSaveToContacts = { onAction(CompaniesUiAction.OnSaveToContacts(it)) }
                         )
                     }
 
@@ -273,7 +277,8 @@ private fun CompaniesScreenContent(
                                 onAction(CompaniesUiAction.OnEditCompanyClicked(company))
                             },
                             onCopyPhone = { onAction(CompaniesUiAction.OnCopyPhoneNumber(it)) },
-                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) }
+                            onMessagePhone = { onAction(CompaniesUiAction.OnMessagePhoneNumber(it)) },
+                            onSaveToContacts = { onAction(CompaniesUiAction.OnSaveToContacts(it)) }
                         )
                     }
                 }

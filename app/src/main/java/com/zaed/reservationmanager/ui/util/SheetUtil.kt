@@ -314,13 +314,6 @@ object SheetUtil {
                     currentY,
                     startX,
                     currentY + cellHeight,
-                    borderPaint
-                )
-                canvas.drawRect(
-                    startX - width,
-                    currentY,
-                    startX,
-                    currentY + cellHeight,
                     blackBackground
                 )
                 canvas.drawText(
@@ -328,6 +321,13 @@ object SheetUtil {
                     startX - (width / 2),
                     currentY + (cellHeight / 2) + 4,
                     headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
                 )
             }
             currentY += cellHeight
@@ -363,20 +363,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
                             )
-                        } else {
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -384,11 +376,19 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
+                        } else {
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 
@@ -429,6 +429,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
                             canvas.drawRect(
                                 172f,
                                 currentY,
@@ -436,22 +442,9 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
-                            canvas.drawText(
-                                summaryRowData[columnIndex],
-                                startX - (width / 2),
-                                currentY + (cellHeight / 2) + 4,
-                                headerPaint
-                            )
                         } else if (columnIndex in 2..8) {
                             return@forEachIndexed
                         } else {
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -464,6 +457,13 @@ object SheetUtil {
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 
@@ -607,13 +607,6 @@ object SheetUtil {
                     currentY,
                     startX,
                     currentY + cellHeight,
-                    borderPaint
-                )
-                canvas.drawRect(
-                    startX - width,
-                    currentY,
-                    startX,
-                    currentY + cellHeight,
                     blackBackground
                 )
                 canvas.drawText(
@@ -621,6 +614,13 @@ object SheetUtil {
                     startX - (width / 2),
                     currentY + (cellHeight / 2) + 4,
                     headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
                 )
             }
             currentY += cellHeight
@@ -653,20 +653,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
                             )
-                        } else {
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -674,11 +666,19 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
+                        } else {
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 
@@ -716,6 +716,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
                             canvas.drawRect(
                                 172f,
                                 currentY,
@@ -723,22 +729,9 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
-                            canvas.drawText(
-                                summaryRowData[columnIndex],
-                                startX - (width / 2),
-                                currentY + (cellHeight / 2) + 4,
-                                headerPaint
-                            )
                         } else if (columnIndex in 2..7) {
                             return@forEachIndexed
                         } else {
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -751,6 +744,13 @@ object SheetUtil {
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 
@@ -800,8 +800,8 @@ object SheetUtil {
             "الرصيد"
         )
         // Define page configuration
-        val pageWidth = 595 //842 A4 width in points
-        val pageHeight = 842 //595 A4 height in points
+        val pageWidth = 842 //842 A4 width in points
+        val pageHeight = 595 //595 A4 height in points
         val cellHeight = 20f
         val fontSize = 12f
         val titleFontSize = 16f
@@ -834,6 +834,7 @@ object SheetUtil {
         val borderPaint = Paint()
         borderPaint.style = Paint.Style.STROKE
         borderPaint.strokeWidth = 1f
+        borderPaint.color = android.graphics.Color.BLACK
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
@@ -905,13 +906,6 @@ object SheetUtil {
                     currentY,
                     startX,
                     currentY + cellHeight,
-                    borderPaint
-                )
-                canvas.drawRect(
-                    startX - width,
-                    currentY,
-                    startX,
-                    currentY + cellHeight,
                     blackBackground
                 )
                 canvas.drawText(
@@ -919,6 +913,13 @@ object SheetUtil {
                     startX - (width / 2),
                     currentY + (cellHeight / 2) + 4,
                     headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
                 )
             }
             currentY += cellHeight
@@ -950,20 +951,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
                             )
-                        } else {
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -971,11 +964,19 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
+                        } else {
                             canvas.drawText(
                                 rowData[columnIndex],
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 
@@ -997,9 +998,6 @@ object SheetUtil {
                     "",
                     "",
                     "",
-                    "",
-                    "",
-                    "",
                     totalPrice.toString(),
                     totalCollected.toString(),
                     totalBalance.toString()
@@ -1014,6 +1012,12 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 blackBackground
                             )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
                             canvas.drawRect(
                                 172f,
                                 currentY,
@@ -1021,22 +1025,9 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
-                            canvas.drawText(
-                                summaryRowData[columnIndex],
-                                startX - (width / 2),
-                                currentY + (cellHeight / 2) + 4,
-                                headerPaint
-                            )
-                        } else if (columnIndex in 2..8) {
+                        } else if (columnIndex in 2..5) {
                             return@forEachIndexed
                         } else {
-                            canvas.drawRect(
-                                startX - width,
-                                currentY,
-                                startX,
-                                currentY + cellHeight,
-                                borderPaint
-                            )
                             canvas.drawRect(
                                 startX - width,
                                 currentY,
@@ -1049,6 +1040,13 @@ object SheetUtil {
                                 startX - (width / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
                             )
                         }
 

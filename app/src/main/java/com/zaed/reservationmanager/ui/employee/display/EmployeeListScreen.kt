@@ -81,6 +81,9 @@ fun EmployeeListScreen(
         onCopyPhone = {
             clipboardManager.setText(AnnotatedString(it))
             Toast.makeText(context, context.getString(R.string.number_copied_to_clipboard), Toast.LENGTH_SHORT).show()
+        },
+        onSaveToContacts = { employee->
+            PhoneUtil.saveToContacts(context,employee.name,employee.phoneNumber1,employee.phoneNumber2,employee.email,employee.company )
         }
     )
 }
@@ -95,7 +98,8 @@ fun EmployeeListWithScreenContent(
     onEditEmployee: (Employee) -> Unit = {},
     onDeleteEmployee: (String) -> Unit = {},
     onMessagePhone: (String) -> Unit = {},
-    onCopyPhone: (String) -> Unit = {}
+    onCopyPhone: (String) -> Unit = {},
+    onSaveToContacts: (Employee) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -215,6 +219,7 @@ fun EmployeeListWithScreenContent(
                 onEditEmployee = onEditEmployee,
                 onMessagePhone = onMessagePhone,
                 onCopyPhone = onCopyPhone,
+                onSaveToContacts = onSaveToContacts
             )
         }
     }

@@ -287,5 +287,6 @@
     <string name="phone_number_2_is_already_in_use">رقم الجوال 2 مستخدم بالفعل</string>
     <string name="name_is_already_used">الاسم مستخدم بالفعل</string>
     <string name="car_filter">فلتر السيارة</string>
+    <string name="save">حفظ</string>
 
 </resources>

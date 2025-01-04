@@ -40,4 +40,5 @@ sealed interface HomeUiAction {
     data class FetchReservationsForReport(val report: Report, val onSuccess: (List<Reservation>) -> Unit) : HomeUiAction
     data class ShareFile(val file: File, val type: String) : HomeUiAction
     data class OpenFile(val file: File, val type: String) : HomeUiAction
+    data class SaveToContacts (val customer: Customer) : HomeUiAction
 }

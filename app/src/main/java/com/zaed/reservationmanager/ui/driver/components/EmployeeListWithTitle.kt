@@ -17,7 +17,8 @@ fun EmployeeListWithTitle(
     onDeleteEmployee: (String) -> Unit,
     onEditEmployee: (Employee) -> Unit,
     onMessagePhone: (String) -> Unit = {},
-    onCopyPhone: (String) -> Unit = {}
+    onCopyPhone: (String) -> Unit = {},
+    onSaveToContacts: (Employee) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -37,7 +38,10 @@ fun EmployeeListWithTitle(
                     onEmployeeDetailsClicked(employee.id)
                 },
                 onMessagePhone = onMessagePhone,
-                onCopyPhone = onCopyPhone
+                onCopyPhone = onCopyPhone,
+                onSaveToContacts = {
+                    onSaveToContacts(employee)
+                }
             )
         }
     }

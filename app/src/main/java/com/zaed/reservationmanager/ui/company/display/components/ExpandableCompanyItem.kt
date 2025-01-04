@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,6 +52,7 @@ fun ExpandableCompanyItem(
     onEditCompany: () -> Unit = {},
     onCopyPhone: (String) -> Unit = {},
     onMessagePhone: (String) -> Unit = {},
+    onSaveToContacts: () -> Unit = {},
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -139,7 +142,7 @@ fun ExpandableCompanyItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        Button(
+                        TextButton (
                             modifier = Modifier.heightIn(min = 0.dp, max = 28.dp),
                             onClick = { onEditCompany() },
                             colors = ButtonDefaults.buttonColors(
@@ -158,7 +161,26 @@ fun ExpandableCompanyItem(
                                 modifier = Modifier.padding(start = 4.dp)
                             )
                         }
-                        Button(
+                        TextButton(
+                            modifier = Modifier.heightIn(min = 0.dp, max = 28.dp),
+                            onClick = { onSaveToContacts() },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = MaterialTheme.colorScheme.primary,
+                                containerColor = Color.Transparent
+                            ),
+                            contentPadding = PaddingValues(top = 0.dp, bottom = 0.dp, start = 0.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Contacts,
+                                contentDescription = null,
+                            )
+                            Text(
+                                text = stringResource(R.string.save),
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        TextButton(
                             modifier = Modifier.heightIn(min = 0.dp, max = 28.dp),
                             onClick = { onDeleteCompany() },
                             colors = ButtonDefaults.buttonColors(

@@ -13,9 +13,9 @@ class CustomerRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore
 ) : CustomerRemoteDataSource {
     companion object {
-        private val TAG = "CustomerRemoteDataSource"
-        private val CUSTOMER_COLLECTION = "customers"
-        private val RESERVATION_COLLECTION = "reservations"
+        private const val TAG = "CustomerRemoteDataSource"
+        private const val CUSTOMER_COLLECTION = "customers"
+        private const val RESERVATION_COLLECTION = "reservations"
     }
 
     override fun createCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> =
@@ -41,8 +41,6 @@ class CustomerRemoteDataSourceImpl(
                 } else {
                     true
                 }
-
-
                 if (result1 && result2) {
                     val document = firestore.collection(CUSTOMER_COLLECTION).document()
                     document.set(customer.copy(id = document.id)).addOnSuccessListener {
@@ -63,9 +61,14 @@ class CustomerRemoteDataSourceImpl(
 
     override suspend fun getCustomerByNumber(number: String): Result<Customer> {
         return try {
+
             val task =
-                firestore.collection(CUSTOMER_COLLECTION).whereEqualTo("phoneNumber", number).get()
-                    .await()
+                firestore.collection(CUSTOMER_COLLECTION).where(
+                    Filter.or(
+                        Filter.equalTo("phoneNumber1", number),
+                        Filter.equalTo("phoneNumber2", number)
+                    )
+                ).get().await()
             if (task.isEmpty) {
                 Result.success(Customer())
             } else {
@@ -92,7 +95,6 @@ class CustomerRemoteDataSourceImpl(
             Result.failure(e)
         }
     }
-
 
     override fun updateCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> =
         callbackFlow {

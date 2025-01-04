@@ -49,19 +49,19 @@ class EmployeeRemoteDataSourceImpl(
                     .collection(EMPLOYEE_COLLECTION)
                     .where(
                         phoneNumber1Filter
-                    ).get().result.documents.isEmpty()
+                    ).get().await().documents.isEmpty()
                 val phoneNumber2Result = if (employee.phoneNumber2.isNotBlank()) {
                     firestore
                         .collection(EMPLOYEE_COLLECTION)
                         .where(
                             phoneNumber2Filter
-                        ).get().result.documents.isEmpty()
+                        ).get().await().documents.isEmpty()
                 } else true
                 val employeeNameResult = firestore
                     .collection(EMPLOYEE_COLLECTION)
                     .where(
                         employeeNameFilter
-                    ).get().result.documents.isEmpty()
+                    ).get().await().documents.isEmpty()
 
                 if (phoneNumber1Result && phoneNumber2Result && employeeNameResult) {
                     val document = firestore.collection(EMPLOYEE_COLLECTION).document()
@@ -121,19 +121,19 @@ class EmployeeRemoteDataSourceImpl(
                     .collection(EMPLOYEE_COLLECTION)
                     .where(
                         phoneNumber1Filter
-                    ).get().result.documents.isEmpty()
+                    ).get().await().documents.isEmpty()
                 val phoneNumber2Result = if (employee.phoneNumber2.isNotBlank()) {
                     firestore
                         .collection(EMPLOYEE_COLLECTION)
                         .where(
                             phoneNumber2Filter
-                        ).get().result.documents.isEmpty()
+                        ).get().await().documents.isEmpty()
                 } else true
                 val employeeNameResult = firestore
                     .collection(EMPLOYEE_COLLECTION)
                     .where(
                         employeeNameFilter
-                    ).get().result.documents.isEmpty()
+                    ).get().await().documents.isEmpty()
 
                 if (phoneNumber1Result && phoneNumber2Result && employeeNameResult) {
                     val batch = firestore.batch()

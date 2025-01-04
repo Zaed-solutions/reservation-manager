@@ -290,4 +290,5 @@
     <string name="all_arrival_report_placeholder">All Arrivals Report- %1$s</string>
     <string name="company_account_report_placeholder">Company Account Report- %1$s - %2$s</string>
     <string name="car_filter">Car Filter</string>
+    <string name="save">Save</string>
 </resources>

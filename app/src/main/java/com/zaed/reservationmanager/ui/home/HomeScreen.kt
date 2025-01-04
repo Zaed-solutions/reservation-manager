@@ -2,7 +2,6 @@ package com.zaed.reservationmanager.ui.home
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -71,7 +70,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
@@ -377,6 +375,15 @@ fun HomeScreen(
                                 snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
                             }
                         }
+                    )
+                }
+                is HomeUiAction.SaveToContacts -> {
+                    PhoneUtil.saveToContacts(
+                        context,
+                        action.customer.name,
+                        action.customer.phoneNumber1,
+                        action.customer.phoneNumber2,
+                        action.customer.email,
                     )
                 }
 
@@ -710,7 +717,11 @@ fun HomeScreenContent(
                                 },
                                 onCopyPhoneNumber = { phoneNumber ->
                                     onAction(HomeUiAction.OnCopyPhoneNumber(phoneNumber))
+                                },
+                                onSaveToContacts = { customer ->
+                                    onAction(HomeUiAction.SaveToContacts(customer))
                                 }
+
                             )
                         }
                     }
