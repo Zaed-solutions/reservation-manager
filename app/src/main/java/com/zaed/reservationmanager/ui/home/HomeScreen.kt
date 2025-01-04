@@ -89,12 +89,11 @@ import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
-import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsToExcel
+import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForAllReservations
+import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyReservations
 import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
-import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
-import com.zaed.reservationmanager.ui.util.formatMoney
 import com.zaed.reservationmanager.ui.util.getDate
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
@@ -193,24 +192,24 @@ fun HomeScreen(
                 }
 
                 HomeUiAction.ExportReservationsAsCsv -> {
-                    val file = state.displayedReservations.exportReservationsToExcel(
-                        context = context,
-                        isAllRides = true,
-                        headers = listOf(
-                            context.getString(R.string.date),
-                            context.getString(R.string.type),
-                            context.getString(R.string.car),
-                            context.getString(R.string.client_name),
-                            context.getString(R.string.tourism_company),
-                            context.getString(R.string.tourism_ride_price),
-                            context.getString(R.string.tourism_collected_amount),
-                            context.getString(R.string.tourism_balance),
-                            context.getString(R.string.travel_company),
-                            context.getString(R.string.travel_ride_price),
-                            context.getString(R.string.travel_collected_amount),
-                            context.getString(R.string.travel_company_balance)
-                        )
-                    )
+                    val file = generatePaginatedArabicPdfReportForCompanyReservations(context, state.displayedReservations)
+//                        context = context,
+//                        isAllRides = true,
+//                        headers = listOf(
+//                            context.getString(R.string.date),
+//                            context.getString(R.string.type),
+//                            context.getString(R.string.car),
+//                            context.getString(R.string.client_name),
+//                            context.getString(R.string.tourism_company),
+//                            context.getString(R.string.tourism_ride_price),
+//                            context.getString(R.string.tourism_collected_amount),
+//                            context.getString(R.string.tourism_balance),
+//                            context.getString(R.string.travel_company),
+//                            context.getString(R.string.travel_ride_price),
+//                            context.getString(R.string.travel_collected_amount),
+//                            context.getString(R.string.travel_company_balance)
+//                        )
+//                    )
                     scope.launch {
                         if (file != null) {
                             snackbarHostState.showSnackbar(
@@ -225,7 +224,7 @@ fun HomeScreen(
                                                 "${context.packageName}.fileprovider",
                                                 file
                                             )
-                                            setDataAndType(fileUri, "text/csv")
+                                            setDataAndType(fileUri, "application/pdf")
                                             flags =
                                                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                                         }
