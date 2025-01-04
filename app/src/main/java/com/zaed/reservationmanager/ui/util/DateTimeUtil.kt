@@ -15,6 +15,14 @@ fun Long.formatEpochSecondsToDate(): String {
     )
     return dateTime.format(formatter)
 }
+fun Long.formatEpochSecondsToDateNumbers(): String {
+    val dateTime =
+        java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("d / MM / yyyy", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
+    return dateTime.format(formatter)
+}
 fun TimeFilter.getDate(): String {
     val dateTime =
         when(this){
@@ -46,6 +54,14 @@ fun Long.formatEpochSecondsToDateTime(): String {
     val dateTime =
         java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
     val formatter = DateTimeFormatter.ofPattern("d MMM, yyyy, hh:mm a", Locale.getDefault()).withDecimalStyle(
+        DecimalStyle.of(Locale.getDefault())
+    )
+    return dateTime.format(formatter)
+}
+fun Long.formatEpochSecondsToTime(): String {
+    val dateTime =
+        java.time.Instant.ofEpochSecond(this).atZone(ZoneId.of("UTC")).toLocalDateTime()
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault()).withDecimalStyle(
         DecimalStyle.of(Locale.getDefault())
     )
     return dateTime.format(formatter)
