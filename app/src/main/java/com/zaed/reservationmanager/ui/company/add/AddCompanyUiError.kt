@@ -12,4 +12,6 @@ enum class AddCompanyUiError(@StringRes val messageRes: Int) {
     FAX_NUMBER_IS_INVALID(R.string.invalid_fax_number),
     PHONE_NUMBER_1_IS_INVALID(R.string.invalid_phone_number),
     PHONE_NUMBER_2_IS_INVALID(R.string.invalid_phone_number),
+    PHONE_NUMBER_1_IS_IN_USE(R.string.phone_number_1_is_already_in_use),
+    PHONE_NUMBER_2_IS_IN_USE(R.string.phone_number_2_is_already_in_use),
 }

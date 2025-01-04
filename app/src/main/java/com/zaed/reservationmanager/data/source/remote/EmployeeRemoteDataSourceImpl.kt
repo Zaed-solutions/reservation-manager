@@ -20,110 +20,157 @@ class EmployeeRemoteDataSourceImpl(
 
     }
 
-    override fun createEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow {
-        try {
-            val filter = if (employee.phoneNumber2.isNotBlank()) {
-                Filter.or(
-                    Filter.equalTo("name", employee.name),
-                    Filter.or(
-                        Filter.inArray("phoneNumber1", listOf(employee.phoneNumber1, employee.phoneNumber2)),
-                        Filter.inArray("phoneNumber2", listOf(employee.phoneNumber2, employee.phoneNumber1))
-                    )
-                )
-            } else {
-                Filter.or(
-                    Filter.equalTo("name", employee.name),
-                    Filter.equalTo("phoneNumber1", employee.phoneNumber1)
-                )
-            }
-            firestore
-                .collection(EMPLOYEE_COLLECTION)
-                .where(
-                    filter
-                ).get().addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        val document = firestore.collection(EMPLOYEE_COLLECTION).document()
-                        document.set(employee.copy(id = document.id)).addOnSuccessListener {
-                            trySend(Result.success(true))
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
-                        }
-                    } else {
-                        trySend(Result.success(false))
-                    }
-                }.addOnFailureListener { e ->
-                    trySend(Result.failure(e))
-                }
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
-        }
-        awaitClose { }
-    }
-
-    override fun updateEmployee(employee: Employee): Flow<Result<Boolean>> = callbackFlow {
-        try {
-            val reservations = firestore
-                .collection(RESERVATION_COLLECTION)
-                .where(
-                    Filter.or(
-                        Filter.equalTo("driverId", employee.id),
-                        Filter.equalTo("tourismEmployeeId", employee.id)
-                    )
-                ).get().await()
-            val filter = if (employee.phoneNumber2.isNotBlank()) {
-                Filter.and(
-                    Filter.or(
-                        Filter.inArray("phoneNumber1", listOf(employee.phoneNumber1, employee.phoneNumber2)),
-                        Filter.inArray("phoneNumber2", listOf(employee.phoneNumber2, employee.phoneNumber1))
+    override fun createEmployee(employee: Employee): Flow<Result<Pair<Boolean, String>>> =
+        callbackFlow {
+            try {
+                val phoneNumber1Filter = Filter.or(
+                    Filter.inArray(
+                        "phoneNumber1",
+                        listOf(employee.phoneNumber1)
                     ),
-                    Filter.notEqualTo("id", employee.id),
+                    Filter.inArray(
+                        "phoneNumber2",
+                        listOf(employee.phoneNumber1)
+                    )
                 )
-            } else {
-                Filter.and(
-                    Filter.equalTo("phoneNumber1", employee.phoneNumber1),
-                    Filter.notEqualTo("id", employee.id),
+                val phoneNumber2Filter = Filter.or(
+                    Filter.inArray(
+                        "phoneNumber1",
+                        listOf(employee.phoneNumber2)
+                    ),
+                    Filter.inArray(
+                        "phoneNumber2",
+                        listOf(employee.phoneNumber2)
+                    )
                 )
-            }
-            firestore.collection(EMPLOYEE_COLLECTION)
-                .where(filter)
-                .get()
-                .addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        val batch = firestore.batch()
-                        val employeeRef =
-                            firestore.collection(EMPLOYEE_COLLECTION).document(employee.id)
-                        batch.set(employeeRef, employee)
-                        val updates = when (employee.position) {
-                            EmployeeType.DRIVER.name -> mapOf(
-                                "driver" to employee.name,
-                                "driverPhoneNumber" to employee.phoneNumber1
-                            )
+                val employeeNameFilter = Filter.equalTo("name", employee.name)
 
-                            else -> mapOf(
-                                "tourismEmployee" to employee.name,
-                                "tourismEmployeePhone" to employee.phoneNumber1
-                            )
-                        }
-                        reservations.forEach {
-                            batch.update(it.reference, updates)
-                        }
+                val phoneNumber1Result = firestore
+                    .collection(EMPLOYEE_COLLECTION)
+                    .where(
+                        phoneNumber1Filter
+                    ).get().result.documents.isEmpty()
+                val phoneNumber2Result = if (employee.phoneNumber2.isNotBlank()) {
+                    firestore
+                        .collection(EMPLOYEE_COLLECTION)
+                        .where(
+                            phoneNumber2Filter
+                        ).get().result.documents.isEmpty()
+                } else true
+                val employeeNameResult = firestore
+                    .collection(EMPLOYEE_COLLECTION)
+                    .where(
+                        employeeNameFilter
+                    ).get().result.documents.isEmpty()
 
-                        batch.commit().addOnSuccessListener {
-                            trySend(Result.success(true))
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
-                        }
-                    } else {
-                        trySend(Result.success(false))
+                if (phoneNumber1Result && phoneNumber2Result && employeeNameResult) {
+                    val document = firestore.collection(EMPLOYEE_COLLECTION).document()
+                    document.set(employee.copy(id = document.id)).addOnSuccessListener {
+                        trySend(Result.success(true to document.id))
+                    }.addOnFailureListener { e ->
+                        trySend(Result.failure(e))
                     }
-                }.addOnFailureListener { e ->
-                    trySend(Result.failure(e))
+                } else if (!employeeNameResult) {
+                    trySend(Result.success(false to "name"))
+                } else if (!phoneNumber1Result) {
+                    trySend(Result.success(false to "phoneNumber1"))
+                } else {
+                    trySend(Result.success(false to "phoneNumber2"))
                 }
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
+
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
         }
-        awaitClose { }
-    }
+
+    override fun updateEmployee(employee: Employee): Flow<Result<Pair<Boolean, String>>> =
+        callbackFlow {
+            try {
+                val reservations = firestore
+                    .collection(RESERVATION_COLLECTION)
+                    .where(
+                        Filter.or(
+                            Filter.equalTo("driverId", employee.id),
+                            Filter.equalTo("tourismEmployeeId", employee.id)
+                        )
+                    ).get().await()
+                val phoneNumber1Filter = Filter.or(
+                    Filter.inArray(
+                        "phoneNumber1",
+                        listOf(employee.phoneNumber1)
+                    ),
+                    Filter.inArray(
+                        "phoneNumber2",
+                        listOf(employee.phoneNumber1)
+                    )
+                )
+                val phoneNumber2Filter = Filter.or(
+                    Filter.inArray(
+                        "phoneNumber1",
+                        listOf(employee.phoneNumber2)
+                    ),
+                    Filter.inArray(
+                        "phoneNumber2",
+                        listOf(employee.phoneNumber2)
+                    )
+                )
+                val employeeNameFilter = Filter.equalTo("name", employee.name)
+
+                val phoneNumber1Result = firestore
+                    .collection(EMPLOYEE_COLLECTION)
+                    .where(
+                        phoneNumber1Filter
+                    ).get().result.documents.isEmpty()
+                val phoneNumber2Result = if (employee.phoneNumber2.isNotBlank()) {
+                    firestore
+                        .collection(EMPLOYEE_COLLECTION)
+                        .where(
+                            phoneNumber2Filter
+                        ).get().result.documents.isEmpty()
+                } else true
+                val employeeNameResult = firestore
+                    .collection(EMPLOYEE_COLLECTION)
+                    .where(
+                        employeeNameFilter
+                    ).get().result.documents.isEmpty()
+
+                if (phoneNumber1Result && phoneNumber2Result && employeeNameResult) {
+                    val batch = firestore.batch()
+                    val employeeRef =
+                        firestore.collection(EMPLOYEE_COLLECTION).document(employee.id)
+                    batch.set(employeeRef, employee)
+                    val updates = when (employee.position) {
+                        EmployeeType.DRIVER.name -> mapOf(
+                            "driver" to employee.name,
+                            "driverPhoneNumber" to employee.phoneNumber1
+                        )
+
+                        else -> mapOf(
+                            "tourismEmployee" to employee.name,
+                            "tourismEmployeePhone" to employee.phoneNumber1
+                        )
+                    }
+                    reservations.forEach {
+                        batch.update(it.reference, updates)
+                    }
+                    batch.commit().addOnSuccessListener {
+                        trySend(Result.success(true to employee.id))
+                    }.addOnFailureListener { e ->
+                        trySend(Result.failure(e))
+                    }
+                } else if (!employeeNameResult) {
+                    trySend(Result.success(false to "name"))
+                } else if (!phoneNumber1Result) {
+                    trySend(Result.success(false to "phoneNumber1"))
+                } else {
+                    trySend(Result.success(false to "phoneNumber2"))
+                }
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
 
     override fun deleteEmployee(employeeId: String): Flow<Result<Unit>> = callbackFlow {
         try {

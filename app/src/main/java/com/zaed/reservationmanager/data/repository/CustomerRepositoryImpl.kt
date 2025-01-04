@@ -19,7 +19,7 @@ class CustomerRepositoryImpl(
         return remoteSource.updateCustomers(customers)
     }
 
-    override fun updateCustomer(customer: Customer): Flow<Result<Boolean>> {
+    override fun updateCustomer(customer: Customer): Flow<Result<Pair<Boolean, String>>> {
         return remoteSource.updateCustomer(customer)
     }
 
