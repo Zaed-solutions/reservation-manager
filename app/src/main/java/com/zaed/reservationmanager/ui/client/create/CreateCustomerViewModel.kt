@@ -52,23 +52,51 @@ class CreateCustomerViewModel(
             }
             with(uiState.value) {
                 if (customer.name.isBlank()) {
-                    _uiState.update { it.copy(error = ClientUIError.NAME_IS_REQUIRED, loading = false) }
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.NAME_IS_REQUIRED,
+                            loading = false
+                        )
+                    }
                     return@launch
                 }
                 if (customer.phoneNumber1.isBlank()) {
-                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_IS_REQUIRED, loading = false) }
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.PHONE_NUMBER_IS_REQUIRED,
+                            loading = false
+                        )
+                    }
                     return@launch
                 }
                 if (!InputValidator.isPhoneNumberValid(customer.phoneNumber1)) {
-                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_1_IS_INVALID, loading = false) }
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.PHONE_NUMBER_1_IS_INVALID,
+                            loading = false
+                        )
+                    }
                     return@launch
                 }
-                if (customer.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(customer.phoneNumber2)) {
-                    _uiState.update { it.copy(error = ClientUIError.PHONE_NUMBER_2_IS_INVALID, loading = false) }
+                if (customer.phoneNumber2.isNotBlank() && !InputValidator.isPhoneNumberValid(
+                        customer.phoneNumber2
+                    )
+                ) {
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.PHONE_NUMBER_2_IS_INVALID,
+                            loading = false
+                        )
+                    }
                     return@launch
                 }
                 if (customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)) {
-                    _uiState.update { it.copy(error = ClientUIError.EMAIL_IS_INVALID, loading = false) }
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.EMAIL_IS_INVALID,
+                            loading = false
+                        )
+                    }
                     return@launch
                 }
                 _uiState.update { it.copy(error = ClientUIError.NONE) }
@@ -88,19 +116,30 @@ class CreateCustomerViewModel(
                 Log.d(TAG, "updateClient: $result")
                 result.onSuccess { data ->
                     Log.d(TAG, "updateClient: success: $data")
-                    if(data){
+                    if (data.first) {
                         _uiState.update { oldState ->
                             oldState.copy(successStatus = true, loading = false)
                         }
                         Log.d(TAG, "addClient: SUCCESS")
                     } else {
-                        _uiState.update { oldState ->
-                            oldState.copy(
-                                error = ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
-                                loading = false
-                            )
+                        if (data.second == "phoneNumber1") {
+                            _uiState.update { oldState ->
+                                oldState.copy(
+                                    error = ClientUIError.PHONE_NUMBER_1_IS_IN_USE,
+                                    loading = false
+                                )
+                            }
+                            Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
+                        } else {
+                            _uiState.update { oldState ->
+                                oldState.copy(
+                                    error = ClientUIError.PHONE_NUMBER_2_IS_IN_USE,
+                                    loading = false
+                                )
+                            }
+                            Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
                         }
-                        Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
+
                     }
                 }.onFailure { error ->
                     _uiState.update { oldState ->
@@ -122,18 +161,28 @@ class CreateCustomerViewModel(
             repository.createCustomer(uiState.value.customer.copy(createdAtEpochSeconds = Clock.System.now().epochSeconds))
                 .collect { result ->
                     result.onSuccess { data ->
-                        if(data.first){
+                        if (data.first) {
                             _uiState.update { oldState ->
                                 oldState.copy(successStatus = true, loading = false)
                             }
                             Log.d(TAG, "addClient: SUCCESS")
                         } else {
-                            _uiState.update { oldState ->
-                                oldState.copy(
-                                    error = ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
-                                    loading = false
-                                )
+                            if (data.second == "phoneNumber1") {
+                                _uiState.update { oldState ->
+                                    oldState.copy(
+                                        error = ClientUIError.PHONE_NUMBER_1_IS_IN_USE,
+                                        loading = false
+                                    )
+                                }
+                            } else {
+                                _uiState.update { oldState ->
+                                    oldState.copy(
+                                        error = ClientUIError.PHONE_NUMBER_2_IS_IN_USE,
+                                        loading = false
+                                    )
+                                }
                             }
+
                             Log.d(TAG, "addClient: PHONE_NUMBER_ALREADY_EXISTS")
                         }
                     }.onFailure { error ->
@@ -177,6 +226,7 @@ class CreateCustomerViewModel(
             )
         }
     }
+
     private fun updateMobile2(mobile2: String) {
         _uiState.update { oldState ->
             oldState.copy(
@@ -208,6 +258,7 @@ class CreateCustomerViewModel(
             )
         }
     }
+
     private fun updateMobile(city: String) {
         _uiState.update { oldState ->
             oldState.copy(
@@ -215,6 +266,7 @@ class CreateCustomerViewModel(
             )
         }
     }
+
     fun handleAction(action: CreateCustomerUiAction) {
         when (action) {
             CreateCustomerUiAction.SubmitClient -> onSubmit()

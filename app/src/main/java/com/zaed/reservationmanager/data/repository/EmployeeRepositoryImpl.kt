@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.Flow
 class EmployeeRepositoryImpl(
     private val remoteSource: EmployeeRemoteDataSource
 ) : EmployeeRepository {
-    override fun createEmployee(employee: Employee): Flow<Result<Boolean>> {
+    override fun createEmployee(employee: Employee): Flow<Result<Pair<Boolean,String>>> {
         return remoteSource.createEmployee(employee)
     }
 
-    override fun updateEmployee(employee: Employee): Flow<Result<Boolean>> {
+    override fun updateEmployee(employee: Employee): Flow<Result<Pair<Boolean,String>>> {
         return remoteSource.updateEmployee(employee)
     }
 

@@ -12,4 +12,7 @@ enum class AddEmployeeUiError(@StringRes val messageRes: Int) {
     EMAIL_IS_INVALID(R.string.email_is_invalid),
     PHONE_NUMBER_1_IS_INVALID(R.string.invalid_phone_number),
     PHONE_NUMBER_2_IS_INVALID(R.string.invalid_phone_number),
+    NAME_IS_ALREADY_USED(R.string.name_is_already_used),
+    PHONE_NUMBER_1_IS_IN_USE(R.string.phone_number_1_is_already_in_use),
+    PHONE_NUMBER_2_IS_IN_USE(R.string.phone_number_2_is_already_in_use),
 }

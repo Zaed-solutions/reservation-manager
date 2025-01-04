@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -187,7 +186,7 @@ private fun AddEmployeeScreenContent(
                 isOptional = false,
                 isError = error in listOf(
                     AddEmployeeUiError.NAME_IS_REQUIRED,
-                    AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED
+                    AddEmployeeUiError.NAME_IS_ALREADY_USED
                 ),
                 errorMessageRes = error.messageRes
             )
@@ -196,7 +195,11 @@ private fun AddEmployeeScreenContent(
                 title = stringResource(R.string.company),
                 selectedValue = currentEmployee.company,
                 onValueChanged = { index ->
-                    onAction(AddEmployeeUiAction.OnCompanyChanged(companies.getOrNull(index)?:Company()))
+                    onAction(
+                        AddEmployeeUiAction.OnCompanyChanged(
+                            companies.getOrNull(index) ?: Company()
+                        )
+                    )
                 },
                 isOptional = false,
                 options = companies.map { it.name },
@@ -258,7 +261,7 @@ private fun AddEmployeeScreenContent(
                 isError = error in listOf(
                     AddEmployeeUiError.PHONE_NUMBER_1_IS_INVALID,
                     AddEmployeeUiError.PHONE_NUMBER_IS_REQUIRED,
-                    AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED,
+                    AddEmployeeUiError.PHONE_NUMBER_1_IS_IN_USE,
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
@@ -271,7 +274,10 @@ private fun AddEmployeeScreenContent(
                     onAction(AddEmployeeUiAction.OnPhoneNumber2Changed(phoneNumber))
                 },
                 isOptional = true,
-                isError = error in listOf(AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID, AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED),
+                isError = error in listOf(
+                    AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID,
+                    AddEmployeeUiError.PHONE_NUMBER_2_IS_IN_USE
+                ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
             )

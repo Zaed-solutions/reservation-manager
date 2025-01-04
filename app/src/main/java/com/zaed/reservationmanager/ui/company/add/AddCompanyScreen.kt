@@ -205,7 +205,7 @@ private fun AddCompanyScreenContent(
                 isOptional = false,
                 isError = error in listOf(
                     AddCompanyUiError.PHONE_NUMBER_1_IS_INVALID,
-                    AddCompanyUiError.PHONE_IS_ALREADY_USED,
+                    AddCompanyUiError.PHONE_NUMBER_1_IS_IN_USE,
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone
@@ -220,7 +220,7 @@ private fun AddCompanyScreenContent(
                 isOptional = true,
                 isError = error in listOf(
                     AddCompanyUiError.PHONE_NUMBER_2_IS_INVALID,
-                    AddCompanyUiError.PHONE_IS_ALREADY_USED
+                    AddCompanyUiError.PHONE_NUMBER_2_IS_IN_USE
                 ),
                 errorMessageRes = error.messageRes,
                 keyboardType = KeyboardType.Phone

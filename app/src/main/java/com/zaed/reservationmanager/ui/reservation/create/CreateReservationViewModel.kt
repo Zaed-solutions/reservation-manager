@@ -302,12 +302,20 @@ class CreateReservationViewModel(
             ).collect { result ->
                 result.onSuccess { data ->
                     Log.d(TAG, "createCustomer: success")
-                    _uiState.update {
-                        it.copy(
-                            customer = it.customer.copy(
-                                id = data.second
+                    if(data.first) {
+                        _uiState.update {
+                            it.copy(
+                                customer = it.customer.copy(
+                                    id = data.second
+                                )
                             )
-                        )
+                        }
+                    }else{
+                        if(data.second== "phoneNumber1") {
+                            _uiState.update { it.copy(reservationError = ReservationError.PHONE_NUMBER_1_IS_IN_USE) }
+                        }else{
+                            _uiState.update { it.copy(reservationError = ReservationError.PHONE_NUMBER_2_IS_IN_USE) }
+                        }
                     }
                     createReservations()
                 }.onFailure {

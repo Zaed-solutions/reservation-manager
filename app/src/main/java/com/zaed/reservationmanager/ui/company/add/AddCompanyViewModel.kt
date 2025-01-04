@@ -88,10 +88,14 @@ class AddCompanyViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             companyRepo.updateCompany(uiState.value.company).collect { result ->
                 result.onSuccess { isUpdated ->
-                    if(isUpdated){
+                    if(isUpdated.first){
                         _uiState.update { it.copy(isFinished = true) }
                     } else {
-                        _uiState.update { it.copy(error = AddCompanyUiError.PHONE_IS_ALREADY_USED) }
+                        if(isUpdated.second == "phoneNumber1") {
+                            _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_1_IS_IN_USE) }
+                        }else{
+                            _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                        }
                     }
                 }.onFailure { error ->
                     Log.e(TAG, "onSave: ${error.message}")
@@ -110,11 +114,14 @@ class AddCompanyViewModel(
                 )
             ).collect { result ->
                 result.onSuccess { isCreated ->
-                    if (isCreated) {
+                    if (isCreated.first) {
                         _uiState.update { it.copy(isFinished = true) }
                     } else {
-                        _uiState.update { it.copy(error = AddCompanyUiError.PHONE_IS_ALREADY_USED) }
-                    }
+                        if(isCreated.second == "phoneNumber1") {
+                            _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_1_IS_IN_USE) }
+                        }else{
+                            _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                        }                    }
                 }.onFailure { error ->
                     Log.e(TAG, "onSave: ${error.message}")
                     error.printStackTrace()
