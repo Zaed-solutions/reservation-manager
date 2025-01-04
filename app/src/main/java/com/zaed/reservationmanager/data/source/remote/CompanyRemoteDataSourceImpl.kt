@@ -25,40 +25,52 @@ class CompanyRemoteDataSourceImpl(
         private val RESERVATION_COLLECTION = "reservations"
     }
 
-    override fun createCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
+    override fun createCompany(company: Company): Flow<Result<Pair<Boolean,String>>> = callbackFlow {
         try {
-            val filter = if (company.phoneNumber2.isNotBlank()) {
+            val filter1 = Filter.and(
                 Filter.or(
-                    Filter.inArray("phoneNumber1", listOf(company.phoneNumber1, company.phoneNumber2)),
-                    Filter.inArray("phoneNumber2",  listOf(company.phoneNumber1, company.phoneNumber2))
-                )
+                    Filter.equalTo("phoneNumber1", company.phoneNumber1),
+                    Filter.equalTo("phoneNumber2", company.phoneNumber1)
+                ),
+                Filter.notEqualTo("id", company.id),
+            )
+            val filter2 = Filter.and(
+                Filter.or(
+                    Filter.equalTo("phoneNumber1", company.phoneNumber2),
+                    Filter.equalTo("phoneNumber2", company.phoneNumber2)
+                ),
+                Filter.notEqualTo("id", company.id),
+            )
+            val result1 = firestore.collection(COMPANY_COLLECTION).where(
+                filter1
+            ).get().await().documents.isEmpty()
+            val result2 = if (company.phoneNumber2.isNotBlank()) {
+                firestore.collection(COMPANY_COLLECTION).where(
+                    filter2
+                ).get().await().documents.isEmpty()
             } else {
-                Filter.equalTo("phoneNumber1", company.phoneNumber1)
+                true
             }
-            firestore.collection(COMPANY_COLLECTION)
-                .where(filter)
-                .get()
-                .addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        val document = firestore.collection(COMPANY_COLLECTION).document()
-                        document.set(company.copy(id = document.id)).addOnSuccessListener {
-                            trySend(Result.success(true))
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
-                        }
-                    } else {
-                        trySend(Result.success(false))
-                    }
+
+            if (result1 && result2) {
+                val document = firestore.collection(COMPANY_COLLECTION).document()
+                document.set(company.copy(id = document.id)).addOnSuccessListener {
+                    trySend(Result.success(true to document.id))
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))
                 }
+            } else if (!result1) {
+                trySend(Result.success(false to "phoneNumber1"))
+            } else {
+                trySend(Result.success(false to "phoneNumber2"))
+            }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
         awaitClose { }
     }
 
-    override fun updateCompany(company: Company): Flow<Result<Boolean>> = callbackFlow {
+    override fun updateCompany(company: Company): Flow<Result<Pair<Boolean,String>>> = callbackFlow {
         try {
             val reservations = firestore.collection(RESERVATION_COLLECTION)
                 .where(
@@ -71,58 +83,66 @@ class CompanyRemoteDataSourceImpl(
                 .whereEqualTo("companyId", company.id)
                 .get().await()
             Log.d(TAG, "updateCustomer: reservations: ${reservations.size()}")
-            val filter = if (company.phoneNumber2.isNotBlank()) {
-                Filter.and(
-                    Filter.or(
-                        Filter.inArray("phoneNumber1", listOf(company.phoneNumber1, company.phoneNumber2)),
-                        Filter.inArray("phoneNumber2", listOf(company.phoneNumber1, company.phoneNumber2)),
-                    ),
-                    Filter.notEqualTo("id", company.id),
-                )
-            } else {
-                Filter.and(
+            ////////////
+            val filter1 = Filter.and(
+                Filter.or(
                     Filter.equalTo("phoneNumber1", company.phoneNumber1),
-                    Filter.notEqualTo("id", company.id),
-                )
+                    Filter.equalTo("phoneNumber2", company.phoneNumber1)
+                ),
+                Filter.notEqualTo("id", company.id),
+            )
+            val filter2 = Filter.and(
+                Filter.or(
+                    Filter.equalTo("phoneNumber1", company.phoneNumber2),
+                    Filter.equalTo("phoneNumber2", company.phoneNumber2)
+                ),
+                Filter.notEqualTo("id", company.id),
+            )
+            val result1 = firestore.collection(COMPANY_COLLECTION).where(
+                filter1
+            ).get().await().documents.isEmpty()
+            val result2 = if (company.phoneNumber2.isNotBlank()) {
+                firestore.collection(COMPANY_COLLECTION).where(
+                    filter2
+                ).get().await().documents.isEmpty()
+            } else {
+                true
             }
-            firestore.collection(COMPANY_COLLECTION)
-                .where(filter)
-                .get()
-                .addOnSuccessListener { data ->
-                    if (data.isEmpty) {
-                        val batch = firestore.batch()
-                        val companyRef =
-                            firestore.collection(COMPANY_COLLECTION).document(company.id)
-                        batch.set(companyRef, company)
-                        val reservationUpdates = when (company.type) {
-                            CompanyType.TOURISM -> mapOf(
-                                "tourismCompany" to company.name,
-                                "tourismCompanyPhone" to company.phoneNumber1
-                            )
 
-                            CompanyType.TRAVEL -> mapOf(
-                                "travelCompany" to company.name,
-                                "travelCompanyPhone" to company.phoneNumber1
-                            )
-                        }
-                        reservations.forEach {
-                            batch.update(it.reference, reservationUpdates)
-                        }
-                        employees.forEach{
-                            batch.update(it.reference, mapOf("company" to company.name))
-                        }
+            if (result1 && result2) {
+                val batch = firestore.batch()
+                val companyRef =
+                    firestore.collection(COMPANY_COLLECTION).document(company.id)
+                batch.set(companyRef, company)
+                val reservationUpdates = when (company.type) {
+                    CompanyType.TOURISM -> mapOf(
+                        "tourismCompany" to company.name,
+                        "tourismCompanyPhone" to company.phoneNumber1
+                    )
 
-                        batch.commit().addOnSuccessListener {
-                            trySend(Result.success(true))
-                        }.addOnFailureListener { e ->
-                            trySend(Result.failure(e))
-                        }
-                    } else {
-                        trySend(Result.success(false))
-                    }
+                    CompanyType.TRAVEL -> mapOf(
+                        "travelCompany" to company.name,
+                        "travelCompanyPhone" to company.phoneNumber1
+                    )
+                }
+                reservations.forEach {
+                    batch.update(it.reference, reservationUpdates)
+                }
+                employees.forEach {
+                    batch.update(it.reference, mapOf("company" to company.name))
+                }
+
+                batch.commit().addOnSuccessListener {
+                    trySend(Result.success(true to company.id))
                 }.addOnFailureListener { e ->
                     trySend(Result.failure(e))
                 }
+            }  else if (!result1) {
+                trySend(Result.success(false to "phoneNumber1"))
+            } else {
+                trySend(Result.success(false to "phoneNumber2"))
+            }
+            ///////
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -145,14 +165,15 @@ class CompanyRemoteDataSourceImpl(
 
     override fun getCompanyById(companyId: String): Flow<Result<Company>> = callbackFlow {
         try {
-            firestore.collection(COMPANY_COLLECTION).document(companyId).addSnapshotListener { data, error ->
-                if (error != null) {
-                    trySend(Result.failure(error))
-                } else {
-                    val company = data?.toObject(Company::class.java) ?: Company()
-                    trySend(Result.success(company))
+            firestore.collection(COMPANY_COLLECTION).document(companyId)
+                .addSnapshotListener { data, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val company = data?.toObject(Company::class.java) ?: Company()
+                        trySend(Result.success(company))
+                    }
                 }
-            }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -164,13 +185,13 @@ class CompanyRemoteDataSourceImpl(
             firestore.collection(COMPANY_COLLECTION)
                 .orderBy("name")
                 .addSnapshotListener { value, error ->
-                if (error != null) {
-                    trySend(Result.failure(error))
-                } else {
-                    val companies = value?.toObjects(Company::class.java)
-                    trySend(Result.success(companies ?: emptyList()))
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val companies = value?.toObjects(Company::class.java)
+                        trySend(Result.success(companies ?: emptyList()))
+                    }
                 }
-            }
         } catch (e: Exception) {
             trySend(Result.failure(e))
         }
@@ -234,18 +255,26 @@ class CompanyRemoteDataSourceImpl(
             reservationSnapshot.documents.forEach { document ->
                 Log.d("ReservationDocument", document.data.toString())
             }
-            val paymentQuery = firestore.collection(COMPANY_PAYMENT_COLLECTION).whereEqualTo("companyId", companyId)
-            val totalRidePriceResult = reservationQuery.aggregate(AggregateField.sum(if(companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice"))
-                .get(AggregateSource.SERVER).await()
-            val totalCollectedResult = reservationQuery.aggregate(AggregateField.sum(if(companyType == CompanyType.TOURISM)"tourismCollectedAmount" else "travelCollectedAmount"))
-                .get(AggregateSource.SERVER).await()
-            val totalPaymentResult =  paymentQuery.aggregate(AggregateField.sum("amount"))
+            val paymentQuery = firestore.collection(COMPANY_PAYMENT_COLLECTION)
+                .whereEqualTo("companyId", companyId)
+            val totalRidePriceResult =
+                reservationQuery.aggregate(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice"))
+                    .get(AggregateSource.SERVER).await()
+            val totalCollectedResult =
+                reservationQuery.aggregate(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount"))
+                    .get(AggregateSource.SERVER).await()
+            val totalPaymentResult = paymentQuery.aggregate(AggregateField.sum("amount"))
                 .get(AggregateSource.SERVER).await()
 
-            val totalRidePrice = (totalRidePriceResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice")) as? Number)?.toDouble() ?: 0.0
+            val totalRidePrice =
+                (totalRidePriceResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismRidePrice" else "travelRidePrice")) as? Number)?.toDouble()
+                    ?: 0.0
 
-            val totalCollected = (totalCollectedResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount")) as? Number)?.toDouble() ?: 0.0
-            val totalPayment = (totalPaymentResult.get(AggregateField.sum("amount")) as? Number)?.toDouble() ?: 0.0
+            val totalCollected =
+                (totalCollectedResult.get(AggregateField.sum(if (companyType == CompanyType.TOURISM) "tourismCollectedAmount" else "travelCollectedAmount")) as? Number)?.toDouble()
+                    ?: 0.0
+            val totalPayment =
+                (totalPaymentResult.get(AggregateField.sum("amount")) as? Number)?.toDouble() ?: 0.0
             Log.d(
                 "CompanyBalance",
                 "getCompanyBalance: $companyId $companyType totalRidePrice=$totalRidePrice, totalCollected=$totalCollected, totalPayment=$totalPayment"
@@ -263,26 +292,29 @@ class CompanyRemoteDataSourceImpl(
         }
     }
 
-    override fun getCompanyPayments(companyId: String): Flow<Result<List<CompanyPayment>>> = callbackFlow {
-        try {
-            firestore.collection(COMPANY_PAYMENT_COLLECTION).whereEqualTo("companyId", companyId)
-                .addSnapshotListener { value, error ->
-                    if (error != null) {
-                        trySend(Result.failure(error))
-                    } else {
-                        val payments = value?.toObjects(CompanyPayment::class.java) ?: emptyList()
-                        trySend(Result.success(payments))
+    override fun getCompanyPayments(companyId: String): Flow<Result<List<CompanyPayment>>> =
+        callbackFlow {
+            try {
+                firestore.collection(COMPANY_PAYMENT_COLLECTION)
+                    .whereEqualTo("companyId", companyId)
+                    .addSnapshotListener { value, error ->
+                        if (error != null) {
+                            trySend(Result.failure(error))
+                        } else {
+                            val payments =
+                                value?.toObjects(CompanyPayment::class.java) ?: emptyList()
+                            trySend(Result.success(payments))
+                        }
                     }
-                }
-        } catch (e: Exception) {
-            trySend(Result.failure(e))
+            } catch (e: Exception) {
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     override suspend fun addPayment(payment: CompanyPayment): Result<Boolean> {
         return try {
-            val document =firestore.collection(COMPANY_PAYMENT_COLLECTION).document()
+            val document = firestore.collection(COMPANY_PAYMENT_COLLECTION).document()
             document.set(payment.copy(id = document.id)).await()
             Result.success(true)
         } catch (e: Exception) {
@@ -292,7 +324,8 @@ class CompanyRemoteDataSourceImpl(
 
     override suspend fun editPayment(payment: CompanyPayment): Result<Boolean> {
         return try {
-            firestore.collection(COMPANY_PAYMENT_COLLECTION).document(payment.id).set(payment).await()
+            firestore.collection(COMPANY_PAYMENT_COLLECTION).document(payment.id).set(payment)
+                .await()
             Result.success(true)
         } catch (e: Exception) {
             Result.failure(e)

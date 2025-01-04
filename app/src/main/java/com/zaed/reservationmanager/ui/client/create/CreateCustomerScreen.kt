@@ -1,6 +1,5 @@
 package com.zaed.reservationmanager.ui.client.create
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +41,6 @@ import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField2
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -171,7 +169,7 @@ fun NewClientDataEntryScreenContent(
                 onValueChanged = { index ->
                     action(
                         CreateCustomerUiAction.UpdateNationality(
-                            nationalities.getOrNull(index)?: ""
+                            nationalities.getOrNull(index) ?: ""
                         )
                     )
                 },
@@ -183,7 +181,15 @@ fun NewClientDataEntryScreenContent(
             TitledDropDownTextField(
                 title = stringResource(R.string.country_of_residence),
                 selectedValue = customer.residenceCountry,
-                onValueChanged = { index -> action(CreateCustomerUiAction.UpdateCountry(countries.getOrNull(index)?:"")) },
+                onValueChanged = { index ->
+                    action(
+                        CreateCustomerUiAction.UpdateCountry(
+                            countries.getOrNull(
+                                index
+                            ) ?: ""
+                        )
+                    )
+                },
                 isOptional = false,
                 errorMessageRes = R.string.country_is_required,
                 options = countries
@@ -192,7 +198,7 @@ fun NewClientDataEntryScreenContent(
                 title = stringResource(R.string.city),
                 value = customer.city,
                 onValueChanged = { newText ->
-                        action(CreateCustomerUiAction.UpdateCity(newText))
+                    action(CreateCustomerUiAction.UpdateCity(newText))
                 },
                 isOptional = true,
             )
@@ -205,7 +211,7 @@ fun NewClientDataEntryScreenContent(
                 isOptional = false,
                 isError = error in listOf(
                     ClientUIError.PHONE_NUMBER_IS_REQUIRED,
-                    ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS,
+                    ClientUIError.PHONE_NUMBER_1_IS_IN_USE,
                     ClientUIError.PHONE_NUMBER_1_IS_INVALID
                 ),
                 errorMessageRes = error.messageRes,
@@ -215,9 +221,12 @@ fun NewClientDataEntryScreenContent(
                 title = stringResource(R.string.phone_number_2),
                 value = customer.phoneNumber2,
                 onValueChanged = { newText ->
-                        action(CreateCustomerUiAction.UpdateNumber2(newText))
+                    action(CreateCustomerUiAction.UpdateNumber2(newText))
                 },
-                isError = (error in listOf(ClientUIError.PHONE_NUMBER_2_IS_INVALID, ClientUIError.CLIENT_WITH_THIS_PHONE_NUMBER_ALREADY_EXISTS)) && customer.phoneNumber2.isNotBlank(),
+                isError = (error in listOf(
+                    ClientUIError.PHONE_NUMBER_2_IS_INVALID,
+                    ClientUIError.PHONE_NUMBER_2_IS_IN_USE
+                )) && customer.phoneNumber2.isNotBlank(),
                 errorMessageRes = error.messageRes,
                 isOptional = true,
                 keyboardType = KeyboardType.Phone

@@ -267,4 +267,7 @@
     <string name="city">City</string>
     <string name="phone_number_is_blank">Phone number is blank!</string>
     <string name="import_customers_from_excel">Import Customers from Excel</string>
+    <string name="phone_number_1_is_already_in_use">Phone number 1 is already in use</string>
+    <string name="phone_number_2_is_already_in_use">Phone number 2 is already in use</string>
+    <string name="name_is_already_used">Name is already used</string>
 </resources>

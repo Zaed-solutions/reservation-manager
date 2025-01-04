@@ -44,7 +44,11 @@ fun CustomerInfoSection(
                 onUpdatePhoneNumber(phoneNumber)
             },
             isOptional = false,
-            isError = (error == ReservationError.CUSTOMER_PHONE_IS_REQUIRED || error == ReservationError.CUSTOMER_PHONE_IS_INVALID),
+            isError = error in listOf(
+                ReservationError.CUSTOMER_PHONE_IS_REQUIRED,
+                ReservationError.CUSTOMER_PHONE_IS_INVALID,
+                ReservationError.PHONE_NUMBER_1_IS_IN_USE
+            ),
             errorMessageRes = error.messageRes,
             keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Search,
@@ -56,7 +60,7 @@ fun CustomerInfoSection(
         )
         AnimatedVisibility(isNewCustomer != null) {
             when {
-                isNewCustomer == true ->{
+                isNewCustomer == true -> {
                     Column(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -110,10 +114,10 @@ fun CustomerInfoSection(
                 }
 
                 else -> {
-                    Column (
+                    Column(
                         modifier = modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ){
+                    ) {
                         DetailRow(
                             label = stringResource(R.string.client_name),
                             value = customer.name,

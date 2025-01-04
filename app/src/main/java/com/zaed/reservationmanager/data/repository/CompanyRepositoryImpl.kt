@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.Flow
 class CompanyRepositoryImpl(
     private val remoteSource: CompanyRemoteDataSource
 ) : CompanyRepository {
-    override fun createCompany(company: Company): Flow<Result<Boolean>> {
+    override fun createCompany(company: Company): Flow<Result<Pair<Boolean,String>>>{
         return remoteSource.createCompany(company)
     }
 
-    override fun updateCompany(company: Company): Flow<Result<Boolean>> {
+    override fun updateCompany(company: Company): Flow<Result<Pair<Boolean,String>>> {
         return remoteSource.updateCompany(company)
     }
 

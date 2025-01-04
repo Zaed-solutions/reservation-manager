@@ -139,10 +139,16 @@ class AddEmployeeViewModel(
             try {
                 employeeRepo.updateEmployee(uiState.value.employee).collect { result ->
                     result.onSuccess { isUpdated ->
-                        if (isUpdated) {
+                        if (isUpdated.first) {
                             _uiState.update { it.copy(isFinished = true) }
                         } else {
-                            _uiState.update { it.copy(error = AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED) }
+                            if (isUpdated.second == "name") {
+                                _uiState.update { it.copy(error = AddEmployeeUiError.NAME_IS_ALREADY_USED) }
+                            } else if (isUpdated.second == "phoneNumber1") {
+                                _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_1_IS_IN_USE) }
+                            } else {
+                                _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                            }
                         }
                     }.onFailure { error ->
                         Log.e(TAG, "updateCompany: ${error.message}")
@@ -164,10 +170,16 @@ class AddEmployeeViewModel(
                 )
             ).collect { result ->
                 result.onSuccess { isCreated ->
-                    if (isCreated) {
+                    if (isCreated.first) {
                         _uiState.update { it.copy(isFinished = true) }
                     } else {
-                        _uiState.update { it.copy(error = AddEmployeeUiError.NAME_OR_PHONE_ARE_ALREADY_USED) }
+                        if (isCreated.second == "name") {
+                            _uiState.update { it.copy(error = AddEmployeeUiError.NAME_IS_ALREADY_USED) }
+                        } else if (isCreated.second == "phoneNumber1") {
+                            _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_1_IS_IN_USE) }
+                        } else {
+                            _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                        }
                     }
                 }.onFailure { error ->
                     Log.e(TAG, "createCompany: ${error.message}")
@@ -211,7 +223,10 @@ class AddEmployeeViewModel(
         viewModelScope.launch {
             _uiState.update { oldState ->
                 oldState.copy(
-                    employee = oldState.employee.copy(company = company.name, companyId = company.id)
+                    employee = oldState.employee.copy(
+                        company = company.name,
+                        companyId = company.id
+                    )
                 )
             }
         }
