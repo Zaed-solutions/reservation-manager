@@ -1,8 +1,6 @@
 package com.zaed.reservationmanager.ui.util
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -10,15 +8,11 @@ import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import androidx.compose.ui.graphics.Color
 import com.opencsv.CSVReader
-import com.zaed.reservationmanager.R
-import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.util.InputValidator.validate
-import io.github.voytech.tabulate.model.attributes.cell.Colors
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.DateUtil
@@ -201,7 +195,7 @@ object SheetUtil {
         return null
     }
 
-    fun generatePaginatedArabicPdfReportForAllReservations(
+    fun generatePaginatedArabicPdfReportForAllArrivals(
         context: Context,
         reservations: List<Reservation>,
         fileName: String = "تقرير جميع الوصول",
@@ -239,7 +233,6 @@ object SheetUtil {
         headerPaint.textSize = fontSize
         headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
         headerPaint.textAlign = Paint.Align.CENTER
-        headerPaint.color = android.graphics.Color.WHITE
 
         val footerPaint = Paint()
         footerPaint.textSize = fontSize
@@ -262,7 +255,7 @@ object SheetUtil {
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.BLACK
+        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnWidths = listOf(
@@ -499,7 +492,7 @@ object SheetUtil {
         return filePath // Return the generated file
     }
 
-    fun generatePaginatedArabicPdfReportForCompanyReservations(
+    fun generatePaginatedArabicPdfReportForCompanyArrivals(
         context: Context,
         reservations: List<Reservation>,
         fileName: String = "تقرير الوصول للشركات",
@@ -536,7 +529,6 @@ object SheetUtil {
         headerPaint.textSize = fontSize
         headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
         headerPaint.textAlign = Paint.Align.CENTER
-        headerPaint.color = android.graphics.Color.WHITE
 
         val footerPaint = Paint()
         footerPaint.textSize = fontSize
@@ -559,7 +551,7 @@ object SheetUtil {
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.BLACK
+        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnWidths = listOf(
@@ -790,7 +782,7 @@ object SheetUtil {
     fun generatePaginatedArabicPdfReportForCompanyAccount(
         context: Context,
         reservations: List<Reservation>,
-        fileName: String = "تقرير جميع الوصول",
+        fileName: String = "تقرير حساب الشركة",
         title : String = "تقرير",
         companyType: CompanyType = CompanyType.TRAVEL
     ): File? {
@@ -808,8 +800,8 @@ object SheetUtil {
             "الرصيد"
         )
         // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
+        val pageWidth = 595 //842 A4 width in points
+        val pageHeight = 842 //595 A4 height in points
         val cellHeight = 20f
         val fontSize = 12f
         val titleFontSize = 16f
@@ -823,7 +815,6 @@ object SheetUtil {
         headerPaint.textSize = fontSize
         headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
         headerPaint.textAlign = Paint.Align.CENTER
-        headerPaint.color = android.graphics.Color.WHITE
 
         val footerPaint = Paint()
         footerPaint.textSize = fontSize
@@ -846,7 +837,7 @@ object SheetUtil {
 
         val blackBackground = Paint()
         blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.BLACK
+        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnWidths = listOf(

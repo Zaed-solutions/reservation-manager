@@ -18,11 +18,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -30,7 +33,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -77,7 +79,10 @@ import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
+import com.zaed.reservationmanager.ui.components.FabItem
+import com.zaed.reservationmanager.ui.components.MultiFloatingActionButton
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.CreateReportBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
 import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
@@ -87,10 +92,10 @@ import com.zaed.reservationmanager.ui.home.component.TimeFiltersChips
 import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import com.zaed.reservationmanager.ui.util.FileUtil
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
-import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForAllReservations
-import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyReservations
+import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals
 import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
@@ -164,25 +169,16 @@ fun HomeScreen(
                                 actionLabel = context.getString(R.string.open)
                             ).let { result ->
                                 if (result == SnackbarResult.ActionPerformed) {
-                                    try {
-                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            val fileUri: Uri = FileProvider.getUriForFile(
-                                                context,
-                                                "${context.packageName}.fileprovider",
-                                                file
-                                            )
-                                            setDataAndType(fileUri, "text/csv")
-                                            flags =
-                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    FileUtil.openFile(
+                                        context = context,
+                                        file = file,
+                                        type = "text/csv",
+                                        onFailure = {
+                                            scope.launch{
+                                                snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
+                                            }
                                         }
-                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(openFileIntent)
-                                        } else {
-                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
-                                        }
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
+                                    )
                                 }
                             }
                         } else {
@@ -192,7 +188,7 @@ fun HomeScreen(
                 }
 
                 HomeUiAction.ExportReservationsAsCsv -> {
-                    val file = generatePaginatedArabicPdfReportForCompanyReservations(context, state.displayedReservations)
+                    val file = generatePaginatedArabicPdfReportForCompanyArrivals(context, state.displayedReservations)
 //                        context = context,
 //                        isAllRides = true,
 //                        headers = listOf(
@@ -217,29 +213,20 @@ fun HomeScreen(
                                 actionLabel = context.getString(R.string.open)
                             ).let { result ->
                                 if (result == SnackbarResult.ActionPerformed) {
-                                    try {
-                                        val openFileIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            val fileUri: Uri = FileProvider.getUriForFile(
-                                                context,
-                                                "${context.packageName}.fileprovider",
-                                                file
-                                            )
-                                            setDataAndType(fileUri, "application/pdf")
-                                            flags =
-                                                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    FileUtil.openFile(
+                                        context = context,
+                                        file = file,
+                                        type = "application/pdf",
+                                        onFailure = {
+                                            scope.launch{
+                                                snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
+                                            }
                                         }
-                                        if (openFileIntent.resolveActivity(context.packageManager) != null) {
-                                            context.startActivity(openFileIntent)
-                                        } else {
-                                            snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
-                                        }
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
+                                    )
                                 }
                             }
                         } else {
-                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_csv))
+                            snackbarHostState.showSnackbar(context.getString(R.string.error_exporting_pdf))
                         }
                     }
                 }
@@ -366,6 +353,32 @@ fun HomeScreen(
                     val customer = state.customers.first { it.id == action.customerId }
                     onNavigateToEditCustomer(customer)
                 }
+                
+                is HomeUiAction.ShareFile -> {
+                    FileUtil.shareFile(
+                        context = context,
+                        file = action.file,
+                        type = action.type,
+                        onFailure = {
+                            scope.launch{
+                                snackbarHostState.showSnackbar(context.getString(R.string.no_apps_found_to_share_file))
+                            }
+                        }
+                    )
+                }
+
+                is HomeUiAction.OpenFile -> {
+                    FileUtil.openFile(
+                        context = context,
+                        file = action.file,
+                        type = action.type,
+                        onFailure = {
+                            scope.launch{
+                                snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
+                            }
+                        }
+                    )
+                }
 
                 else -> viewModel.handleAction(action)
             }
@@ -406,6 +419,9 @@ fun HomeScreenContent(
         mutableStateOf(Reservation())
     }
     var isConfirmDeleteDialogVisible by remember {
+        mutableStateOf(false)
+    }
+    var isReportsBottomSheetVisible by remember {
         mutableStateOf(false)
     }
     var selectedItemId by remember {
@@ -509,17 +525,36 @@ fun HomeScreenContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (pagerState.currentPage == 1) {
-                        onAction(HomeUiAction.AddCustomer)
-                    } else {
-                        onAction(HomeUiAction.AddReservation)
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            val fabItems = remember{
+                listOf(
+                    FabItem(
+                        icon = Icons.AutoMirrored.Filled.Assignment,
+                        label = context.getString(R.string.create_report),
+                        onFabItemClicked = {
+                            isReportsBottomSheetVisible = true
+                        }
+                    ),
+                    FabItem(
+                        icon = Icons.Default.PersonAddAlt1,
+                        label = context.getString(R.string.add_customer),
+                        onFabItemClicked = {
+                            onAction(HomeUiAction.AddCustomer)
+                        }
+                    ),
+                    FabItem(
+                        icon = Icons.Default.DirectionsCar,
+                        label = context.getString(R.string.add_reservation),
+                        onFabItemClicked = {
+                            onAction(HomeUiAction.AddReservation)
+                        }
+                    ),
+                )
             }
+            MultiFloatingActionButton(
+                fabIcon = Icons.Default.Add,
+                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                items = fabItems
+            )
         }
     ) { paddingValues ->
         Column(
@@ -789,7 +824,6 @@ fun HomeScreenContent(
                     modifier = Modifier.fillMaxSize(),
                     onDismissRequest = {},
                     properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
-
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -861,6 +895,37 @@ fun HomeScreenContent(
                     },
                     onDismiss = { isFixedDatePickerVisible = false }
                 )
+            }
+            AnimatedVisibility(isReportsBottomSheetVisible) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        isReportsBottomSheetVisible = false
+                    },
+                    sheetState = bottomSheetState,
+                ) {
+                    CreateReportBottomSheetContent(
+                        tourismCompanies = tourismCompanies,
+                        travelCompanies = travelCompanies,
+                        cars = cars,
+                        onDismiss = {
+                            isReportsBottomSheetVisible = false
+                        },
+                        onFetchReservations = { report, onSuccess ->
+                            onAction(
+                                HomeUiAction.FetchReservationsForReport(
+                                    report = report,
+                                    onSuccess = onSuccess
+                                )
+                            )
+                        },
+                        onShareFile = {
+                            onAction(HomeUiAction.ShareFile(it, "application/pdf"))
+                        },
+                        onOpenFile = {
+                            onAction(HomeUiAction.OpenFile(it, "application/pdf"))
+                        }
+                    )
+                }
             }
             AnimatedVisibility(isConfirmDeleteDialogVisible) {
                 ModalBottomSheet(

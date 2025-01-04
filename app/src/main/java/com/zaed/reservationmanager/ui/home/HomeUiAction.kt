@@ -3,7 +3,9 @@ package com.zaed.reservationmanager.ui.home
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.home.component.Report
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
+import java.io.File
 
 sealed interface HomeUiAction {
     data object ShowNavDrawer : HomeUiAction
@@ -35,4 +37,7 @@ sealed interface HomeUiAction {
     data class FetchDrivers(val companyId: String) : HomeUiAction
     data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
     data class AddCustomers (val customers: List<Customer>) : HomeUiAction
+    data class FetchReservationsForReport(val report: Report, val onSuccess: (List<Reservation>) -> Unit) : HomeUiAction
+    data class ShareFile(val file: File, val type: String) : HomeUiAction
+    data class OpenFile(val file: File, val type: String) : HomeUiAction
 }

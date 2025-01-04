@@ -2,6 +2,7 @@ package com.zaed.reservationmanager.data.repository
 
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
+import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.flow.Flow
 
 class ReservationRepositoryImpl(
@@ -49,5 +50,9 @@ class ReservationRepositoryImpl(
 
     override fun getArchivedReservations(): Flow<Result<List<Reservation>>> {
         return remoteDataSource.getArchivedReservations()
+    }
+
+    override fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>> {
+        return remoteDataSource.fetchReportReservations(report)
     }
 }
