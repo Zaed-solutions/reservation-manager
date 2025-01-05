@@ -93,12 +93,13 @@ object SheetUtil {
                     val name = getCellStringValue(row.getCell(0))
                     val nationality = getCellStringValue(row.getCell(1))
                     val residenceCountry = getCellStringValue(row.getCell(2))
-                    val phoneNumber = getCellStringValue(row.getCell(3))
-                    val email = getCellStringValue(row.getCell(4))
+                    val phoneNumber1 = getCellStringValue(row.getCell(3))
+                    val phoneNumber2 = getCellStringValue(row.getCell(4))
+                    val email = getCellStringValue(row.getCell(5))
 
                     Log.d(
                         "ImportUtil",
-                        "importCustomersFromExcel: $name, $nationality, $residenceCountry, $phoneNumber, $email"
+                        "importCustomersFromExcel: $name, $nationality, $residenceCountry, $phoneNumber1, $phoneNumber2, $email"
                     )
 
                     // Create a Customer object
@@ -106,7 +107,8 @@ object SheetUtil {
                         name = name,
                         nationality = nationality,
                         residenceCountry = residenceCountry,
-                        phoneNumber1 = phoneNumber,
+                        phoneNumber1 = phoneNumber1,
+                        phoneNumber2 = phoneNumber2,
                         email = email
                     )
                     if (customer.validate()) {

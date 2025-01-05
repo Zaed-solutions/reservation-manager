@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.AggregateField
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.Filter
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class CompanyRemoteDataSourceImpl(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val crashlytics: FirebaseCrashlytics
 ) : CompanyRemoteDataSource {
     companion object {
         private val TAG = "CompanyRemoteDataSource"
@@ -65,6 +67,7 @@ class CompanyRemoteDataSourceImpl(
                 trySend(Result.success(false to "phoneNumber2"))
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -144,6 +147,7 @@ class CompanyRemoteDataSourceImpl(
             }
             ///////
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose {}
@@ -158,6 +162,7 @@ class CompanyRemoteDataSourceImpl(
                     trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -175,6 +180,7 @@ class CompanyRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -193,6 +199,7 @@ class CompanyRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -214,6 +221,7 @@ class CompanyRemoteDataSourceImpl(
                     trySend(Result.failure(error))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -235,6 +243,7 @@ class CompanyRemoteDataSourceImpl(
                     trySend(Result.failure(error))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -288,6 +297,7 @@ class CompanyRemoteDataSourceImpl(
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -307,6 +317,7 @@ class CompanyRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -318,6 +329,7 @@ class CompanyRemoteDataSourceImpl(
             document.set(payment.copy(id = document.id)).await()
             Result.success(true)
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -328,6 +340,7 @@ class CompanyRemoteDataSourceImpl(
                 .await()
             Result.success(true)
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -337,6 +350,7 @@ class CompanyRemoteDataSourceImpl(
             firestore.collection(COMPANY_PAYMENT_COLLECTION).document(paymentId).delete().await()
             Result.success(true)
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }

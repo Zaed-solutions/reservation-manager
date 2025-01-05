@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.firebase)
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -99,6 +100,8 @@ dependencies {
     //Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore.ktx)
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
     //Google Fonts
     implementation(libs.androidx.ui.text.google.fonts)
     //Lottie

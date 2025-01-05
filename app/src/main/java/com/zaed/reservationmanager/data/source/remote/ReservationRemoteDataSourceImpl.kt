@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 class ReservationRemoteDataSourceImpl(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val crashlytics: FirebaseCrashlytics
 ) : ReservationRemoteDataSource {
     private val TAG = "ReservationRemoteDataSource"
     private val RESERVATION_COLLECTION = "reservations"
@@ -44,6 +46,7 @@ class ReservationRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -85,6 +88,7 @@ class ReservationRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -104,6 +108,7 @@ class ReservationRemoteDataSourceImpl(
                     trySend(Result.failure(it))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose {}
@@ -124,6 +129,7 @@ class ReservationRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -143,6 +149,7 @@ class ReservationRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -157,6 +164,7 @@ class ReservationRemoteDataSourceImpl(
                     trySend(Result.failure(it))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -174,6 +182,7 @@ class ReservationRemoteDataSourceImpl(
                     trySend(Result.failure(it))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -190,6 +199,7 @@ class ReservationRemoteDataSourceImpl(
                     trySend(Result.failure(it))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -216,6 +226,7 @@ class ReservationRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -234,6 +245,7 @@ class ReservationRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -267,6 +279,7 @@ class ReservationRemoteDataSourceImpl(
                 }
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose {  }

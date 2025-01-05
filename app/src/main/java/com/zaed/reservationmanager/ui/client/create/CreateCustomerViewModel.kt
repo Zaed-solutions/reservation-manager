@@ -90,6 +90,15 @@ class CreateCustomerViewModel(
                     }
                     return@launch
                 }
+                if(customer.phoneNumber1 == customer.phoneNumber2){
+                    _uiState.update {
+                        it.copy(
+                            error = ClientUIError.PHONE_NUMBER_2_IS_IN_USE,
+                            loading = false
+                        )
+                    }
+                    return@launch
+                }
                 if (customer.email.isNotBlank() && !InputValidator.isEmailValid(customer.email)) {
                     _uiState.update {
                         it.copy(

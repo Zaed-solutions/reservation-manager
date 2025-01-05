@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Customer
@@ -10,7 +11,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class CustomerRemoteDataSourceImpl(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val crashlytics: FirebaseCrashlytics
 ) : CustomerRemoteDataSource {
     companion object {
         private const val TAG = "CustomerRemoteDataSource"
@@ -54,6 +56,7 @@ class CustomerRemoteDataSourceImpl(
                     trySend(Result.success(false to "phoneNumber2"))
                 }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -76,6 +79,7 @@ class CustomerRemoteDataSourceImpl(
                 Result.success(customer)
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -92,6 +96,7 @@ class CustomerRemoteDataSourceImpl(
                 Result.success(customer)
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -158,6 +163,7 @@ class CustomerRemoteDataSourceImpl(
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "updateCustomer: exception: $e")
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -179,6 +185,7 @@ class CustomerRemoteDataSourceImpl(
                 trySend(Result.success(false))
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -195,6 +202,7 @@ class CustomerRemoteDataSourceImpl(
                 }
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -213,6 +221,7 @@ class CustomerRemoteDataSourceImpl(
                 trySend(Result.failure(it))
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -257,6 +266,7 @@ class CustomerRemoteDataSourceImpl(
                 trySend(Result.failure(it))
             }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }

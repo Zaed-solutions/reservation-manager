@@ -15,9 +15,9 @@ fun CustomerListWithTitle(
     onViewCustomerDetailsClicked: (String) -> Unit = {},
     onDeleteCustomer: (String) -> Unit = {},
     onEditCustomer: (Customer) -> Unit = {},
-    onMessagePhoneNumber: (String) -> Unit = {},
-    onCopyPhoneNumber: (String) -> Unit = {},
-    onSaveToContacts: (Customer) -> Unit = {}
+    onMessagePhoneNumber: (String) -> Unit,
+    onCopyPhoneNumber: (String) -> Unit,
+    onSaveToContacts: (Customer) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -35,11 +35,11 @@ fun CustomerListWithTitle(
                 onEditClicked = {
                     onEditCustomer(customer)
                 },
-                onMessagePhoneNumber = {
-                    onMessagePhoneNumber(it)
+                onMessagePhoneNumber = { number ->
+                    onMessagePhoneNumber(number)
                 },
-                onCopyPhoneNumber = {
-                    onCopyPhoneNumber(it)
+                onCopyPhoneNumber = { number ->
+                    onCopyPhoneNumber(number)
                 },
                 onSaveToContacts = {
                     onSaveToContacts(customer)

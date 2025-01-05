@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Message
 import kotlinx.coroutines.channels.awaitClose
@@ -9,7 +10,8 @@ import kotlinx.coroutines.tasks.await
 import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 
 class MessageRemoteDataSourceImpl (
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val crashlytics: FirebaseCrashlytics
 ): MessageRemoteDataSource {
     private val MESSAGES_COLLECTION = "messages"
     override fun fetchMessages(): Flow<Result<List<Message>>> = callbackFlow {
@@ -23,6 +25,7 @@ class MessageRemoteDataSourceImpl (
                 }
             }
         } catch (e: Exception){
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose {  }
@@ -34,6 +37,7 @@ class MessageRemoteDataSourceImpl (
             messageRef.set(message.copy(id = messageRef.id)).await()
             Result.success(Unit)
         } catch (e: Exception){
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -44,6 +48,7 @@ class MessageRemoteDataSourceImpl (
             messageRef.set(message).await()
             Result.success(Unit)
         } catch (e: Exception){
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }
@@ -54,6 +59,7 @@ class MessageRemoteDataSourceImpl (
             messageRef.delete().await()
             Result.success(Unit)
         } catch (e: Exception){
+            crashlytics.recordException(e)
             Result.failure(e)
         }
     }

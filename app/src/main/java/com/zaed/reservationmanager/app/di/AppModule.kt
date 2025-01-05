@@ -1,5 +1,7 @@
 package com.zaed.reservationmanager.app.di
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -79,4 +81,5 @@ val remoteModule = module {
     singleOf(::ReservationRemoteDataSourceImpl) { bind<ReservationRemoteDataSource>() }
     singleOf(::MenuDataStoreImpl) { bind<MenuDataStore>() }
     single<FirebaseFirestore> { Firebase.firestore }
+    single<FirebaseCrashlytics> { Firebase.crashlytics }
 }

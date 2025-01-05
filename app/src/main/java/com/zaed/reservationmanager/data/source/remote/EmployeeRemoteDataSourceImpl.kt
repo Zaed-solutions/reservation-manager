@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.source.remote
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.zaed.reservationmanager.data.model.Employee
@@ -11,7 +12,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class EmployeeRemoteDataSourceImpl(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val crashlytics: FirebaseCrashlytics
 ) : EmployeeRemoteDataSource {
     companion object {
         private val TAG = "EmployeeRemoteDataSource"
@@ -79,6 +81,7 @@ class EmployeeRemoteDataSourceImpl(
                 }
 
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -167,6 +170,7 @@ class EmployeeRemoteDataSourceImpl(
                     trySend(Result.success(false to "phoneNumber2"))
                 }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
@@ -181,6 +185,7 @@ class EmployeeRemoteDataSourceImpl(
                     trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -199,6 +204,7 @@ class EmployeeRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -217,6 +223,7 @@ class EmployeeRemoteDataSourceImpl(
                     }
                 }
         } catch (e: Exception) {
+            crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
@@ -238,6 +245,7 @@ class EmployeeRemoteDataSourceImpl(
                         }
                     }
             } catch (e: Exception) {
+                crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }

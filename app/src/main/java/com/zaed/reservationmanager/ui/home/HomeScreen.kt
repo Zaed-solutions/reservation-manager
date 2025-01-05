@@ -2,6 +2,8 @@ package com.zaed.reservationmanager.ui.home
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -70,6 +72,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
@@ -118,7 +121,7 @@ fun HomeScreen(
     onNavigateToCompanyDetails: (String, CompanyType) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
@@ -231,12 +234,18 @@ fun HomeScreen(
                 }
 
                 is HomeUiAction.OnCopyPhoneNumber -> {
-                    clipboardManager.setText(AnnotatedString(action.phoneNumber))
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = context.getString(R.string.number_copied_to_clipboard),
-                            withDismissAction = true
-                        )
+                    if (action.phoneNumber.isNotBlank()) {
+                        clipboardManager.setText(AnnotatedString(action.phoneNumber))
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.number_copied_to_clipboard),
+                                withDismissAction = true
+                            )
+                        }
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(context.getString(R.string.phone_number_is_blank))
+                        }
                     }
                 }
 
@@ -411,7 +420,7 @@ fun HomeScreenContent(
     drivers: List<Employee> = emptyList(),
     countries: List<String> = emptyList(),
     isLoading: Boolean = false,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    snackbarHostState: SnackbarHostState,
     onAction: (HomeUiAction) -> Unit = {},
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current
@@ -983,6 +992,6 @@ fun HomeScreenContent(
 @Preview
 fun CustomerListScreenPreview() {
     ReservationManagerTheme {
-        HomeScreenContent()
+        HomeScreenContent(snackbarHostState = SnackbarHostState())
     }
 }

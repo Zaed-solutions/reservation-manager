@@ -124,6 +124,10 @@ class AddEmployeeViewModel(
                     _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_2_IS_INVALID) }
                     return@launch
                 }
+                if(employee.phoneNumber1 == employee.phoneNumber2){
+                    _uiState.update { it.copy(error = AddEmployeeUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                    return@launch
+                }
                 _uiState.update { it.copy(error = AddEmployeeUiError.NONE) }
             }
             if (uiState.value.isNew) {

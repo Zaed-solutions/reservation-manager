@@ -74,6 +74,10 @@ class AddCompanyViewModel(
                     _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_2_IS_INVALID) }
                     return@launch
                 }
+                if(company.phoneNumber1 == company.phoneNumber2){
+                    _uiState.update { it.copy(error = AddCompanyUiError.PHONE_NUMBER_2_IS_IN_USE) }
+                    return@launch
+                }
                 _uiState.update { it.copy(error = AddCompanyUiError.NONE) }
             }
             if (uiState.value.isNew) {
