@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
@@ -59,6 +60,7 @@ class FabItem(
 
 @Composable
 fun MultiFloatingActionButton(
+    modifier: Modifier = Modifier,
     fabIcon: ImageVector,
     items: List<FabItem>,
     backgroundColor: Color,
@@ -92,19 +94,18 @@ fun MultiFloatingActionButton(
         currentState = MultiFabState.COLLAPSED
     }
 
-    val modifier = if (currentState == MultiFabState.EXPANDED)
-        Modifier
+    val modifier2 = if (currentState == MultiFabState.EXPANDED)
+        modifier
             .fillMaxSize()
             .clickable(indication = null,
                 interactionSource = remember { MutableInteractionSource() }) {
                 currentState = MultiFabState.COLLAPSED
-            } else Modifier.fillMaxSize()
+            } else modifier
 
-    Box(modifier = modifier, contentAlignment = Alignment.BottomEnd) {
+    Box(modifier = modifier2, contentAlignment = Alignment.BottomEnd) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp),
+                .heightIn(max = 400.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             if (currentState == MultiFabState.EXPANDED) {
@@ -129,7 +130,6 @@ fun MultiFloatingActionButton(
                         LayoutDirection.Rtl -> -150f
                     }
                     translate(horizontalPosition, top = 300f) {
-                        scale(5f) {}
                         drawCircle(backgroundColor, radius = animatedRadiusPx, alpha = 0.6f)
                     }
                 }
@@ -141,14 +141,16 @@ fun MultiFloatingActionButton(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                items.forEach { item ->
-                    SmallFloatingActionButtonRow(
-                        item = item,
-                        stateTransition = stateTransition,
-                        stateChange = stateChange,
-                        showLabel = showLabels,
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
+                if (currentState == MultiFabState.EXPANDED) {
+                    items.forEach { item ->
+                        SmallFloatingActionButtonRow(
+                            item = item,
+                            stateTransition = stateTransition,
+                            stateChange = stateChange,
+                            showLabel = showLabels,
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
                 FloatingActionButton(
                     shape = CircleShape,
