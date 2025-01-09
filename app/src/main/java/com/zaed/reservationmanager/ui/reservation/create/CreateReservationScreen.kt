@@ -65,12 +65,14 @@ fun CreateReservationScreen(
     LaunchedEffect(state.isFinished) {
         if (state.isFinished) {
             snackbarHostState.showSnackbarWithDuration(
-                message = context.getString(R.string.reservation_added_successfully),
+                message = if(state.isNewCustomer == false)
+                    context.getString(R.string.reservation_added_successfully)
+                else
+                    context.getString(R.string.customer_added_successfully),
                 durationMillis = 1500L,
                 scope = scope,
                 onFinished = {
                     navigateToCustomerDetailsScreen(state.customer.id)
-//                    navigateBack()
                 }
             )
         }
@@ -148,10 +150,10 @@ private fun CreateReservationScreenContent(
                         .fillMaxWidth()
                         .heightIn(min = 48.dp),
                     shape = MaterialTheme.shapes.medium,
-                    enabled = isNewCustomer != null && reservations.isNotEmpty(),
+                    enabled = isNewCustomer != null && customer.isComplete() && (isNewCustomer || reservations.isNotEmpty()),
                     onClick = { onAction(CreateReservationUiAction.SaveReservations) },
                 ) {
-                    Text(text = stringResource(R.string.save_reservations))
+                    Text(text = if(isNewCustomer == false) stringResource(R.string.save_reservations) else stringResource(R.string.save_customer))
                 }
             }
         }
@@ -193,7 +195,7 @@ private fun CreateReservationScreenContent(
                     onAction(CreateReservationUiAction.UpdateCustomerNationality(it))
                 }
             )
-            AnimatedVisibility(isNewCustomer != null) {
+            AnimatedVisibility(isNewCustomer == false) {
                 AddedReservationsList(
                     reservations = reservations,
                     onAddReservation = {

@@ -372,7 +372,8 @@ class HomeViewModel(
                         reservation.clientName,
                         reservation.tourismCompany,
                         reservation.travelCompany,
-                        reservation.clientPhone
+                        reservation.clientPhone,
+                        reservation.car
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
@@ -389,7 +390,8 @@ class HomeViewModel(
                         reservation.clientName,
                         reservation.tourismCompany,
                         reservation.travelCompany,
-                        reservation.clientPhone
+                        reservation.clientPhone,
+                        reservation.car
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && matchesFilter(timeFilter, reservation.date)

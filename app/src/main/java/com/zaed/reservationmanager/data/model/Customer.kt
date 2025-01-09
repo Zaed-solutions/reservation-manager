@@ -14,4 +14,8 @@ data class Customer(
     val phoneNumber2: String = "",
     val email: String = "",
     val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
-)
+) {
+    fun isComplete(): Boolean {
+        return this.name.isNotBlank() && this.phoneNumber1.isNotBlank() && this.residenceCountry.isNotBlank()
+    }
+}
