@@ -17,13 +17,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -39,7 +40,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -64,7 +64,6 @@ fun MultiFloatingActionButton(
     fabIcon: ImageVector,
     items: List<FabItem>,
     backgroundColor: Color,
-    showLabels: Boolean = true,
     onStateChanged: ((state: MultiFabState) -> Unit)? = null
 ) {
     var currentState by remember { mutableStateOf(MultiFabState.COLLAPSED) }
@@ -130,7 +129,7 @@ fun MultiFloatingActionButton(
                         LayoutDirection.Rtl -> -150f
                     }
                     translate(horizontalPosition, top = 300f) {
-                        drawCircle(backgroundColor, radius = animatedRadiusPx, alpha = 0.6f)
+                        drawCircle(backgroundColor, radius = animatedRadiusPx, alpha = 0.85f)
                     }
                 }
                 LaunchedEffect(Unit) {
@@ -147,7 +146,6 @@ fun MultiFloatingActionButton(
                             item = item,
                             stateTransition = stateTransition,
                             stateChange = stateChange,
-                            showLabel = showLabels,
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -174,7 +172,6 @@ fun MultiFloatingActionButton(
 @Composable
 fun SmallFloatingActionButtonRow(
     item: FabItem,
-    showLabel: Boolean,
     stateTransition: Transition<MultiFabState>,
     stateChange: () -> Unit
 ) {
@@ -200,14 +197,12 @@ fun SmallFloatingActionButtonRow(
                 stateChange()
             }
     ) {
-        if (showLabel) {
-            Text(
-                text = item.label,
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
-                color = Color.White
-            )
-        }
+        Text(
+            text = item.label,
+            modifier = Modifier
+                .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
+            color = MaterialTheme.colorScheme.primaryContainer,
+        )
         SmallFloatingActionButton(
             shape = CircleShape,
             modifier = Modifier

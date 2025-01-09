@@ -573,7 +573,7 @@ fun HomeScreenContent(
             }
             MultiFloatingActionButton(
                 fabIcon = Icons.Default.Add,
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
                 items = fabItems
             )
         }

@@ -291,5 +291,6 @@
     <string name="name_is_already_used">الاسم مستخدم بالفعل</string>
     <string name="car_filter">فلتر السيارة</string>
     <string name="save">حفظ</string>
+    <string name="save_customer">حفظ البروفايل</string>
 
 </resources>

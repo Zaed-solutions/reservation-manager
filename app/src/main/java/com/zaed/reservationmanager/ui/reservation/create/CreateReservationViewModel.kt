@@ -294,7 +294,7 @@ class CreateReservationViewModel(
     }
 
     private fun createCustomer() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             customerRepository.createCustomer(
                 uiState.value.customer.copy(
                     createdAtEpochSeconds = Clock.System.now().epochSeconds
@@ -307,17 +307,17 @@ class CreateReservationViewModel(
                             it.copy(
                                 customer = it.customer.copy(
                                     id = data.second
-                                )
+                                ),
+                                isFinished = true
                             )
                         }
-                    }else{
+                    } else {
                         if(data.second== "phoneNumber1") {
                             _uiState.update { it.copy(reservationError = ReservationError.PHONE_NUMBER_1_IS_IN_USE) }
                         }else{
                             _uiState.update { it.copy(reservationError = ReservationError.PHONE_NUMBER_2_IS_IN_USE) }
                         }
                     }
-                    createReservations()
                 }.onFailure {
                     Log.d(TAG, "createNewCustomer: failed to create customer${it.message}")
                     it.printStackTrace()
