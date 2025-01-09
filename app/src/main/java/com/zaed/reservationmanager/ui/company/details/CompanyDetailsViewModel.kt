@@ -135,10 +135,10 @@ class CompanyDetailsViewModel(
     private fun fetchReservations(companyId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservationsByCompanyId(companyId).collect { result ->
-                result.onSuccess {
-                    Log.d(TAG, "fetchReservations: success ${it.size}")
+                result.onSuccess { data ->
+                    Log.d(TAG, "fetchReservations: success ${data.size}")
                     _uiState.update { oldState ->
-                        oldState.copy(reservations = it)
+                        oldState.copy(reservations = data.sortedByDescending { it.date + it.time })
                     }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchReservations: failed to fetch reservations: ${e.message}")
