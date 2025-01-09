@@ -174,7 +174,15 @@ fun CreateReportBottomSheetContent(
                                         isSelectCompanyTypeVisible = false
                                         isSelectCompanyAccountTypeVisible = false
                                     }
-
+                                    3 -> {
+                                        isSelectCarVisible = false
+                                        isExportEnabled = false
+                                        isSelectRangeVisible = true
+                                        isSelectCompanyVisible = false
+                                        isSelectCarTypeVisible = false
+                                        isSelectCompanyTypeVisible = false
+                                        isSelectCompanyAccountTypeVisible = false
+                                    }
                                     else -> {
                                         isSelectCompanyTypeVisible = true
                                         isSelectCarVisible = false
@@ -378,6 +386,20 @@ fun CreateReportBottomSheetContent(
                                                         generatedFile = pdfFile
                                                     }
                                                 }
+                                                ReportType.PROFITS->{
+                                                    SheetUtil.generatePaginatedArabicPdfReportForProfits(
+                                                        context = context,
+                                                        reservations = reservations.sortedBy { it.date+it.time},
+                                                        title = context.getString(
+                                                            R.string.profits_report_placeholder,
+                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                        ),
+                                                    )?.let { pdfFile ->
+                                                        isLoaded = true
+                                                        isLoading = false
+                                                        generatedFile = pdfFile
+                                                    }
+                                                }
 
                                                 else -> {
                                                     SheetUtil.generatePaginatedArabicPdfReportForAllArrivals(
@@ -427,7 +449,8 @@ data class Report(
 enum class ReportType(@StringRes val stringRes: Int) {
     COMPANY_ACCOUNT(R.string.company_account),
     COMPANY_ARRIVAL(R.string.company_arrival),
-    ALL_ARRIVALS(R.string.all_arivals),
+    ALL_ARRIVALS(R.string.show_all_arrival),
+    PROFITS(R.string.profits),
 }
 
 enum class CompanyAccountType(@StringRes val stringRes: Int) {

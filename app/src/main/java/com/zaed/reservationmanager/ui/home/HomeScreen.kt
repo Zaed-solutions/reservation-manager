@@ -122,9 +122,9 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     HomeScreenContent(
         reservations = state.displayedReservations,
         customers = state.displayedCustomers,
@@ -218,7 +218,7 @@ fun HomeScreen(
                                     FileUtil.openFile(
                                         context = context,
                                         file = file,
-                                        type = "application/pdf",
+                                        type = "text/csv",
                                         onFailure = {
                                             scope.launch{
                                                 snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
@@ -542,7 +542,7 @@ fun HomeScreenContent(
             )
         },
         floatingActionButton = {
-            val fabItems = remember{
+            val fabItems = remember {
                 listOf(
                     FabItem(
                         icon = Icons.AutoMirrored.Filled.Assignment,
@@ -586,7 +586,7 @@ fun HomeScreenContent(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = {
-                    val data =if(it.matches(Regex("[+\\d\\s]+"))) it.replace(" ","") else it
+                    val data = if (it.matches(Regex("[+\\d\\s]+"))) it.replace(" ", "") else it
                     onAction(HomeUiAction.UpdateSearchQuery(data))
                 },
                 placeholder = { Text(stringResource(R.string.smart_search)) },
@@ -696,13 +696,14 @@ fun HomeScreenContent(
                                     )
                                 }
                             }
-                            AnimatedVisibility(selectedCountry!="" && customers.isNotEmpty()) {
+                            AnimatedVisibility(selectedCountry != "" && customers.isNotEmpty()) {
                                 Text(
                                     text = stringResource(
                                         R.string.customers_count_is_customers,
-                                        NumberFormat.getInstance(Locale.getDefault()).format(customers.size)
+                                        NumberFormat.getInstance(Locale.getDefault())
+                                            .format(customers.size)
                                     ),
-                                    modifier = Modifier.padding(start = 8.dp,top = 8.dp)
+                                    modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                                 )
                             }
                             CustomerListWithTitle(
@@ -737,7 +738,7 @@ fun HomeScreenContent(
                     }
 
                     0 -> {
-                        val totalEarnings = remember(reservations){
+                        val totalEarnings = remember(reservations) {
                             reservations.sumOf { it.tourismRidePrice - it.travelRidePrice }
                         }
                         Column(
@@ -770,7 +771,7 @@ fun HomeScreenContent(
                                     ),
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
-                            } else if(selectedTimeFilter !is TimeFilter.TodayOnwards && selectedTimeFilter !is TimeFilter.All){
+                            } else if (selectedTimeFilter !is TimeFilter.TodayOnwards && selectedTimeFilter !is TimeFilter.All) {
                                 Text(
                                     text = stringResource(
                                         R.string.selected_date_place,
@@ -779,15 +780,20 @@ fun HomeScreenContent(
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
-                            if(selectedTimeFilter !is TimeFilter.All){
+                            if (selectedTimeFilter !is TimeFilter.All) {
                                 Text(
-                                    text  = stringResource(
+                                    text = stringResource(
                                         R.string.reservation_count_total_earnings,
-                                        NumberFormat.getInstance(Locale.getDefault()).format(reservations.size),
-                                        context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(totalEarnings))
+                                        NumberFormat.getInstance(Locale.getDefault())
+                                            .format(reservations.size),
+                                        context.getString(
+                                            R.string.sar,
+                                            NumberFormat.getInstance(Locale.getDefault())
+                                                .format(totalEarnings)
+                                        )
                                     ),
 
-                                )
+                                    )
                             }
 
                             ReservationsList(
@@ -831,7 +837,7 @@ fun HomeScreenContent(
                                 onSendConfirmationToCustomer = { reservationId: String ->
                                     onAction(HomeUiAction.SendConfirmationToClient(reservationId))
                                 },
-                                onSendThanksMessageToCustomer =  {
+                                onSendThanksMessageToCustomer = {
                                     onAction(HomeUiAction.SendThanksMessageToCustomer(it))
                                 }
                             )
@@ -970,7 +976,9 @@ fun HomeScreenContent(
                                         customerId = selectedItemId,
                                         onShowMessage = { isDeleted ->
                                             snackbarHostState.showSnackbarWithDuration(
-                                                message = if (isDeleted) context.getString(R.string.customer_deleted_successfully) else context.getString(R.string.customer_has_reservations_and_cannot_be_deleted),
+                                                message = if (isDeleted) context.getString(R.string.customer_deleted_successfully) else context.getString(
+                                                    R.string.customer_has_reservations_and_cannot_be_deleted
+                                                ),
                                                 durationMillis = 1500L,
                                                 scope = scope
                                             )

@@ -409,7 +409,7 @@ object SheetUtil {
             if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
                 val summaryRowData = listOf(
                     "",
-                    " عدد التسجيلات :${reservations.size}",
+                    " عدد السجلات :${reservations.size}",
                     "",
                     "",
                     "",
@@ -467,6 +467,300 @@ object SheetUtil {
                                 currentY + cellHeight,
                                 borderPaint
                             )
+                        }
+
+                    }
+            }
+
+            val footer = " صفحة $currentPage"
+            canvas.drawText(footer, (pageWidth / 2).toFloat(), pageHeight - 25f, footerPaint)
+
+
+            // Finish the current page
+            pdfDocument.finishPage(page)
+            currentPage++
+        }
+
+        // Save the PDF
+        val filePath = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+            "$fileName  ${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())}.pdf"
+        )
+        pdfDocument.writeTo(FileOutputStream(filePath))
+        pdfDocument.close()
+
+        // Notify user
+        println("PDF report generated successfully at: $filePath")
+        return filePath // Return the generated file
+    }
+    fun generatePaginatedArabicPdfReportForProfits(
+        context: Context,
+        reservations: List<Reservation>,
+        fileName: String = "تقرير الارباح",
+        title : String = "تقرير",
+    ): File? {
+        // Initialize the PDF document
+        val pdfDocument = PdfDocument()
+        val headers: List<String> = listOf(
+            "#",
+            "اسم الضيف",
+            "التاريخ",
+            "الوقت",
+            "الحركة",
+            "السيارة",
+            "السعر",
+            "الربح"
+        )
+        // Define page configuration
+        val pageWidth = 842 //842 A4 width in points
+        val pageHeight = 595 //595 A4 height in points
+        val cellHeight = 20f
+        val fontSize = 12f
+        val titleFontSize = 16f
+
+        val paint = Paint()
+        paint.textSize = fontSize
+        paint.textAlign = Paint.Align.CENTER
+        paint.isAntiAlias = true
+
+        val headerPaint = Paint()
+        headerPaint.textSize = fontSize
+        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
+        headerPaint.textAlign = Paint.Align.CENTER
+
+        val footerPaint = Paint()
+        footerPaint.textSize = fontSize
+        footerPaint.textAlign = Paint.Align.CENTER
+        footerPaint.color = android.graphics.Color.DKGRAY
+
+        val titlePaint = Paint()
+        titlePaint.textSize = titleFontSize
+        titlePaint.textAlign = Paint.Align.CENTER
+        titlePaint.isFakeBoldText = true
+
+        val companyNamePaint = Paint()
+        companyNamePaint.textSize = fontSize
+        companyNamePaint.textAlign = Paint.Align.LEFT
+        companyNamePaint.isFakeBoldText = true
+
+        val borderPaint = Paint()
+        borderPaint.style = Paint.Style.STROKE
+        borderPaint.strokeWidth = 1f
+
+        val blackBackground = Paint()
+        blackBackground.style = Paint.Style.FILL
+        blackBackground.color = android.graphics.Color.LTGRAY
+
+        // Define column positions and widths
+        val columnWidths = listOf(
+            30f,  // #
+            100f,  // اسم الضيف
+            90f,  // التاريخ
+            50f,  // الوقت
+            60f,  // نوع الحركة
+            50f,  // نوع السيارة
+            50f,  // السعر
+            50f   //الربح
+        )
+        // Calculate the total width of the columns
+        val totalColumnsWidth = columnWidths.sum()
+
+        // Calculate the start position for the columns to center them on the page
+        val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
+
+        // Create column start positions relative to the startXOffset
+        val columnStartPositions =
+            columnWidths.runningFold(startXOffset) { acc, width -> acc - width }
+
+        val maxRowsPerPage = ((pageHeight - 140) / cellHeight).toInt()
+
+        var currentPage = 1
+        var currentIndex = 0
+
+        // Track the totals for the last three columns
+        val totalProfit = reservations.sumOf { it.tourismRidePrice-it.travelRidePrice }
+
+        while (currentIndex < reservations.size) {
+            // Start a new page
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, currentPage).create()
+            val page = pdfDocument.startPage(pageInfo)
+            val canvas: Canvas = page.canvas
+
+            // Draw Title
+            canvas.drawText(
+                title,
+                (pageWidth / 2).toFloat(),
+                50f,
+                titlePaint
+            )
+
+            // Draw Header Row
+            var currentY = 70f
+            columnStartPositions.zip(columnWidths).forEachIndexed { index, (startX, width) ->
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    blackBackground
+                )
+                canvas.drawText(
+                    headers[index],
+                    startX - (width / 2),
+                    currentY + (cellHeight / 2) + 4,
+                    headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
+                )
+            }
+            currentY += cellHeight
+
+            // Draw Data Rows
+            for (i in 0 until maxRowsPerPage) {
+                if (currentIndex >= reservations.size) break
+
+                val reservation = reservations[currentIndex]
+                val rowData = listOf(
+                    reservation.reservationNumber.toString(),
+                    reservation.clientName,
+                    reservation.date.formatEpochSecondsToDateNumbers(),
+                    (reservation.time + reservation.date).formatEpochSecondsToTime(),
+                    reservation.type,
+                    reservation.car,
+                    reservation.tourismRidePrice.toString(), // السعر
+                    (reservation.tourismRidePrice - reservation.travelRidePrice).toString()//profit
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        if (columnIndex == 0) {
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        } else {
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+
+                    }
+                currentIndex++
+
+                currentY += cellHeight
+            }
+
+            // Draw Summary Row (Total)
+            if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
+                val summaryRowData = listOf(
+                    "",//index
+                    " عدد السجلات :${reservations.size}", //records number
+                    "",//records number
+                    "",//records number
+                    "اجمالى الربح : ${totalProfit.toString()}",
+                    "",//total profit
+                    "",//total profit
+                    "",//total profit
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        if(columnIndex == 0){
+                            canvas.drawRect(
+                                startX-width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX-width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+                        if (columnIndex == 1) {
+                            canvas.drawRect(
+                                startX-columnWidths[1]-columnWidths[2]-columnWidths[3],
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX-columnWidths[1]-columnWidths[2]-columnWidths[3],
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }  else if(columnIndex==4) {
+                            val leftSpace = columnWidths[4]+columnWidths[5]+columnWidths[6]+columnWidths[7]
+                            canvas.drawRect(
+                                startX - leftSpace,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (leftSpace / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - leftSpace,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }else   {
+                            return@forEachIndexed
                         }
 
                     }
@@ -698,7 +992,7 @@ object SheetUtil {
             if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
                 val summaryRowData = listOf(
                     "",
-                    " عدد التسجيلات :${reservations.size}",
+                    " عدد السجلات :${reservations.size}",
                     "",
                     "",
                     "",
@@ -995,7 +1289,7 @@ object SheetUtil {
             if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
                 val summaryRowData = listOf(
                     "",
-                    " عدد التسجيلات :${reservations.size}",
+                    " عدد السجلات :${reservations.size}",
                     "",
                     "",
                     "",
