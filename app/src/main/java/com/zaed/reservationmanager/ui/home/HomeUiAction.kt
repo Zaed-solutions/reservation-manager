@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.ui.home
 
+import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
@@ -41,4 +42,5 @@ sealed interface HomeUiAction {
     data class ShareFile(val file: File, val type: String) : HomeUiAction
     data class OpenFile(val file: File, val type: String) : HomeUiAction
     data class SaveToContacts (val customer: Customer) : HomeUiAction
+    data class FetchCompaniesHistory (val report: Report, val onSuccess:(List<CompanyHistory>)->Unit) : HomeUiAction
 }

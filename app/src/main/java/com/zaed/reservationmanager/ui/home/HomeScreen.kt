@@ -945,6 +945,14 @@ fun HomeScreenContent(
                                 )
                             )
                         },
+                        onFetchCompaniesHistory = { report, onSuccess ->
+                            onAction(
+                                HomeUiAction.FetchCompaniesHistory(
+                                    report = report,
+                                    onSuccess = onSuccess
+                                )
+                            )
+                        },
                         onShareFile = {
                             onAction(HomeUiAction.ShareFile(it, "application/pdf"))
                         },

@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.repository
 
+import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
 import com.zaed.reservationmanager.ui.home.component.Report
@@ -54,5 +55,9 @@ class ReservationRepositoryImpl(
 
     override fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>> {
         return remoteDataSource.fetchReportReservations(report)
+    }
+
+    override fun fetchCompanyOpenAccount(report: Report): Flow<Result<List<CompanyHistory>>> {
+        return remoteDataSource.fetchCompanyOpenAccount(report)
     }
 }

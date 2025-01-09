@@ -3,8 +3,11 @@ package com.zaed.reservationmanager.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zaed.reservationmanager.data.model.CompanyHistory
+import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.data.model.filterOpenAccountCompanies
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
@@ -194,10 +197,28 @@ class HomeViewModel(
             }
 
             is HomeUiAction.FetchReservationsForReport -> fetchReportReservations(action.report, action.onSuccess)
+            is HomeUiAction.FetchCompaniesHistory -> fetchCompaniesHistory(action.report, action.onSuccess)
 
             else -> Unit
         }
     }
+
+    private fun fetchCompaniesHistory(report: Report, onSuccess: (List<CompanyHistory>) -> Unit) {
+        viewModelScope.launch (Dispatchers.IO){
+            reservationRepo.fetchCompanyOpenAccount(
+                report = report
+            ).collect{result->
+                result.onSuccess { data ->
+                    onSuccess(data.filterOpenAccountCompanies(report.companyType?: CompanyType.TRAVEL))
+                    Log.d("HomeViewModel", "fetchCompaniesHistory: success $data")
+                }.onFailure { e ->
+                    e.printStackTrace()
+                    Log.e("HomeViewModel", "fetchCompaniesHistory: ${e.message}")
+                }
+            }
+        }
+    }
+
 
     private fun fetchReportReservations(report: Report, onSuccess: (List<Reservation>) -> Unit) {
         Log.d("ReportTest", "fetchReportReservations: called in vm: $report")

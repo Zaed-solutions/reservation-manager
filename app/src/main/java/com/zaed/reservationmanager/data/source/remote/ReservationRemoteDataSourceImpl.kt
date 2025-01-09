@@ -1,15 +1,21 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyHistory
+import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.data.model.convertToCompanyHistoryList
 import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class ReservationRemoteDataSourceImpl(
     private val firestore: FirebaseFirestore,
@@ -17,6 +23,8 @@ class ReservationRemoteDataSourceImpl(
 ) : ReservationRemoteDataSource {
     private val TAG = "ReservationRemoteDataSource"
     private val RESERVATION_COLLECTION = "reservations"
+    private val COMPANY_PAYMENT_COLLECTION = "payments"
+    private val COMPANY_COLLECTION = "companies"
     override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
         callbackFlow {
             try {
@@ -251,37 +259,94 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>> = callbackFlow {
-        try{
-            var query: Query = firestore.collection(RESERVATION_COLLECTION)
-            if (report.company.id.isNotBlank()) {
-                if(report.company.type == CompanyType.TOURISM) {
-                    query = query.whereEqualTo("tourismCompanyId", report.company.id)
-                } else {
-                    query = query.whereEqualTo("travelCompanyId", report.company.id)
+    override fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>> =
+        callbackFlow {
+            try {
+                var query: Query = firestore.collection(RESERVATION_COLLECTION)
+                if (report.company.id.isNotBlank()) {
+                    if (report.company.type == CompanyType.TOURISM) {
+                        query = query.whereEqualTo("tourismCompanyId", report.company.id)
+                    } else {
+                        query = query.whereEqualTo("travelCompanyId", report.company.id)
+                    }
                 }
-            }
-            if (report.car.isNotBlank()) {
-                query = query.whereEqualTo("car", report.car)
-            }
-            if (report.fromEpochSeconds != 0L) {
-                query = query.whereGreaterThanOrEqualTo("date", report.fromEpochSeconds)
-            }
-            if(report.toEpochSeconds != 0L) {
-                query = query.whereLessThanOrEqualTo("date", report.toEpochSeconds)
-            }
-            query.addSnapshotListener { task, error ->
-                if (error != null) {
-                    trySend(Result.failure(error))
-                } else {
-                    val reservations = task?.toObjects(Reservation::class.java)
-                    trySend(Result.success(reservations ?: emptyList()))
+                if (report.car.isNotBlank()) {
+                    query = query.whereEqualTo("car", report.car)
                 }
+                if (report.fromEpochSeconds != 0L) {
+                    query = query.whereGreaterThanOrEqualTo("date", report.fromEpochSeconds)
+                }
+                if (report.toEpochSeconds != 0L) {
+                    query = query.whereLessThanOrEqualTo("date", report.toEpochSeconds)
+                }
+                query.addSnapshotListener { task, error ->
+                    if (error != null) {
+                        trySend(Result.failure(error))
+                    } else {
+                        val reservations = task?.toObjects(Reservation::class.java)
+                        trySend(Result.success(reservations ?: emptyList()))
+                    }
+                }
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
             }
-        } catch (e: Exception) {
-            crashlytics.recordException(e)
-            trySend(Result.failure(e))
+            awaitClose { }
         }
-        awaitClose {  }
-    }
+
+    override fun fetchCompanyOpenAccount(report: Report): Flow<Result<List<CompanyHistory>>> =
+        callbackFlow {
+            try {
+                var query: Query = firestore.collection(RESERVATION_COLLECTION)
+
+                if(report.companyType == CompanyType.TRAVEL){
+                    query = query.whereNotEqualTo("travelCompanyId", "")
+                }else{
+                    query = query.whereNotEqualTo("tourismCompanyId", "")
+                }
+                if (report.fromEpochSeconds != 0L) {
+                    query = query.whereGreaterThanOrEqualTo("date", report.fromEpochSeconds)
+                }
+                if (report.toEpochSeconds != 0L) {
+                    query = query.whereLessThanOrEqualTo("date", report.toEpochSeconds)
+                }
+                val result1 = query.get().await()
+
+                var query2:Query = firestore.collection(COMPANY_PAYMENT_COLLECTION)
+                if (report.fromEpochSeconds != 0L) {
+                    query2 = query2.whereGreaterThanOrEqualTo("createdAtEpochSeconds", report.fromEpochSeconds)
+                }
+                if (report.toEpochSeconds != 0L) {
+                    query2 = query2.whereLessThanOrEqualTo("createdAtEpochSeconds", report.toEpochSeconds)
+                }
+                val result2 = query2.get().await()
+                val query3 = firestore.collection(COMPANY_COLLECTION)
+                    .whereEqualTo("type", report.companyType?.name?:"")
+                    .get().await()
+                val reservations = result1?.toObjects(Reservation::class.java)?.groupBy{
+                    if(report.companyType == CompanyType.TRAVEL){
+                        it.travelCompanyId
+                    }else{
+                        it.tourismCompanyId
+                    }
+                }?: emptyMap()
+                val payments = result2?.toObjects(CompanyPayment::class.java)?.groupBy {
+                    it.companyId
+                }?: emptyMap()
+                val companies = query3?.toObjects(Company::class.java)?: emptyList()
+
+                val result = convertToCompanyHistoryList(reservations, payments, companies)
+                    .filter {
+                        it.reservations.isNotEmpty() || it.payments.isNotEmpty()
+                    }
+                Log.d("fetchCompanyOpenAccount", "fetchCompanyOpenAccountc: ${report.companyType}$companies")
+                Log.d("fetchCompanyOpenAccount", "fetchCompanyOpenAccountr: $reservations")
+                Log.d("fetchCompanyOpenAccount", "fetchCompanyOpenAccountp: $payments")
+                trySend(Result.success(result))
+            } catch (e: Exception) {
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+            awaitClose { }
+        }
 }
