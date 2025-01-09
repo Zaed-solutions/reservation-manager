@@ -290,9 +290,9 @@ object SheetUtil {
         var currentIndex = 0
 
         // Track the totals for the last three columns
-        var totalPrice = 0.0
-        var totalCollected = 0.0
-        var totalBalance = 0.0
+        var totalPrice = reservations.sumOf { it.tourismRidePrice }
+        var totalCollected = reservations.sumOf { if (it.travelCollectedAmount == 0) it.tourismCollectedAmount else it.travelCollectedAmount }
+        var totalBalance = totalPrice-totalCollected
 
         while (currentIndex < reservations.size) {
             // Start a new page
@@ -396,11 +396,6 @@ object SheetUtil {
 
                     }
                 currentIndex++
-
-                // Update totals for the last three columns
-                totalPrice += reservation.tourismRidePrice
-                totalCollected += collectedPrice
-                totalBalance += (reservation.tourismRidePrice - collectedPrice)
 
                 currentY += cellHeight
             }
@@ -878,8 +873,8 @@ object SheetUtil {
         var currentIndex = 0
 
         // Track the totals for the last three columns
-        var totalPrice = 0.0
-        var totalCollected = 0.0
+        var totalPrice = reservations.sumOf { it.tourismRidePrice }
+        var totalCollected = reservations.sumOf { if(it.travelCollectedAmount>0) it.travelCollectedAmount else it.tourismCollectedAmount }
 
         while (currentIndex < reservations.size) {
             // Start a new page
@@ -980,10 +975,6 @@ object SheetUtil {
 
                     }
                 currentIndex++
-
-                // Update totals for the last three columns
-                totalPrice += reservation.tourismRidePrice
-                totalCollected += if(reservation.travelCollectedAmount>0) reservation.travelCollectedAmount else reservation.tourismCollectedAmount
 
                 currentY += cellHeight
             }
