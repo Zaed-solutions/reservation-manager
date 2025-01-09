@@ -158,7 +158,11 @@ fun NavigationHost(
             CreateReservationScreen(
                 navigateBack = { navController.popBackStack() },
                 navigateToCustomerDetailsScreen = {
-                    navController.navigate(Route.CustomerDetailsRoute(it))
+                    navController.navigate(Route.CustomerDetailsRoute(it)){
+                        popUpTo(Route.CreateReservationRoute) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

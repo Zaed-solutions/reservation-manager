@@ -291,4 +291,5 @@
     <string name="company_account_report_placeholder">Company Account Report- %1$s - %2$s</string>
     <string name="car_filter">Car Filter</string>
     <string name="save">Save</string>
+    <string name="save_customer">Save Customer</string>
 </resources>

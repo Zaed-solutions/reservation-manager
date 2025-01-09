@@ -38,7 +38,7 @@ class CompanyDetailsViewModel(
         fetchCompany(companyId)
         fetchPayments(companyId)
         fetchCompanyBalance(companyId, companyType)
-        fetchReservations(companyId)
+        fetchReservations(companyId, companyType)
         fetchReservationTypes()
         fetchCarTypes()
         fetchTravelCompanies()
@@ -132,13 +132,18 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun fetchReservations(companyId: String) {
+    private fun fetchReservations(companyId: String, companyType: CompanyType) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservationsByCompanyId(companyId).collect { result ->
                 result.onSuccess { data ->
                     Log.d(TAG, "fetchReservations: success ${data.size}")
                     _uiState.update { oldState ->
-                        oldState.copy(reservations = data.sortedByDescending { it.date + it.time })
+                        oldState.copy(reservations = data.filter{
+                            if(companyType == CompanyType.TRAVEL)
+                                it.travelRidePrice != it.travelCollectedAmount
+                            else
+                                it.tourismRidePrice != it.tourismCollectedAmount
+                        }.sortedByDescending { it.date + it.time })
                     }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchReservations: failed to fetch reservations: ${e.message}")
