@@ -37,12 +37,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.reservation.create.component.convertRangeToString
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.util.SheetUtil
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
 import java.io.File
 
 
@@ -53,10 +56,11 @@ fun CreateReportBottomSheetContent(
     travelCompanies: List<Company> = emptyList(),
     cars: List<String> = emptyList(),
     onFetchReservations: (report: Report, onSuccess: (List<Reservation>) -> Unit) -> Unit,
+    onFetchCompaniesHistory: (report: Report, onSuccess: (List<CompanyHistory>) -> Unit) -> Unit,
     onDismiss: () -> Unit,
     onShareFile: (File) -> Unit,
     onOpenFile: (File) -> Unit,
-    ) {
+) {
     val context = LocalContext.current
     var report by remember {
         mutableStateOf(Report())
@@ -79,9 +83,9 @@ fun CreateReportBottomSheetContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AnimatedContent(isLoading to isLoaded) { state ->
-            when{
+            when {
                 state.first -> {
-                    Box (
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 200.dp),
@@ -90,12 +94,13 @@ fun CreateReportBottomSheetContent(
                         CircularProgressIndicator(modifier = Modifier.size(36.dp))
                     }
                 }
+
                 state.second -> {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        if(generatedFile == null) {
+                        if (generatedFile == null) {
                             Text(
                                 text = stringResource(id = R.string.no_reservations_added),
                                 style = MaterialTheme.typography.headlineMedium,
@@ -115,7 +120,7 @@ fun CreateReportBottomSheetContent(
                             ) {
                                 Button(
                                     modifier = Modifier.weight(1f),
-                                    onClick = { generatedFile?.let{ onShareFile(it) } },
+                                    onClick = { generatedFile?.let { onShareFile(it) } },
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Icon(
@@ -130,7 +135,7 @@ fun CreateReportBottomSheetContent(
                                 Button(
                                     modifier = Modifier.weight(1f),
                                     onClick = {
-                                        generatedFile?.let{ onOpenFile(generatedFile!!)}
+                                        generatedFile?.let { onOpenFile(generatedFile!!) }
                                     },
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
@@ -147,6 +152,7 @@ fun CreateReportBottomSheetContent(
                         }
                     }
                 }
+
                 else -> {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -165,10 +171,20 @@ fun CreateReportBottomSheetContent(
                             onValueChanged = { index ->
                                 report = report.copy(type = ReportType.entries[index])
                                 when (index) {
-                                    2 -> {
+                                    ReportType.ALL_ARRIVALS.ordinal -> {
                                         isSelectCarVisible = true
                                         isExportEnabled = false
                                         isSelectRangeVisible = false
+                                        isSelectCompanyVisible = false
+                                        isSelectCarTypeVisible = false
+                                        isSelectCompanyTypeVisible = false
+                                        isSelectCompanyAccountTypeVisible = false
+                                    }
+
+                                    ReportType.PROFITS.ordinal -> {
+                                        isSelectCarVisible = false
+                                        isExportEnabled = false
+                                        isSelectRangeVisible = true
                                         isSelectCompanyVisible = false
                                         isSelectCarTypeVisible = false
                                         isSelectCompanyTypeVisible = false
@@ -186,23 +202,33 @@ fun CreateReportBottomSheetContent(
                                     }
                                 }
                             },
-                            selectedValue = report.type?.let { stringResource(report.type!!.stringRes) } ?: "",
+                            selectedValue = report.type?.let { stringResource(report.type!!.stringRes) }
+                                ?: "",
                         )
                         AnimatedVisibility(isSelectCompanyTypeVisible) {
                             TitledDropDownTextField(
                                 isClearEnabled = false,
                                 options = CompanyType.entries.map { stringResource(it.displayNameRes) },
-                                selectedValue = report.companyType,
+                                selectedValue = report.companyType?.displayNameRes?.let { stringResource(it) }?:"",
                                 title = stringResource(id = R.string.company_type),
                                 onValueChanged = { index ->
                                     report =
-                                        report.copy(companyType = context.getString(CompanyType.entries[index].displayNameRes))
-                                    isSelectCompanyVisible = true
-                                    isSelectCarVisible = false
-                                    isExportEnabled = false
-                                    isSelectRangeVisible = false
-                                    isSelectCarTypeVisible = false
-                                    isSelectCompanyAccountTypeVisible = false
+                                        report.copy(companyType = CompanyType.entries[index])
+                                    if (report.type == ReportType.OPEN_BALANCE) {
+                                        isSelectCompanyVisible = false
+                                        isSelectCarVisible = false
+                                        isExportEnabled = false
+                                        isSelectRangeVisible = true
+                                        isSelectCarTypeVisible = false
+                                        isSelectCompanyAccountTypeVisible = false
+                                    } else {
+                                        isSelectCompanyVisible = true
+                                        isSelectCarVisible = false
+                                        isExportEnabled = false
+                                        isSelectRangeVisible = false
+                                        isSelectCarTypeVisible = false
+                                        isSelectCompanyAccountTypeVisible = false
+                                    }
                                 },
                             )
                         }
@@ -210,8 +236,8 @@ fun CreateReportBottomSheetContent(
                             TitledDropDownTextField(
                                 isClearEnabled = false,
                                 options = when (report.companyType) {
-                                    context.getString(CompanyType.TOURISM.displayNameRes) -> tourismCompanies.map { it.name }
-                                    context.getString(CompanyType.TRAVEL.displayNameRes) -> travelCompanies.map { it.name }
+                                    CompanyType.TOURISM -> tourismCompanies.map { it.name }
+                                    CompanyType.TRAVEL -> travelCompanies.map { it.name }
                                     else -> emptyList()
                                 },
                                 selectedValue = report.company.name,
@@ -219,15 +245,21 @@ fun CreateReportBottomSheetContent(
                                 onValueChanged = { index ->
                                     report = report.copy(
                                         company = when (report.companyType) {
-                                            context.getString(CompanyType.TOURISM.displayNameRes) -> tourismCompanies[index]
-                                            context.getString(CompanyType.TRAVEL.displayNameRes) -> travelCompanies[index]
+                                            CompanyType.TOURISM -> tourismCompanies[index]
+                                            CompanyType.TRAVEL -> travelCompanies[index]
                                             else -> Company()
                                         }
                                     )
-                                    Log.d("CompanySelection", "CreateReportBottomSheetContent: $report")
+                                    Log.d(
+                                        "CompanySelection",
+                                        "CreateReportBottomSheetContent: $report"
+                                    )
                                     when (report.type) {
                                         ReportType.COMPANY_ACCOUNT -> {
-                                            Log.d("CompanySelection", "CreateReportBottomSheetContent: COMPANY_ACCOUNT")
+                                            Log.d(
+                                                "CompanySelection",
+                                                "CreateReportBottomSheetContent: COMPANY_ACCOUNT"
+                                            )
                                             isSelectCompanyAccountTypeVisible = true
                                             isExportEnabled = false
                                             isSelectRangeVisible = false
@@ -236,7 +268,10 @@ fun CreateReportBottomSheetContent(
                                         }
 
                                         else -> {
-                                            Log.d("CompanySelection", "CreateReportBottomSheetContent: ELSE")
+                                            Log.d(
+                                                "CompanySelection",
+                                                "CreateReportBottomSheetContent: ELSE"
+                                            )
                                             isSelectCarVisible = true
                                             isExportEnabled = false
                                             isSelectRangeVisible = false
@@ -251,7 +286,8 @@ fun CreateReportBottomSheetContent(
                             TitledDropDownTextField(
                                 isClearEnabled = false,
                                 options = CarType.entries.map { stringResource(it.stringRes) },
-                                selectedValue = report.carType?.let { stringResource(it.stringRes) } ?: "",
+                                selectedValue = report.carType?.let { stringResource(it.stringRes) }
+                                    ?: "",
                                 title = stringResource(id = R.string.car_filter),
                                 onValueChanged = { index ->
                                     val selectedType = CarType.entries[index]
@@ -281,7 +317,9 @@ fun CreateReportBottomSheetContent(
                                 },
                             )
                         }
-                        androidx.compose.animation.AnimatedVisibility(isSelectCompanyAccountTypeVisible) {
+                        androidx.compose.animation.AnimatedVisibility(
+                            isSelectCompanyAccountTypeVisible
+                        ) {
                             TitledDropDownTextField(
                                 isClearEnabled = false,
                                 options = CompanyAccountType.entries.map { stringResource(it.stringRes) },
@@ -289,7 +327,8 @@ fun CreateReportBottomSheetContent(
                                     ?: "",
                                 title = stringResource(id = R.string.account_type),
                                 onValueChanged = { index ->
-                                    report = report.copy(companyAccountType = CompanyAccountType.entries[index])
+                                    report =
+                                        report.copy(companyAccountType = CompanyAccountType.entries[index])
                                     isSelectRangeVisible = true
                                 },
                             )
@@ -329,76 +368,123 @@ fun CreateReportBottomSheetContent(
                                 enabled = isExportEnabled,
                                 onClick = {
                                     isLoading = true
-                                    onFetchReservations(
-                                        report
-                                    ) { reservations ->
-                                        if(reservations.isNotEmpty()) {
-                                            when (report.type) {
-                                                ReportType.COMPANY_ACCOUNT -> {
-                                                    val filteredReservation =
-                                                        if (report.companyAccountType == CompanyAccountType.OPEN_BALANCE) {
-                                                            reservations.filter {
-                                                                if (report.company.type == CompanyType.TRAVEL)
-                                                                    it.travelRidePrice != it.travelCollectedAmount
-                                                                else
-                                                                    it.tourismRidePrice != it.tourismCollectedAmount
-                                                            }
-                                                        } else {
-                                                            reservations
-                                                        }
-                                                    SheetUtil.generatePaginatedArabicPdfReportForCompanyAccount(
+                                    when (report.type) {
+                                        ReportType.OPEN_BALANCE->{
+                                            onFetchCompaniesHistory(
+                                                report
+                                            ) { data ->
+                                                if(data.isEmpty()){
+                                                    isLoaded = true
+                                                    isLoading = false
+                                                }else {
+                                                    SheetUtil.generatePaginatedArabicPdfReportForCompanyOpenAccount(
                                                         context = context,
-                                                        reservations = filteredReservation,
+                                                        history = data,
                                                         companyType = report.company.type,
                                                         title = context.getString(
-                                                            R.string.company_account_report_placeholder,
-                                                            report.company.name,
-                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                            R.string.open_account_title,
+                                                            if(report.companyType ==CompanyType.TRAVEL) context.getString(R.string.travel) else context.getString(R.string.tourism),
+                                                            report.fromEpochSeconds.formatEpochSecondsToMonthlyDate(),
+                                                            report.toEpochSeconds.formatEpochSecondsToMonthlyDate(),
                                                         ),
-                                                    )?.let { pdfFile ->
-                                                        isLoaded = true
-                                                        isLoading = false
-                                                        generatedFile = pdfFile
-                                                    }
-                                                }
-
-                                                ReportType.COMPANY_ARRIVAL -> {
-                                                    SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals(
-                                                        context = context,
-                                                        reservations = reservations,
-                                                        companyType = report.company.type,
-                                                        title = context.getString(
-                                                            R.string.company_arrival_report_placeholder,
-                                                            report.company.name,
-                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
-                                                        ),
-                                                    )?.let { pdfFile ->
-                                                        isLoaded = true
-                                                        isLoading = false
-                                                        generatedFile = pdfFile
-                                                    }
-                                                }
-
-                                                else -> {
-                                                    SheetUtil.generatePaginatedArabicPdfReportForAllArrivals(
-                                                        context = context,
-                                                        reservations = reservations,
-                                                        title = context.getString(
-                                                            R.string.all_arrival_report_placeholder,
-                                                            convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
-                                                        ),
-                                                    )?.let { pdfFile ->
+                                                    ).let { pdfFile ->
                                                         isLoaded = true
                                                         isLoading = false
                                                         generatedFile = pdfFile
                                                     }
                                                 }
                                             }
-                                        } else {
-                                            isLoaded = true
-                                            isLoading = false
+                                        }
+                                        else->{
+                                            onFetchReservations(
+                                                report
+                                            ) { reservations ->
+                                                if (reservations.isNotEmpty()) {
+                                                    when (report.type) {
+                                                        ReportType.COMPANY_ACCOUNT -> {
+                                                            val filteredReservation =
+                                                                if (report.companyAccountType == CompanyAccountType.OPEN_BALANCE) {
+                                                                    reservations.filter {
+                                                                        if (report.company.type == CompanyType.TRAVEL)
+                                                                            it.travelRidePrice != it.travelCollectedAmount
+                                                                        else
+                                                                            it.tourismRidePrice != it.tourismCollectedAmount
+                                                                    }
+                                                                } else {
+                                                                    reservations
+                                                                }
+                                                            SheetUtil.generatePaginatedArabicPdfReportForCompanyAccount(
+                                                                context = context,
+                                                                reservations = filteredReservation,
+                                                                companyType = report.company.type,
+                                                                title = context.getString(
+                                                                    R.string.company_account_report_placeholder,
+                                                                    report.company.name,
+                                                                    convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                                ),
+                                                            ).let { pdfFile ->
+                                                                isLoaded = true
+                                                                isLoading = false
+                                                                generatedFile = pdfFile
+                                                            }
+                                                        }
+
+                                                        ReportType.COMPANY_ARRIVAL -> {
+                                                            SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals(
+                                                                context = context,
+                                                                reservations = reservations,
+                                                                companyType = report.company.type,
+                                                                title = context.getString(
+                                                                    R.string.company_arrival_report_placeholder,
+                                                                    report.company.name,
+                                                                    convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                                ),
+                                                            )?.let { pdfFile ->
+                                                                isLoaded = true
+                                                                isLoading = false
+                                                                generatedFile = pdfFile
+                                                            }
+                                                        }
+
+                                                        ReportType.PROFITS -> {
+                                                            SheetUtil.generatePaginatedArabicPdfReportForProfits(
+                                                                context = context,
+                                                                reservations = reservations.sortedBy { it.date + it.time },
+                                                                title = context.getString(
+                                                                    R.string.profits_report_placeholder,
+                                                                    report.fromEpochSeconds.formatEpochSecondsToMonthlyDate(),
+                                                                    report.toEpochSeconds.formatEpochSecondsToMonthlyDate()
+                                                                ),
+                                                            )?.let { pdfFile ->
+                                                                isLoaded = true
+                                                                isLoading = false
+                                                                generatedFile = pdfFile
+                                                            }
+                                                        }
+
+                                                        else -> {
+                                                            SheetUtil.generatePaginatedArabicPdfReportForAllArrivals(
+                                                                context = context,
+                                                                reservations = reservations,
+                                                                title = context.getString(
+                                                                    R.string.all_arrival_report_placeholder,
+                                                                    convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                                ),
+                                                            )?.let { pdfFile ->
+                                                                isLoaded = true
+                                                                isLoading = false
+                                                                generatedFile = pdfFile
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    isLoaded = true
+                                                    isLoading = false
+                                                }
+                                            }
                                         }
                                     }
+
                                 },
                                 shape = RoundedCornerShape(12.dp)
                             ) {
@@ -415,7 +501,7 @@ fun CreateReportBottomSheetContent(
 
 data class Report(
     val type: ReportType? = null,
-    val companyType: String = "",
+    val companyType: CompanyType? = null,
     val companyAccountType: CompanyAccountType? = null,
     val company: Company = Company(),
     val carType: CarType? = null,
@@ -427,7 +513,9 @@ data class Report(
 enum class ReportType(@StringRes val stringRes: Int) {
     COMPANY_ACCOUNT(R.string.company_account),
     COMPANY_ARRIVAL(R.string.company_arrival),
-    ALL_ARRIVALS(R.string.all_arivals),
+    ALL_ARRIVALS(R.string.show_all_arrival),
+    PROFITS(R.string.profits),
+    OPEN_BALANCE(R.string.open_balance),
 }
 
 enum class CompanyAccountType(@StringRes val stringRes: Int) {

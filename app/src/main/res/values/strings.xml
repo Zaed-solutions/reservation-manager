@@ -287,9 +287,13 @@
     <string name="share">Share</string>
     <string name="no_apps_found_to_share_file">No apps were found to share this file</string>
     <string name="company_arrival_report_placeholder">Company Arrivals Report- %1$s - %2$s</string>
+    <string name="profits_report_placeholder">"Profit report for the period from %1$s to %2$s"</string>
     <string name="all_arrival_report_placeholder">All Arrivals Report- %1$s</string>
     <string name="company_account_report_placeholder">Company Account Report- %1$s - %2$s</string>
     <string name="car_filter">Car Filter</string>
     <string name="save">Save</string>
     <string name="save_customer">Save Customer</string>
+    <string name="profits">Profits</string>
+    <string name="show_all_arrival">show all arivals</string>
+    <string name="open_account_title">"Open balance report for %1$s companies from %2$s to %3$s"</string>
 </resources>

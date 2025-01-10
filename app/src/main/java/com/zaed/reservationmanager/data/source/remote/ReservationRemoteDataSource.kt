@@ -1,5 +1,6 @@
 package com.zaed.reservationmanager.data.source.remote
 
+import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.flow.Flow
@@ -16,4 +17,5 @@ interface ReservationRemoteDataSource {
     fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>>
     fun getArchivedReservations(): Flow<Result<List<Reservation>>>
     fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>>
+    fun fetchCompanyOpenAccount(report: Report): Flow<Result<List<CompanyHistory>>>
 }

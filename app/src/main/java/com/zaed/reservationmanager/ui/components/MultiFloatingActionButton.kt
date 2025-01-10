@@ -14,20 +14,17 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -187,36 +184,25 @@ fun SmallFloatingActionButtonRow(
     ) { state ->
         if (state == MultiFabState.EXPANDED) 1.0f else 0f
     }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    ExtendedFloatingActionButton(
         modifier = Modifier
-            .alpha(animateFloatAsState((alpha), label = "").value)
-            .scale(animateFloatAsState(targetValue = scale, label = "").value)
-            .clickable {
-                item.onFabItemClicked()
-                stateChange()
-            }
-    ) {
+        .alpha(animateFloatAsState((alpha), label = "").value)
+        .scale(animateFloatAsState(targetValue = scale, label = "").value),
+        onClick = {
+            item.onFabItemClicked()
+            stateChange()
+        },
+        shape = MaterialTheme.shapes.extraLarge) {
         Text(
             text = item.label,
             modifier = Modifier
-                .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
-            color = MaterialTheme.colorScheme.primaryContainer,
+                .padding(end = 16.dp),
         )
-        SmallFloatingActionButton(
-            shape = CircleShape,
-            modifier = Modifier
-                .padding(4.dp),
-            onClick = {
-                item.onFabItemClicked()
-                stateChange()
-            },
-        ) {
-            Icon(
-                imageVector = item.icon,
-                contentDescription = item.label,
-                modifier = Modifier.padding(4.dp)
-            )
-        }
+        Icon(
+            imageVector = item.icon,
+            contentDescription = item.label,
+            modifier = Modifier.padding(4.dp)
+        )
+
     }
 }
