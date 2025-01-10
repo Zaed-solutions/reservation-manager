@@ -493,9 +493,10 @@ object SheetUtil {
         context: Context,
         fileName: String = "تقرير الرصيد المفتوح",
         title: String = "تقرير",
-        companyType: CompanyType = CompanyType.TOURISM,
+        companyType: CompanyType,
         history: List<CompanyHistory>
     ): File {
+        Log.d("SheetUtil", "generatePaginatedArabicPdfReportForCompanyOpenAccount: $companyType")
         // Initialize the PDF document
         val pdfDocument = PdfDocument()
         val headers: List<String> = listOf(
