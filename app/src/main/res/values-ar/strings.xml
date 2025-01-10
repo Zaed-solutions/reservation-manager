@@ -292,6 +292,8 @@
     <string name="car_filter">فلتر السيارة</string>
     <string name="save">حفظ</string>
     <string name="save_customer">حفظ البروفايل</string>
-    <string name="open_account_title">"تقرير الرصيد المفتوح لشركات %1$s من %2$s إلى %3$s"</string>
+    <string name="open_account_title">"تقرير الرصيد المفتوح %1$s من %2$s إلى %3$s"</string>
+    <string name="for_travel_companies">لشركات النقل</string>
+    <string name="for_tourism_companies">للشركات السياحية</string>
 
 </resources>

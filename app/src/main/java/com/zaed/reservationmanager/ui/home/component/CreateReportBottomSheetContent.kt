@@ -384,7 +384,7 @@ fun CreateReportBottomSheetContent(
                                                         companyType = report.companyType?:CompanyType.TOURISM,
                                                         title = context.getString(
                                                             R.string.open_account_title,
-                                                            if(report.companyType ==CompanyType.TRAVEL) context.getString(R.string.travel) else context.getString(R.string.tourism),
+                                                            if(report.companyType ==CompanyType.TRAVEL) context.getString(R.string.for_travel_companies) else context.getString(R.string.for_tourism_companies),
                                                             report.fromEpochSeconds.formatEpochSecondsToMonthlyDate(),
                                                             report.toEpochSeconds.formatEpochSecondsToMonthlyDate(),
                                                         ),
