@@ -301,7 +301,7 @@ class HomeViewModel(
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
                 _uiState.update {
                     it.copy(
-                        displayedCustomers = it.customers.sortedByDescending { customer -> customer.createdAtEpochSeconds },
+                        displayedCustomers = it.customers.sortedBy { customer -> customer.name },
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -313,7 +313,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
-                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
+                }.sortedBy { customer -> customer.name }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers
@@ -328,7 +328,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
-                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
+                }.sortedBy { customer -> customer.name }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,
@@ -343,7 +343,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
-                }.sortedByDescending { customer -> customer.createdAtEpochSeconds }
+                }.sortedBy { customer -> customer.name }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedCustomers = filteredCustomers,

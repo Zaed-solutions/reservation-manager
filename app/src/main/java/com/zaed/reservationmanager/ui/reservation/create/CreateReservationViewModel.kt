@@ -308,7 +308,8 @@ class CreateReservationViewModel(
                                 customer = it.customer.copy(
                                     id = data.second
                                 ),
-                                isFinished = true
+                                isLoading = false,
+                                isNewCustomer = false
                             )
                         }
                     } else {

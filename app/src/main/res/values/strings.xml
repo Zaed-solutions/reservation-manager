@@ -296,4 +296,6 @@
     <string name="profits">Profits</string>
     <string name="show_all_arrival">show all arivals</string>
     <string name="open_account_title">"Open balance report for %1$s companies from %2$s to %3$s"</string>
+    <string name="for_travel_companies">for travel companies</string>
+    <string name="for_tourism_companies">for tourism companies</string>
 </resources>
