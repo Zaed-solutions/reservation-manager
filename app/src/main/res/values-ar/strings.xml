@@ -283,7 +283,7 @@
     <string name="share">مشاركة</string>
     <string name="no_apps_found_to_share_file">لم يتم العثور على تطبيقات لمشاركة هذا الملف</string>
     <string name="company_arrival_report_placeholder">تقرير الوصول للشركة - %1$s - %2$s</string>
-    <string name="profits_report_placeholder">تقرير الارباح - %1$s</string>
+    <string name="profits_report_placeholder">"تقرير الأرباح للفترة من %1$s إلى %2$s"</string>
     <string name="all_arrival_report_placeholder">تقرير جميع الوصولات - %1$s</string>
     <string name="company_account_report_placeholder">تقرير حساب الشركة - %1$s - %2$s</string>
     <string name="phone_number_1_is_already_in_use">رقم الجوال 1 مستخدم بالفعل</string>
@@ -292,5 +292,6 @@
     <string name="car_filter">فلتر السيارة</string>
     <string name="save">حفظ</string>
     <string name="save_customer">حفظ البروفايل</string>
+    <string name="open_account_title">"تقرير الرصيد المفتوح لشركات %1$s من %2$s إلى %3$s"</string>
 
 </resources>

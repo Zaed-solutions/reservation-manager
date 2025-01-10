@@ -44,6 +44,8 @@ import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.reservation.create.component.convertRangeToString
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.util.SheetUtil
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToDate
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
 import java.io.File
 
 
@@ -379,7 +381,12 @@ fun CreateReportBottomSheetContent(
                                                         context = context,
                                                         history = data,
                                                         companyType = report.company.type,
-                                                        title = "تقرير الرصيد المفتوح",
+                                                        title = context.getString(
+                                                            R.string.open_account_title,
+                                                            if(report.companyType ==CompanyType.TRAVEL) context.getString(R.string.travel) else context.getString(R.string.tourism),
+                                                            report.fromEpochSeconds.formatEpochSecondsToMonthlyDate(),
+                                                            report.toEpochSeconds.formatEpochSecondsToMonthlyDate(),
+                                                        ),
                                                     ).let { pdfFile ->
                                                         isLoaded = true
                                                         isLoading = false
@@ -445,7 +452,8 @@ fun CreateReportBottomSheetContent(
                                                                 reservations = reservations.sortedBy { it.date + it.time },
                                                                 title = context.getString(
                                                                     R.string.profits_report_placeholder,
-                                                                    convertRangeToString(report.fromEpochSeconds to report.toEpochSeconds)
+                                                                    report.fromEpochSeconds.formatEpochSecondsToMonthlyDate(),
+                                                                    report.toEpochSeconds.formatEpochSecondsToMonthlyDate()
                                                                 ),
                                                             )?.let { pdfFile ->
                                                                 isLoaded = true
