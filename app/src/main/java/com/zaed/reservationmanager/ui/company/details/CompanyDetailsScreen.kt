@@ -527,8 +527,8 @@ fun CompanyDetailsScreenContent(
                             onArchiveReservation = { reservationId ->
                                 onAction(CompanyDetailsUiAction.ArchiveReservation(reservationId))
                             },
-                            onDeleteReservation = {
-                                selectedReservation = Reservation(id = it)
+                            onDeleteReservation = { reservation ->
+                                selectedReservation = reservation
                                 isReservation = true
                                 isConfirmDeleteDialogVisible = true
                             },
@@ -563,6 +563,26 @@ fun CompanyDetailsScreenContent(
                                 onAction(
                                     CompanyDetailsUiAction.SendThanksMessageToCustomer(it)
                                 )
+                            },
+                            onAddSecondaryReservation = { mainReservation ->
+                                selectedReservation =
+                                    Reservation(
+                                        reservationNumber = mainReservation.reservationNumber,
+                                        mainReservation = false,
+                                        mainReservationId = mainReservation.id,
+                                        tourismCompany = mainReservation.tourismCompany,
+                                        tourismCompanyId = mainReservation.tourismCompanyId,
+                                        tourismCompanyPhone = mainReservation.tourismCompanyPhone,
+                                        tourismEmployeeId = mainReservation.tourismEmployeeId,
+                                        tourismEmployee = mainReservation.tourismEmployee,
+                                        tourismEmployeePhone = mainReservation.tourismEmployeePhone,
+                                        flightNumber = mainReservation.flightNumber,
+                                        clientId = mainReservation.clientId,
+                                        clientName = mainReservation.clientName,
+                                        clientPhone = mainReservation.clientPhone,
+                                        clientCountry = mainReservation.clientCountry,
+                                    )
+                                isEditReservationBottomSheetVisible = true
                             }
                         )
                     }
@@ -609,19 +629,35 @@ fun CompanyDetailsScreenContent(
                         onSaveReservation = {
                             isEditReservationBottomSheetVisible = false
                             onAction(
-                                CompanyDetailsUiAction.OnEditReservation(
-                                    reservation = it,
-                                    onSuccess = {
-                                        snackBarHostState.showSnackbarWithDuration(
-                                            message = context.getString(R.string.reservation_updated_successfully),
-                                            durationMillis = 1500L,
-                                            scope = scope,
-                                            onFinished = {
-                                                selectedReservation = Reservation()
-                                            }
-                                        )
-                                    }
-                                )
+                                if(selectedReservation.id.isNotBlank()){
+                                    CompanyDetailsUiAction.OnEditReservation(
+                                        reservation = it,
+                                        onSuccess = {
+                                            snackBarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_updated_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    CompanyDetailsUiAction.OnAddReservation(
+                                        reservation = it,
+                                        onSuccess = {
+                                            snackBarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_added_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
                             )
                         },
                         onDismiss = {
@@ -703,7 +739,7 @@ fun CompanyDetailsScreenContent(
                             isConfirmDeleteDialogVisible = false
                             onAction(
                                 if(isReservation){
-                                    CompanyDetailsUiAction.OnDeleteReservation(selectedReservation.id)
+                                    CompanyDetailsUiAction.OnDeleteReservation(selectedReservation)
                                 } else {
                                     CompanyDetailsUiAction.OnDeletePayment(
                                         paymentId = selectedPayment.id,

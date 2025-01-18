@@ -624,7 +624,12 @@ object SheetUtil {
                 if (currentIndex >= history.size) break
 
                 val currentHistory = history[currentIndex]
-                val ridePrice = currentHistory.reservations.sumOf { if(companyType ==CompanyType.TOURISM) it.tourismRidePrice else it.travelRidePrice }
+                val ridePrice = currentHistory.reservations.sumOf {
+                    if(companyType ==CompanyType.TOURISM)
+                        it.tourismRidePrice
+                    else
+                        it.travelRidePrice
+                }
                 val collectedPrice = currentHistory.reservations.sumOf { if(companyType ==CompanyType.TOURISM) it.tourismCollectedAmount else it.travelCollectedAmount }
                 val payments = currentHistory.payments.sumOf { it.amount }.toInt()
                 val balance = ridePrice - collectedPrice-payments

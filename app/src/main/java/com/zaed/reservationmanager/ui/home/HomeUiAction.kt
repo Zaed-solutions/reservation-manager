@@ -12,14 +12,14 @@ sealed interface HomeUiAction {
     data object ShowNavDrawer : HomeUiAction
     data object ExportReservationsAsCsv : HomeUiAction
     data object ExportCustomersAsCsv : HomeUiAction
-    data object AddReservation : HomeUiAction
+    data object AddReservationClicked : HomeUiAction
     data object AddCustomer : HomeUiAction
     data class OnDriverInfoSent(val reservationId: String) : HomeUiAction
     data class ArchiveReservation(val reservationId: String) : HomeUiAction
     data class FetchCustomerForUpdating(val customerId: String, val onSuccess: () -> Unit = {}) : HomeUiAction
     data class OnConfirmationSentToClient(val reservationId: String) : HomeUiAction
     data class OnInfoSentToTravelCompany(val reservationId: String) : HomeUiAction
-    data class OnDeleteReservation(val reservationId: String) : HomeUiAction
+    data class OnDeleteReservation(val reservation: Reservation) : HomeUiAction
     data class OnDeleteCustomer(val customerId: String, val onShowMessage: (Boolean) -> Unit ) : HomeUiAction
     data class UpdateSearchQuery(val query: String) : HomeUiAction
     data class UpdateTimeFilter(val timeFilter: TimeFilter) : HomeUiAction
@@ -37,6 +37,7 @@ sealed interface HomeUiAction {
     data class FetchEmployees(val companyId: String) : HomeUiAction
     data class FetchDrivers(val companyId: String) : HomeUiAction
     data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
+    data class AddReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
     data class AddCustomers (val customers: List<Customer>) : HomeUiAction
     data class FetchReservationsForReport(val report: Report, val onSuccess: (List<Reservation>) -> Unit) : HomeUiAction
     data class ShareFile(val file: File, val type: String) : HomeUiAction

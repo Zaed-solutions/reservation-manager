@@ -3,6 +3,7 @@ package com.zaed.reservationmanager.ui.home.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -78,6 +80,8 @@ fun ReservationItem(
     isActionsVisible: Boolean = true,
     isEditable: Boolean = true,
     isEditProfileEnabled: Boolean = true,
+    onAddSecondaryReservation: () -> Unit = {},
+    onViewMainReservation: () -> Unit = {}
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -311,7 +315,20 @@ fun ReservationItem(
                         value = "#${reservation.reservationNumber}",
                         onClick = {
                             onReservationClicked()
-                        }
+                        },
+                        textAlign = if(reservation.mainReservation) TextAlign.Start else TextAlign.End,
+                        trailingContent = if(reservation.mainReservation){
+                            {
+                                Text(
+                                    text = stringResource(R.string.add_ride),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.clickable {
+                                        onAddSecondaryReservation()
+                                    }
+                                )
+                            }
+                        } else null
                     )
 
                     DetailRow(
@@ -373,6 +390,28 @@ fun ReservationItem(
                         label = stringResource(R.string.people_count),
                         value = reservation.peopleCount.toString()
                     )
+                    DetailRow(
+                        label = stringResource(R.string.total_rides_count),
+                        value = reservation.numberOfRides.toString()
+                    )
+                    DetailRow(
+                        label = stringResource(R.string.total_reservation_price),
+                        value = stringResource(
+                            R.string.sar,
+                            NumberFormat.getInstance(Locale.getDefault())
+                                .format(reservation.totalRidesPrice)
+                        ),
+                    )
+                    if(!reservation.mainReservation){
+                        Text(
+                            text = stringResource(R.string.view_main_reservation),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable {
+                                onViewMainReservation()
+                            }
+                        )
+                    }
 
                     DetailRow(
                         label = stringResource(R.string.flight_number),

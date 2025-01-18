@@ -10,7 +10,7 @@ interface ReservationRemoteDataSource {
     fun createReservations(reservations: List<Reservation>): Flow<Result<Unit>>
     fun getReservationById(id: String): Flow<Result<Reservation>>
     fun getReservationsByCustomerId(customerId: String): Flow<Result<List<Reservation>>>
-    fun deleteReservation(id: String): Flow<Result<Boolean>>
+    fun deleteReservation(reservation: Reservation): Flow<Result<Boolean>>
     fun getReservations(): Flow<Result<List<Reservation>>>
     fun updateReservation(reservationId: String, updates: Map<String, Any>): Flow<Result<Boolean>>
     fun updateReservation(reservation: Reservation): Flow<Result<Boolean>>

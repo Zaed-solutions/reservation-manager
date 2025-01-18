@@ -298,4 +298,8 @@
     <string name="open_account_title">"Open balance report for %1$s companies from %2$s to %3$s"</string>
     <string name="for_travel_companies">for travel companies</string>
     <string name="for_tourism_companies">for tourism companies</string>
+    <string name="total_rides_count">Total rides count</string>
+    <string name="total_reservation_price">Total reservation price</string>
+    <string name="view_main_reservation">View main reservation</string>
+    <string name="main_reservation_not_in_this_list">Main reservation not in this list</string>
 </resources>

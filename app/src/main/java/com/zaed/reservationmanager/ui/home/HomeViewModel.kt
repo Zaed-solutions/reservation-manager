@@ -135,7 +135,7 @@ class HomeViewModel(
     }
 
     private fun fetchReservations() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.getReservations().collect { results ->
                 results.onSuccess { data ->
                     _uiState.update {
@@ -157,10 +157,15 @@ class HomeViewModel(
                 action.reservationId,
                 mapOf("sentConfirmToCustomer" to true)
             )
+
             is HomeUiAction.AddCustomers -> handleImportedCustomer(action.customers)
 
-            is HomeUiAction.OnDeleteCustomer -> deleteCustomer(action.customerId, action.onShowMessage)
-            is HomeUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
+            is HomeUiAction.OnDeleteCustomer -> deleteCustomer(
+                action.customerId,
+                action.onShowMessage
+            )
+
+            is HomeUiAction.OnDeleteReservation -> deleteReservation(action.reservation)
             is HomeUiAction.OnDriverInfoSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)
@@ -170,6 +175,7 @@ class HomeViewModel(
                 action.reservationId,
                 mapOf("sentToDriverCompany" to true)
             )
+
             is HomeUiAction.ThanksMessageSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentThanksToCustomer" to true)
@@ -179,7 +185,12 @@ class HomeViewModel(
                 countryFilter = action.countryFilter
             )
 
-            is HomeUiAction.UpdateReservation -> updateReservation(action.reservation, action.onSuccess)
+            is HomeUiAction.UpdateReservation -> updateReservation(
+                action.reservation,
+                action.onSuccess
+            )
+
+            is HomeUiAction.AddReservation -> addReservation(action.reservation, action.onSuccess)
             is HomeUiAction.UpdateSearchQuery -> filterData(
                 searchQuery = action.query
             )
@@ -187,6 +198,7 @@ class HomeViewModel(
             is HomeUiAction.UpdateTimeFilter -> filterData(
                 timeFilter = action.timeFilter,
             )
+
             is HomeUiAction.ArchiveReservation -> {
                 updateReservation(
                     action.reservationId,
@@ -196,20 +208,31 @@ class HomeViewModel(
                 )
             }
 
-            is HomeUiAction.FetchReservationsForReport -> fetchReportReservations(action.report, action.onSuccess)
-            is HomeUiAction.FetchCompaniesHistory -> fetchCompaniesHistory(action.report, action.onSuccess)
+            is HomeUiAction.FetchReservationsForReport -> fetchReportReservations(
+                action.report,
+                action.onSuccess
+            )
+
+            is HomeUiAction.FetchCompaniesHistory -> fetchCompaniesHistory(
+                action.report,
+                action.onSuccess
+            )
 
             else -> Unit
         }
     }
 
     private fun fetchCompaniesHistory(report: Report, onSuccess: (List<CompanyHistory>) -> Unit) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.fetchCompanyOpenAccount(
                 report = report
-            ).collect{result->
+            ).collect { result ->
                 result.onSuccess { data ->
-                    onSuccess(data.filterOpenAccountCompanies(report.companyType?: CompanyType.TRAVEL))
+                    onSuccess(
+                        data.filterOpenAccountCompanies(
+                            report.companyType ?: CompanyType.TRAVEL
+                        )
+                    )
                     Log.d("HomeViewModel", "fetchCompaniesHistory: success $data")
                 }.onFailure { e ->
                     e.printStackTrace()
@@ -222,8 +245,8 @@ class HomeViewModel(
 
     private fun fetchReportReservations(report: Report, onSuccess: (List<Reservation>) -> Unit) {
         Log.d("ReportTest", "fetchReportReservations: called in vm: $report")
-        viewModelScope.launch (Dispatchers.IO){
-            reservationRepo.fetchReportReservations(report).collect{ result ->
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.fetchReportReservations(report).collect { result ->
                 result.onSuccess { data ->
                     Log.d("ReportTest", "fetchReportReservations: success ${data.size}")
                     onSuccess(data)
@@ -240,9 +263,10 @@ class HomeViewModel(
             val existingCustomers = mutableListOf<Customer>()
             val newCustomers = mutableListOf<Customer>()
 
-            customers.forEach {newCustomer ->
+            customers.forEach { newCustomer ->
                 if (uiState.value.customers.any { it.phoneNumber1 == newCustomer.phoneNumber1 }) {
-                    val existingCustomer = uiState.value.customers.first { it.phoneNumber1 == newCustomer.phoneNumber1 }
+                    val existingCustomer =
+                        uiState.value.customers.first { it.phoneNumber1 == newCustomer.phoneNumber1 }
                     existingCustomers.add(newCustomer.copy(id = existingCustomer.id))
                 } else {
                     newCustomers.add(newCustomer)
@@ -251,7 +275,7 @@ class HomeViewModel(
             if (newCustomers.isNotEmpty()) {
                 addCustomers(newCustomers)
             }
-            if(existingCustomers.isNotEmpty()){
+            if (existingCustomers.isNotEmpty()) {
                 updateCustomers(existingCustomers)
             }
         }
@@ -269,6 +293,7 @@ class HomeViewModel(
             }
         }
     }
+
     private fun updateCustomers(customers: List<Customer>) {
         viewModelScope.launch(Dispatchers.IO) {
             customerRepo.updateCustomers(customers).collect { result ->
@@ -287,7 +312,10 @@ class HomeViewModel(
         countryFilter: String = uiState.value.selectedCountry,
         searchQuery: String = uiState.value.searchQuery
     ) {
-        Log.d(TAG, "filterData: timeFilter: $timeFilter, currentSeconds: ${java.time.Instant.now().epochSecond}")
+        Log.d(
+            TAG,
+            "filterData: timeFilter: $timeFilter, currentSeconds: ${java.time.Instant.now().epochSecond}"
+        )
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -297,7 +325,7 @@ class HomeViewModel(
                 )
             }
         }
-        viewModelScope.launch (Dispatchers.Default){
+        viewModelScope.launch(Dispatchers.Default) {
             if (searchQuery.isBlank() && countryFilter.isBlank()) {
                 _uiState.update {
                     it.copy(
@@ -372,14 +400,10 @@ class HomeViewModel(
                 }
             } else if (searchQuery.startsWith("#")) {
                 Log.d(TAG, "filterData: searching for reservation number: $searchQuery")
-                val filteredReservations = mutableListOf<Reservation>().apply{
-                    uiState.value.reservations.firstOrNull { reservation ->
-                        reservation.reservationNumber == (searchQuery.substringAfter("#").toLongOrNull()
-                            ?: -1)
-                    }?.let {
-                       this.add(it)
-                    }
-                }
+                val filteredReservations = uiState.value.reservations.filter { reservation ->
+                    reservation.reservationNumber == (searchQuery.substringAfter("#").toLongOrNull()
+                        ?: -1)
+                }.sortedBy { reservation -> reservation.date + reservation.time }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
@@ -416,14 +440,17 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && matchesFilter(timeFilter, reservation.date)
-                }.sortedBy {  reservation -> reservation.date + reservation.time }
+                }.sortedBy { reservation -> reservation.date + reservation.time }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,
                     )
                 }
             }
-            Log.d(TAG, "filterData: displayedReservations: ${uiState.value.displayedReservations}, timeFilter: $timeFilter")
+            Log.d(
+                TAG,
+                "filterData: displayedReservations: ${uiState.value.displayedReservations}, timeFilter: $timeFilter"
+            )
         }
     }
 
@@ -503,6 +530,20 @@ class HomeViewModel(
         }
     }
 
+    private fun addReservation(reservation: Reservation, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.createReservation(reservation).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "addReservations: success")
+                    onSuccess()
+                }.onFailure { e ->
+                    Log.e(TAG, "addReservations: failed to add reservation: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
     private fun updateReservation(reservation: Reservation, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
@@ -517,9 +558,9 @@ class HomeViewModel(
         }
     }
 
-    private fun deleteReservation(reservationId: String) {
-        viewModelScope.launch (Dispatchers.IO){
-            reservationRepo.deleteReservation(reservationId).collect {
+    private fun deleteReservation(reservation: Reservation) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.deleteReservation(reservation).collect {
                 it.onSuccess {
                     Log.d("DisplayReservationViewModel", "onDeleteReservation: success")
                 }.onFailure {

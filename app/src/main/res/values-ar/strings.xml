@@ -123,7 +123,7 @@
     <string name="customer_country_is_required">بلد العميل مطلوبة</string>
     <string name="travel_no">رقم الرحلة</string>
     <string name="tourist_company">شركة سياحة</string>
-    <string name="add_ride">إضافة حركة</string>
+    <string name="add_ride">إضافة مشوار</string>
     <string name="fill_all_required_fields_to_add_ride">يرجى تعبئة جميع الحقول المطلوبة لإضافة حركة</string>
     <string name="tourism_employee_is_required">موظف السياحة مطلوب</string>
     <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
@@ -295,5 +295,8 @@
     <string name="open_account_title">"تقرير الرصيد المفتوح %1$s من %2$s إلى %3$s"</string>
     <string name="for_travel_companies">لشركات النقل</string>
     <string name="for_tourism_companies">للشركات السياحية</string>
+    <string name="total_rides_count">مجموع عدد الحركات</string>
+    <string name="total_reservation_price">إجمالي قيمة الحجز</string>
+    <string name="view_main_reservation">عرض الحجز الرئيسي</string>
 
 </resources>

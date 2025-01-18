@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.toObject
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.CompanyPayment
@@ -12,6 +13,7 @@ import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.convertToCompanyHistoryList
 import com.zaed.reservationmanager.ui.home.component.Report
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -28,37 +30,83 @@ class ReservationRemoteDataSourceImpl(
     override fun createReservation(reservation: Reservation): Flow<Result<Pair<String, Long>>> =
         callbackFlow {
             try {
-                firestore.collection(RESERVATION_COLLECTION)
-                    .orderBy(
-                        "reservationNumber",
-                        com.google.firebase.firestore.Query.Direction.DESCENDING
-                    )
-                    .limit(1)
-                    .get()
-                    .addOnSuccessListener { doc ->
-                        val reservationNumber = if (!doc.isEmpty) {
-                            doc.documents[0].get("reservationNumber") as Long
-                        } else {
-                            0
-                        }
-                        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
-                        reservationRef.set(
-                            reservation.copy(
-                                id = reservationRef.id,
-                                reservationNumber = reservationNumber + 1
-                            )
-                        ).addOnSuccessListener {
-                            trySend(Result.success(reservationRef.id to (reservationNumber + 1)))
-                        }.addOnFailureListener {
-                            trySend(Result.failure(it))
-                        }
-                    }
+                if(reservation.mainReservation){
+                    createMainReservation(reservation)
+                } else {
+                    createSecondaryReservation(reservation)
+                }
             } catch (e: Exception) {
                 crashlytics.recordException(e)
                 trySend(Result.failure(e))
             }
             awaitClose { }
         }
+
+    private suspend fun ProducerScope<Result<Pair<String, Long>>>.createSecondaryReservation(reservation: Reservation) {
+        val batch = firestore.batch()
+        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
+        val mainReservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.mainReservationId)
+        var mainReservation = mainReservationRef.get().await().toObject(Reservation::class.java)!!
+        mainReservation = mainReservation.copy(
+            totalRidesPrice = (if(mainReservation.totalRidesPrice == 0) mainReservation.tourismRidePrice else mainReservation.totalRidesPrice) + reservation.tourismRidePrice, numberOfRides = mainReservation.numberOfRides + 1)
+        val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.mainReservationId).get().await().toObjects(Reservation::class.java)
+        secondaryReservations.forEach {
+            batch.set(
+                firestore
+                    .collection(RESERVATION_COLLECTION)
+                    .document(it.id),
+                it.copy(
+                    totalRidesPrice = mainReservation.totalRidesPrice,
+                    numberOfRides = mainReservation.numberOfRides
+                )
+            )
+        }
+        batch.set(mainReservationRef, mainReservation)
+        batch.set(reservationRef, reservation.copy(
+            id = reservationRef.id,
+            numberOfRides = mainReservation.numberOfRides,
+            reservationNumber = mainReservation.reservationNumber,
+            totalRidesPrice = mainReservation.totalRidesPrice
+            )
+        )
+        batch.commit().addOnSuccessListener {
+            trySend(Result.success(reservationRef.id to mainReservation.reservationNumber))
+        }.addOnFailureListener {e ->
+            crashlytics.recordException(e)
+            trySend(Result.failure(e))
+        }
+    }
+
+    private fun ProducerScope<Result<Pair<String, Long>>>.createMainReservation(
+        reservation: Reservation
+    ) {
+        firestore.collection(RESERVATION_COLLECTION)
+            .orderBy(
+                "reservationNumber",
+                Query.Direction.DESCENDING
+            )
+            .limit(1)
+            .get()
+            .addOnSuccessListener { doc ->
+                val reservationNumber = if (!doc.isEmpty) {
+                    doc.documents[0].get("reservationNumber") as Long
+                } else {
+                    0
+                }
+                val reservationRef = firestore.collection(RESERVATION_COLLECTION).document()
+                reservationRef.set(
+                    reservation.copy(
+                        id = reservationRef.id,
+                        reservationNumber = reservationNumber + 1
+                    )
+                ).addOnSuccessListener {
+                    trySend(Result.success(reservationRef.id to (reservationNumber + 1)))
+                }.addOnFailureListener { e ->
+                    crashlytics.recordException(e)
+                    trySend(Result.failure(e))
+                }
+            }
+    }
 
     override fun createReservations(reservations: List<Reservation>): Flow<Result<Unit>> =
         callbackFlow {
@@ -91,8 +139,9 @@ class ReservationRemoteDataSourceImpl(
                         }
                         batch.commit().addOnSuccessListener {
                             trySend(Result.success(Unit))
-                        }.addOnFailureListener {
-                            trySend(Result.failure(it))
+                        }.addOnFailureListener {e ->
+                            crashlytics.recordException(e)
+                            trySend(Result.failure(e))
                         }
                     }
             } catch (e: Exception) {
@@ -112,8 +161,9 @@ class ReservationRemoteDataSourceImpl(
                     reservation?.let {
                         trySend(Result.success(reservation))
                     } ?: trySend(Result.failure(Exception("Reservation not found")))
-                }.addOnFailureListener {
-                    trySend(Result.failure(it))
+                }.addOnFailureListener {e ->
+                    crashlytics.recordException(e)
+                    trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -129,6 +179,7 @@ class ReservationRemoteDataSourceImpl(
                     .whereEqualTo("clientId", customerId)
                     .addSnapshotListener { value, error ->
                         if (error != null) {
+                            crashlytics.recordException(error)
                             trySend(Result.failure(error))
                         } else {
                             val reservations =
@@ -150,6 +201,7 @@ class ReservationRemoteDataSourceImpl(
                 .whereNotEqualTo("archived", true)
                 .addSnapshotListener { task, error ->
                     if (error != null) {
+                        crashlytics.recordException(error)
                         trySend(Result.failure(error))
                     } else {
                         val reservations = task?.toObjects(Reservation::class.java)
@@ -163,19 +215,63 @@ class ReservationRemoteDataSourceImpl(
         awaitClose { }
     }
 
-    override fun deleteReservation(id: String): Flow<Result<Boolean>> = callbackFlow {
+    override fun deleteReservation(reservation: Reservation): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(RESERVATION_COLLECTION).document(id).delete()
-                .addOnSuccessListener {
-                    trySend(Result.success(true))
-                }.addOnFailureListener {
-                    trySend(Result.failure(it))
-                }
+            if(reservation.mainReservation){
+                deleteMainReservation(reservation)
+            } else {
+                deleteSecondaryReservation(reservation)
+            }
+            deleteMainReservation(reservation)
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
+    }
+
+    private suspend fun ProducerScope<Result<Boolean>>.deleteSecondaryReservation(reservation: Reservation) {
+        val batch = firestore.batch()
+        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.id)
+        batch.delete(reservationRef)
+        var mainReservation = firestore.collection(RESERVATION_COLLECTION).document(reservation.mainReservationId).get().await().toObject(Reservation::class.java)
+        mainReservation = mainReservation?.copy(
+            numberOfRides = mainReservation.numberOfRides - 1,
+            totalRidesPrice = mainReservation.totalRidesPrice - reservation.tourismRidePrice
+        )
+        batch.set(firestore.collection(RESERVATION_COLLECTION).document(reservation.mainReservationId), mainReservation!!)
+        val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.mainReservationId).get().await().toObjects(Reservation::class.java)
+        secondaryReservations.forEach {
+            batch.set(
+                firestore.collection(RESERVATION_COLLECTION).document(it.id),
+                it.copy(
+                    totalRidesPrice = mainReservation.totalRidesPrice,
+                    numberOfRides = mainReservation.numberOfRides
+                )
+            )
+        }
+        batch.commit().addOnSuccessListener {
+                trySend(Result.success(true))
+            }.addOnFailureListener { e ->
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+    }
+
+    private suspend fun ProducerScope<Result<Boolean>>.deleteMainReservation(reservation: Reservation) {
+        val batch = firestore.batch()
+        val mainReservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.id)
+        batch.delete(mainReservationRef)
+        val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.id).get().await().toObjects(Reservation::class.java)
+        secondaryReservations.forEach { reservation ->
+            batch.delete(firestore.collection(RESERVATION_COLLECTION).document(reservation.id))
+        }
+        batch.commit().addOnSuccessListener {
+                trySend(Result.success(true))
+            }.addOnFailureListener { e ->
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
     }
 
     override fun updateReservation(
@@ -186,8 +282,9 @@ class ReservationRemoteDataSourceImpl(
             firestore.collection(RESERVATION_COLLECTION).document(reservationId).update(updates)
                 .addOnSuccessListener {
                     trySend(Result.success(true))
-                }.addOnFailureListener {
-                    trySend(Result.failure(it))
+                }.addOnFailureListener {e ->
+                    crashlytics.recordException(e)
+                    trySend(Result.failure(e))
                 }
         } catch (e: Exception) {
             crashlytics.recordException(e)
@@ -200,17 +297,89 @@ class ReservationRemoteDataSourceImpl(
         reservation: Reservation
     ): Flow<Result<Boolean>> = callbackFlow {
         try {
-            firestore.collection(RESERVATION_COLLECTION).document(reservation.id).set(reservation)
-                .addOnSuccessListener {
-                    trySend(Result.success(true))
-                }.addOnFailureListener {
-                    trySend(Result.failure(it))
-                }
+            if(reservation.mainReservation){
+                updateMainReservation(reservation)
+            } else {
+                updateSecondaryReservation(reservation)
+            }
         } catch (e: Exception) {
             crashlytics.recordException(e)
             trySend(Result.failure(e))
         }
         awaitClose { }
+    }
+
+    private suspend fun ProducerScope<Result<Boolean>>.updateSecondaryReservation(
+        reservation: Reservation
+    ) {
+        val batch = firestore.batch()
+        val reservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.id)
+        val oldReservation = reservationRef.get().await().toObject(Reservation::class.java)
+        if(reservation.tourismRidePrice != oldReservation?.tourismRidePrice){
+            val mainReservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.mainReservationId)
+            var mainReservation = mainReservationRef.get().await().toObject(Reservation::class.java)
+            mainReservation = mainReservation?.copy(
+                totalRidesPrice = mainReservation.totalRidesPrice - oldReservation!!.tourismRidePrice + reservation.tourismRidePrice
+            )
+            batch.set(mainReservationRef, mainReservation!!)
+            val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.mainReservationId).get().await().toObjects(Reservation::class.java)
+            secondaryReservations.forEach {
+                if(it.id != reservation.id){
+                    batch.set(
+                        firestore.collection(RESERVATION_COLLECTION).document(it.id),
+                        it.copy(
+                            totalRidesPrice = mainReservation.totalRidesPrice
+                        )
+                    )
+                }
+            }
+            batch.set(reservationRef, reservation.copy(totalRidesPrice = mainReservation.totalRidesPrice))
+        } else {
+            batch.set(reservationRef, reservation)
+        }
+        batch.commit().addOnSuccessListener {
+                trySend(Result.success(true))
+            }.addOnFailureListener { e ->
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
+    }
+
+    private suspend fun ProducerScope<Result<Boolean>>.updateMainReservation(
+        reservation: Reservation
+    ) {
+        val batch = firestore.batch()
+        val mainReservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.id)
+        val oldReservation = mainReservationRef.get().await().toObject(Reservation::class.java)
+        if(reservation.tourismRidePrice != oldReservation?.tourismRidePrice || reservation.tourismCompanyId != oldReservation.tourismCompanyId){
+            val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.id).get().await().toObjects(Reservation::class.java)
+            val newReservation: Reservation = reservation.copy(
+                totalRidesPrice = oldReservation!!.totalRidesPrice - oldReservation.tourismRidePrice + reservation.tourismRidePrice,
+            )
+            secondaryReservations.forEach {
+                batch.set(
+                    firestore.collection(RESERVATION_COLLECTION).document(it.id),
+                    it.copy(
+                        totalRidesPrice = newReservation.totalRidesPrice,
+                        tourismCompany = reservation.tourismCompany,
+                        tourismCompanyId = reservation.tourismCompanyId,
+                        tourismCompanyPhone = reservation.tourismCompanyPhone,
+                        tourismEmployee = reservation.tourismEmployee,
+                        tourismEmployeeId = reservation.tourismEmployeeId,
+                        tourismEmployeePhone = reservation.tourismEmployeePhone,
+                    )
+                )
+            }
+            batch.set(mainReservationRef, newReservation)
+        } else {
+            batch.set(mainReservationRef, reservation)
+        }
+        batch.commit().addOnSuccessListener {
+                trySend(Result.success(true))
+            }.addOnFailureListener { e ->
+                crashlytics.recordException(e)
+                trySend(Result.failure(e))
+            }
     }
 
     override fun getReservationsByCompanyId(companyId: String): Flow<Result<List<Reservation>>> =
@@ -225,6 +394,7 @@ class ReservationRemoteDataSourceImpl(
                     )
                     .addSnapshotListener { data, error ->
                         if (error != null) {
+                            crashlytics.recordException(error)
                             trySend(Result.failure(error))
                         } else {
                             val reservations =
@@ -246,6 +416,7 @@ class ReservationRemoteDataSourceImpl(
                 .whereEqualTo("archived", true)
                 .addSnapshotListener { task, error ->
                     if (error != null) {
+                        crashlytics.recordException(error)
                         trySend(Result.failure(error))
                     } else {
                         val reservations = task?.toObjects(Reservation::class.java)
@@ -281,6 +452,7 @@ class ReservationRemoteDataSourceImpl(
                 }
                 query.addSnapshotListener { task, error ->
                     if (error != null) {
+                        crashlytics.recordException(error)
                         trySend(Result.failure(error))
                     } else {
                         val reservations = task?.toObjects(Reservation::class.java)
