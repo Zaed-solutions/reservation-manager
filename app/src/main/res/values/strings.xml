@@ -310,4 +310,5 @@
     <string name="reservations_type">Reservations Type</string>
     <string name="all_secondary_reservations_will_be_deleted_as_well">All Secondary Reservations will be deleted as well</string>
     <string name="customer">Customer</string>
+    <string name="reservations_from">Reservations From</string>
 </resources>

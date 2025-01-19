@@ -307,5 +307,6 @@
     <string name="reservations_type">نوع الحجوزات</string>
     <string name="all_secondary_reservations_will_be_deleted_as_well">كل الحجوزات الفرعية لهذا الحجز سيتم حذفها ايضا</string>
     <string name="customer">العميل</string>
+    <string name="reservations_from">حجوزات الفترة من :</string>
 
 </resources>

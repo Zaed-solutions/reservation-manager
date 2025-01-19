@@ -107,6 +107,7 @@ class CompaniesViewModel(
                 listOf(
                     companyWithBalance.company.name,
                     companyWithBalance.company.country,
+                    companyWithBalance.company.city,
                     companyWithBalance.company.phoneNumber1,
                     companyWithBalance.company.phoneNumber2
                 ).any { value ->
@@ -117,6 +118,7 @@ class CompaniesViewModel(
                 listOf(
                     companyWithBalance.company.name,
                     companyWithBalance.company.country,
+                    companyWithBalance.company.city,
                     companyWithBalance.company.phoneNumber1,
                     companyWithBalance.company.phoneNumber2,
                 ).any { value ->

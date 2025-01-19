@@ -765,13 +765,26 @@ fun HomeScreenContent(
                             )
                             if (selectedTimeFilter is TimeFilter.FixedRange) {
                                 Text(
-                                    text = stringResource(
-                                        R.string.selected_range_place,
-                                        selectedTimeFilter.startDate.formatEpochSecondsToMonthlyDate(),
-                                        selectedTimeFilter.endDate.formatEpochSecondsToMonthlyDate()
-                                    ),
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
+                                            append(stringResource(R.string.reservations_from))
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)){
+                                            append(selectedTimeFilter.startDate.formatEpochSecondsToMonthlyDate())
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
+                                            append(stringResource(R.string.to))
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)){
+                                            append(selectedTimeFilter.endDate.formatEpochSecondsToMonthlyDate())
+                                        }
+                                    }
                                 )
+
                             } else if (selectedTimeFilter !is TimeFilter.TodayOnwards && selectedTimeFilter !is TimeFilter.All) {
                                 Text(
                                     text = buildAnnotatedString {
