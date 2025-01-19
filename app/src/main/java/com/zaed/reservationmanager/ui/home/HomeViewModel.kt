@@ -403,7 +403,10 @@ class HomeViewModel(
                 val filteredReservations = uiState.value.reservations.filter { reservation ->
                     reservation.reservationNumber == (searchQuery.substringAfter("#").toLongOrNull()
                         ?: -1)
-                }.sortedBy { reservation -> reservation.date + reservation.time }
+                }.sortedWith(
+                    compareBy<Reservation> { !it.mainReservation }
+                        .thenBy { it.date + it.time }
+                )
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,

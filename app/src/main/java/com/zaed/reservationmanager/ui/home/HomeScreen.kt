@@ -828,6 +828,7 @@ fun HomeScreenContent(
                                 isHeaderVisible = false,
                                 isAddEnabled = false,
                                 isSendActionsVisible = true,
+                                isViewRelatedEnabled = true,
                                 onDeleteReservation = { reservation ->
                                     isCustomer = false
                                     selectedReservation = reservation
@@ -882,6 +883,9 @@ fun HomeScreenContent(
                                         )
                                     isAddReservationBottomSheetVisible = true
                                 },
+                                onViewRelatedReservations = { reservationNumber ->
+                                    onAction(HomeUiAction.UpdateSearchQuery("#$reservationNumber"))
+                                }
                             )
                         }
                     }
