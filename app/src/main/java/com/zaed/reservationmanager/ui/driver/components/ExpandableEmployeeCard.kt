@@ -75,13 +75,21 @@ fun ExpandableEmployeeCard(
                 Text(
                     text = employee.name.takeIf { it.length <= 15 }
                         ?: "${employee.name.take(15)}...",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = if(isDriver)MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
+                if(isDriver){
+                    Text(
+                        text = employee.city.takeIf { it.length <= 15 }
+                            ?: "${employee.city.take(15)}...",
+                        style = MaterialTheme.typography.titleSmall ,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
                 Text(
                     text = employee.phoneNumber1.takeIf { it.length <= 15 }
                         ?: "${employee.phoneNumber1.take(15)}...",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = if(isDriver)MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .combinedClickable(

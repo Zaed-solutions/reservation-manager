@@ -2,20 +2,15 @@ package com.zaed.reservationmanager.ui.home
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -47,7 +42,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -56,7 +50,6 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,7 +64,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
@@ -101,7 +98,6 @@ import com.zaed.reservationmanager.ui.util.FileUtil
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportCustomersToExcel
 import com.zaed.reservationmanager.ui.util.SheetUtil.exportReservationsToExcel
-import com.zaed.reservationmanager.ui.util.SheetUtil.generatePaginatedArabicPdfReportForCompanyArrivals
 import com.zaed.reservationmanager.ui.util.SheetUtil.importCustomersFromExcel
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMonthlyDate
@@ -180,7 +176,7 @@ fun HomeScreen(
                                         file = file,
                                         type = "text/csv",
                                         onFailure = {
-                                            scope.launch{
+                                            scope.launch {
                                                 snackbarHostState.showSnackbar(context.getString(R.string.no_csv_viewer_found))
                                             }
                                         }
@@ -224,7 +220,7 @@ fun HomeScreen(
                                         file = file,
                                         type = "text/csv",
                                         onFailure = {
-                                            scope.launch{
+                                            scope.launch {
                                                 snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
                                             }
                                         }
@@ -365,14 +361,14 @@ fun HomeScreen(
                     val customer = state.customers.first { it.id == action.customerId }
                     onNavigateToEditCustomer(customer)
                 }
-                
+
                 is HomeUiAction.ShareFile -> {
                     FileUtil.shareFile(
                         context = context,
                         file = action.file,
                         type = action.type,
                         onFailure = {
-                            scope.launch{
+                            scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.no_apps_found_to_share_file))
                             }
                         }
@@ -385,12 +381,13 @@ fun HomeScreen(
                         file = action.file,
                         type = action.type,
                         onFailure = {
-                            scope.launch{
+                            scope.launch {
                                 snackbarHostState.showSnackbar(context.getString(R.string.no_pdf_viewer_found))
                             }
                         }
                     )
                 }
+
                 is HomeUiAction.SaveToContacts -> {
                     PhoneUtil.saveToContacts(
                         context,
@@ -404,7 +401,7 @@ fun HomeScreen(
                 else -> viewModel.handleAction(action)
             }
         },
-        context= context
+        context = context
     )
 }
 
@@ -777,27 +774,49 @@ fun HomeScreenContent(
                                 )
                             } else if (selectedTimeFilter !is TimeFilter.TodayOnwards && selectedTimeFilter !is TimeFilter.All) {
                                 Text(
-                                    text = stringResource(
-                                        R.string.selected_date_place,
-                                        selectedTimeFilter.getDate()
-                                    ),
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(stringResource(R.string.the_reservations) + ":")
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(selectedTimeFilter.getDate())
+                                        }
+                                    },
                                     modifier = Modifier.padding(top = 8.dp)
                                 )
                             }
                             if (selectedTimeFilter !is TimeFilter.All) {
                                 Text(
-                                    text = stringResource(
-                                        R.string.reservation_count_total_earnings,
-                                        NumberFormat.getInstance(Locale.getDefault())
-                                            .format(reservations.size),
-                                        context.getString(
-                                            R.string.sar,
-                                            NumberFormat.getInstance(Locale.getDefault())
-                                                .format(totalEarnings)
-                                        )
-                                    ),
+                                    text = buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(stringResource(R.string.reservations_count))
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(
+                                                NumberFormat.getInstance(Locale.getDefault())
+                                                    .format(reservations.size)
+                                            )
+                                        }
+                                        append(" | ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(stringResource(R.string.total_earnings)+":")
+                                        }
+                                        append(" ")
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(
+                                                NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
+                                                    maximumFractionDigits = 0
+                                                }.format(
+                                                    totalEarnings
+                                                )
 
-                                    )
+                                            )
+                                        }
+                                    },
+                                    modifier = Modifier.padding(top = 8.dp)
+                                )
                             }
 
                             ReservationsList(
@@ -1012,6 +1031,14 @@ fun HomeScreenContent(
 @Preview
 fun CustomerListScreenPreview() {
     ReservationManagerTheme {
-        HomeScreenContent(snackbarHostState = SnackbarHostState())
+        HomeScreenContent(
+            snackbarHostState = SnackbarHostState(),
+            reservations = listOf(
+                Reservation(
+
+                )
+            ),
+            searchQuery = "d"
+        )
     }
 }

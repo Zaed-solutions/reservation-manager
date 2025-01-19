@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,14 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
+import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.CompanyWithBalance
 import com.zaed.reservationmanager.ui.home.component.DetailRow
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpandableCompanyItem(
     modifier: Modifier = Modifier,
-    company: Company = Company(),
+    companyWithBalance: CompanyWithBalance = CompanyWithBalance(),
     onCompanyDetailsClicked: () -> Unit = {},
     onDeleteCompany: () -> Unit = {},
     onEditCompany: () -> Unit = {},
@@ -65,6 +68,7 @@ fun ExpandableCompanyItem(
             targetValue = if (isExpanded) 180f else 0f
         )
     }
+    val company = companyWithBalance.company
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -92,10 +96,24 @@ fun ExpandableCompanyItem(
                         }
                     ),
                 )
-                Text(
-                    text = company.country,
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                if (company.type == CompanyType.TOURISM) {
+                    Text(
+                        text = company.country,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                } else {
+                    Text(
+                        text = company.city,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                TextButton({}) {
+                    Text(
+                        text = NumberFormat.getCurrencyInstance(Locale.getDefault())
+                            .format(companyWithBalance.balance),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column(
@@ -142,7 +160,7 @@ fun ExpandableCompanyItem(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        TextButton (
+                        TextButton(
                             modifier = Modifier.heightIn(min = 0.dp, max = 28.dp),
                             onClick = { onEditCompany() },
                             colors = ButtonDefaults.buttonColors(
@@ -218,13 +236,17 @@ private fun ExpandableCompanyItemPreview() {
     ReservationManagerTheme {
         ExpandableCompanyItem(
             modifier = Modifier.padding(16.dp),
-            company = Company(
-                name = "Company Name",
-                country = "Country",
-                phoneNumber1 = "123456789",
-                faxNumber = "123456789",
-                email = "company-name@test.com"
-            ),
+            companyWithBalance = CompanyWithBalance(
+                Company(
+                    name = "Company Name",
+                    type = CompanyType.TRAVEL,
+                    country = "Country",
+                    city = "p",
+                    phoneNumber1 = "123456789",
+                    faxNumber = "123456789",
+                    email = "company-name@test.com"
+                ), 50
+            )
         )
     }
 }

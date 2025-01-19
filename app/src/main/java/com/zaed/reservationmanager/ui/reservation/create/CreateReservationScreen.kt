@@ -77,6 +77,11 @@ fun CreateReservationScreen(
             )
         }
     }
+    LaunchedEffect (state.isNewCustomer){
+        if(state.isNewCustomer == false){
+            navigateToCustomerDetailsScreen(state.customer.id)
+        }
+    }
     CreateReservationScreenContent(
         snackbarHostState = snackbarHostState,
         reservations = state.reservations,
@@ -187,13 +192,16 @@ private fun CreateReservationScreenContent(
                 onUpdatePhoneNumber = {
                     onAction(CreateReservationUiAction.UpdateCustomerPhone(it))
                 },
+                onUpdatePhoneNumber2 = {
+                    onAction(CreateReservationUiAction.UpdateCustomerPhone2(it))
+                },
                 onUpdateEmail = {
                     onAction(CreateReservationUiAction.UpdateCustomerEmail(it))
                 },
                 error = reservationError,
                 onUpdateNationality = {
                     onAction(CreateReservationUiAction.UpdateCustomerNationality(it))
-                }
+                },
             )
             AnimatedVisibility(isNewCustomer == false) {
                 AddedReservationsList(
