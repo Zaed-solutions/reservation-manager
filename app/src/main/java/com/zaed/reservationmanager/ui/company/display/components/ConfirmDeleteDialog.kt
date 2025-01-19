@@ -21,6 +21,7 @@ import com.zaed.reservationmanager.R
 fun ConfirmDeleteDialog(
     modifier: Modifier = Modifier,
     label: String,
+    subtitle: String = stringResource(R.string.this_action_cannot_be_undone),
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
@@ -35,7 +36,7 @@ fun ConfirmDeleteDialog(
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
-            text = stringResource(R.string.this_action_cannot_be_undone),
+            text = subtitle,
             style = MaterialTheme.typography.bodyMedium,
         )
         Row(
