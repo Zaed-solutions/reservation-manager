@@ -31,10 +31,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -81,7 +79,8 @@ fun ReservationItem(
     isEditable: Boolean = true,
     isEditProfileEnabled: Boolean = true,
     onAddSecondaryReservation: () -> Unit = {},
-    onViewMainReservation: () -> Unit = {}
+    isViewRelatedEnabled: Boolean = false,
+    onViewRelatedReservation: () -> Unit = {}
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -402,13 +401,13 @@ fun ReservationItem(
                                 .format(reservation.totalRidesPrice)
                         ),
                     )
-                    if(!reservation.mainReservation){
+                    if(isViewRelatedEnabled){
                         Text(
                             text = stringResource(R.string.view_main_reservation),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.clickable {
-                                onViewMainReservation()
+                                onViewRelatedReservation()
                             }
                         )
                     }

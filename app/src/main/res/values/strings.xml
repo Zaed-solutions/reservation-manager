@@ -303,7 +303,7 @@
     <string name="total_earning">"total earning: "</string>
     <string name="total_rides_count">Total rides count</string>
     <string name="total_reservation_price">Total reservation price</string>
-    <string name="view_main_reservation">View main reservation</string>
+    <string name="view_main_reservation">View related reservation</string>
     <string name="main_reservation_not_in_this_list">Main reservation not in this list</string>
     <string name="detailed_reservations">Detailed Reservations</string>
     <string name="aggregate_reservations">Aggregate Reservations</string>

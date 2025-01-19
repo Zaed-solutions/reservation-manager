@@ -1,7 +1,6 @@
 package com.zaed.reservationmanager.ui.home.component
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun ReservationsList(
@@ -54,8 +52,10 @@ fun ReservationsList(
     onSendThanksMessageToCustomer: (reservationId: String) -> Unit = {},
     scope: CoroutineScope = rememberCoroutineScope(),
     context: Context = LocalContext.current,
-    onAddSecondaryReservation: (mainReservation: Reservation) -> Unit = {}
-) {
+    onAddSecondaryReservation: (mainReservation: Reservation) -> Unit = {},
+    onViewRelatedReservations:(reservationNumber: Long) -> Unit = {},
+    isViewRelatedEnabled: Boolean = false,
+    ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -141,20 +141,10 @@ fun ReservationsList(
                                 onAddSecondaryReservation = {
                                     onAddSecondaryReservation(reservation)
                                 },
-                                onViewMainReservation = {
-                                    scope.launch {
-                                        val index =reservations.indexOfFirst { it.mainReservation && it.reservationNumber == reservation.reservationNumber }
-                                        if(index != -1) {
-                                            lazyState.scrollToItem(index)
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                context.getString(R.string.main_reservation_not_in_this_list),
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                }
+                                onViewRelatedReservation = {
+                                    onViewRelatedReservations(reservation.reservationNumber)
+                                },
+                                isViewRelatedEnabled = isViewRelatedEnabled
                             )
                         }
                     }
