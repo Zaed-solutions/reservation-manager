@@ -48,7 +48,14 @@ class ReservationRemoteDataSourceImpl(
         val mainReservationRef = firestore.collection(RESERVATION_COLLECTION).document(reservation.mainReservationId)
         var mainReservation = mainReservationRef.get().await().toObject(Reservation::class.java)!!
         mainReservation = mainReservation.copy(
-            totalRidesPrice = (if(mainReservation.totalRidesPrice == 0) mainReservation.tourismRidePrice else mainReservation.totalRidesPrice) + reservation.tourismRidePrice, numberOfRides = mainReservation.numberOfRides + 1)
+            totalRidesPrice = (
+                    if(mainReservation.totalRidesPrice == 0)
+                        mainReservation.tourismRidePrice
+                    else
+                        mainReservation.totalRidesPrice
+                    ) + reservation.tourismRidePrice,
+            numberOfRides = mainReservation.numberOfRides + 1
+        )
         val secondaryReservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("mainReservationId", reservation.mainReservationId).get().await().toObjects(Reservation::class.java)
         secondaryReservations.forEach {
             batch.set(
@@ -62,6 +69,7 @@ class ReservationRemoteDataSourceImpl(
             )
         }
         batch.set(mainReservationRef, mainReservation)
+        Log.d(TAG, "createSecondaryReservation: $mainReservation,,,,,,,,, $reservation")
         batch.set(reservationRef, reservation.copy(
             id = reservationRef.id,
             numberOfRides = mainReservation.numberOfRides,
@@ -97,7 +105,8 @@ class ReservationRemoteDataSourceImpl(
                 reservationRef.set(
                     reservation.copy(
                         id = reservationRef.id,
-                        reservationNumber = reservationNumber + 1
+                        reservationNumber = reservationNumber + 1,
+                        totalRidesPrice = reservation.tourismRidePrice,
                     )
                 ).addOnSuccessListener {
                     trySend(Result.success(reservationRef.id to (reservationNumber + 1)))

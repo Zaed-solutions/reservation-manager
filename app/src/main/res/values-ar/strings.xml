@@ -301,5 +301,9 @@
     <string name="total_rides_count">مجموع عدد الحركات</string>
     <string name="total_reservation_price">إجمالي قيمة الحجز</string>
     <string name="view_main_reservation">عرض الحجز الرئيسي</string>
+    <string name="main_reservation_not_in_this_list">الحجز الرئيسي غير موجود في هذه القائمة</string>
+    <string name="detailed_reservations">حجوزات مفصلة</string>
+    <string name="aggregate_reservations">حجوزات مجمعة</string>
+    <string name="reservations_type">نوع الحجوزات</string>
 
 </resources>
