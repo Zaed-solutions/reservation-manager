@@ -123,7 +123,7 @@ class CustomerDetailsViewModel(
 
     fun handleAction(action: CustomerDetailsUiAction) {
         when (action) {
-            is CustomerDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
+            is CustomerDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservation)
             is CustomerDetailsUiAction.OnAddReservation -> addReservation(action.reservation, action.onSuccess)
             is CustomerDetailsUiAction.OnFetchDrivers -> fetchDrivers(action.companyId)
             is CustomerDetailsUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
@@ -244,9 +244,9 @@ class CustomerDetailsViewModel(
         }
     }
 
-    private fun deleteReservation(reservationId: String) {
+    private fun deleteReservation(reservation: Reservation) {
         viewModelScope.launch(Dispatchers.IO) {
-            reservationRepo.deleteReservation(reservationId).collect { result ->
+            reservationRepo.deleteReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "deleteReservation: success")
                 }.onFailure { e ->

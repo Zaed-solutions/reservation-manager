@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.itextpdf.styledxmlparser.jsoup.internal.StringUtil.padding
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
@@ -33,18 +34,18 @@ fun DetailRow(
     onClick: (() -> Unit) = {},
     onLongClick: (() -> Unit) = {},
     isDividerVisible: Boolean = true,
-    isValueSingleLine : Boolean = true
-
+    isValueSingleLine : Boolean = true,
+    textAlign: TextAlign = TextAlign.End,
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
     AnimatedVisibility(value.isNotBlank()) {
         Column(
             modifier = modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Top,
+                verticalAlignment = if(trailingContent == null) Alignment.Top else Alignment.CenterVertically,
             ) {
                 Text(
                     text = label,
@@ -59,14 +60,17 @@ fun DetailRow(
                     style = style,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = if(isValueSingleLine) 1 else 5,
-                    textAlign = TextAlign.End,
+                    textAlign = textAlign,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.padding(start = 16.dp).weight(1f)
                         .combinedClickable(
                             onClick = { onClick() },
                             onLongClick = { onLongClick() }
                         )
                 )
+                trailingContent?.let{
+                    it()
+                }
             }
             if (isDividerVisible) {
                 HorizontalDivider(

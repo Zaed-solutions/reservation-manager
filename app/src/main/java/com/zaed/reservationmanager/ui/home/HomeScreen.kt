@@ -145,7 +145,7 @@ fun HomeScreen(
             when (action) {
                 HomeUiAction.ShowNavDrawer -> onShowNavDrawer()
                 HomeUiAction.AddCustomer -> onNavigateToAddCustomer()
-                HomeUiAction.AddReservation -> onNavigateToAddReservation()
+                HomeUiAction.AddReservationClicked -> onNavigateToAddReservation()
                 is HomeUiAction.OnCompanyClicked -> onNavigateToCompanyDetails(
                     action.companyId,
                     action.companyType
@@ -430,10 +430,10 @@ fun HomeScreenContent(
         mutableStateOf(false)
     }
     val pagerState = rememberPagerState(pageCount = { 2 })
-    var isEditReservationBottomSheetVisible by remember {
+    var isAddReservationBottomSheetVisible by remember {
         mutableStateOf(false)
     }
-    var editedReservation by remember {
+    var selectedReservation by remember {
         mutableStateOf(Reservation())
     }
     var isConfirmDeleteDialogVisible by remember {
@@ -453,7 +453,7 @@ fun HomeScreenContent(
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { newValue ->
-            newValue != SheetValue.Hidden || !isEditReservationBottomSheetVisible
+            newValue != SheetValue.Hidden || !isAddReservationBottomSheetVisible
         }
     )
     val filePicker =
@@ -563,7 +563,7 @@ fun HomeScreenContent(
                         icon = Icons.Default.DirectionsCar,
                         label = context.getString(R.string.add_reservation),
                         onFabItemClicked = {
-                            onAction(HomeUiAction.AddReservation)
+                            onAction(HomeUiAction.AddReservationClicked)
                         }
                     ),
                 )
@@ -821,7 +821,6 @@ fun HomeScreenContent(
 
                             ReservationsList(
                                 reservations = reservations,
-                                onAddReservation = {},
                                 isEditProfileEnabled = true,
                                 onEditProfile = {
                                     onAction(HomeUiAction.FetchCustomerForUpdating(it))
@@ -829,9 +828,9 @@ fun HomeScreenContent(
                                 isHeaderVisible = false,
                                 isAddEnabled = false,
                                 isSendActionsVisible = true,
-                                onDeleteReservation = { reservationId ->
+                                onDeleteReservation = { reservation ->
                                     isCustomer = false
-                                    selectedItemId = reservationId
+                                    selectedReservation = reservation
                                     isConfirmDeleteDialogVisible = true
                                 },
                                 onArchiveReservation = { reservationId ->
@@ -844,8 +843,8 @@ fun HomeScreenContent(
                                     onAction(HomeUiAction.OnMessagePhoneNumber(phoneNumber))
                                 },
                                 onEditReservation = { reservation ->
-                                    editedReservation = reservation
-                                    isEditReservationBottomSheetVisible = true
+                                    selectedReservation = reservation
+                                    isAddReservationBottomSheetVisible = true
                                 },
                                 onSendDriverInfoToClient = { reservationId: String ->
                                     onAction(HomeUiAction.SendDriverInfoToClient(reservationId))
@@ -862,13 +861,33 @@ fun HomeScreenContent(
                                 },
                                 onSendThanksMessageToCustomer = {
                                     onAction(HomeUiAction.SendThanksMessageToCustomer(it))
-                                }
+                                },
+                                onAddSecondaryReservation = { mainReservation ->
+                                    selectedReservation =
+                                        Reservation(
+                                            reservationNumber = mainReservation.reservationNumber,
+                                            mainReservation = false,
+                                            mainReservationId = mainReservation.id,
+                                            tourismCompany = mainReservation.tourismCompany,
+                                            tourismCompanyId = mainReservation.tourismCompanyId,
+                                            tourismCompanyPhone = mainReservation.tourismCompanyPhone,
+                                            tourismEmployeeId = mainReservation.tourismEmployeeId,
+                                            tourismEmployee = mainReservation.tourismEmployee,
+                                            tourismEmployeePhone = mainReservation.tourismEmployeePhone,
+                                            flightNumber = mainReservation.flightNumber,
+                                            clientId = mainReservation.clientId,
+                                            clientName = mainReservation.clientName,
+                                            clientPhone = mainReservation.clientPhone,
+                                            clientCountry = mainReservation.clientCountry,
+                                        )
+                                    isAddReservationBottomSheetVisible = true
+                                },
                             )
                         }
                     }
                 }
             }
-            AnimatedVisibility(isEditReservationBottomSheetVisible) {
+            AnimatedVisibility(isAddReservationBottomSheetVisible) {
                 ModalBottomSheet(
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize(),
@@ -888,32 +907,49 @@ fun HomeScreenContent(
                         },
                         travelCompanies = travelCompanies,
                         drivers = drivers,
-                        initialReservation = editedReservation,
+                        initialReservation = selectedReservation,
                         onFetchDrivers = {
                             onAction(
                                 HomeUiAction.FetchDrivers(it)
                             )
                         },
                         onSaveReservation = {
-                            isEditReservationBottomSheetVisible = false
+                            isAddReservationBottomSheetVisible = false
                             onAction(
-                                HomeUiAction.UpdateReservation(
-                                    reservation = it,
-                                    onSuccess = {
-                                        snackbarHostState.showSnackbarWithDuration(
-                                            message = context.getString(R.string.reservation_updated_successfully),
-                                            durationMillis = 1500L,
-                                            scope = scope,
-                                            onFinished = {
-                                                editedReservation = Reservation()
-                                            }
-                                        )
-                                    }
-                                ))
+                                if (selectedReservation.id.isNotBlank()) {
+                                    HomeUiAction.UpdateReservation(
+                                        reservation = it,
+                                        onSuccess = {
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_updated_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        }
+                                    )
+                                } else {
+                                    HomeUiAction.AddReservation(
+                                        reservation = it,
+                                        onSuccess = {
+                                            snackbarHostState.showSnackbarWithDuration(
+                                                message = context.getString(R.string.reservation_added_successfully),
+                                                durationMillis = 1500L,
+                                                scope = scope,
+                                                onFinished = {
+                                                    selectedReservation = Reservation()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
                         },
                         onDismiss = {
-                            isEditReservationBottomSheetVisible = false
-                            editedReservation = Reservation()
+                            isAddReservationBottomSheetVisible = false
+                            selectedReservation = Reservation()
                         }
 
                     )
@@ -1016,7 +1052,7 @@ fun HomeScreenContent(
                                         }
                                     )
                                 else
-                                    HomeUiAction.OnDeleteReservation(selectedItemId)
+                                    HomeUiAction.OnDeleteReservation(selectedReservation)
                             )
                             selectedItemId = ""
                         }

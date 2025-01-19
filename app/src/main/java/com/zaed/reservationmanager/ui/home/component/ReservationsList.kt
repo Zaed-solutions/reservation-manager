@@ -1,5 +1,7 @@
 package com.zaed.reservationmanager.ui.home.component
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -16,14 +19,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ReservationsList(
@@ -35,7 +42,7 @@ fun ReservationsList(
     isAddEnabled: Boolean = true,
     isSendActionsVisible: Boolean = true,
     isEditable: Boolean = true,
-    onDeleteReservation: (reservationId: String) -> Unit = {},
+    onDeleteReservation: (reservation: Reservation) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
     onEditProfile: (String) -> Unit = {},
@@ -45,6 +52,9 @@ fun ReservationsList(
     onSendDriverInfoToClient: (reservationId: String) -> Unit = { },
     onSendInfoToTravelCompany: (reservationId: String) -> Unit = {},
     onSendThanksMessageToCustomer: (reservationId: String) -> Unit = {},
+    scope: CoroutineScope = rememberCoroutineScope(),
+    context: Context = LocalContext.current,
+    onAddSecondaryReservation: (mainReservation: Reservation) -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -82,8 +92,10 @@ fun ReservationsList(
                 }
 
                 else -> {
+                    val lazyState = rememberLazyListState()
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
+                        state = lazyState,
                         contentPadding = PaddingValues(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
@@ -93,7 +105,7 @@ fun ReservationsList(
                                 reservation = reservation,
                                 isActionsVisible = isSendActionsVisible,
                                 onDeleteReservation = {
-                                    onDeleteReservation(reservation.id)
+                                    onDeleteReservation(reservation)
                                 },
                                 isEditable = isEditable,
                                 onEditReservation = {
@@ -125,6 +137,23 @@ fun ReservationsList(
                                 isEditProfileEnabled = isEditProfileEnabled,
                                 onEditProfile = {
                                     onEditProfile(reservation.clientId)
+                                },
+                                onAddSecondaryReservation = {
+                                    onAddSecondaryReservation(reservation)
+                                },
+                                onViewMainReservation = {
+                                    scope.launch {
+                                        val index =reservations.indexOfFirst { it.mainReservation && it.reservationNumber == reservation.reservationNumber }
+                                        if(index != -1) {
+                                            lazyState.scrollToItem(index)
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.main_reservation_not_in_this_list),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
                                 }
                             )
                         }

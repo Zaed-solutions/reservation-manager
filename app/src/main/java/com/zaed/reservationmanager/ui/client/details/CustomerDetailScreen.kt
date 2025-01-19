@@ -301,8 +301,8 @@ private fun CustomerDetailScreenContent(
                         CustomerDetailsUiAction.ArchiveReservation(reservationId)
                     )
                 },
-                onDeleteReservation = {
-                    selectedReservation = Reservation(id = it)
+                onDeleteReservation = { reservation ->
+                    selectedReservation = reservation
                     isConfirmDeleteDialogVisible = true
                 },
                 onCopyPhoneNumber = { onAction(CustomerDetailsUiAction.OnCopyPhone(it)) },
@@ -339,8 +339,27 @@ private fun CustomerDetailScreenContent(
                     selectedReservation = Reservation()
                     isAddReservationBottomSheetVisible = true
                 },
-
-                )
+                onAddSecondaryReservation = { mainReservation ->
+                    selectedReservation =
+                        Reservation(
+                            reservationNumber = mainReservation.reservationNumber,
+                            mainReservation = false,
+                            mainReservationId = mainReservation.id,
+                            tourismCompany = mainReservation.tourismCompany,
+                            tourismCompanyId = mainReservation.tourismCompanyId,
+                            tourismCompanyPhone = mainReservation.tourismCompanyPhone,
+                            tourismEmployeeId = mainReservation.tourismEmployeeId,
+                            tourismEmployee = mainReservation.tourismEmployee,
+                            tourismEmployeePhone = mainReservation.tourismEmployeePhone,
+                            flightNumber = mainReservation.flightNumber,
+                            clientId = mainReservation.clientId,
+                            clientName = mainReservation.clientName,
+                            clientPhone = mainReservation.clientPhone,
+                            clientCountry = mainReservation.clientCountry,
+                            )
+                    isAddReservationBottomSheetVisible = true
+                }
+            )
             val bottomSheetState = rememberModalBottomSheetState(
                 skipPartiallyExpanded = true,
                 confirmValueChange = { newValue ->
@@ -430,7 +449,7 @@ private fun CustomerDetailScreenContent(
                         },
                         onConfirm = {
                             onAction(
-                                CustomerDetailsUiAction.OnDeleteReservation(selectedReservation.id)
+                                CustomerDetailsUiAction.OnDeleteReservation(selectedReservation)
                             )
                             isConfirmDeleteDialogVisible = false
                             selectedReservation = Reservation()

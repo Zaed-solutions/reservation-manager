@@ -25,8 +25,8 @@ class ReservationRepositoryImpl(
         return remoteDataSource.getReservationsByCustomerId(customerId)
     }
 
-    override fun deleteReservation(id: String): Flow<Result<Boolean>> {
-        return remoteDataSource.deleteReservation(id)
+    override fun deleteReservation(reservation: Reservation): Flow<Result<Boolean>> {
+        return remoteDataSource.deleteReservation(reservation)
     }
 
     override fun updateReservation(

@@ -139,6 +139,8 @@ fun AddReservationBottomSheetContent(
             },
             isOptional = true,
             options = tourismCompanies.map { it.name },
+            isReadOnly = !reservation.mainReservation,
+            isClearEnabled = reservation.mainReservation
         )
         //employee name
         TitledDropDownTextField(
@@ -162,6 +164,8 @@ fun AddReservationBottomSheetContent(
             },
             isOptional = true,
             options = employees.map { it.name },
+            isReadOnly = !reservation.mainReservation,
+            isClearEnabled = reservation.mainReservation
         )
         //reservation type
         TitledDropDownTextField(

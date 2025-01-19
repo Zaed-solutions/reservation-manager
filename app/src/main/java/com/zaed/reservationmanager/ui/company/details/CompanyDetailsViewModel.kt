@@ -170,8 +170,12 @@ class CompanyDetailsViewModel(
 
     fun handleAction(action: CompanyDetailsUiAction) {
         when (action) {
-            is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservationId)
+            is CompanyDetailsUiAction.OnDeleteReservation -> deleteReservation(action.reservation)
             is CompanyDetailsUiAction.OnEditReservation -> editReservation(
+                action.reservation,
+                action.onSuccess
+            )
+            is CompanyDetailsUiAction.OnAddReservation -> addReservation(
                 action.reservation,
                 action.onSuccess
             )
@@ -321,6 +325,20 @@ class CompanyDetailsViewModel(
         }
     }
 
+    private fun addReservation(reservation: Reservation, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.createReservation(reservation).collect { result ->
+                result.onSuccess {
+                    Log.d(TAG, "addReservations: success")
+                    onSuccess()
+                }.onFailure { e ->
+                    Log.e(TAG, "addReservations: failed to add reservation: ${e.message}")
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
     private fun editReservation(reservation: Reservation, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             reservationRepo.updateReservation(reservation).collect { result ->
@@ -335,10 +353,10 @@ class CompanyDetailsViewModel(
         }
     }
 
-    private fun deleteReservation(reservationId: String) {
-        Log.d(TAG, "deleteReservation: $reservationId")
+    private fun deleteReservation(reservation: Reservation) {
+        Log.d(TAG, "deleteReservation: ${reservation.id}")
         viewModelScope.launch(Dispatchers.IO) {
-            reservationRepo.deleteReservation(reservationId).collect { result ->
+            reservationRepo.deleteReservation(reservation).collect { result ->
                 result.onSuccess {
                     Log.d(TAG, "deleteReservation: success")
                     fetchCompanyBalance()

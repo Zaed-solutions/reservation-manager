@@ -40,5 +40,9 @@ data class Reservation(
     val sentDriverInfoToCustomer: Boolean = false,
     val sentToDriverCompany: Boolean = false,
     val sentThanksToCustomer: Boolean = false,
-    val archived: Boolean = false
+    val archived: Boolean = false,
+    val numberOfRides: Int = 1,
+    val totalRidesPrice: Int = 0,
+    val mainReservation: Boolean = true,
+    val mainReservationId: String = "",
 )
