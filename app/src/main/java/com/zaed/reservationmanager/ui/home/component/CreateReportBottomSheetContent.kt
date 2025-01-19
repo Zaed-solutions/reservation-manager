@@ -72,6 +72,7 @@ fun CreateReportBottomSheetContent(
     var isSelectCarTypeVisible by remember { mutableStateOf(false) }
     var isSelectCarVisible by remember { mutableStateOf(false) }
     var isExportEnabled by remember { mutableStateOf(false) }
+    var isSelectReservationTypeVisible by remember { mutableStateOf(false) }
     var isSelectRangeVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     var isLoaded by remember { mutableStateOf(false) }
@@ -327,8 +328,26 @@ fun CreateReportBottomSheetContent(
                                     ?: "",
                                 title = stringResource(id = R.string.account_type),
                                 onValueChanged = { index ->
-                                    report =
-                                        report.copy(companyAccountType = CompanyAccountType.entries[index])
+                                    report = report.copy(companyAccountType = CompanyAccountType.entries[index])
+                                    if(report.companyType == CompanyType.TRAVEL) {
+                                        isSelectRangeVisible = true
+                                        isSelectReservationTypeVisible = false
+                                    } else {
+                                        isSelectReservationTypeVisible = true
+                                        isSelectRangeVisible = false
+                                    }
+                                },
+                            )
+                        }
+                        AnimatedVisibility(isSelectReservationTypeVisible) {
+                            TitledDropDownTextField(
+                                isClearEnabled = false,
+                                options = ReservationType.entries.map { stringResource(it.stringRes) },
+                                selectedValue = report.reservationType?.let { stringResource(it.stringRes) }
+                                    ?: "",
+                                title = stringResource(id = R.string.reservations_type),
+                                onValueChanged = { index ->
+                                    report = report.copy(reservationType = ReservationType.entries[index])
                                     isSelectRangeVisible = true
                                 },
                             )
@@ -403,7 +422,7 @@ fun CreateReportBottomSheetContent(
                                                 if (reservations.isNotEmpty()) {
                                                     when (report.type) {
                                                         ReportType.COMPANY_ACCOUNT -> {
-                                                            val filteredReservation =
+                                                            var filteredReservations =
                                                                 if (report.companyAccountType == CompanyAccountType.OPEN_BALANCE) {
                                                                     reservations.filter {
                                                                         if (report.company.type == CompanyType.TRAVEL)
@@ -414,9 +433,21 @@ fun CreateReportBottomSheetContent(
                                                                 } else {
                                                                     reservations
                                                                 }
+                                                            filteredReservations = if (report.companyType == CompanyType.TOURISM && report.reservationType == ReservationType.AGGREGATE) {
+                                                                val groupedReservations = filteredReservations.groupBy { it.mainReservationId }
+                                                                filteredReservations.filter { it.mainReservation }.map { mainReservation ->
+                                                                    val secondaryReservations = groupedReservations[mainReservation.id].orEmpty()
+                                                                    mainReservation.copy(
+                                                                        tourismRidePrice = mainReservation.tourismRidePrice + secondaryReservations.sumOf { it.tourismRidePrice },
+                                                                        tourismCollectedAmount = mainReservation.tourismCollectedAmount + secondaryReservations.sumOf { it.tourismCollectedAmount }
+                                                                    )
+                                                                }
+                                                            } else {
+                                                                filteredReservations
+                                                            }
                                                             SheetUtil.generatePaginatedArabicPdfReportForCompanyAccount(
                                                                 context = context,
-                                                                reservations = filteredReservation,
+                                                                reservations = filteredReservations,
                                                                 companyType = report.company.type,
                                                                 title = context.getString(
                                                                     R.string.company_account_report_placeholder,
@@ -507,6 +538,7 @@ data class Report(
     val company: Company = Company(),
     val carType: CarType? = null,
     val car: String = "",
+    val reservationType: ReservationType? = null,
     val fromEpochSeconds: Long = 0,
     val toEpochSeconds: Long = 0,
 )
@@ -522,6 +554,11 @@ enum class ReportType(@StringRes val stringRes: Int) {
 enum class CompanyAccountType(@StringRes val stringRes: Int) {
     ALL_ARRIVALS(R.string.all_arivals),
     OPEN_BALANCE(R.string.open_balance),
+}
+
+enum class ReservationType(@StringRes val stringRes: Int) {
+    DETAILED(R.string.detailed_reservations),
+    AGGREGATE(R.string.aggregate_reservations),
 }
 
 enum class CarType(@StringRes val stringRes: Int) {
