@@ -145,7 +145,7 @@
     <string name="buying">الشراء</string>
     <string name="selling">البيع</string>
     <string name="collected">التحصيل</string>
-    <string name="total_earnings">إجمالي الأرباح</string>
+    <string name="total_earnings">إجمالي الربح</string>
     <string name="total_balance">الرصيد العام:</string>
     <string name="reservation_number">رقم الحجز</string>
     <string name="selling_price_is_required">سعر المشوار مطلوب</string>
@@ -305,5 +305,7 @@
     <string name="detailed_reservations">حجوزات مفصلة</string>
     <string name="aggregate_reservations">حجوزات مجمعة</string>
     <string name="reservations_type">نوع الحجوزات</string>
+    <string name="all_secondary_reservations_will_be_deleted_as_well">كل الحجوزات الفرعية لهذا الحجز سيتم حذفها ايضا</string>
+    <string name="customer">العميل</string>
 
 </resources>

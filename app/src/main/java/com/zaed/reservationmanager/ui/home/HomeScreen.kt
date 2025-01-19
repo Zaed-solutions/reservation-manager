@@ -1029,11 +1029,12 @@ fun HomeScreenContent(
                     },
                 ) {
                     ConfirmDeleteDialog(
-                        label = stringResource(id = R.string.reservation),
+                        label = if(isCustomer) stringResource(R.string.customer) else stringResource(id = R.string.reservation),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         },
+                        subtitle = if(selectedReservation.mainReservation&& !isCustomer) stringResource(R.string.all_secondary_reservations_will_be_deleted_as_well) else stringResource(R.string.this_action_cannot_be_undone),
                         onConfirm = {
                             isConfirmDeleteDialogVisible = false
 
