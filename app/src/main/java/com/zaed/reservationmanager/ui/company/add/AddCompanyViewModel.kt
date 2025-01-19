@@ -35,6 +35,7 @@ class AddCompanyViewModel(
     fun handleAction(action: AddCompanyUiAction) {
         when (action) {
             is AddCompanyUiAction.OnCountryChanged -> onUpdateCountry(action.country)
+            is AddCompanyUiAction.OnCityChanged -> onUpdateCity(action.city)
             is AddCompanyUiAction.OnEmailChanged -> onUpdateEmail(action.email)
             is AddCompanyUiAction.OnFaxNumberChanged -> onUpdateFaxNumber(action.faxNumber)
             is AddCompanyUiAction.OnNameChanged -> onUpdateName(action.name)
@@ -43,6 +44,12 @@ class AddCompanyViewModel(
             AddCompanyUiAction.OnSaveClicked -> onSave()
             is AddCompanyUiAction.OnTypeChanged -> onUpdateType(action.index)
             else -> Unit
+        }
+    }
+
+    private fun onUpdateCity(city: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(company = it.company.copy(city = city)) }
         }
     }
 

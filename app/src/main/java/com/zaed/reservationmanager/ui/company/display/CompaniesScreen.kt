@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -44,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.CompanyWithBalance
 import com.zaed.reservationmanager.ui.company.display.components.CompaniesList
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -67,6 +69,7 @@ fun CompaniesScreen(
     val context = LocalContext.current
     CompaniesScreenContent(
         modifier = modifier,
+        isLoading = state.isLoading,
         onAction = { action ->
             when (action) {
                 CompaniesUiAction.OnShowNavDrawer -> onShowNavDrawer()
@@ -111,8 +114,15 @@ fun CompaniesScreen(
                         }
                     }
                 }
-                is CompaniesUiAction.OnSaveToContacts->{
-                    PhoneUtil.saveToContacts(context, action.company.name,action.company.phoneNumber1,action.company.phoneNumber2,action.company.email)
+
+                is CompaniesUiAction.OnSaveToContacts -> {
+                    PhoneUtil.saveToContacts(
+                        context,
+                        action.company.name,
+                        action.company.phoneNumber1,
+                        action.company.phoneNumber2,
+                        action.company.email
+                    )
                 }
 
                 else -> viewModel.handleAction(action)
@@ -129,10 +139,11 @@ fun CompaniesScreen(
 @Composable
 private fun CompaniesScreenContent(
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     onAction: (CompaniesUiAction) -> Unit = {},
     searchQuery: String = "",
-    tourismCompanies: List<Company> = emptyList(),
-    travelCompanies: List<Company> = emptyList(),
+    tourismCompanies: List<CompanyWithBalance> = emptyList(),
+    travelCompanies: List<CompanyWithBalance> = emptyList(),
     snackbarHostState: SnackbarHostState? = null,
 ) {
     val scope = rememberCoroutineScope()
@@ -229,6 +240,12 @@ private fun CompaniesScreenContent(
                     }
                 }
             }
+            AnimatedVisibility(isLoading) {
+                LinearProgressIndicator(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp))
+            }
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth()
@@ -314,21 +331,25 @@ private fun CompaniesScreenContent(
 @Composable
 private fun CompaniesScreenContentPreview() {
     val companies = listOf(
-        Company(
-            id = "1",
-            name = "Company 1",
-            country = "Egypt",
-            phoneNumber1 = "+01012345678",
-            faxNumber = "+1234567890",
-            email = "company-1@test.com"
+        CompanyWithBalance(
+            company = Company(
+                id = "1",
+                name = "Company 1",
+                country = "Egypt",
+                phoneNumber1 = "+01012345678",
+                faxNumber = "+1234567890",
+                email = "company-1@test.com"
+            )
         ),
-        Company(
-            id = "2",
-            name = "Company 2",
-            country = "Egypt",
-            phoneNumber1 = "+01012345678",
-            faxNumber = "+1234567890",
-            email = "company-2@test.com"
+        CompanyWithBalance(
+            Company(
+                id = "2",
+                name = "Company 2",
+                country = "Egypt",
+                phoneNumber1 = "+01012345678",
+                faxNumber = "+1234567890",
+                email = "company-2@test.com"
+            )
         ),
     )
     ReservationManagerTheme {

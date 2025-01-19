@@ -4,8 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.CompanyWithBalance
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,10 +27,35 @@ class CompaniesViewModel(
 
     private fun fetchCompanies() {
         viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
             companyRepo.getCompanies().collect { result ->
                 result.onSuccess { data ->
-                    val tourismCompanies = data.filter { it.type == CompanyType.TOURISM }
-                    val travelCompanies = data.filter { it.type == CompanyType.TRAVEL }
+                    // Fetch balances concurrently
+                    val companiesWithBalance = data.map { company ->
+                        async {
+                            companyRepo.getCompanyBalance(company.id, company.type).fold(
+                                onSuccess = { balance ->
+                                    CompanyWithBalance(
+                                        company,
+                                        balance=(balance.totalRidePrice - balance.totalCollected - balance.totalPayment).toInt()
+                                    )
+                                },
+                                onFailure = {
+                                    Log.e(TAG, "Failed to fetch balance for company ${company.id}: ${it.message}")
+                                    CompanyWithBalance(
+                                        company,
+                                        balance = 0
+                                    ) // Return the original company without a balance
+                                }
+                            )
+                        }
+                    }.awaitAll().sortedByDescending { it.balance }
+
+                    // Filter processed companies
+                    val tourismCompanies = companiesWithBalance.filter { it.company.type == CompanyType.TOURISM }
+                    val travelCompanies = companiesWithBalance.filter { it.company.type == CompanyType.TRAVEL }
+
+                    // Update UI state
                     _uiState.update { oldState ->
                         oldState.copy(
                             isLoading = false,
@@ -38,12 +66,14 @@ class CompaniesViewModel(
                         )
                     }
                 }.onFailure { error ->
+                    _uiState.update { it.copy(isLoading = false) }
                     Log.e(TAG, error.message.toString())
                     error.printStackTrace()
                 }
             }
         }
     }
+
 
     fun handleAction(action: CompaniesUiAction) {
         when (action) {
@@ -73,22 +103,22 @@ class CompaniesViewModel(
             }
         } else {
             Log.d(TAG, "filterData: timeFilter is All")
-            val filteredTourismCompanies = uiState.value.tourismCompanies.filter { company ->
+            val filteredTourismCompanies = uiState.value.tourismCompanies.filter { companyWithBalance ->
                 listOf(
-                    company.name,
-                    company.country,
-                    company.phoneNumber1,
-                    company.phoneNumber2
+                    companyWithBalance.company.name,
+                    companyWithBalance.company.country,
+                    companyWithBalance.company.phoneNumber1,
+                    companyWithBalance.company.phoneNumber2
                 ).any { value ->
                     value.contains(searchQuery, ignoreCase = true)
                 }
             }
-            val filteredTravelCompanies = uiState.value.travelCompanies.filter { company ->
+            val filteredTravelCompanies = uiState.value.travelCompanies.filter { companyWithBalance ->
                 listOf(
-                    company.name,
-                    company.country,
-                    company.phoneNumber1,
-                    company.phoneNumber2,
+                    companyWithBalance.company.name,
+                    companyWithBalance.company.country,
+                    companyWithBalance.company.phoneNumber1,
+                    companyWithBalance.company.phoneNumber2,
                 ).any { value ->
                     value.contains(searchQuery, ignoreCase = true)
                 }

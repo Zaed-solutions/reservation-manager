@@ -11,12 +11,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.CompanyWithBalance
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 
 @Composable
 fun CompaniesList(
     modifier: Modifier = Modifier,
-    companies: List<Company> = emptyList(),
+    companies: List<CompanyWithBalance> = emptyList(),
     onNavigateToCompanyDetails: (companyId: String, companyType: CompanyType) -> Unit = { _, _ -> },
     onDeleteCompany: (companyId: String) -> Unit = {},
     onEditCompany: (company: Company) -> Unit = {},
@@ -24,6 +25,7 @@ fun CompaniesList(
     onMessagePhone: (String) -> Unit = {},
     onSaveToContacts: (company: Company) -> Unit = {},
 ) {
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(vertical = 16.dp),
@@ -31,11 +33,12 @@ fun CompaniesList(
     ) {
         items(
             items = companies,
-            key = { it.id }
-        ) { company ->
+            key = { it.company.id }
+        ) { companyWithBalance ->
+            val company = companyWithBalance.company
             ExpandableCompanyItem(
                 modifier = Modifier.animateItem(),
-                company = company,
+                companyWithBalance = companyWithBalance,
                 onCompanyDetailsClicked = {
                     onNavigateToCompanyDetails(company.id, company.type)
                 },
@@ -64,6 +67,7 @@ fun CompaniesList(
 private fun CompaniesListPreview() {
     ReservationManagerTheme {
         val companies = listOf(
+            CompanyWithBalance(
             Company(
                 id = "1",
                 name = "Company 1",
@@ -71,7 +75,8 @@ private fun CompaniesListPreview() {
                 phoneNumber1 = "+01012345678",
                 faxNumber = "+1234567890",
                 email = "company-1@test.com"
-            ),
+            ),50),
+            CompanyWithBalance(
             Company(
                 id = "2",
                 name = "Company 2",
@@ -79,7 +84,7 @@ private fun CompaniesListPreview() {
                 phoneNumber1 = "+01012345678",
                 faxNumber = "+1234567890",
                 email = "company-2@test.com"
-            ),
+            ),600),
         )
         CompaniesList(
             modifier = Modifier.padding(horizontal = 16.dp),

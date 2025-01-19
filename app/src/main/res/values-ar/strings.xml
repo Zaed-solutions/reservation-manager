@@ -238,6 +238,7 @@
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
     <string name="reservation_count_total_earnings">عدد الحجوزات: %1$s  | إجمالي الربح: %2$s</string>
     <string name="ride2">المشوار</string>
+    <string name="total_earning">إجمالي الربح: </string>
     <string name="collecting">التحصيل</string>
     <string name="quota">الرصيد</string>
     <string name="tourism_company_account">حساب شركة السياحة</string>
@@ -282,10 +283,10 @@
     <string name="account_type">نوع الحساب</string>
     <string name="share">مشاركة</string>
     <string name="no_apps_found_to_share_file">لم يتم العثور على تطبيقات لمشاركة هذا الملف</string>
-    <string name="company_arrival_report_placeholder">تقرير الوصول للشركة - %1$s - %2$s</string>
+    <string name="company_arrival_report_placeholder">تقرير الوصول لشركة / %1$s - %2$s</string>
     <string name="profits_report_placeholder">"تقرير الأرباح للفترة من %1$s إلى %2$s"</string>
     <string name="all_arrival_report_placeholder">تقرير جميع الوصولات - %1$s</string>
-    <string name="company_account_report_placeholder">تقرير حساب الشركة - %1$s - %2$s</string>
+    <string name="company_account_report_placeholder">تقرير حساب شركة / %1$s - %2$s</string>
     <string name="phone_number_1_is_already_in_use">رقم الجوال 1 مستخدم بالفعل</string>
     <string name="phone_number_2_is_already_in_use">رقم الجوال 2 مستخدم بالفعل</string>
     <string name="name_is_already_used">الاسم مستخدم بالفعل</string>
@@ -295,6 +296,8 @@
     <string name="open_account_title">"تقرير الرصيد المفتوح %1$s من %2$s إلى %3$s"</string>
     <string name="for_travel_companies">لشركات النقل</string>
     <string name="for_tourism_companies">للشركات السياحية</string>
+    <string name="the_reservations">حجوزات</string>
+    <string name="reservations_count">عدد الحجوزات:</string>
     <string name="total_rides_count">مجموع عدد الحركات</string>
     <string name="total_reservation_price">إجمالي قيمة الحجز</string>
     <string name="view_main_reservation">عرض الحجز الرئيسي</string>

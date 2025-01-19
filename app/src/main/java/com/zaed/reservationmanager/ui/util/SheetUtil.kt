@@ -26,6 +26,7 @@ import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.max
 
 object SheetUtil {
 
@@ -217,7 +218,7 @@ object SheetUtil {
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
-            "التحصيل",
+            "المدفوعات",
             "الرصيد"
         )
         // Define page configuration
@@ -504,7 +505,7 @@ object SheetUtil {
             "اسم الشركة",
             "عدد المشاوير",
             "قيمة المشاوير",
-            "التحصيل",
+            "المدفوعات",
             "المدفوعات",
             "الرصيد"
         )
@@ -1076,7 +1077,7 @@ object SheetUtil {
     fun generatePaginatedArabicPdfReportForCompanyArrivals(
         context: Context,
         reservations: List<Reservation>,
-        fileName: String = "تقرير الوصول للشركات",
+        fileName: String = "تقرير الوصول للشركة",
         title : String = "تقرير حجوزات الشركة",
         companyType: CompanyType = CompanyType.TRAVEL
     ): File {
@@ -1092,7 +1093,7 @@ object SheetUtil {
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
-            "التحصيل",
+            "المدفوعات",
         )
         // Define page configuration
         val pageWidth = 842 //842 A4 width in points
@@ -1174,7 +1175,7 @@ object SheetUtil {
 
             // Draw Title
             canvas.drawText(
-                title,
+                fileName,
                 (pageWidth / 2).toFloat(),
                 50f,
                 titlePaint
@@ -1359,7 +1360,7 @@ object SheetUtil {
     fun generatePaginatedArabicPdfReportForCompanyAccount(
         context: Context,
         reservations: List<Reservation>,
-        fileName: String = "تقرير حساب الشركة",
+        fileName: String = "تقرير حساب شركة",
         title : String = "تقرير",
         companyType: CompanyType = CompanyType.TRAVEL
     ): File {
@@ -1373,7 +1374,7 @@ object SheetUtil {
             "الحركة",
             "السيارة",
             "السعر",
-            "التحصيل",
+            "المدفوعات",
             "الرصيد"
         )
         // Define page configuration
@@ -1418,17 +1419,8 @@ object SheetUtil {
         blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
-        val columnWidths = listOf(
-            30f,  // #
-            100f,  // اسم الضيف
-            90f,  // التاريخ
-            50f,  // الوقت
-            60f,  // نوع الحركة
-            50f,  // نوع السيارة
-            50f,  // السعر
-            50f,  // التحصيل
-            50f   //الرصيد
-        )
+        val columnWidths = calculateColumnWidths(headers, reservations, companyType)
+
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
 
@@ -1710,4 +1702,37 @@ object SheetUtil {
             return null
         }
     }
+    fun calculateColumnWidths(
+        headers: List<String>,
+        reservations: List<Reservation>,
+        companyType: CompanyType
+    ): List<Float> {
+        val columnData = listOf(
+            reservations.map { it.reservationNumber.toString() },
+            reservations.map { it.clientName },
+            reservations.map { it.date.formatEpochSecondsToDateNumbers() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { it.type },
+            reservations.map { it.car },
+            reservations.map { if (companyType == CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString() },
+            reservations.map { if (companyType == CompanyType.TRAVEL) it.travelCollectedAmount.toString() else it.tourismCollectedAmount.toString() },
+            reservations.map { if (companyType == CompanyType.TRAVEL) (it.travelRidePrice - it.travelCollectedAmount).toString() else (it.tourismRidePrice - it.tourismCollectedAmount).toString() }
+        )
+
+        // Include headers in the calculation
+        val maxLengths = headers.mapIndexed { index, header ->
+            maxOf(
+                header.length,
+                columnData[index].maxOfOrNull { it.length } ?: 0
+            )
+        }
+
+        // Convert character lengths to column widths
+        val minWidth = 30f
+        val charWidth = 7f
+        val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
+
+        return columnWidths
+    }
+
 }

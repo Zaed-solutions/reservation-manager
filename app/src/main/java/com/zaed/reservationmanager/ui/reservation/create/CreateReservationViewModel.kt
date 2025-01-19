@@ -149,7 +149,20 @@ class CreateReservationViewModel(
             )
 
             is CreateReservationUiAction.UpdateCustomerPhone -> updateCustomerPhone(action.phone)
+            is CreateReservationUiAction.UpdateCustomerPhone2 -> updateCustomerPhone2(action.phone)
             else -> Unit
+        }
+    }
+
+    private fun updateCustomerPhone2(phone: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    customer = it.customer.copy(
+                        phoneNumber2 = phone,
+                    ),
+                )
+            }
         }
     }
 

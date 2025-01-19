@@ -66,7 +66,7 @@ fun ReservationsList(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.reservations),
+                    text = stringResource(R.string.add_reservation),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.weight(1f)
                 )

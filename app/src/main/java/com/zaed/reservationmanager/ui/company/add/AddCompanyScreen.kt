@@ -195,6 +195,15 @@ private fun AddCompanyScreenContent(
                 isError = error == AddCompanyUiError.COUNTRY_IS_REQUIRED,
                 errorMessageRes = error.messageRes
             )
+            //city
+            TitledTextField(
+                title = stringResource(R.string.city),
+                initialValue = initialCompany.city,
+                onValueChanged = { city ->
+                    onAction(AddCompanyUiAction.OnCityChanged(city))
+                },
+            )
+
             //phone number 1
             TitledTextField(
                 title = stringResource(R.string.phone_number_1),

@@ -158,6 +158,7 @@
     <string name="save_changes">Save Changes</string>
     <string name="drop_down_lists"> Update Drop Down Lists</string>
     <string name="reservation">Reservation</string>
+    <string name="the_reservations">The Reservations</string>
     <string name="customer_details">Customer Details</string>
     <string name="phonenumber_is_blank">Phone number is blank</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
@@ -298,6 +299,8 @@
     <string name="open_account_title">"Open balance report for %1$s companies from %2$s to %3$s"</string>
     <string name="for_travel_companies">for travel companies</string>
     <string name="for_tourism_companies">for tourism companies</string>
+    <string name="reservations_count">"reservations count: "</string>
+    <string name="total_earning">"total earning: "</string>
     <string name="total_rides_count">Total rides count</string>
     <string name="total_reservation_price">Total reservation price</string>
     <string name="view_main_reservation">View main reservation</string>
