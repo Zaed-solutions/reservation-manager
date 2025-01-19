@@ -8,6 +8,7 @@ data class Company(
     val id: String = "",
     val name: String = "",
     val country: String = "",
+    val city : String = "",
     val phoneNumber1: String = "",
     val phoneNumber2: String = "",
     val email: String = "",

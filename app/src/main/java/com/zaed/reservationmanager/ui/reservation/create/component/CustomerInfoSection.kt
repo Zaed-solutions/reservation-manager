@@ -29,6 +29,7 @@ fun CustomerInfoSection(
     onUpdateCountry: (String) -> Unit = {},
     countries: List<String> = emptyList(),
     onUpdatePhoneNumber: (String) -> Unit = {},
+    onUpdatePhoneNumber2: (String) -> Unit = {},
     onUpdateEmail: (String) -> Unit = {},
     error: ReservationError = ReservationError.NONE,
     onUpdateNationality: (String) -> Unit = {},
@@ -110,6 +111,18 @@ fun CustomerInfoSection(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Next,
                         )
+                        TitledTextField(
+                            title = stringResource(R.string.phone_number_2),
+                            initialValue = customer.phoneNumber2,
+                            onValueChanged = { phoneNumber2 ->
+                                onUpdatePhoneNumber2(phoneNumber2)
+                            },
+                            isOptional = true,
+                            isError = error in listOf(ReservationError.PHONE_NUMBER_2_IS_IN_USE,),
+                            errorMessageRes = error.messageRes,
+                            keyboardType = KeyboardType.Phone,
+                            imeAction = ImeAction.Next,
+                        )
                     }
                 }
 
@@ -133,6 +146,10 @@ fun CustomerInfoSection(
                         DetailRow(
                             label = stringResource(R.string.email),
                             value = customer.email,
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.phone_number_2),
+                            value = customer.phoneNumber2,
                             isDividerVisible = false
                         )
                     }

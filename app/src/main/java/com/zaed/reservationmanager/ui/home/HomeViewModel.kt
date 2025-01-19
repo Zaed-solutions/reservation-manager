@@ -339,7 +339,7 @@ class HomeViewModel(
                     listOf(
                         customer.name,
                         customer.phoneNumber1,
-                        customer.phoneNumber2
+                        customer.phoneNumber2,
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && customer.residenceCountry == countryFilter
@@ -394,7 +394,8 @@ class HomeViewModel(
                         reservation.tourismCompany,
                         reservation.travelCompany,
                         reservation.clientPhone,
-                        reservation.car
+                        reservation.car,
+                        reservation.type
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
@@ -412,7 +413,8 @@ class HomeViewModel(
                         reservation.tourismCompany,
                         reservation.travelCompany,
                         reservation.clientPhone,
-                        reservation.car
+                        reservation.car,
+                        reservation.type
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     } && matchesFilter(timeFilter, reservation.date)

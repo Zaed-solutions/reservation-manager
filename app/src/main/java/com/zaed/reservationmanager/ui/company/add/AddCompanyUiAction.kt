@@ -10,4 +10,5 @@ sealed interface AddCompanyUiAction {
     data class OnPhoneNumber2Changed(val phoneNumber: String) : AddCompanyUiAction
     data class OnTypeChanged(val index: Int) : AddCompanyUiAction
     data class OnCountryChanged(val country: String) : AddCompanyUiAction
+    data class OnCityChanged(val city: String) : AddCompanyUiAction
 }
