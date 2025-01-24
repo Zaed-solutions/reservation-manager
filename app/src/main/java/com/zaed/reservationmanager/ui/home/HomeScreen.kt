@@ -160,6 +160,7 @@ fun HomeScreen(
                             context.getString(R.string.name),
                             context.getString(R.string.nationality),
                             context.getString(R.string.residence_country),
+                            context.getString(R.string.city),
                             context.getString(R.string.email),
                             context.getString(R.string.phone_number)
                         )
@@ -195,6 +196,7 @@ fun HomeScreen(
                         isAllRides = true,
                         headers = listOf(
                             context.getString(R.string.date),
+                            context.getString(R.string.time),
                             context.getString(R.string.type),
                             context.getString(R.string.car),
                             context.getString(R.string.client_name),
@@ -874,7 +876,6 @@ fun HomeScreenContent(
                                             tourismEmployeeId = mainReservation.tourismEmployeeId,
                                             tourismEmployee = mainReservation.tourismEmployee,
                                             tourismEmployeePhone = mainReservation.tourismEmployeePhone,
-                                            flightNumber = mainReservation.flightNumber,
                                             clientId = mainReservation.clientId,
                                             clientName = mainReservation.clientName,
                                             clientPhone = mainReservation.clientPhone,

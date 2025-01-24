@@ -95,9 +95,10 @@ object SheetUtil {
                     val name = getCellStringValue(row.getCell(0))
                     val nationality = getCellStringValue(row.getCell(1))
                     val residenceCountry = getCellStringValue(row.getCell(2))
-                    val phoneNumber1 = getCellStringValue(row.getCell(3))
-                    val phoneNumber2 = getCellStringValue(row.getCell(4))
-                    val email = getCellStringValue(row.getCell(5))
+                    val city = getCellStringValue(row.getCell(3))
+                    val phoneNumber1 = getCellStringValue(row.getCell(4))
+                    val phoneNumber2 = getCellStringValue(row.getCell(5))
+                    val email = getCellStringValue(row.getCell(6))
 
                     Log.d(
                         "ImportUtil",
@@ -109,6 +110,7 @@ object SheetUtil {
                         name = name,
                         nationality = nationality,
                         residenceCountry = residenceCountry,
+                        city = city,
                         phoneNumber1 = phoneNumber1,
                         phoneNumber2 = phoneNumber2,
                         email = email
@@ -162,6 +164,7 @@ object SheetUtil {
             "Name",
             "Nationality",
             "Residence Country",
+            "City",
             "Phone Number",
             "Email"
         )
@@ -184,8 +187,10 @@ object SheetUtil {
                 row.createCell(0).setCellValue(customer.name)
                 row.createCell(1).setCellValue(customer.nationality)
                 row.createCell(2).setCellValue(customer.residenceCountry)
-                row.createCell(3).setCellValue(customer.phoneNumber1)
-                row.createCell(4).setCellValue(customer.email)
+                row.createCell(3).setCellValue(customer.city)
+                row.createCell(4).setCellValue(customer.phoneNumber1)
+                row.createCell(5).setCellValue(customer.phoneNumber2)
+                row.createCell(6).setCellValue(customer.email)
             }
 
             // Create a file in the external storage directory
@@ -1762,9 +1767,12 @@ object SheetUtil {
             this.forEachIndexed { rowIndex, reservation ->
                 val row = sheet.createRow(rowIndex + 1)
                 var columnIndex = 0
-
+                //date
                 row.createCell(columnIndex++)
-                    .setCellValue(reservation.date.formatEpochSecondsToDateTime())
+                    .setCellValue(reservation.date.formatEpochSecondsToDate())
+                //time
+                row.createCell(columnIndex++)
+                    .setCellValue(reservation.time.formatEpochSecondsToTime())
                 row.createCell(columnIndex++).setCellValue(reservation.type)
                 row.createCell(columnIndex++).setCellValue(reservation.car)
                 row.createCell(columnIndex++).setCellValue(reservation.clientName)

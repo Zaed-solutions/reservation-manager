@@ -129,13 +129,18 @@ fun CompanyDetailsScreen(
                     } else {
                         listOf(
                             context.getString(R.string.date),
+                            context.getString(R.string.time),
                             context.getString(R.string.type),
                             context.getString(R.string.car),
                             context.getString(R.string.client_name),
-                            context.getString(R.string.selling_price),
-                            context.getString(R.string.buying_price),
-                            context.getString(R.string.collected_price),
-                            context.getString(R.string.balance),
+                            context.getString(R.string.tourism_company),
+                            context.getString(R.string.tourism_ride_price),
+                            context.getString(R.string.tourism_collected_amount),
+                            context.getString(R.string.tourism_balance),
+                            context.getString(R.string.travel_company),
+                            context.getString(R.string.travel_ride_price),
+                            context.getString(R.string.travel_collected_amount),
+                            context.getString(R.string.travel_company_balance)
                         )
                     }
                     val file = state.reservations.exportReservationsToExcel(
@@ -576,7 +581,6 @@ fun CompanyDetailsScreenContent(
                                         tourismEmployeeId = mainReservation.tourismEmployeeId,
                                         tourismEmployee = mainReservation.tourismEmployee,
                                         tourismEmployeePhone = mainReservation.tourismEmployeePhone,
-                                        flightNumber = mainReservation.flightNumber,
                                         clientId = mainReservation.clientId,
                                         clientName = mainReservation.clientName,
                                         clientPhone = mainReservation.clientPhone,
