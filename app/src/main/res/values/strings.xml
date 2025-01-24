@@ -306,8 +306,8 @@
     <string name="total_reservation_price">Total reservation price</string>
     <string name="view_main_reservation">View related reservation</string>
     <string name="main_reservation_not_in_this_list">Main reservation not in this list</string>
-    <string name="detailed_reservations">Detailed Reservations</string>
-    <string name="aggregate_reservations">Aggregate Reservations</string>
+    <string name="detailed_reservations">Show Details</string>
+    <string name="aggregate_reservations">Hide Details</string>
     <string name="reservations_type">Reservations Type</string>
     <string name="report_language">Report Language</string>
     <string name="all_secondary_reservations_will_be_deleted_as_well">All Secondary Reservations will be deleted as well</string>
