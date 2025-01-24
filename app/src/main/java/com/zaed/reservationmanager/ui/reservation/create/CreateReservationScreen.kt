@@ -188,6 +188,9 @@ private fun CreateReservationScreenContent(
                 onUpdateCountry = {
                     onAction(CreateReservationUiAction.UpdateCustomerCountry(it))
                 },
+                onUpdateCity = {
+                    onAction(CreateReservationUiAction.UpdateCustomerCity(it))
+                },
                 countries = countries,
                 onUpdatePhoneNumber = {
                     onAction(CreateReservationUiAction.UpdateCustomerPhone(it))
