@@ -351,7 +351,6 @@ private fun CustomerDetailScreenContent(
                             tourismEmployeeId = mainReservation.tourismEmployeeId,
                             tourismEmployee = mainReservation.tourismEmployee,
                             tourismEmployeePhone = mainReservation.tourismEmployeePhone,
-                            flightNumber = mainReservation.flightNumber,
                             clientId = mainReservation.clientId,
                             clientName = mainReservation.clientName,
                             clientPhone = mainReservation.clientPhone,

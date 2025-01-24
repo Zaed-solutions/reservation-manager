@@ -142,6 +142,7 @@ class CreateReservationViewModel(
             CreateReservationUiAction.SaveReservations -> onSave()
             CreateReservationUiAction.SearchCustomer -> fetchCustomerByNumber()
             is CreateReservationUiAction.UpdateCustomerCountry -> updateCustomerCountry(action.country)
+            is CreateReservationUiAction.UpdateCustomerCity -> updateCustomerCity(action.city)
             is CreateReservationUiAction.UpdateCustomerEmail -> updateCustomerEmail(action.email)
             is CreateReservationUiAction.UpdateCustomerName -> updateCustomerName(action.name)
             is CreateReservationUiAction.UpdateCustomerNationality -> updateCustomerNationality(
@@ -151,6 +152,18 @@ class CreateReservationViewModel(
             is CreateReservationUiAction.UpdateCustomerPhone -> updateCustomerPhone(action.phone)
             is CreateReservationUiAction.UpdateCustomerPhone2 -> updateCustomerPhone2(action.phone)
             else -> Unit
+        }
+    }
+
+    private fun updateCustomerCity(city: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    customer = it.customer.copy(
+                        city = city,
+                    ),
+                )
+            }
         }
     }
 

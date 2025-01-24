@@ -107,13 +107,13 @@ fun ExpandableCompanyItem(
                         style = MaterialTheme.typography.titleMedium,
                     )
                 }
-                TextButton({}) {
-                    Text(
-                        text = NumberFormat.getCurrencyInstance(Locale.getDefault())
-                            .format(companyWithBalance.balance),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+                Text(
+                    text = stringResource(
+                        R.string.sar,
+                        NumberFormat.getInstance(Locale.getDefault()).format(companyWithBalance.balance)),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
             AnimatedVisibility(visible = isExpanded) {
                 Column(
@@ -230,7 +230,7 @@ fun ExpandableCompanyItem(
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showSystemUi = true, showBackground = true, locale = "ar")
 @Composable
 private fun ExpandableCompanyItemPreview() {
     ReservationManagerTheme {
@@ -245,7 +245,7 @@ private fun ExpandableCompanyItemPreview() {
                     phoneNumber1 = "123456789",
                     faxNumber = "123456789",
                     email = "company-name@test.com"
-                ), 50
+                ), 1250
             )
         )
     }

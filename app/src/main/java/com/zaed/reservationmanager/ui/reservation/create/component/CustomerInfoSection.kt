@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Customer
+import com.zaed.reservationmanager.ui.client.create.CreateCustomerUiAction
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField2
@@ -27,6 +28,7 @@ fun CustomerInfoSection(
     onSearchCustomer: () -> Unit = {},
     onUpdateName: (String) -> Unit = {},
     onUpdateCountry: (String) -> Unit = {},
+    onUpdateCity: (String) -> Unit = {},
     countries: List<String> = emptyList(),
     onUpdatePhoneNumber: (String) -> Unit = {},
     onUpdatePhoneNumber2: (String) -> Unit = {},
@@ -98,6 +100,14 @@ fun CustomerInfoSection(
                             options = countries,
                             isError = (error == ReservationError.CUSTOMER_COUNTRY_IS_REQUIRED),
                             errorMessageRes = error.messageRes,
+                        )
+                        TitledTextField2(
+                            title = stringResource(R.string.city),
+                            value = customer.city,
+                            onValueChanged = { newText ->
+                                onUpdateCity(newText)
+                            },
+                            isOptional = true,
                         )
                         TitledTextField(
                             title = stringResource(R.string.email),

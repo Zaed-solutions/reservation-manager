@@ -13,6 +13,7 @@ sealed interface CreateReservationUiAction {
     data class UpdateCustomerPhone2(val phone: String) : CreateReservationUiAction
     data class UpdateCustomerEmail(val email: String) : CreateReservationUiAction
     data class UpdateCustomerCountry(val country: String) : CreateReservationUiAction
+    data class UpdateCustomerCity(val city: String) : CreateReservationUiAction
     data class UpdateCustomerNationality(val nationality: String) : CreateReservationUiAction
     data class FetchEmployees(val companyId: String) : CreateReservationUiAction
     data class FetchDrivers(val companyId: String) : CreateReservationUiAction
