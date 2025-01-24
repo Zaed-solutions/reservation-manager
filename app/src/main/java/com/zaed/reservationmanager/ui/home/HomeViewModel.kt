@@ -382,7 +382,7 @@ class HomeViewModel(
                 Log.d(TAG, "filterData: searchQuery is blank and timeFilter is All")
                 _uiState.update {
                     it.copy(
-                        displayedReservations = it.reservations.sortedBy { reservation -> reservation.date + reservation.time },
+                        displayedReservations = it.reservations.sortedByDescending { reservation -> reservation.date + reservation.time },
                     )
                 }
             } else if (searchQuery.isBlank()) {
@@ -426,7 +426,7 @@ class HomeViewModel(
                     ).any { value ->
                         value.contains(searchQuery, ignoreCase = true)
                     }
-                }.sortedBy { reservation -> reservation.date + reservation.time }
+                }.sortedByDescending { reservation -> reservation.date + reservation.time }
                 _uiState.update { oldState ->
                     oldState.copy(
                         displayedReservations = filteredReservations,

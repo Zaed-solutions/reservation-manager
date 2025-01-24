@@ -697,16 +697,14 @@ fun HomeScreenContent(
                                     )
                                 }
                             }
-                            AnimatedVisibility(selectedCountry != "" && customers.isNotEmpty()) {
-                                Text(
-                                    text = stringResource(
-                                        R.string.customers_count_is_customers,
-                                        NumberFormat.getInstance(Locale.getDefault())
-                                            .format(customers.size)
-                                    ),
-                                    modifier = Modifier.padding(start = 8.dp, top = 8.dp)
-                                )
-                            }
+                            Text(
+                                text = stringResource(
+                                    R.string.customers_count_is_customers,
+                                    NumberFormat.getInstance(Locale.getDefault())
+                                        .format(customers.size)
+                                ),
+                                modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+                            )
                             CustomerListWithTitle(
                                 customers = customers,
                                 onViewCustomerDetailsClicked = { customerId ->
@@ -801,14 +799,15 @@ fun HomeScreenContent(
                                         }
                                         append(" | ")
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(stringResource(R.string.total_earnings)+":")
+                                            append(stringResource(R.string.total_earnings) + ":")
                                         }
                                         append(" ")
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
                                             append(
-                                                NumberFormat.getCurrencyInstance(Locale.getDefault()).apply {
-                                                    maximumFractionDigits = 0
-                                                }.format(
+                                                NumberFormat.getCurrencyInstance(Locale.getDefault())
+                                                    .apply {
+                                                        maximumFractionDigits = 0
+                                                    }.format(
                                                     totalEarnings
                                                 )
 
@@ -1033,12 +1032,16 @@ fun HomeScreenContent(
                     },
                 ) {
                     ConfirmDeleteDialog(
-                        label = if(isCustomer) stringResource(R.string.customer) else stringResource(id = R.string.reservation),
+                        label = if (isCustomer) stringResource(R.string.customer) else stringResource(
+                            id = R.string.reservation
+                        ),
                         onDismiss = {
                             isConfirmDeleteDialogVisible = false
                             selectedItemId = ""
                         },
-                        subtitle = if(selectedReservation.mainReservation&& !isCustomer) stringResource(R.string.all_secondary_reservations_will_be_deleted_as_well) else stringResource(R.string.this_action_cannot_be_undone),
+                        subtitle = if (selectedReservation.mainReservation && !isCustomer) stringResource(
+                            R.string.all_secondary_reservations_will_be_deleted_as_well
+                        ) else stringResource(R.string.this_action_cannot_be_undone),
                         onConfirm = {
                             isConfirmDeleteDialogVisible = false
 
