@@ -13,7 +13,19 @@ import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.CompanyType
 import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.home.component.ReportLanguage
 import com.zaed.reservationmanager.ui.util.InputValidator.validate
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.blackBackground
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.borderPaint
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.cellHeight
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.charWidth
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.footerPaint
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.headerPaint
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.minWidth
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.pageHeight
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.pageWidth
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.paint
+import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.titlePaint
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.DateUtil
@@ -23,6 +35,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -150,13 +163,10 @@ object SheetUtil {
         }
     }
 
-    private fun String.truncate(maxLength: Int = 13): String {
-        return if (this.length > maxLength) {
-            this.take(maxLength - 3) + "..." // Take the first (maxLength - 3) characters and append "..."
-        } else {
-            this
-        }
-    }
+    // Extension functions
+    private fun String.truncate(maxLength: Int = 15): String =
+        if (length > maxLength) substring(0, maxLength) + "..." else this
+
 
     fun List<Customer>.exportCustomersToExcel(
         context: Context,
@@ -212,6 +222,55 @@ object SheetUtil {
         return null
     }
 
+    object PdfConfig {
+
+        val minWidth = 30f
+        val charWidth = 5.5f
+        val pageWidth: Int = 842
+        val pageHeight: Int = 595
+        val cellHeight: Float = 20f
+        val fontSize: Float = 10f
+        val titleFontSize: Float = 16f
+
+        val paint = Paint().apply {
+            textSize = fontSize
+            textAlign = Paint.Align.CENTER
+            isAntiAlias = true
+        }
+        val headerPaint = Paint().apply {
+            textSize = fontSize
+            typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+
+        val footerPaint = Paint().apply {
+            textSize = fontSize
+            textAlign = Paint.Align.CENTER
+            color = android.graphics.Color.DKGRAY
+        }
+        val titlePaint = Paint().apply {
+            textSize = titleFontSize
+            textAlign = Paint.Align.CENTER
+            isFakeBoldText = true
+        }
+
+        val companyNamePaint = Paint().apply {
+            textSize = fontSize
+            textAlign = Paint.Align.LEFT
+            isFakeBoldText = true
+        }
+
+        val borderPaint = Paint().apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 1f
+        }
+
+        val blackBackground = Paint().apply {
+            style = Paint.Style.FILL
+            color = android.graphics.Color.LTGRAY
+        }
+    }
+
     fun generatePaginatedArabicPdfReportForAllArrivals(
         context: Context,
         reservations: List<Reservation>,
@@ -231,48 +290,10 @@ object SheetUtil {
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
-            "المدفوعات",
+            "التحصيل",
             "الرصيد"
         )
-        // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
-        val cellHeight = 20f
-        val fontSize = 12f
-        val titleFontSize = 16f
 
-        val paint = Paint()
-        paint.textSize = fontSize
-        paint.textAlign = Paint.Align.CENTER
-        paint.isAntiAlias = true
-
-        val headerPaint = Paint()
-        headerPaint.textSize = fontSize
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-        headerPaint.textAlign = Paint.Align.CENTER
-
-        val footerPaint = Paint()
-        footerPaint.textSize = fontSize
-        footerPaint.textAlign = Paint.Align.CENTER
-        footerPaint.color = android.graphics.Color.DKGRAY
-
-        val titlePaint = Paint()
-        titlePaint.textSize = titleFontSize
-        titlePaint.textAlign = Paint.Align.CENTER
-        titlePaint.isFakeBoldText = true
-
-        val companyNamePaint = Paint()
-        companyNamePaint.textSize = fontSize
-        companyNamePaint.textAlign = Paint.Align.LEFT
-        companyNamePaint.isFakeBoldText = true
-
-        val borderPaint = Paint()
-        borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 1f
-
-        val blackBackground = Paint()
-        blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnData = listOf(
@@ -301,8 +322,7 @@ object SheetUtil {
         Log.d("SheetUtil", "generatePaginatedArabicPdfReportForAllArrivals: $maxLengths")
 
         // Convert character lengths to column widths
-        val minWidth = 30f
-        val charWidth = 7f
+
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
 
         // Calculate the total width of the columns
@@ -453,7 +473,7 @@ object SheetUtil {
                         if (columnIndex == 1) {
                             val space = columnWidths.subList(1, 9).sum()
                             canvas.drawRect(
-                                startX-space,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,
@@ -466,7 +486,7 @@ object SheetUtil {
                                 headerPaint
                             )
                             canvas.drawRect(
-                                startX-space,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,
@@ -537,51 +557,11 @@ object SheetUtil {
             "اسم الشركة",
             "عدد المشاوير",
             "قيمة المشاوير",
-            "التحصيل",
+            "مجموع التحصيل",
             "المدفوعات",
             "الرصيد"
         )
-        // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
-        val cellHeight = 20f
-        val fontSize = 12f
-        val titleFontSize = 16f
 
-        val paint = Paint()
-        paint.textSize = fontSize
-        paint.textAlign = Paint.Align.CENTER
-        paint.isAntiAlias = true
-
-        val headerPaint = Paint()
-        headerPaint.textSize = fontSize
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-        headerPaint.textAlign = Paint.Align.CENTER
-
-        val footerPaint = Paint()
-        footerPaint.textSize = fontSize
-        footerPaint.textAlign = Paint.Align.CENTER
-        footerPaint.color = android.graphics.Color.DKGRAY
-
-        val titlePaint = Paint()
-        titlePaint.textSize = titleFontSize
-        titlePaint.textAlign = Paint.Align.CENTER
-        titlePaint.isFakeBoldText = true
-
-        val companyNamePaint = Paint()
-        companyNamePaint.textSize = fontSize
-        companyNamePaint.textAlign = Paint.Align.LEFT
-        companyNamePaint.isFakeBoldText = true
-
-        val borderPaint = Paint()
-        borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 1f
-
-        val blackBackground = Paint()
-        blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.LTGRAY
-
-        // Define column positions and widths
         // Define column positions and widths
         val rides =
             history.map { it.reservations.sumOf { if (companyType == CompanyType.TOURISM) it.tourismRidePrice else it.travelRidePrice } }
@@ -592,7 +572,7 @@ object SheetUtil {
             .zip(payments) { (ride, collected), payment -> (ride - collected - payment) }
 
         val columnData = listOf(
-            (1..history.size).map{it.toString()},
+            (1..history.size).map { it.toString() },
             history.map { it.company.name },
             history.map { it.reservations.size.toString() },
             rides.map { it.toString() },
@@ -609,8 +589,7 @@ object SheetUtil {
         }
 
         // Convert character lengths to column widths
-        val minWidth = 30f
-        val charWidth = 7f
+
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
 
         // Calculate the total width of the columns
@@ -849,45 +828,6 @@ object SheetUtil {
             "السعر",
             "الربح"
         )
-        // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
-        val cellHeight = 20f
-        val fontSize = 12f
-        val titleFontSize = 16f
-
-        val paint = Paint()
-        paint.textSize = fontSize
-        paint.textAlign = Paint.Align.CENTER
-        paint.isAntiAlias = true
-
-        val headerPaint = Paint()
-        headerPaint.textSize = fontSize
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-        headerPaint.textAlign = Paint.Align.CENTER
-
-        val footerPaint = Paint()
-        footerPaint.textSize = fontSize
-        footerPaint.textAlign = Paint.Align.CENTER
-        footerPaint.color = android.graphics.Color.DKGRAY
-
-        val titlePaint = Paint()
-        titlePaint.textSize = titleFontSize
-        titlePaint.textAlign = Paint.Align.CENTER
-        titlePaint.isFakeBoldText = true
-
-        val companyNamePaint = Paint()
-        companyNamePaint.textSize = fontSize
-        companyNamePaint.textAlign = Paint.Align.LEFT
-        companyNamePaint.isFakeBoldText = true
-
-        val borderPaint = Paint()
-        borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 1f
-
-        val blackBackground = Paint()
-        blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnData = listOf(
@@ -908,8 +848,7 @@ object SheetUtil {
         }
 
         // Convert character lengths to column widths
-        val minWidth = 30f
-        val charWidth = 7f
+
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
 
         // Calculate the total width of the columns
@@ -1037,7 +976,7 @@ object SheetUtil {
                     " عدد السجلات :${reservations.size}", //records number
                     "",//records number
                     "",//records number
-                    "اجمالى الربح : ${totalProfit.toString()}",
+                    "اجمالى الربح : ${NumberFormat.getCurrencyInstance().apply { maximumFractionDigits =0 }.format(totalProfit)}",
                     "",//total profit
                     "",//total profit
                     "",//total profit
@@ -1158,47 +1097,8 @@ object SheetUtil {
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
-            "المدفوعات",
+            "التحصيل",
         )
-        // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
-        val cellHeight = 20f
-        val fontSize = 12f
-        val titleFontSize = 16f
-
-        val paint = Paint()
-        paint.textSize = fontSize
-        paint.textAlign = Paint.Align.CENTER
-        paint.isAntiAlias = true
-
-        val headerPaint = Paint()
-        headerPaint.textSize = fontSize
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-        headerPaint.textAlign = Paint.Align.CENTER
-
-        val footerPaint = Paint()
-        footerPaint.textSize = fontSize
-        footerPaint.textAlign = Paint.Align.CENTER
-        footerPaint.color = android.graphics.Color.DKGRAY
-
-        val titlePaint = Paint()
-        titlePaint.textSize = titleFontSize
-        titlePaint.textAlign = Paint.Align.CENTER
-        titlePaint.isFakeBoldText = true
-
-        val companyNamePaint = Paint()
-        companyNamePaint.textSize = fontSize
-        companyNamePaint.textAlign = Paint.Align.LEFT
-        companyNamePaint.isFakeBoldText = true
-
-        val borderPaint = Paint()
-        borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 1f
-
-        val blackBackground = Paint()
-        blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnData = listOf(
@@ -1210,8 +1110,8 @@ object SheetUtil {
             reservations.map { it.car },
             reservations.map { it.startLocation },
             reservations.map { it.endLocation },
-            reservations.map { it.tourismRidePrice.toString() },
-            reservations.map { if (it.travelCollectedAmount > 0) it.travelCollectedAmount.toString() else it.tourismCollectedAmount.toString() },
+            reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString()  },
+            reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelCollectedAmount.toString() else it.tourismCollectedAmount.toString() },
         )
         val maxLengths = headers.mapIndexed { index, header ->
             maxOf(
@@ -1243,7 +1143,7 @@ object SheetUtil {
         // Track the totals for the last three columns
         var totalPrice = reservations.sumOf { it.tourismRidePrice }
         var totalCollected =
-            reservations.sumOf { if (it.travelCollectedAmount > 0) it.travelCollectedAmount else it.tourismCollectedAmount }
+            reservations.sumOf { if (companyType==CompanyType.TRAVEL) it.travelCollectedAmount else it.tourismCollectedAmount }
 
         while (currentIndex < reservations.size) {
             // Start a new page
@@ -1365,9 +1265,9 @@ object SheetUtil {
                 columnStartPositions.zip(columnWidths)
                     .forEachIndexed { columnIndex, (startX, width) ->
                         if (columnIndex == 1) {
-                            val space = columnWidths.subList(1,8).sum()
+                            val space = columnWidths.subList(1, 8).sum()
                             canvas.drawRect(
-                                startX-space,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,
@@ -1380,13 +1280,536 @@ object SheetUtil {
                                 headerPaint
                             )
                             canvas.drawRect(
-                                startX-space,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,
                                 borderPaint
                             )
                         } else if (columnIndex in 2..7) {
+                            return@forEachIndexed
+                        } else {
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+
+                    }
+            }
+
+            val footer = " صفحة $currentPage"
+            canvas.drawText(footer, (pageWidth / 2).toFloat(), pageHeight - 25f, footerPaint)
+
+
+            // Finish the current page
+            pdfDocument.finishPage(page)
+            currentPage++
+        }
+
+        // Save the PDF
+        val filePath = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+            "$fileName  ${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())}.pdf"
+        )
+        pdfDocument.writeTo(FileOutputStream(filePath))
+        pdfDocument.close()
+
+        // Notify user
+        println("PDF report generated successfully at: $filePath")
+        return filePath // Return the generated file
+    }
+
+    private fun List<String>.calculateMaxLengths(columnData: List<List<String>>): List<Int> {
+        return this.mapIndexed { index, header ->
+            maxOf(
+                header.length,
+                columnData[index].maxOfOrNull { it.length } ?: 0
+            )
+        }
+    }
+
+    fun generatePaginatedArabicPdfReportForCompanyAccountCompact(
+        context: Context,
+        reservations: List<Reservation>,
+        fileName: String = "تقرير حساب شركة",
+        title: String = "تقرير",
+        language: ReportLanguage = ReportLanguage.Arabic,
+    ): File {
+        // Initialize the PDF document
+        val pdfDocument = PdfDocument()
+        var headers: List<String> = listOf(
+            "#",
+            "اسم الضيف",
+            "إسم الموظف",
+            "تاريخ أول حركة",
+            "عدد الحركات",
+            "السعر",
+            "المدفوع",
+            "الرصيد"
+        )
+        if(language == ReportLanguage.English){
+            headers=listOf(
+                "#",
+                "Guest Name",
+                "Employee",
+                "First Movement",
+                "Nu. Of Mov.",
+                "Price",
+                "Paid",
+                "Balance"
+            )
+        }
+
+        // Define column positions and widths
+        val columnData = listOf(
+            reservations.map { it.reservationNumber.toString() },
+            reservations.map { it.clientName },
+            reservations.map { it.tourismEmployee },
+            reservations.map { it.date.formatEpochSecondsToDateNumbers() },
+            reservations.map { it.numberOfRides.toString() },
+            reservations.map { it.tourismRidePrice.toString() },
+            reservations.map { it.tourismCollectedAmount.toString() },
+            reservations.map { (it.tourismRidePrice - it.tourismCollectedAmount).toString() }
+        )
+        val maxLengths = headers.calculateMaxLengths(columnData)
+        val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
+        val totalColumnsWidth = columnWidths.sum()
+
+        // Calculate the start position for the columns to center them on the page
+        val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
+
+        // Create column start positions relative to the startXOffset
+        val columnStartPositions =
+            columnWidths.runningFold(startXOffset) { acc, width -> acc - width }
+
+        val maxRowsPerPage = ((pageHeight - 140) / cellHeight).toInt()
+
+        var currentPage = 1
+        var currentIndex = 0
+
+        val totalPrice = reservations.sumOf { it.tourismRidePrice }
+        val totalCollected = reservations.sumOf { it.tourismCollectedAmount }
+        val totalBalance = totalPrice - totalCollected
+
+        while (currentIndex < reservations.size) {
+            // Start a new page
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, currentPage).create()
+            val page = pdfDocument.startPage(pageInfo)
+            val canvas: Canvas = page.canvas
+
+            // Draw Title
+            canvas.drawText(
+                title,
+                (pageWidth / 2).toFloat(),
+                50f,
+                titlePaint
+            )
+
+            // Draw Header Row
+            var currentY = 70f
+            columnStartPositions.zip(columnWidths).forEachIndexed { index, (startX, width) ->
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    blackBackground
+                )
+                canvas.drawText(
+                    headers[index],
+                    startX - (width / 2),
+                    currentY + (cellHeight / 2) + 4,
+                    headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
+                )
+            }
+            currentY += cellHeight
+
+            // Draw Data Rows
+            for (i in 0 until maxRowsPerPage) {
+                if (currentIndex >= reservations.size) break
+
+                val reservation = reservations[currentIndex]
+
+                val rowData = listOf(
+                    reservation.reservationNumber.toString(),
+                    reservation.clientName,
+                    reservation.tourismEmployee,
+                    reservation.date.formatEpochSecondsToDateNumbers(),
+                    reservation.numberOfRides.toString(),
+                    reservation.tourismRidePrice.toString(), // السعر
+                    reservation.tourismCollectedAmount.toString(), // التحصيل
+                    (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString()
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        if (columnIndex == 0) {
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        } else {
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+
+                    }
+                currentIndex++
+
+                // Update totals for the last three columns
+
+
+                currentY += cellHeight
+            }
+
+            // Draw Summary Row (Total)
+            if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
+                val summaryRowData = listOf(
+                    "",
+                    if(language == ReportLanguage.Arabic)" عدد السجلات :${reservations.size}" else "Record Count :${reservations.size}",
+                    "",
+                    "",
+                    reservations.sumOf { it.numberOfRides }.toString(),
+                    totalPrice.toString(),
+                    totalCollected.toString(),
+                    totalBalance.toString()
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        val space = columnWidths.subList(1, 4).sum()
+                        if (columnIndex == 1) {
+                            canvas.drawRect(
+                                startX - space,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (space / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - space,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        } else if (columnIndex in 2..3) {
+                            return@forEachIndexed
+                        } else {
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+
+                    }
+            }
+
+            val footer = " صفحة $currentPage"
+            canvas.drawText(footer, (pageWidth / 2).toFloat(), pageHeight - 25f, footerPaint)
+
+
+            // Finish the current page
+            pdfDocument.finishPage(page)
+            currentPage++
+        }
+
+        // Save the PDF
+        val filePath = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+            "$fileName  ${SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())}.pdf"
+        )
+        pdfDocument.writeTo(FileOutputStream(filePath))
+        pdfDocument.close()
+
+        // Notify user
+        println("PDF report generated successfully at: $filePath")
+        return filePath // Return the generated file
+    }
+
+    fun generatePaginatedArabicPdfReportForCompanyAccountDetailed(
+        context: Context,
+        reservations: List<Reservation>,
+        fileName: String = "تقرير حساب شركة",
+        title: String = "تقرير",
+    ): File {
+        // Initialize the PDF document
+        val pdfDocument = PdfDocument()
+        val headers: List<String> = listOf(
+            "#",//0
+            "اسم الضيف",//1
+            "إسم الموظف",//2
+            "التاريخ",//3
+            "الوقت",//4
+            "الحركة",//5
+            "السيارة",//6
+            "من",//7
+            "إلى",//8
+            "السعر",//9
+            "المدفوع ",//10
+            "الرصيد"//11
+        )
+
+        // Define column positions and widths
+        val columnData = listOf(
+            reservations.map { it.reservationNumber.toString() },
+            reservations.map { it.clientName.truncate() },
+            reservations.map { it.tourismEmployee.truncate() },
+            reservations.map { it.date.formatEpochSecondsToDateNumbers() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { it.type },
+            reservations.map { it.car },
+            reservations.map { it.startLocation.truncate() },
+            reservations.map { it.endLocation.truncate() },
+            reservations.map { it.tourismRidePrice.toString() },
+            reservations.map { it.tourismCollectedAmount.toString() },
+            reservations.map { (it.tourismRidePrice - it.tourismCollectedAmount).toString() }
+        )
+        val maxLengths = headers.calculateMaxLengths(columnData)
+
+        // Convert character lengths to column widths
+        val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
+
+
+        // Calculate the total width of the columns
+        val totalColumnsWidth = columnWidths.sum()
+
+        // Calculate the start position for the columns to center them on the page
+        val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
+
+        // Create column start positions relative to the startXOffset
+        val columnStartPositions =
+            columnWidths.runningFold(startXOffset) { acc, width -> acc - width }
+
+        val maxRowsPerPage = ((pageHeight - 140) / cellHeight).toInt()
+
+        var currentPage = 1
+        var currentIndex = 0
+
+        val totalPrice = reservations.sumOf { it.tourismRidePrice }
+        val totalCollected = reservations.sumOf { it.tourismCollectedAmount }
+        val totalBalance = totalPrice - totalCollected
+
+        while (currentIndex < reservations.size) {
+            // Start a new page
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, currentPage).create()
+            val page = pdfDocument.startPage(pageInfo)
+            val canvas: Canvas = page.canvas
+
+            // Draw Title
+            canvas.drawText(
+                title,
+                (pageWidth / 2).toFloat(),
+                50f,
+                titlePaint
+            )
+
+            // Draw Header Row
+            var currentY = 70f
+            columnStartPositions.zip(columnWidths).forEachIndexed { index, (startX, width) ->
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    blackBackground
+                )
+                canvas.drawText(
+                    headers[index],
+                    startX - (width / 2),
+                    currentY + (cellHeight / 2) + 4,
+                    headerPaint
+                )
+                canvas.drawRect(
+                    startX - width,
+                    currentY,
+                    startX,
+                    currentY + cellHeight,
+                    borderPaint
+                )
+            }
+            currentY += cellHeight
+
+            // Draw Data Rows
+            for (i in 0 until maxRowsPerPage) {
+                if (currentIndex >= reservations.size) break
+
+                val reservation = reservations[currentIndex]
+
+                val rowData = listOf(
+                    reservation.reservationNumber.toString(),
+                    reservation.clientName.truncate(),
+                    reservation.tourismEmployee.truncate(),
+                    reservation.date.formatEpochSecondsToDateNumbers(),
+                    (reservation.time + reservation.date).formatEpochSecondsToTime(),
+                    reservation.type,
+                    reservation.car,
+                    reservation.startLocation.truncate(),
+                    reservation.endLocation.truncate(),
+                    reservation.tourismRidePrice.toString(), // السعر
+                    reservation.tourismCollectedAmount.toString(), // التحصيل
+                    (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString()
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        if (columnIndex == 0) {
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        } else {
+                            canvas.drawText(
+                                rowData[columnIndex],
+                                startX - (width / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                paint
+                            )
+                            canvas.drawRect(
+                                startX - width,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        }
+
+                    }
+                currentIndex++
+
+                // Update totals for the last three columns
+
+
+                currentY += cellHeight
+            }
+
+            // Draw Summary Row (Total)
+            if (currentIndex >= reservations.size || currentY + cellHeight > pageHeight) {
+                val summaryRowData = listOf(
+                    "",
+                    " عدد السجلات :${reservations.size}",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    totalPrice.toString(),
+                    totalCollected.toString(),
+                    totalBalance.toString()
+                )
+                columnStartPositions.zip(columnWidths)
+                    .forEachIndexed { columnIndex, (startX, width) ->
+                        val space = columnWidths.subList(1, 9).sum()
+                        if (columnIndex == 1) {
+                            canvas.drawRect(
+                                startX - space,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                blackBackground
+                            )
+                            canvas.drawText(
+                                summaryRowData[columnIndex],
+                                startX - (space / 2),
+                                currentY + (cellHeight / 2) + 4,
+                                headerPaint
+                            )
+                            canvas.drawRect(
+                                startX - space,
+                                currentY,
+                                startX,
+                                currentY + cellHeight,
+                                borderPaint
+                            )
+                        } else if (columnIndex in 2..8) {
                             return@forEachIndexed
                         } else {
                             canvas.drawRect(
@@ -1456,46 +1879,6 @@ object SheetUtil {
             "المدفوعات",
             "الرصيد"
         )
-        // Define page configuration
-        val pageWidth = 842 //842 A4 width in points
-        val pageHeight = 595 //595 A4 height in points
-        val cellHeight = 20f
-        val fontSize = 12f
-        val titleFontSize = 16f
-
-        val paint = Paint()
-        paint.textSize = fontSize
-        paint.textAlign = Paint.Align.CENTER
-        paint.isAntiAlias = true
-
-        val headerPaint = Paint()
-        headerPaint.textSize = fontSize
-        headerPaint.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
-        headerPaint.textAlign = Paint.Align.CENTER
-
-        val footerPaint = Paint()
-        footerPaint.textSize = fontSize
-        footerPaint.textAlign = Paint.Align.CENTER
-        footerPaint.color = android.graphics.Color.DKGRAY
-
-        val titlePaint = Paint()
-        titlePaint.textSize = titleFontSize
-        titlePaint.textAlign = Paint.Align.CENTER
-        titlePaint.isFakeBoldText = true
-
-        val companyNamePaint = Paint()
-        companyNamePaint.textSize = fontSize
-        companyNamePaint.textAlign = Paint.Align.LEFT
-        companyNamePaint.isFakeBoldText = true
-
-        val borderPaint = Paint()
-        borderPaint.style = Paint.Style.STROKE
-        borderPaint.strokeWidth = 1f
-        borderPaint.color = android.graphics.Color.BLACK
-
-        val blackBackground = Paint()
-        blackBackground.style = Paint.Style.FILL
-        blackBackground.color = android.graphics.Color.LTGRAY
 
         // Define column positions and widths
         val columnData = listOf(
@@ -1517,8 +1900,7 @@ object SheetUtil {
         }
 
         // Convert character lengths to column widths
-        val minWidth = 30f
-        val charWidth = 7f
+
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
 
 
@@ -1675,9 +2057,10 @@ object SheetUtil {
                 )
                 columnStartPositions.zip(columnWidths)
                     .forEachIndexed { columnIndex, (startX, width) ->
+                        val space = columnWidths.subList(1, 6).sum()
                         if (columnIndex == 1) {
                             canvas.drawRect(
-                                172f,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,
@@ -1685,12 +2068,12 @@ object SheetUtil {
                             )
                             canvas.drawText(
                                 summaryRowData[columnIndex],
-                                startX - (width / 2),
+                                startX - (space / 2),
                                 currentY + (cellHeight / 2) + 4,
                                 headerPaint
                             )
                             canvas.drawRect(
-                                172f,
+                                startX - space,
                                 currentY,
                                 startX,
                                 currentY + cellHeight,

@@ -289,8 +289,9 @@
     <string name="no_apps_found_to_share_file">No apps were found to share this file</string>
     <string name="company_arrival_report_placeholder">Company Arrivals Report- %1$s - %2$s</string>
     <string name="profits_report_placeholder">"Profit report for the period from %1$s to %2$s"</string>
-    <string name="all_arrival_report_placeholder">All Arrivals Report- %1$s</string>
+    <string name="all_arrival_report_placeholder">All Arrival Report for the Period from %1$s to %2$s</string>
     <string name="company_account_report_placeholder">Company Account Report- %1$s - %2$s</string>
+    <string name="company_account_report_placeholder_en">(%1$s) Company Financial Statement  %2$s </string>
     <string name="car_filter">Car Filter</string>
     <string name="save">Save</string>
     <string name="save_customer">Save Customer</string>
@@ -308,7 +309,10 @@
     <string name="detailed_reservations">Detailed Reservations</string>
     <string name="aggregate_reservations">Aggregate Reservations</string>
     <string name="reservations_type">Reservations Type</string>
+    <string name="report_language">Report Language</string>
     <string name="all_secondary_reservations_will_be_deleted_as_well">All Secondary Reservations will be deleted as well</string>
     <string name="customer">Customer</string>
     <string name="reservations_from">Reservations From</string>
+    <string name="arabic">العربية</string>
+    <string name="english">English</string>
 </resources>
