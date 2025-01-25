@@ -50,7 +50,7 @@ class ArchiveViewModel(
             reservationRepo.getArchivedReservations().collect{ result ->
                 result.onSuccess { data ->
                     _uiState.update { oldState ->
-                        oldState.copy(reservations = data)
+                        oldState.copy(reservations = data.sortedBy { it.date+it.time })
                     }
                 }.onFailure { e ->
                     Log.e(TAG, "fetchReservations: ${e.message}")

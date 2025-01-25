@@ -224,12 +224,12 @@ object SheetUtil {
 
     object PdfConfig {
 
-        val minWidth = 30f
-        val charWidth = 5.5f
+        val minWidth = 35f
+        val charWidth = 6f
         val pageWidth: Int = 842
         val pageHeight: Int = 595
         val cellHeight: Float = 20f
-        val fontSize: Float = 10f
+        val fontSize: Float = 9f
         val titleFontSize: Float = 16f
 
         val paint = Paint().apply {
@@ -343,7 +343,7 @@ object SheetUtil {
         // Track the totals for the last three columns
         var totalPrice = reservations.sumOf { it.tourismRidePrice }
         var totalCollected =
-            reservations.sumOf { if (it.travelCollectedAmount == 0) it.tourismCollectedAmount else it.travelCollectedAmount }
+            reservations.sumOf { max(it.tourismCollectedAmount, it.travelCollectedAmount) }
         var totalBalance = totalPrice - totalCollected
 
         while (currentIndex < reservations.size) {
@@ -392,7 +392,7 @@ object SheetUtil {
 
                 val reservation = reservations[currentIndex]
                 val collectedPrice =
-                    if (reservation.travelCollectedAmount == 0) reservation.tourismCollectedAmount else reservation.travelCollectedAmount
+                    max(reservation.tourismCollectedAmount, reservation.travelCollectedAmount)
                 val rowData = listOf(
                     reservation.reservationNumber.toString(),
                     reservation.clientName.truncate(),
@@ -1141,7 +1141,7 @@ object SheetUtil {
         var currentIndex = 0
 
         // Track the totals for the last three columns
-        var totalPrice = reservations.sumOf { it.tourismRidePrice }
+        var totalPrice = reservations.sumOf { if (companyType ==CompanyType.TRAVEL) it.travelRidePrice else it.tourismRidePrice }
         var totalCollected =
             reservations.sumOf { if (companyType==CompanyType.TRAVEL) it.travelCollectedAmount else it.tourismCollectedAmount }
 
@@ -1200,8 +1200,8 @@ object SheetUtil {
                     reservation.car,
                     reservation.startLocation,
                     reservation.endLocation,
-                    reservation.tourismRidePrice.toString(), // السعر
-                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
+                    if (companyType ==CompanyType.TRAVEL) reservation.travelRidePrice.toString() else reservation.tourismRidePrice.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
+                    if (companyType ==CompanyType.TRAVEL) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
                 )
                 columnStartPositions.zip(columnWidths)
                     .forEachIndexed { columnIndex, (startX, width) ->
@@ -1419,7 +1419,7 @@ object SheetUtil {
                 title,
                 (pageWidth / 2).toFloat(),
                 50f,
-                titlePaint
+                titlePaint.apply { textSize = 12f }
             )
 
             // Draw Header Row

@@ -291,7 +291,7 @@
     <string name="profits_report_placeholder">"Profit report for the period from %1$s to %2$s"</string>
     <string name="all_arrival_report_placeholder">All Arrival Report for the Period from %1$s to %2$s</string>
     <string name="company_account_report_placeholder">Company Account Report- %1$s - %2$s</string>
-    <string name="company_account_report_placeholder_en">(%1$s) Company Financial Statement  %2$s </string>
+    <string name="company_account_report_placeholder_en">%1$s Company Financial Statement  %2$s </string>
     <string name="car_filter">Car Filter</string>
     <string name="save">Save</string>
     <string name="save_customer">Save Customer</string>
