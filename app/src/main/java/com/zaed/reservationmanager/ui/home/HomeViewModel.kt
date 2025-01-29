@@ -256,7 +256,7 @@ class HomeViewModel(
             reservationRepo.fetchReportReservations(report).collect { result ->
                 result.onSuccess { data ->
                     Log.d("ReportTest", "fetchReportReservations: success ${data.size}")
-                    onSuccess(data)
+                    onSuccess(data.sortedBy { it.date + it.time })
                 }.onFailure { e ->
                     Log.e("ReportTest", "fetchReportReservations: ${e.message}")
                     e.printStackTrace()

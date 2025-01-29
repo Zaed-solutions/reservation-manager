@@ -164,7 +164,7 @@ object SheetUtil {
     }
 
     // Extension functions
-    private fun String.truncate(maxLength: Int = 15): String =
+    private fun String.truncate(maxLength: Int = 20): String =
         if (length > maxLength) substring(0, maxLength) + "..." else this
 
 
@@ -224,8 +224,8 @@ object SheetUtil {
 
     object PdfConfig {
 
-        val minWidth = 35f
-        val charWidth = 6f
+        val minWidth = 28f
+        val charWidth = 4.6f
         val pageWidth: Int = 842
         val pageHeight: Int = 595
         val cellHeight: Float = 20f
@@ -301,9 +301,9 @@ object SheetUtil {
             reservations.map { it.clientName.truncate() },
             reservations.map { it.tourismCompany.truncate() },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
-            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type.truncate() },
-            reservations.map { it.car.truncate() },
+            reservations.map { it.car +"  "},
             reservations.map { it.startLocation.truncate() },
             reservations.map { it.endLocation.truncate() },
             reservations.map { it.tourismRidePrice.toString() },
@@ -400,7 +400,7 @@ object SheetUtil {
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type.truncate(),
-                    reservation.car.truncate(),
+                    "${reservation.carCount} ${reservation.car}",
                     reservation.startLocation.truncate(),
                     reservation.endLocation.truncate(),
                     reservation.tourismRidePrice.toString(), // السعر
@@ -834,9 +834,9 @@ object SheetUtil {
             reservations.map { it.reservationNumber.toString() },
             reservations.map { it.clientName },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
-            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type },
-            reservations.map { it.car },
+            reservations.map { it.car +"  "},
             reservations.map { it.tourismRidePrice.toString() },
             reservations.map { (it.tourismRidePrice - it.travelRidePrice).toString() },
         )
@@ -920,7 +920,7 @@ object SheetUtil {
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type,
-                    reservation.car,
+                    "${reservation.carCount} ${reservation.car}",
                     reservation.tourismRidePrice.toString(), // السعر
                     (reservation.tourismRidePrice - reservation.travelRidePrice).toString()//profit
                 )
@@ -1105,9 +1105,9 @@ object SheetUtil {
             reservations.map { it.reservationNumber.toString() },
             reservations.map { it.clientName },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
-            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type },
-            reservations.map { it.car },
+            reservations.map { it.car +"  "},
             reservations.map { it.startLocation },
             reservations.map { it.endLocation },
             reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString()  },
@@ -1197,7 +1197,7 @@ object SheetUtil {
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type,
-                    reservation.car,
+                    "${reservation.carCount} ${reservation.car}",
                     reservation.startLocation,
                     reservation.endLocation,
                     if (companyType ==CompanyType.TRAVEL) reservation.travelRidePrice.toString() else reservation.tourismRidePrice.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
@@ -1359,7 +1359,7 @@ object SheetUtil {
             "اسم الضيف",
             "إسم الموظف",
             "تاريخ أول حركة",
-            "عدد الحركات",
+            "الحركات",
             "السعر",
             "المدفوع",
             "الرصيد"
@@ -1627,9 +1627,9 @@ object SheetUtil {
             reservations.map { it.clientName.truncate() },
             reservations.map { it.tourismEmployee.truncate() },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
-            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type },
-            reservations.map { it.car },
+            reservations.map { it.car +"  "},
             reservations.map { it.startLocation.truncate() },
             reservations.map { it.endLocation.truncate() },
             reservations.map { it.tourismRidePrice.toString() },
@@ -1714,7 +1714,7 @@ object SheetUtil {
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type,
-                    reservation.car,
+                    "${reservation.carCount} ${reservation.car}",
                     reservation.startLocation.truncate(),
                     reservation.endLocation.truncate(),
                     reservation.tourismRidePrice.toString(), // السعر
@@ -1885,9 +1885,9 @@ object SheetUtil {
             reservations.map { it.reservationNumber.toString() },
             reservations.map { it.clientName },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
-            reservations.map { (it.time + it.date).formatEpochSecondsToTime() },
+            reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type },
-            reservations.map { it.car },
+            reservations.map { it.car +"  "},
             reservations.map { if (companyType == CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString() },
             reservations.map { if (companyType == CompanyType.TRAVEL) it.travelCollectedAmount.toString() else it.tourismCollectedAmount.toString() },
             reservations.map { if (companyType == CompanyType.TRAVEL) (it.travelRidePrice - it.travelCollectedAmount).toString() else (it.tourismRidePrice - it.tourismCollectedAmount).toString() }
@@ -1989,7 +1989,7 @@ object SheetUtil {
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type,
-                    reservation.car,
+                    "${reservation.carCount} ${reservation.car}",
                     if (companyType == CompanyType.TRAVEL) reservation.travelRidePrice.toString() else reservation.tourismRidePrice.toString(), // السعر
                     if (companyType == CompanyType.TRAVEL) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
                     if (companyType == CompanyType.TRAVEL) (reservation.travelRidePrice - reservation.travelCollectedAmount).toString() else (reservation.tourismRidePrice - reservation.tourismCollectedAmount).toString()
