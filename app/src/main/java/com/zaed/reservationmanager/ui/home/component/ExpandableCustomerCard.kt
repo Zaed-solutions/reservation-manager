@@ -114,6 +114,11 @@ fun ExpandableCustomerCard(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     DetailRow(
+                        label = stringResource(R.string.job),
+                        value = customer.job,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    DetailRow(
                         label = stringResource(R.string.phone_number_2),
                         value = customer.phoneNumber2,
                         style = MaterialTheme.typography.bodyMedium,

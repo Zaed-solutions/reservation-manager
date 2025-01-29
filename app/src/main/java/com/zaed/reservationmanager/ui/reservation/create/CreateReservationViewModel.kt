@@ -155,10 +155,23 @@ class CreateReservationViewModel(
             is CreateReservationUiAction.UpdateCustomerNationality -> updateCustomerNationality(
                 action.nationality
             )
+            is CreateReservationUiAction.UpdateCustomerJob -> updateCustomerJob(action.job)
 
             is CreateReservationUiAction.UpdateCustomerPhone -> updateCustomerPhone(action.phone)
             is CreateReservationUiAction.UpdateCustomerPhone2 -> updateCustomerPhone2(action.phone)
             else -> Unit
+        }
+    }
+
+    private fun updateCustomerJob(job: String) {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    customer = it.customer.copy(
+                        job = job
+                    )
+                )
+            }
         }
     }
 

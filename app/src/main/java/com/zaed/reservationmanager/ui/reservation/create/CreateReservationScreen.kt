@@ -205,6 +205,9 @@ private fun CreateReservationScreenContent(
                 onUpdateNationality = {
                     onAction(CreateReservationUiAction.UpdateCustomerNationality(it))
                 },
+                onUpdateJob = {
+                    onAction(CreateReservationUiAction.UpdateCustomerJob(it))
+                }
             )
             AnimatedVisibility(isNewCustomer == false) {
                 AddedReservationsList(

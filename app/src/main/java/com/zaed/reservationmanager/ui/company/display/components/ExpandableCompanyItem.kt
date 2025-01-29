@@ -110,7 +110,8 @@ fun ExpandableCompanyItem(
                 Text(
                     text = stringResource(
                         R.string.sar,
-                        NumberFormat.getInstance(Locale.getDefault()).format(companyWithBalance.balance)),
+                        NumberFormat.getInstance(Locale.getDefault()).format(companyWithBalance.balance)
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

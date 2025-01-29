@@ -44,6 +44,10 @@ fun CustomerDetailsHeader(
             value = customer.city,
         )
         DetailRow(
+            label = stringResource(R.string.job),
+            value = customer.job,
+        )
+        DetailRow(
             label = stringResource(R.string.phone_number_1),
             value = customer.phoneNumber1,
             onClick = { onMessagePhone(customer.phoneNumber1) },

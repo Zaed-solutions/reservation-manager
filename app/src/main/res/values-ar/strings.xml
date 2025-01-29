@@ -312,5 +312,9 @@
     <string name="arabic">العربية</string>
     <string name="english">English</string>
     <string name="report_language">لغة التقرير</string>
+    <string name="ride_profit">ربح الحركة</string>
+    <string name="job">العمل</string>
+    <string name="open_account">الرصيد المفتوح</string>
+    <string name="all_accounts">جميع الشركات</string>
 
 </resources>

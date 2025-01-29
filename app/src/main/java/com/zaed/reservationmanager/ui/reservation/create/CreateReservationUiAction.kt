@@ -15,6 +15,7 @@ sealed interface CreateReservationUiAction {
     data class UpdateCustomerCountry(val country: String) : CreateReservationUiAction
     data class UpdateCustomerCity(val city: String) : CreateReservationUiAction
     data class UpdateCustomerNationality(val nationality: String) : CreateReservationUiAction
+    data class UpdateCustomerJob(val job: String) : CreateReservationUiAction
     data class FetchEmployees(val companyId: String) : CreateReservationUiAction
     data class FetchDrivers(val companyId: String) : CreateReservationUiAction
 }

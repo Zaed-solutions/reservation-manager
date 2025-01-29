@@ -315,4 +315,8 @@
     <string name="reservations_from">Reservations From</string>
     <string name="arabic">العربية</string>
     <string name="english">English</string>
+    <string name="ride_profit">Ride profit</string>
+    <string name="job">Job</string>
+    <string name="open_account">Open Accounts</string>
+    <string name="all_accounts">All Companies</string>
 </resources>

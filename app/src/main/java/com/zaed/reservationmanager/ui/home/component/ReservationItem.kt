@@ -296,7 +296,7 @@ fun ReservationItem(
                     text = stringResource(
                         R.string.sar,
                         NumberFormat.getInstance(Locale.getDefault())
-                            .format((reservation.tourismRidePrice - reservation.travelRidePrice))
+                            .format(reservation.tourismRidePrice)
                     ),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
@@ -329,7 +329,14 @@ fun ReservationItem(
                             }
                         } else null
                     )
-
+                    DetailRow(
+                        label = stringResource(R.string.ride_profit),
+                        value = stringResource(
+                            R.string.sar,
+                            NumberFormat.getInstance(Locale.getDefault())
+                                .format((reservation.tourismRidePrice - reservation.travelRidePrice))
+                        )
+                    )
                     DetailRow(
                         label = stringResource(R.string.client_phone),
                         value = reservation.clientPhone,
@@ -401,6 +408,11 @@ fun ReservationItem(
                                 .format(reservation.totalRidesPrice)
                         ),
                     )
+                    DetailRow(
+                        label = stringResource(R.string.flight_number),
+                        value = reservation.flightNumber
+                    )
+
                     if(isViewRelatedEnabled){
                         Text(
                             text = stringResource(R.string.view_main_reservation),
@@ -411,11 +423,6 @@ fun ReservationItem(
                             }
                         )
                     }
-
-                    DetailRow(
-                        label = stringResource(R.string.flight_number),
-                        value = reservation.flightNumber
-                    )
 
                     Column {
                         Row(
@@ -428,7 +435,7 @@ fun ReservationItem(
                                     MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
 
                                 ),
-                                modifier = Modifier.weight(2f),
+                                modifier = Modifier.weight(1f),
                                 color = Color.Transparent,
                                 shape = RoundedCornerShape(topStart = 8.dp)
                             ) {
@@ -514,7 +521,7 @@ fun ReservationItem(
                                         1.dp,
                                         MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                                     ),
-                                    modifier = Modifier.weight(2f),
+                                    modifier = Modifier.weight(1f),
                                     color = Color.Transparent,
                                     shape = RoundedCornerShape(topStart = 8.dp)
                                 ) {

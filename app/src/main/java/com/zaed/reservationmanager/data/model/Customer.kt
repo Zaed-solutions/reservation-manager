@@ -13,6 +13,7 @@ data class Customer(
     val phoneNumber1: String = "",
     val phoneNumber2: String = "",
     val email: String = "",
+    val job: String = "",
     val createdAtEpochSeconds: Long = Clock.System.now().epochSeconds,
 ) {
     fun isComplete(): Boolean {

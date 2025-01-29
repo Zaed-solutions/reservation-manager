@@ -1,11 +1,13 @@
 package com.zaed.reservationmanager.ui.company.display
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -21,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
@@ -129,6 +133,7 @@ fun CompaniesScreen(
             }
         },
         searchQuery = state.searchQuery,
+        companyFilter = state.companyFilter,
         tourismCompanies = state.displayTourismCompanies,
         travelCompanies = state.displayTravelCompanies,
         snackbarHostState = snackbarHostState
@@ -142,6 +147,7 @@ private fun CompaniesScreenContent(
     isLoading: Boolean = false,
     onAction: (CompaniesUiAction) -> Unit = {},
     searchQuery: String = "",
+    companyFilter: CompanyFilter = CompanyFilter.ALL_ACCOUNTS,
     tourismCompanies: List<CompanyWithBalance> = emptyList(),
     travelCompanies: List<CompanyWithBalance> = emptyList(),
     snackbarHostState: SnackbarHostState? = null,
@@ -220,6 +226,34 @@ private fun CompaniesScreenContent(
                 singleLine = true,
                 shape = MaterialTheme.shapes.large
             )
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            ) {
+                SegmentedButton(
+                    selected = companyFilter == CompanyFilter.OPEN_ACCOUNT,
+                    onClick = {
+                        onAction(CompaniesUiAction.OnFilterCompanies(CompanyFilter.OPEN_ACCOUNT))
+                    },
+                    shape = RoundedCornerShape(topStart = 24.dp, bottomStart = 24.dp),
+                ) {
+                    Text(
+                        text = stringResource(CompanyFilter.OPEN_ACCOUNT.titleRes),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                SegmentedButton(
+                    selected = companyFilter == CompanyFilter.ALL_ACCOUNTS,
+                    onClick = {
+                        onAction(CompaniesUiAction.OnFilterCompanies(CompanyFilter.ALL_ACCOUNTS))
+                    },
+                    shape = RoundedCornerShape(topEnd = 24.dp, bottomEnd = 24.dp),
+                ) {
+                    Text(
+                        text = stringResource(CompanyFilter.ALL_ACCOUNTS.titleRes),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
             TabRow(
                 modifier = Modifier.padding(top = 16.dp),
                 selectedTabIndex = pagerState.currentPage
@@ -357,4 +391,10 @@ private fun CompaniesScreenContentPreview() {
             tourismCompanies = companies
         )
     }
+}
+
+
+enum class CompanyFilter(@StringRes val titleRes: Int){
+    OPEN_ACCOUNT(R.string.open_account),
+    ALL_ACCOUNTS(R.string.all_accounts)
 }

@@ -272,14 +272,6 @@ class CreateCustomerViewModel(
         }
     }
 
-    private fun updateMobile(city: String) {
-        _uiState.update { oldState ->
-            oldState.copy(
-                customer = oldState.customer.copy(city = city)
-            )
-        }
-    }
-
     fun handleAction(action: CreateCustomerUiAction) {
         when (action) {
             CreateCustomerUiAction.SubmitClient -> onSubmit()
@@ -289,7 +281,28 @@ class CreateCustomerViewModel(
             is CreateCustomerUiAction.UpdateNationality -> updateNationality(action.nationality)
             is CreateCustomerUiAction.UpdateNumber1 -> updateMobile1(action.number)
             is CreateCustomerUiAction.UpdateNumber2 -> updateMobile2(action.number)
-            is CreateCustomerUiAction.UpdateCity -> updateMobile(action.city)
+            is CreateCustomerUiAction.UpdateCity -> updateCity(action.city)
+            is CreateCustomerUiAction.UpdateJob -> updateJob(action.job)
+        }
+    }
+
+    private fun updateCity(city: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(
+                    customer = oldState.customer.copy(city = city)
+                )
+            }
+        }
+    }
+
+    private fun updateJob(job: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(
+                    customer = oldState.customer.copy(job = job)
+                )
+            }
         }
     }
 

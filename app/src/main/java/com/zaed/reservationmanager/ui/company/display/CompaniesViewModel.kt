@@ -79,21 +79,24 @@ class CompaniesViewModel(
         when (action) {
             is CompaniesUiAction.OnDeleteCompanyConfirmed -> deleteCompany(action.companyId)
             is CompaniesUiAction.UpdateSearchQuery -> filterData(action.query)
+            is CompaniesUiAction.OnFilterCompanies -> filterData(companyFilter = action.filter)
             else -> Unit
         }
     }
 
     private fun filterData(
-        searchQuery: String = uiState.value.searchQuery
+        searchQuery: String = uiState.value.searchQuery,
+        companyFilter: CompanyFilter = uiState.value.companyFilter
     ) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    searchQuery = searchQuery
+                    searchQuery = searchQuery,
+                    companyFilter = companyFilter
                 )
             }
         }
-        if (searchQuery.isBlank()) {
+        if (searchQuery.isBlank() && companyFilter == CompanyFilter.ALL_ACCOUNTS) {
             Log.d(TAG, "filterData: searchQuery is blank and timeFilter is All")
             _uiState.update {
                 it.copy(
@@ -101,7 +104,18 @@ class CompaniesViewModel(
                     displayTravelCompanies = it.travelCompanies
                 )
             }
-        } else {
+        } else if(searchQuery.isBlank()){
+            _uiState.update {
+                it.copy(
+                    displayTourismCompanies = uiState.value.tourismCompanies.filter { companyWithBalance ->
+                        companyWithBalance.balance != 0
+                    },
+                    displayTravelCompanies = uiState.value.travelCompanies.filter { companyWithBalance ->
+                        companyWithBalance.balance != 0
+                    }
+                )
+            }
+        } else if (companyFilter == CompanyFilter.ALL_ACCOUNTS) {
             Log.d(TAG, "filterData: timeFilter is All")
             val filteredTourismCompanies = uiState.value.tourismCompanies.filter { companyWithBalance ->
                 listOf(
@@ -116,6 +130,35 @@ class CompaniesViewModel(
             }
             val filteredTravelCompanies = uiState.value.travelCompanies.filter { companyWithBalance ->
                 listOf(
+                    companyWithBalance.company.name,
+                    companyWithBalance.company.country,
+                    companyWithBalance.company.city,
+                    companyWithBalance.company.phoneNumber1,
+                    companyWithBalance.company.phoneNumber2,
+                ).any { value ->
+                    value.contains(searchQuery, ignoreCase = true)
+                }
+            }
+            _uiState.update { oldState ->
+                oldState.copy(
+                    displayTourismCompanies = filteredTourismCompanies,
+                    displayTravelCompanies = filteredTravelCompanies
+                )
+            }
+        } else {
+            val filteredTourismCompanies = uiState.value.tourismCompanies.filter { companyWithBalance ->
+                companyWithBalance.balance != 0 || listOf(
+                    companyWithBalance.company.name,
+                    companyWithBalance.company.country,
+                    companyWithBalance.company.city,
+                    companyWithBalance.company.phoneNumber1,
+                    companyWithBalance.company.phoneNumber2
+                ).any { value ->
+                    value.contains(searchQuery, ignoreCase = true)
+                }
+            }
+            val filteredTravelCompanies = uiState.value.travelCompanies.filter { companyWithBalance ->
+                companyWithBalance.balance != 0 || listOf(
                     companyWithBalance.company.name,
                     companyWithBalance.company.country,
                     companyWithBalance.company.city,

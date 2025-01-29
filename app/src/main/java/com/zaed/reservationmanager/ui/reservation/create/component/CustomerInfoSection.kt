@@ -33,6 +33,7 @@ fun CustomerInfoSection(
     onUpdatePhoneNumber: (String) -> Unit = {},
     onUpdatePhoneNumber2: (String) -> Unit = {},
     onUpdateEmail: (String) -> Unit = {},
+    onUpdateJob: (String) -> Unit,
     error: ReservationError = ReservationError.NONE,
     onUpdateNationality: (String) -> Unit = {},
 ) {
@@ -109,6 +110,14 @@ fun CustomerInfoSection(
                             },
                             isOptional = true,
                         )
+                        TitledTextField2(
+                            title = stringResource(R.string.job),
+                            value = customer.job,
+                            onValueChanged = { newText ->
+                                onUpdateJob(newText)
+                            },
+                            isOptional = true,
+                        )
                         TitledTextField(
                             title = stringResource(R.string.email),
                             initialValue = customer.email,
@@ -152,6 +161,14 @@ fun CustomerInfoSection(
                         DetailRow(
                             label = stringResource(R.string.residence_country),
                             value = customer.residenceCountry
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.city),
+                            value = customer.city,
+                        )
+                        DetailRow(
+                            label = stringResource(R.string.job),
+                            value = customer.job,
                         )
                         DetailRow(
                             label = stringResource(R.string.email),

@@ -203,6 +203,14 @@ fun NewClientDataEntryScreenContent(
                 isOptional = true,
             )
             TitledTextField2(
+                title = stringResource(R.string.job),
+                value = customer.job,
+                onValueChanged = { newText ->
+                    action(CreateCustomerUiAction.UpdateJob(newText))
+                },
+                isOptional = true,
+            )
+            TitledTextField2(
                 title = stringResource(R.string.phone_number_1),
                 value = customer.phoneNumber1,
                 onValueChanged = { newText ->
