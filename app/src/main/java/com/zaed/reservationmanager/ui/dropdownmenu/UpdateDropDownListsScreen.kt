@@ -37,7 +37,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
+import com.zaed.reservationmanager.data.repository.Menus
 import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
@@ -55,21 +57,8 @@ fun UpdateDropDownListsScreen(
     viewModel: UpdateDropDownListsViewModel = koinViewModel()
 ) {
     val scope = rememberCoroutineScope()
-    // Initialize menus
-    LaunchedEffect(Unit) {
-        scope.launch {
-            viewModel.initializeMenus()
-        }
-    }
-
-    val reservationTypesFlow = viewModel.getMenus(RESERVATION_TYPES_KEY)
-        .collectAsState(initial = emptySet())
-    val carTypesFlow = viewModel.getMenus(CAR_TYPES_KEY)
-        .collectAsState(initial = emptySet())
-    val countriesFlow = viewModel.getMenus(COUNTRIES_KEY)
-        .collectAsState(initial = emptySet())
-
-    var selectedMenuKey by remember { mutableStateOf<Preferences.Key<Set<String>>?>(null) }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var selectedMenuKey by remember { mutableStateOf<Menus?>(null) }
     var isEditing by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -95,10 +84,10 @@ fun UpdateDropDownListsScreen(
                 style = MaterialTheme.typography.titleMedium
             )
             TextButton({
-                if (selectedMenuKey == RESERVATION_TYPES_KEY) {
+                if (selectedMenuKey == Menus.RESERVATION_TYPES) {
                     selectedMenuKey = null
                 } else {
-                    selectedMenuKey = RESERVATION_TYPES_KEY
+                    selectedMenuKey = Menus.RESERVATION_TYPES
                 }
             }) {
                 Text(
@@ -108,23 +97,23 @@ fun UpdateDropDownListsScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
-                    selectedMenuKey = RESERVATION_TYPES_KEY
+                    selectedMenuKey = Menus.RESERVATION_TYPES
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Delete")
                 }
             }
-            AnimatedVisibility(selectedMenuKey == RESERVATION_TYPES_KEY) {
+            AnimatedVisibility(selectedMenuKey == Menus.RESERVATION_TYPES) {
                 MenuList(
-                    reservationTypesFlow.value,
+                    state.reservationTypes,
                 ) {
-                    viewModel.deleteMenu(RESERVATION_TYPES_KEY, it)
+                    viewModel.deleteItemFromMenu(Menus.RESERVATION_TYPES, it)
                 }
             }
             TextButton({
-                if (selectedMenuKey == CAR_TYPES_KEY) {
+                if (selectedMenuKey == Menus.CAR_TYPES) {
                     selectedMenuKey = null
                 } else {
-                    selectedMenuKey = CAR_TYPES_KEY
+                    selectedMenuKey = Menus.CAR_TYPES
                 }
             }) {
                 Text(
@@ -134,21 +123,21 @@ fun UpdateDropDownListsScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
-                    selectedMenuKey = CAR_TYPES_KEY
+                    selectedMenuKey = Menus.CAR_TYPES
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Delete")
                 }
             }
-            AnimatedVisibility(selectedMenuKey == CAR_TYPES_KEY) {
-                MenuList(carTypesFlow.value) {
-                    viewModel.deleteMenu(CAR_TYPES_KEY, it)
+            AnimatedVisibility(selectedMenuKey == Menus.CAR_TYPES) {
+                MenuList(state.carTypes) {
+                    viewModel.deleteItemFromMenu(Menus.CAR_TYPES, it)
                 }
             }
             TextButton({
-                if (selectedMenuKey == COUNTRIES_KEY) {
+                if (selectedMenuKey == Menus.COUNTRIES) {
                     selectedMenuKey = null
                 } else {
-                    selectedMenuKey = COUNTRIES_KEY
+                    selectedMenuKey = Menus.COUNTRIES
                 }
             }) {
                 Text(
@@ -158,14 +147,14 @@ fun UpdateDropDownListsScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = {
                     isEditing = true
-                    selectedMenuKey = COUNTRIES_KEY
+                    selectedMenuKey = Menus.COUNTRIES
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Delete")
                 }
             }
-            AnimatedVisibility(selectedMenuKey == COUNTRIES_KEY) {
-                MenuList(countriesFlow.value) {
-                    viewModel.deleteMenu(COUNTRIES_KEY, it)
+            AnimatedVisibility(selectedMenuKey == Menus.COUNTRIES) {
+                MenuList(state.countries) {
+                    viewModel.deleteItemFromMenu(Menus.COUNTRIES, it)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -193,22 +182,9 @@ fun UpdateDropDownListsScreen(
                                 TextButton(onClick = {
                                     if (text.isNotEmpty())
                                         scope.launch {
-                                            viewModel.saveMenus(
+                                            viewModel.addItemToMenu(
                                                 selectedMenuKey!!,
-                                                if (selectedMenuKey == RESERVATION_TYPES_KEY) {
-                                                    reservationTypesFlow.value.toMutableSet()
-                                                        .apply {
-                                                            add(text)
-                                                        }
-                                                } else if (selectedMenuKey == CAR_TYPES_KEY) {
-                                                    carTypesFlow.value.toMutableSet().apply {
-                                                        add(text)
-                                                    }
-                                                } else {
-                                                    countriesFlow.value.toMutableSet().apply {
-                                                        add(text)
-                                                    }
-                                                }
+                                                text
                                             )
                                         }
                                     isEditing = false
@@ -231,7 +207,7 @@ fun UpdateDropDownListsScreen(
 
 @Composable
 fun MenuList(
-    menuItems: Set<String>,
+    menuItems: List<String>,
     deleteItem: (String) -> Unit
 ) {
     val menuList = menuItems.toList()

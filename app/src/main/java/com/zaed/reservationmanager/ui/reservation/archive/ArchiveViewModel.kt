@@ -6,10 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import com.zaed.reservationmanager.data.repository.Menus
+import com.zaed.reservationmanager.data.repository.MenusDataRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel.Companion
-import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,7 @@ import org.bouncycastle.asn1.x500.style.RFC4519Style.o
 class ArchiveViewModel(
     private val reservationRepo: ReservationRepository,
     private val employeeRepo: EmployeeRepository,
-    private val menuDataStore: MenuDataStore,
+    private val menusDataRepository: MenusDataRepository,
     private val companyRepo: CompanyRepository,
     ): ViewModel() {
     private val _uiState = MutableStateFlow(ArchiveUiState())
@@ -62,11 +63,13 @@ class ArchiveViewModel(
 
     private fun fetchReservationTypes() {
         viewModelScope.launch(Dispatchers.IO) {
-            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        reservationTypes = data.toList()
-                    )
+            menusDataRepository.getMenuByName(Menus.RESERVATION_TYPES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            reservationTypes = menu.data,
+                        )
+                    }
                 }
             }
         }
@@ -74,11 +77,13 @@ class ArchiveViewModel(
 
     private fun fetchCarTypes() {
         viewModelScope.launch(Dispatchers.IO) {
-            menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        cars = data.toList()
-                    )
+            menusDataRepository.getMenuByName(Menus.CAR_TYPES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            cars = menu.data,
+                        )
+                    }
                 }
             }
         }

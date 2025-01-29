@@ -11,6 +11,8 @@ import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepositoryImpl
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepositoryImpl
+import com.zaed.reservationmanager.data.repository.MenusDataRepository
+import com.zaed.reservationmanager.data.repository.MenusDataRepositoryImpl
 import com.zaed.reservationmanager.data.repository.MessageRepository
 import com.zaed.reservationmanager.data.repository.MessageRepositoryImpl
 import com.zaed.reservationmanager.data.repository.ReservationRepository
@@ -25,14 +27,14 @@ import com.zaed.reservationmanager.data.source.remote.MessageRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.MessageRemoteDataSourceImpl
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSource
 import com.zaed.reservationmanager.data.source.remote.ReservationRemoteDataSourceImpl
+import com.zaed.reservationmanager.data.source.remote.menus.MenusDataRemoteDataSource
+import com.zaed.reservationmanager.data.source.remote.menus.MenusDataRemoteDataSourceImpl
 import com.zaed.reservationmanager.ui.client.create.CreateCustomerViewModel
 import com.zaed.reservationmanager.ui.client.details.CustomerDetailsViewModel
 import com.zaed.reservationmanager.ui.company.add.AddCompanyViewModel
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel
 import com.zaed.reservationmanager.ui.company.display.CompaniesViewModel
 import com.zaed.reservationmanager.ui.driver.DriverListViewModel
-import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
-import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStoreImpl
 import com.zaed.reservationmanager.ui.dropdownmenu.UpdateDropDownListsViewModel
 import com.zaed.reservationmanager.ui.employee.add.AddEmployeeViewModel
 import com.zaed.reservationmanager.ui.employee.display.EmployeeListViewModel
@@ -71,6 +73,7 @@ val repositoryModule = module {
     singleOf(::CustomerRepositoryImpl) { bind<CustomerRepository>() }
     singleOf(::EmployeeRepositoryImpl) { bind<EmployeeRepository>() }
     singleOf(::ReservationRepositoryImpl) { bind<ReservationRepository>() }
+    singleOf(::MenusDataRepositoryImpl) { bind<MenusDataRepository>() }
 }
 
 val remoteModule = module {
@@ -79,7 +82,8 @@ val remoteModule = module {
     singleOf(::CustomerRemoteDataSourceImpl) { bind<CustomerRemoteDataSource>() }
     singleOf(::EmployeeRemoteDataSourceImpl) { bind<EmployeeRemoteDataSource>() }
     singleOf(::ReservationRemoteDataSourceImpl) { bind<ReservationRemoteDataSource>() }
-    singleOf(::MenuDataStoreImpl) { bind<MenuDataStore>() }
+    singleOf(::MenusDataRemoteDataSourceImpl) { bind<MenusDataRemoteDataSource>() }
     single<FirebaseFirestore> { Firebase.firestore }
     single<FirebaseCrashlytics> { Firebase.crashlytics }
+
 }

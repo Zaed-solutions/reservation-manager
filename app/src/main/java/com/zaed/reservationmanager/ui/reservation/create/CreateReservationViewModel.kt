@@ -7,8 +7,9 @@ import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.CustomerRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import com.zaed.reservationmanager.data.repository.Menus
+import com.zaed.reservationmanager.data.repository.MenusDataRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
-import com.zaed.reservationmanager.ui.dropdownmenu.MenuDataStore
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.COUNTRIES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
@@ -25,7 +26,7 @@ class CreateReservationViewModel(
     private val customerRepository: CustomerRepository,
     private val employeeRepository: EmployeeRepository,
     private val reservationRepository: ReservationRepository,
-    private val menuDataStore: MenuDataStore
+    private val menusDataRepository: MenusDataRepository
 ) : ViewModel() {
     private val TAG = "CreateReservationViewModel"
 
@@ -42,11 +43,13 @@ class CreateReservationViewModel(
 
     private fun fetchCountries() {
         viewModelScope.launch {
-            menuDataStore.getMenus(COUNTRIES_KEY).collect { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        countries = data.toList()
-                    )
+            menusDataRepository.getMenuByName(Menus.COUNTRIES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            countries = menu.data,
+                        )
+                    }
                 }
             }
         }
@@ -54,11 +57,13 @@ class CreateReservationViewModel(
 
     private fun fetchCarTypes() {
         viewModelScope.launch {
-            menuDataStore.getMenus(CAR_TYPES_KEY).collect { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        carTypes = data.toList()
-                    )
+            menusDataRepository.getMenuByName(Menus.CAR_TYPES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            carTypes = menu.data,
+                        )
+                    }
                 }
             }
         }
@@ -66,11 +71,13 @@ class CreateReservationViewModel(
 
     private fun fetchReservationTypes() {
         viewModelScope.launch {
-            menuDataStore.getMenus(RESERVATION_TYPES_KEY).collect { data ->
-                _uiState.update { oldState ->
-                    oldState.copy(
-                        reservationTypes = data.toList()
-                    )
+            menusDataRepository.getMenuByName(Menus.RESERVATION_TYPES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            reservationTypes = menu.data,
+                        )
+                    }
                 }
             }
         }
