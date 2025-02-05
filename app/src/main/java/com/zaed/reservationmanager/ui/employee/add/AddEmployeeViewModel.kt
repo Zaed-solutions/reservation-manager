@@ -8,6 +8,8 @@ import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.EmployeeType
 import com.zaed.reservationmanager.data.repository.CompanyRepository
 import com.zaed.reservationmanager.data.repository.EmployeeRepository
+import com.zaed.reservationmanager.data.repository.Menus
+import com.zaed.reservationmanager.data.repository.MenusDataRepository
 import com.zaed.reservationmanager.ui.util.InputValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ import kotlinx.datetime.Clock
 class AddEmployeeViewModel(
     private val companyRepo: CompanyRepository,
     private val employeeRepo: EmployeeRepository,
+    private val menusDataRepository: MenusDataRepository
 ) : ViewModel() {
     private val TAG = "AddEmployeeViewModel"
     private val _uiState = MutableStateFlow(AddEmployeeUiState())
@@ -36,7 +39,24 @@ class AddEmployeeViewModel(
                     )
                 }
             }
+            if(isDriver){
+                fetchCars()
+            }
             fetchCompanies()
+        }
+    }
+
+    private fun fetchCars() {
+        viewModelScope.launch(Dispatchers.IO) {
+            menusDataRepository.getMenuByName(Menus.CAR_TYPES).collect { result ->
+                result.onSuccess { menu ->
+                    _uiState.update { oldState ->
+                        oldState.copy(
+                            cars = menu.data,
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -58,6 +78,7 @@ class AddEmployeeViewModel(
     fun handleAction(action: AddEmployeeUiAction) {
         when (action) {
             is AddEmployeeUiAction.OnCompanyChanged -> updateCompany(action.company)
+            is AddEmployeeUiAction.OnCarChanged -> updateCar(action.car)
             is AddEmployeeUiAction.OnNameChanged -> updateName(action.name)
             is AddEmployeeUiAction.OnPhoneNumber1Changed -> updatePhoneNumber1(action.phoneNumber)
             is AddEmployeeUiAction.OnPhoneNumber2Changed -> updatePhoneNumber2(action.phoneNumber)
@@ -67,6 +88,14 @@ class AddEmployeeViewModel(
             is AddEmployeeUiAction.OnCityChanged -> updateCity(action.city)
             AddEmployeeUiAction.OnSaveClicked -> onSave()
             else -> Unit
+        }
+    }
+
+    private fun updateCar(car: String) {
+        viewModelScope.launch {
+            _uiState.update { oldState ->
+                oldState.copy(employee = oldState.employee.copy(car = car))
+            }
         }
     }
 

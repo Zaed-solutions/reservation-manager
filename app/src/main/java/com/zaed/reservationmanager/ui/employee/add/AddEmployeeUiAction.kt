@@ -7,6 +7,7 @@ sealed interface AddEmployeeUiAction {
     data object OnSaveClicked : AddEmployeeUiAction
     data class OnNameChanged(val name: String) : AddEmployeeUiAction
     data class OnCompanyChanged(val company: Company) : AddEmployeeUiAction
+    data class OnCarChanged(val car: String) : AddEmployeeUiAction
     data class OnPositionChanged(val position: String) : AddEmployeeUiAction
     data class OnUpdateNationality(val nationality: String) : AddEmployeeUiAction
     data class OnEmailChanged(val email: String) : AddEmployeeUiAction

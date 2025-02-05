@@ -144,6 +144,7 @@ fun DriverListWithScreenContent(
                     driver.phoneNumber1,
                     driver.phoneNumber2,
                     driver.city,
+                    driver.car,
                     driver.nationality
                 ).any { value ->
                     value.contains(searchQuery, ignoreCase = true)

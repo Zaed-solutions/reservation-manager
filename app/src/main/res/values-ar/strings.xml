@@ -93,7 +93,7 @@
     <string name="confirmation_sent">تم إرسال التأكيد</string>
     <string name="rides">الرحلات</string>
     <string name="travel_company">شركة النقل</string>
-    <string name="car">نوع السيارة</string>
+    <string name="car">السيارة</string>
     <string name="driver">اسم السائق</string>
     <string name="notes">ملاحظات</string>
     <string name="send_info_to_client">إرسال معلومات السائق للعميل</string>

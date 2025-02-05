@@ -9,5 +9,6 @@ data class AddEmployeeUiState(
     val isDriver: Boolean = false,
     val isFinished: Boolean = false,
     val companies: List<Company> = emptyList(),
+    val cars: List<String> = emptyList(),
     val error: AddEmployeeUiError = AddEmployeeUiError.NONE
 )

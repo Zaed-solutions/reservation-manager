@@ -109,6 +109,11 @@ fun ExpandableEmployeeCard(
                 ) {
                     if (isDriver) {
                         DetailRow(
+                            label = stringResource(R.string.car),
+                            value = employee.car,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        DetailRow(
                             label = stringResource(R.string.nationality),
                             value = employee.nationality,
                             style = MaterialTheme.typography.bodyMedium

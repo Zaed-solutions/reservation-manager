@@ -39,6 +39,7 @@ import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.ui.components.TitledDropDownTextField
 import com.zaed.reservationmanager.ui.components.TitledTextField
+import com.zaed.reservationmanager.ui.reservation.create.ReservationError
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import org.koin.androidx.compose.koinViewModel
@@ -94,6 +95,7 @@ fun AddEmployeeScreen(
         error = state.error,
         isNew = state.isNew,
         companies = state.companies,
+        cars = state.cars,
         onAction = { action ->
             when (action) {
                 AddEmployeeUiAction.OnBackPressed -> onBackPressed()
@@ -115,7 +117,8 @@ private fun AddEmployeeScreenContent(
     onAction: (AddEmployeeUiAction) -> Unit = {},
     error: AddEmployeeUiError = AddEmployeeUiError.NONE,
     isNew: Boolean = true,
-    companies: List<Company> = emptyList()
+    companies: List<Company> = emptyList(),
+    cars: List<String> = emptyList()
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -190,6 +193,21 @@ private fun AddEmployeeScreenContent(
                 ),
                 errorMessageRes = error.messageRes
             )
+            if(isDriver){
+                TitledDropDownTextField(
+                    title = stringResource(R.string.car),
+                    selectedValue = currentEmployee.car,
+                    onValueChanged = { index ->
+                        onAction(
+                            AddEmployeeUiAction.OnCarChanged(
+                                cars.getOrNull(index) ?: ""
+                            )
+                        )
+                    },
+                    isOptional = true,
+                    options = cars,
+                )
+            }
             //company
             TitledDropDownTextField(
                 title = stringResource(R.string.company),
