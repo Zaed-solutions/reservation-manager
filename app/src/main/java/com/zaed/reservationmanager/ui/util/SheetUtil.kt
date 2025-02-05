@@ -287,6 +287,7 @@ object SheetUtil {
             "الوقت",
             "الحركة",
             "السيارة",
+            "العدد",
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
@@ -304,6 +305,7 @@ object SheetUtil {
             reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type.truncate() },
             reservations.map { it.car +"  "},
+            reservations.map { it.peopleCount.toString()},
             reservations.map { it.startLocation.truncate() },
             reservations.map { it.endLocation.truncate() },
             reservations.map { it.tourismRidePrice.toString() },
@@ -401,6 +403,7 @@ object SheetUtil {
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type.truncate(),
                     "${reservation.carCount} ${reservation.car}",
+                    reservation.peopleCount.toString(),
                     reservation.startLocation.truncate(),
                     reservation.endLocation.truncate(),
                     reservation.tourismRidePrice.toString(), // السعر
@@ -457,6 +460,7 @@ object SheetUtil {
                 val summaryRowData = listOf(
                     "",
                     " عدد السجلات :${reservations.size}",
+                    "",
                     "",
                     "",
                     "",
@@ -1094,6 +1098,7 @@ object SheetUtil {
             "الوقت",
             "الحركة",
             "السيارة",
+            "العدد",
             "بداية الرحلة",
             "نهاية الرحلة",
             "السعر",
@@ -1108,6 +1113,7 @@ object SheetUtil {
             reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
             reservations.map { it.type },
             reservations.map { it.car +"  "},
+            reservations.map { it.peopleCount.toString() },
             reservations.map { it.startLocation },
             reservations.map { it.endLocation },
             reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString()  },
@@ -1198,6 +1204,7 @@ object SheetUtil {
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
                     reservation.type,
                     "${reservation.carCount} ${reservation.car}",
+                    reservation.peopleCount.toString(),
                     reservation.startLocation,
                     reservation.endLocation,
                     if (companyType ==CompanyType.TRAVEL) reservation.travelRidePrice.toString() else reservation.tourismRidePrice.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
@@ -1253,6 +1260,7 @@ object SheetUtil {
                 val summaryRowData = listOf(
                     "",
                     " عدد السجلات :${reservations.size}",
+                    "",
                     "",
                     "",
                     "",

@@ -319,4 +319,6 @@
     <string name="job">Job</string>
     <string name="open_account">Open Accounts</string>
     <string name="all_accounts">All Companies</string>
+    <string name="download_data">Download Data</string>
+    <string name="upload_data">Upload Data</string>
 </resources>

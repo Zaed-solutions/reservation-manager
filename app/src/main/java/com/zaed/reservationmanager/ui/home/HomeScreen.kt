@@ -512,7 +512,7 @@ fun HomeScreenContent(
                                 },
                                 text = {
                                     Text(
-                                        text = stringResource(R.string.export_as_csv),
+                                        text = stringResource(R.string.download_data),
                                     )
                                 },
                             )
@@ -534,7 +534,7 @@ fun HomeScreenContent(
                                 },
                                 text = {
                                     Text(
-                                        text = stringResource(R.string.import_customers_from_excel),
+                                        text = stringResource(R.string.upload_data),
                                     )
                                 },
                             )
