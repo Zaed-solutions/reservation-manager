@@ -74,10 +74,10 @@ fun ReservationItem(
     onSendThanksToCustomer: () -> Unit = {},
     onReservationClicked: () -> Unit = {},
     onEditReservation: () -> Unit = {},
-    onEditProfile: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
     isActionsVisible: Boolean = true,
     isEditable: Boolean = true,
-    isEditProfileEnabled: Boolean = true,
+    isProfileEnabled: Boolean = true,
     onAddSecondaryReservation: () -> Unit = {},
     isViewRelatedEnabled: Boolean = false,
     onViewRelatedReservation: () -> Unit = {}
@@ -205,10 +205,10 @@ fun ReservationItem(
                                 },
                             )
                         }
-                        if (isEditProfileEnabled) {
+                        if (isProfileEnabled) {
                             DropdownMenuItem(
                                 onClick = {
-                                    onEditProfile()
+                                    onNavigateToProfile()
                                     isOptionMenuVisible = false
                                 },
                                 text = {

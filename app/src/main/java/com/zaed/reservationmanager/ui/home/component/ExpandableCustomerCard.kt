@@ -130,11 +130,6 @@ fun ExpandableCustomerCard(
                         value = customer.email,
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    DetailRow(
-                        label = stringResource(R.string.created_at),
-                        value = customer.createdAtEpochSeconds.formatEpochSecondsToDateTime(),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
                     Text(
                         text = stringResource(R.string.view_reservations),
                         style = MaterialTheme.typography.titleMedium,

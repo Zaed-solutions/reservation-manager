@@ -22,8 +22,6 @@ import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.charWidth
 import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.footerPaint
 import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.headerPaint
 import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.minWidth
-import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.pageHeight
-import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.pageWidth
 import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.paint
 import com.zaed.reservationmanager.ui.util.SheetUtil.PdfConfig.titlePaint
 import org.apache.poi.ss.usermodel.Cell
@@ -226,8 +224,6 @@ object SheetUtil {
 
         val minWidth = 28f
         val charWidth = 4.6f
-        val pageWidth: Int = 842
-        val pageHeight: Int = 595
         val cellHeight: Float = 20f
         val fontSize: Float = 9f
         val titleFontSize: Float = 16f
@@ -330,6 +326,8 @@ object SheetUtil {
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
 
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -599,6 +597,9 @@ object SheetUtil {
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
 
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
+
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -858,6 +859,10 @@ object SheetUtil {
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
 
+
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
+
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -1107,15 +1112,15 @@ object SheetUtil {
 
         // Define column positions and widths
         val columnData = listOf(
-            reservations.map { it.reservationNumber.toString() },
-            reservations.map { it.clientName },
+            reservations.map { it.reservationNumber.toString().truncate() },
+            reservations.map { it.clientName.truncate() },
             reservations.map { it.date.formatEpochSecondsToDateNumbers() },
             reservations.map { (it.time + it.date).formatEpochSecondsToTime()+"  " },
-            reservations.map { it.type },
+            reservations.map { it.type.truncate() },
             reservations.map { it.car +"  "},
             reservations.map { it.peopleCount.toString() },
-            reservations.map { it.startLocation },
-            reservations.map { it.endLocation },
+            reservations.map { it.startLocation.truncate() },
+            reservations.map { it.endLocation.truncate() },
             reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelRidePrice.toString() else it.tourismRidePrice.toString()  },
             reservations.map { if (companyType ==CompanyType.TRAVEL) it.travelCollectedAmount.toString() else it.tourismCollectedAmount.toString() },
         )
@@ -1133,7 +1138,8 @@ object SheetUtil {
 
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
-
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -1199,14 +1205,14 @@ object SheetUtil {
 
                 val rowData = listOf(
                     reservation.reservationNumber.toString(),
-                    reservation.clientName,
+                    reservation.clientName.truncate(),
                     reservation.date.formatEpochSecondsToDateNumbers(),
                     (reservation.time + reservation.date).formatEpochSecondsToTime(),
-                    reservation.type,
+                    reservation.type.truncate(),
                     "${reservation.carCount} ${reservation.car}",
                     reservation.peopleCount.toString(),
-                    reservation.startLocation,
-                    reservation.endLocation,
+                    reservation.startLocation.truncate(),
+                    reservation.endLocation.truncate(),
                     if (companyType ==CompanyType.TRAVEL) reservation.travelRidePrice.toString() else reservation.tourismRidePrice.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
                     if (companyType ==CompanyType.TRAVEL) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString() ,                    if (reservation.travelCollectedAmount > 0) reservation.travelCollectedAmount.toString() else reservation.tourismCollectedAmount.toString(), // التحصيل
                 )
@@ -1400,6 +1406,8 @@ object SheetUtil {
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
         val totalColumnsWidth = columnWidths.sum()
 
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -1653,6 +1661,8 @@ object SheetUtil {
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
 
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)
 
@@ -1911,9 +1921,11 @@ object SheetUtil {
 
         val columnWidths = maxLengths.map { max(minWidth, it * charWidth) }
 
-
         // Calculate the total width of the columns
         val totalColumnsWidth = columnWidths.sum()
+
+        val pageWidth = totalColumnsWidth.toInt() + 50
+        val pageHeight = (pageWidth / 1.414f).toInt()
 
         // Calculate the start position for the columns to center them on the page
         val startXOffset = pageWidth - ((pageWidth - totalColumnsWidth) / 2)

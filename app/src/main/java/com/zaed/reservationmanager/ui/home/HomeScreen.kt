@@ -359,11 +359,6 @@ fun HomeScreen(
                     )
                 }
 
-                is HomeUiAction.FetchCustomerForUpdating -> {
-                    val customer = state.customers.first { it.id == action.customerId }
-                    onNavigateToEditCustomer(customer)
-                }
-
                 is HomeUiAction.ShareFile -> {
                     FileUtil.shareFile(
                         context = context,
@@ -836,8 +831,8 @@ fun HomeScreenContent(
                             ReservationsList(
                                 reservations = reservations,
                                 isEditProfileEnabled = true,
-                                onEditProfile = {
-                                    onAction(HomeUiAction.FetchCustomerForUpdating(it))
+                                onNavigateToProfile = {
+                                    onAction(HomeUiAction.OnViewCustomerDetails(it))
                                 },
                                 isHeaderVisible = false,
                                 isAddEnabled = false,

@@ -16,7 +16,6 @@ sealed interface HomeUiAction {
     data object AddCustomer : HomeUiAction
     data class OnDriverInfoSent(val reservationId: String) : HomeUiAction
     data class ArchiveReservation(val reservationId: String) : HomeUiAction
-    data class FetchCustomerForUpdating(val customerId: String, val onSuccess: () -> Unit = {}) : HomeUiAction
     data class OnConfirmationSentToClient(val reservationId: String) : HomeUiAction
     data class OnInfoSentToTravelCompany(val reservationId: String) : HomeUiAction
     data class OnDeleteReservation(val reservation: Reservation) : HomeUiAction

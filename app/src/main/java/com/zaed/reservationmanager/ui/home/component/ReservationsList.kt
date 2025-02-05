@@ -43,7 +43,7 @@ fun ReservationsList(
     onDeleteReservation: (reservation: Reservation) -> Unit = {},
     onCopyPhoneNumber: (String) -> Unit = {},
     onMessagePhoneNumber: (String) -> Unit = {},
-    onEditProfile: (String) -> Unit = {},
+    onNavigateToProfile: (String) -> Unit = {},
     isEditProfileEnabled: Boolean,
     onEditReservation: (reservation: Reservation) -> Unit = {},
     onSendConfirmationToCustomer: (reservationId: String) -> Unit = {},
@@ -134,9 +134,9 @@ fun ReservationsList(
                                 onSendThanksToCustomer = {
                                     onSendThanksMessageToCustomer(reservation.id)
                                 },
-                                isEditProfileEnabled = isEditProfileEnabled,
-                                onEditProfile = {
-                                    onEditProfile(reservation.clientId)
+                                isProfileEnabled = isEditProfileEnabled,
+                                onNavigateToProfile = {
+                                    onNavigateToProfile(reservation.clientId)
                                 },
                                 onAddSecondaryReservation = {
                                     onAddSecondaryReservation(reservation)

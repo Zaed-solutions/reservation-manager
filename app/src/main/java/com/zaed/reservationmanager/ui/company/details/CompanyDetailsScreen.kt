@@ -525,7 +525,7 @@ fun CompanyDetailsScreenContent(
                             reservations = reservations,
                             isHeaderVisible = false,
                             isEditProfileEnabled = true,
-                            onEditProfile = {
+                            onNavigateToProfile = {
                                 onAction(CompanyDetailsUiAction.FetchCustomerForUpdating(it))
                             },
                             isAddEnabled = false,
