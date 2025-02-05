@@ -2,7 +2,7 @@ package com.zaed.reservationmanager.ui.reservation.archive
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -31,6 +31,10 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zaed.reservationmanager.R
@@ -44,6 +48,8 @@ import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun ArchiveScreen(
@@ -150,14 +156,73 @@ private fun ArchiveScreenContent(
             )
         }
     ) { innerPadding ->
-        Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(stringResource(R.string.total_reservations_count))
+                    }
+                    append(" ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                        append(
+                            NumberFormat.getInstance(Locale.getDefault())
+                                .format(reservations.size)
+                        )
+                    }
+                },
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+            ReservationsList(
+                reservations = reservations,
+                isEditProfileEnabled = false,
+                onArchiveReservation = { reservationId ->
+                    onAction(ArchiveUiAction.UnarchiveReservation(reservationId))
+                },
+                isHeaderVisible = false,
+                isAddEnabled = false,
+                isSendActionsVisible = false,
+                isEditable = false,
+                onDeleteReservation = { reservation ->
+                    onAction(ArchiveUiAction.DeleteReservation(reservation))
+                },
+                onCopyPhoneNumber = { phoneNumber ->
+                    onAction(ArchiveUiAction.CopyPhoneNumber(phoneNumber))
+                },
+                onMessagePhoneNumber = { phoneNumber ->
+                    onAction(ArchiveUiAction.MessagePhoneNumber(phoneNumber))
+                },
+                onAddSecondaryReservation = { mainReservation ->
+                    selectedReservation =
+                        Reservation(
+                            reservationNumber = mainReservation.reservationNumber,
+                            mainReservation = false,
+                            mainReservationId = mainReservation.id,
+                            tourismCompany = mainReservation.tourismCompany,
+                            tourismCompanyId = mainReservation.tourismCompanyId,
+                            tourismCompanyPhone = mainReservation.tourismCompanyPhone,
+                            tourismEmployeeId = mainReservation.tourismEmployeeId,
+                            tourismEmployee = mainReservation.tourismEmployee,
+                            tourismEmployeePhone = mainReservation.tourismEmployeePhone,
+                            clientId = mainReservation.clientId,
+                            clientName = mainReservation.clientName,
+                            clientPhone = mainReservation.clientPhone,
+                            clientCountry = mainReservation.clientCountry,
+                        )
+                    isAddReservationBottomSheetVisible = true
+                }
+            )
+
             AnimatedVisibility(isAddReservationBottomSheetVisible) {
                 ModalBottomSheet(
                     onDismissRequest = {},
                     sheetState = bottomSheetState,
                     modifier = Modifier.fillMaxSize(),
                     properties = ModalBottomSheetProperties(shouldDismissOnBackPress = false)
-
                 ) {
                     AddReservationBottomSheetContent(
                         modifier = Modifier.fillMaxSize(),
@@ -217,47 +282,5 @@ private fun ArchiveScreenContent(
                 }
             }
         }
-        ReservationsList(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            reservations = reservations,
-            isEditProfileEnabled = false,
-            onArchiveReservation = { reservationId ->
-                onAction(ArchiveUiAction.UnarchiveReservation(reservationId))
-            },
-            isHeaderVisible = false,
-            isAddEnabled = false,
-            isSendActionsVisible = false,
-            isEditable = false,
-            onDeleteReservation = { reservation ->
-                onAction(ArchiveUiAction.DeleteReservation(reservation))
-            },
-            onCopyPhoneNumber = { phoneNumber ->
-                onAction(ArchiveUiAction.CopyPhoneNumber(phoneNumber))
-            },
-            onMessagePhoneNumber = { phoneNumber ->
-                onAction(ArchiveUiAction.MessagePhoneNumber(phoneNumber))
-            },
-            onAddSecondaryReservation = { mainReservation ->
-                selectedReservation =
-                    Reservation(
-                        reservationNumber = mainReservation.reservationNumber,
-                        mainReservation = false,
-                        mainReservationId = mainReservation.id,
-                        tourismCompany = mainReservation.tourismCompany,
-                        tourismCompanyId = mainReservation.tourismCompanyId,
-                        tourismCompanyPhone = mainReservation.tourismCompanyPhone,
-                        tourismEmployeeId = mainReservation.tourismEmployeeId,
-                        tourismEmployee = mainReservation.tourismEmployee,
-                        tourismEmployeePhone = mainReservation.tourismEmployeePhone,
-                        clientId = mainReservation.clientId,
-                        clientName = mainReservation.clientName,
-                        clientPhone = mainReservation.clientPhone,
-                        clientCountry = mainReservation.clientCountry,
-                    )
-                isAddReservationBottomSheetVisible = true
-            }
-        )
     }
 }

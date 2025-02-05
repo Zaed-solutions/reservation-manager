@@ -316,5 +316,8 @@
     <string name="job">العمل</string>
     <string name="open_account">الرصيد المفتوح</string>
     <string name="all_accounts">جميع الشركات</string>
+    <string name="download_data">تحميل البيانات</string>
+    <string name="upload_data">رفع البيانات</string>
+    <string name="total_reservations_count">إجمالي عدد الحجوزات:</string>
 
 </resources>
