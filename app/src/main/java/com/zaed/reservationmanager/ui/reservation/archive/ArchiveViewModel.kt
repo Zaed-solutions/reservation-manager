@@ -11,6 +11,7 @@ import com.zaed.reservationmanager.data.repository.MenusDataRepository
 import com.zaed.reservationmanager.data.repository.ReservationRepository
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel
 import com.zaed.reservationmanager.ui.company.details.CompanyDetailsViewModel.Companion
+import com.zaed.reservationmanager.ui.home.HomeUiAction
 import com.zaed.reservationmanager.ui.util.Constants.CAR_TYPES_KEY
 import com.zaed.reservationmanager.ui.util.Constants.RESERVATION_TYPES_KEY
 import kotlinx.coroutines.Dispatchers
@@ -131,7 +132,45 @@ class ArchiveViewModel(
             is ArchiveUiAction.OnFetchEmployees -> fetchEmployees(action.companyId)
             is ArchiveUiAction.OnAddReservation -> addReservation(action.reservation, action.onSuccess)
             is ArchiveUiAction.OnEditReservation -> editReservation(action.reservation, action.onSuccess)
+            is ArchiveUiAction.OnConfirmationSentToClient -> updateReservation(
+                action.reservationId,
+                mapOf("sentConfirmToCustomer" to true)
+            )
+
+            is ArchiveUiAction.OnDriverInfoSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentDriverInfoToCustomer" to true)
+            )
+
+            is ArchiveUiAction.OnInfoSentToTravelCompany -> updateReservation(
+                action.reservationId,
+                mapOf("sentToDriverCompany" to true)
+            )
+
+            is ArchiveUiAction.ThanksMessageSent -> updateReservation(
+                action.reservationId,
+                mapOf("sentThanksToCustomer" to true)
+            )
             else -> Unit
+        }
+    }
+
+    private fun updateReservation(reservationId: String, updates: Map<String, Any>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.updateReservation(
+                reservationId,
+                updates
+            ).collect { result ->
+                result.onSuccess {
+                    Log.d("DisplayReservationViewModel", "sendInfoToTravelCompany: success")
+                }.onFailure { e ->
+                    Log.e(
+                        "DisplayReservationViewModel",
+                        "sendInfoToTravelCompany: ${e.message}"
+                    )
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

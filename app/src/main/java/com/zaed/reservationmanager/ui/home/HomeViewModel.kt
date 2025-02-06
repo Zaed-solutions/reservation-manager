@@ -160,10 +160,7 @@ class HomeViewModel(
         when (action) {
             is HomeUiAction.FetchDrivers -> fetchDrivers(action.companyId)
             is HomeUiAction.FetchEmployees -> fetchEmployees(action.companyId)
-            is HomeUiAction.OnConfirmationSentToClient -> updateReservation(
-                action.reservationId,
-                mapOf("sentConfirmToCustomer" to true)
-            )
+
 
             is HomeUiAction.AddCustomers -> handleImportedCustomer(action.customers)
 
@@ -173,6 +170,12 @@ class HomeViewModel(
             )
 
             is HomeUiAction.OnDeleteReservation -> deleteReservation(action.reservation)
+
+            is HomeUiAction.OnConfirmationSentToClient -> updateReservation(
+                action.reservationId,
+                mapOf("sentConfirmToCustomer" to true)
+            )
+
             is HomeUiAction.OnDriverInfoSent -> updateReservation(
                 action.reservationId,
                 mapOf("sentDriverInfoToCustomer" to true)

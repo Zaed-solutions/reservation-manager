@@ -128,14 +128,12 @@
     <string name="whatsapp_is_not_installed">WhatsApp is not installed</string>
     <string name="collected_price">Collected Price</string>
     <string name="selling_price">Selling Price</string>
-    <string name="confirmation_message">Mr\ %1$s\nPeace be upon you,\nReservation has been booked for you on…\n%2$s\nWe will contact you before your trip,\nAnd send you the transportation details\n\nAl-Mosaferoon Transportation Services،،،</string>
+    <string name="confirmation_message">Mr./Ms. %1$s\nYour transportation has been confirmed \nDate: %2$s\nCar type: %3$s\nFrom: %4$s\nTo: %5$s\nPrice: %6$s\n*Al-Mussafiroon Transport Services,,,*</string>
 
-    <string name="reservation_details_message">
-    Mr./Ms. %1$s\nYour trip details:\n%2$s\nCar type: %3$s\nAt your service…\nCaptain: %4$s\nPhone: %5$s\nHave a safe trip!\n\nTravelers Transportation Services,
-</string>
-    <string name="transportation_details">
-    - Guest name: %1$s\n- Guest phone: %2$s\n- Date: %3$s\n- Car type: %4$s, count: %5$d\n- Trip start: %6$s%7$s\n- Trip end: %8$s\n- Trip price: %9$s\n- Collected amount: %10$s\n- Notes:\n%11$s\n\nTravelers Transportation Services,\n%12$s
-</string>
+    <string name="reservation_details_message">Mr./Ms. %1$s\nRide date and time\n%2$s\nCar type: %3$s\nCaptain: %4$s\nPhone: %5$s\nWishing you a safe trip, God willing\n*Al-Mussafiroon Transport Services,,,*</string>
+
+    <string name="transportation_details">Guest: %1$s\nPhone: %2$s\nDate: %3$s\nCar type: %5$d %4$s\nFrom: %6$s\nTo: %7$s\nTrip price: %8$s\nCollected amount: %9$s%10$s\n*%11$s*</string>
+
     <string name="flight_number_placeholder">- Flight Number: %1$s\n</string>
     <string name="positive_trip_balance">The trip balance is %1$d SAR</string>
     <string name="negative_trip_balance">The trip commission is %1$d SAR</string>
@@ -237,7 +235,7 @@
     <string name="customer_has_reservations_and_cannot_be_deleted">Customer has reservations and cannot be deleted!</string>
     <string name="sar">%1$s SAR</string>
     <string name="flight_number">Flight Number</string>
-    <string name="thanks_message">Dear %1$s,\nThank you for choosing our transport services.\nWe are pleased to have been of service to you\nand appreciate your trust in us.\nWe look forward to serving you again\non your future travels.\n\nBest regards,\nThe Travelers Transport Services Team</string>
+    <string name="thanks_message">Mr./Ms. %1$s\nPraise be to God for your safe arrival\nWe were delighted to serve you, and we hope to have the opportunity to serve you again on your next visit\n\n*Al-Mussafiroon Transport Services,,,*</string>
     <string name="thanks_message_sent">Thank you message sent</string>
     <string name="send_thanks_message_to_customer">Send thank you message to customer</string>
     <string name="reservation_count_total_earnings">Reservation Count: %1$s  | Total Earnings: %2$s</string>
@@ -327,4 +325,6 @@
     <string name="add_new_customer">Add New Customer</string>
     <string name="customer_changed_successfully">Customer changed successfully!</string>
     <string name="an_error_occurred_while_changing_customer">An error occurred while changing customer</string>
+    <string name="paid">Paid</string>
+    <string name="note_temp">\nNotes: %1$s</string>
 </resources>

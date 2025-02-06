@@ -194,7 +194,10 @@ fun NavigationHost(
         }
         composable<Route.ArchiveScreen> {
             ArchiveScreen(
-                onShowNavDrawer = onShowNavDrawer
+                onShowNavDrawer = onShowNavDrawer,
+                onNavigateToCustomerDetails = { customerId ->
+                    navController.navigate(Route.CustomerDetailsRoute(customerId))
+                }
             )
         }
         composable<Route.MessagesRoute> {

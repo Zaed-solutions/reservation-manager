@@ -46,6 +46,9 @@ import com.zaed.reservationmanager.ui.client.details.components.CustomerDetailsH
 import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDialog
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
+import com.zaed.reservationmanager.ui.home.component.getClientConfirmationMessage
+import com.zaed.reservationmanager.ui.home.component.getDriverInfoMessage
+import com.zaed.reservationmanager.ui.home.component.getThanksMessage
 import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.util.PhoneUtil
 import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
@@ -122,16 +125,7 @@ fun CustomerDetailScreen(
 
                 is CustomerDetailsUiAction.SendReservationInfo -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
-                    val messageText =
-
-                        context.getString(
-                            R.string.reservation_details_message,
-                            reservation.clientName,
-                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-                            reservation.car,
-                            reservation.driver,
-                            reservation.driverPhoneNumber
-                        )
+                    val messageText = getDriverInfoMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -154,11 +148,7 @@ fun CustomerDetailScreen(
                 is CustomerDetailsUiAction.SendReservationConfirmation -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(
-                            R.string.confirmation_message,
-                            reservation.clientName,
-                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
-                        )
+                        getClientConfirmationMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -202,10 +192,7 @@ fun CustomerDetailScreen(
 
                 is CustomerDetailsUiAction.SendThanksMessageToCustomer -> {
                     val reservation = state.reservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
-                        R.string.thanks_message,
-                        reservation.clientName.trim()
-                    )
+                    val messageText = getThanksMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,

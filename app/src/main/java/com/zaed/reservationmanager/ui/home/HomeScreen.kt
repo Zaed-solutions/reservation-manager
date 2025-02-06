@@ -92,6 +92,9 @@ import com.zaed.reservationmanager.ui.home.component.DateRangePickerModal
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
 import com.zaed.reservationmanager.ui.home.component.TimeFilter
 import com.zaed.reservationmanager.ui.home.component.TimeFiltersChips
+import com.zaed.reservationmanager.ui.home.component.getClientConfirmationMessage
+import com.zaed.reservationmanager.ui.home.component.getDriverInfoMessage
+import com.zaed.reservationmanager.ui.home.component.getThanksMessage
 import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.reservation.create.component.toSeconds
 import com.zaed.reservationmanager.ui.theme.ReservationManagerTheme
@@ -270,11 +273,7 @@ fun HomeScreen(
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
                     val messageText =
-                        context.getString(
-                            R.string.confirmation_message,
-                            reservation.clientName,
-                            (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime()
-                        )
+                        getClientConfirmationMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -293,14 +292,7 @@ fun HomeScreen(
                 is HomeUiAction.SendDriverInfoToClient -> {
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
-                        R.string.reservation_details_message,
-                        reservation.clientName,
-                        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-                        reservation.car,
-                        reservation.driver,
-                        reservation.driverPhoneNumber
-                    )
+                    val messageText = getDriverInfoMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,
@@ -342,10 +334,7 @@ fun HomeScreen(
                 is HomeUiAction.SendThanksMessageToCustomer -> {
                     val reservation =
                         state.displayedReservations.first { it.id == action.reservationId }
-                    val messageText = context.getString(
-                        R.string.thanks_message,
-                        reservation.clientName.trim()
-                    )
+                    val messageText = getThanksMessage(context, reservation)
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
                         phoneNumber = reservation.clientPhone,

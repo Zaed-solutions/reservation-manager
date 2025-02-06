@@ -129,9 +129,9 @@
     <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
     <string name="collected_price">سعر التحصيل</string>
     <string name="selling_price">سعر البيع</string>
-    <string name="confirmation_message">أ/ %1$s\nمحجوز لكم مواصلات بتاريخ\n%2$s\nسيتم التواصل معكم قبل سفركم\nوإرسال تفاصيل حركة النقل\n\nالمـسافرون لخدمات النقل،،،</string>
-    <string name="reservation_details_message">أ/ %1$s\nتاريخ الحركة الخاصة بكم:\n%2$s\nنوع السيارة: %3$s\nيتشرف بخدمتكم…\nكابتن/ %4$s\nجواله/ %5$s\nرحلة موفقة بإذن الله\n\nالمسافرون لخدمات النقل،،،</string>
-    <string name="transportation_details">إسم الضيف: %1$s\nجوال الضيف: %2$s\nالتاريخ: %3$s\nنوع السيارة: عدد %5$d %4$s\nبداية الرحلة: %6$s\n%7$sنهاية الرحلة: %8$s\nسعر المشوار: %9$s\nمبلغ التحصيل: %10$s\nملاحظات:\n%11$s\n\n*%12$s*</string>
+    <string name="confirmation_message">أ/ %1$s\nتم تأكيد حركة نقل لكم \nتاريخ: \n%2$s\nنوع السيارة: %3$s\nمن: %4$s\nإلى: %5$s\nالسعر: %6$s\n*المـسافرون لخدمات النقل،،،*</string>
+    <string name="reservation_details_message">أ/ %1$s\nتاريخ ووقت حركة النقل\n%2$s\nنوع السيارة: %3$s\nكابتن/ %4$s\nجواله/ %5$s\nرحلة موفقة بإذن الله\n*المسافرون لخدمات النقل،،،*</string>
+    <string name="transportation_details">الضيف: %1$s\nجوال: %2$s\nالتاريخ: %3$s\nنوع السيارة: %5$d %4$s\nمن: %6$s\nإلى: %7$s\nسعر المشوار: %8$s\nمبلغ التحصيل: %9$s%10$s\n*%11$s*</string>
     <string name="flight_number_placeholder">رقم الرحلة: %1$s\n</string>
     <string name="positive_trip_balance">حساب المشوار عندي %1$d ريال</string>
     <string name="negative_trip_balance">عمولة المشوار %1$d ريال</string>
@@ -232,7 +232,7 @@
     <string name="customer_has_reservations_and_cannot_be_deleted">لا يمكن حذف البروفايل لوجود حجوزات لدى العميل</string>
     <string name="sar">%1$s ر.س.</string>
     <string name="flight_number">رقم الرحلة</string>
-    <string name="thanks_message">أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وأعذرونا على القصور\nإن شاء الله تكون لنا فرصة…\nنخدمكم بزيارتكم القادمة\n\nالمسافرون لخدمات النقل،،،</string>
+    <string name="thanks_message">أ/ %1$s\nحمداً لله على سلامة الوصول\nسعدنا بخدمتكم وإن شاء الله تكون لنا فرصة نخدمكم بزيارتكم القادمة\n\n*المسافرون لخدمات النقل،،،*</string>
 
     <string name="thanks_message_sent">تم إرسال رسالة الشكر</string>
     <string name="send_thanks_message_to_customer">إرسال رسالة شكر للعميل</string>
@@ -319,5 +319,12 @@
     <string name="download_data">تحميل البيانات</string>
     <string name="upload_data">رفع البيانات</string>
     <string name="total_reservations_count">إجمالي عدد الحجوزات:</string>
+    <string name="change_customer">ربط الحجز ببروفايل آخر</string>
+    <string name="select_existing_customer">اختيار بروفايل آخر</string>
+    <string name="add_new_customer">إنشاء بروفايل جديد</string>
+    <string name="customer_changed_successfully">تم تغيير البروفايل بنجاح</string>
+    <string name="an_error_occurred_while_changing_customer">حدث خطأ أثناء تغيير البروفايل</string>
+    <string name="paid">مدفوع</string>
+    <string name="note_temp">\nملاحظات: %1$s</string>
 
 </resources>

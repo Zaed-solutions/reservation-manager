@@ -1,7 +1,6 @@
 package com.zaed.reservationmanager.ui.reservation.archive
 
 import com.zaed.reservationmanager.data.model.Reservation
-import com.zaed.reservationmanager.ui.company.details.CompanyDetailsUiAction
 
 sealed interface ArchiveUiAction {
     data object ShowNavDrawer : ArchiveUiAction
@@ -14,4 +13,13 @@ sealed interface ArchiveUiAction {
     data class OnEditReservation(val reservation: Reservation, val onSuccess: () -> Unit) :
         ArchiveUiAction
     data class OnAddReservation(val reservation: Reservation, val onSuccess: () -> Unit) : ArchiveUiAction
+    data class SendDriverInfoToClient(val reservationId: String): ArchiveUiAction
+    data class SendConfirmationToClient(val reservationId: String) : ArchiveUiAction
+    data class SendReservationInfoToTravelCompany(val reservationId: String) : ArchiveUiAction
+    data class SendThanksMessageToCustomer(val reservationId: String) : ArchiveUiAction
+    data class ThanksMessageSent(val reservationId: String) : ArchiveUiAction
+    data class OnDriverInfoSent(val reservationId: String) : ArchiveUiAction
+    data class OnConfirmationSentToClient(val reservationId: String) :ArchiveUiAction
+    data class OnInfoSentToTravelCompany(val reservationId: String) :ArchiveUiAction
+    data class OnViewCustomerDetails(val customerId: String) : ArchiveUiAction
 }

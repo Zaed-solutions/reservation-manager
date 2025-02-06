@@ -18,29 +18,46 @@ fun getTransportationDetailsMessage(
     } else {
         R.string.negative_trip_balance
     }
-    val flightNumber = if (reservation.flightNumber.isBlank()) {
-        ""
-    } else {
-        context.getString(
-            R.string.flight_number_placeholder,
-            reservation.flightNumber
-        )
-    }
-
     val additionalMessage = context.getString(additionalMessageResId, kotlin.math.abs(difference))
     return context.getString(
         R.string.transportation_details,
-        reservation.clientName,
-        reservation.clientPhone,
+        reservation.clientName.trim(),
+        reservation.clientPhone.trim(),
         (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
-        reservation.car,
-        reservation.carCount, // New field
-        reservation.startLocation,
-        flightNumber,
-        reservation.endLocation,
+        reservation.car.trim(),
+        reservation.carCount,
+        reservation.startLocation.trim(),
+        reservation.endLocation.trim(),
         context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelRidePrice)),
         context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.travelCollectedAmount)),
-        reservation.note,
-        additionalMessage // %12$s
+        if(reservation.note.isBlank())"" else context.getString(R.string.note_temp, reservation.note.trim()),
+        additionalMessage
+    )
+}
+fun getClientConfirmationMessage(context: Context, reservation: Reservation): String{
+    return context.getString(
+        R.string.confirmation_message,
+        reservation.clientName.trim(),
+        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
+        "${reservation.carCount} ${reservation.car}",
+        reservation.startLocation.trim(),
+        reservation.endLocation.trim(),
+        if(reservation.tourismCollectedAmount > 0) context.getString(R.string.sar, NumberFormat.getInstance(Locale.getDefault()).format(reservation.tourismCollectedAmount)) else context.getString(R.string.paid),
+    )
+}
+fun getDriverInfoMessage(context: Context, reservation: Reservation): String{
+    return context.getString(
+        R.string.reservation_details_message,
+        reservation.clientName.trim(),
+        (reservation.date + reservation.time).formatEpochSecondsToMessageDateTime(),
+        "${reservation.carCount} ${reservation.car}",
+        reservation.driver.trim(),
+        reservation.driverPhoneNumber.trim()
+    )
+}
+fun getThanksMessage(context: Context, reservation: Reservation): String{
+    return context.getString(
+        R.string.thanks_message,
+        reservation.clientName.trim()
     )
 }

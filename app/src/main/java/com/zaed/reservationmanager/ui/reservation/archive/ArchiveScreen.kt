@@ -41,9 +41,15 @@ import com.zaed.reservationmanager.R
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.Employee
 import com.zaed.reservationmanager.data.model.Reservation
+import com.zaed.reservationmanager.ui.home.HomeUiAction
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.ReservationsList
+import com.zaed.reservationmanager.ui.home.component.getClientConfirmationMessage
+import com.zaed.reservationmanager.ui.home.component.getDriverInfoMessage
+import com.zaed.reservationmanager.ui.home.component.getThanksMessage
+import com.zaed.reservationmanager.ui.home.component.getTransportationDetailsMessage
 import com.zaed.reservationmanager.ui.util.PhoneUtil
+import com.zaed.reservationmanager.ui.util.formatEpochSecondsToMessageDateTime
 import com.zaed.reservationmanager.ui.util.showSnackbarWithDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -56,6 +62,7 @@ fun ArchiveScreen(
     modifier: Modifier = Modifier,
     viewModel: ArchiveViewModel = koinViewModel(),
     onShowNavDrawer: () -> Unit,
+    onNavigateToCustomerDetails: (String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -81,6 +88,86 @@ fun ArchiveScreen(
                     }
                 }
 
+                is ArchiveUiAction.SendDriverInfoToClient -> {
+                    val reservation =
+                        state.reservations.first { it.id == action.reservationId }
+                    val messageText = getDriverInfoMessage(context, reservation)
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ArchiveUiAction.OnDriverInfoSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
+                is ArchiveUiAction.SendConfirmationToClient -> {
+                    val reservation =
+                        state.reservations.first { it.id == action.reservationId }
+                    val messageText = getClientConfirmationMessage(context, reservation)
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ArchiveUiAction.OnConfirmationSentToClient(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
+                is ArchiveUiAction.SendReservationInfoToTravelCompany -> {
+                    val reservation =
+                        state.reservations.first { it.id == action.reservationId }
+                    val messageText =
+                        getTransportationDetailsMessage(
+                            context = context,
+                            reservation = reservation
+                        )
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.travelCompanyPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ArchiveUiAction.OnInfoSentToTravelCompany(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
+                is ArchiveUiAction.SendThanksMessageToCustomer -> {
+                    val reservation =
+                        state.reservations.first { it.id == action.reservationId }
+                    val messageText = getThanksMessage(context, reservation)
+                    PhoneUtil.sendWhatsappMessage(
+                        context = context,
+                        phoneNumber = reservation.clientPhone,
+                        message = messageText,
+                        onSuccess = {
+                            viewModel.handleAction(ArchiveUiAction.ThanksMessageSent(action.reservationId))
+                        },
+                        onFailure = {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(context.getString(R.string.whatsapp_is_not_installed))
+                            }
+                        }
+                    )
+                }
+
                 is ArchiveUiAction.MessagePhoneNumber -> {
                     PhoneUtil.sendWhatsappMessage(
                         context = context,
@@ -93,6 +180,8 @@ fun ArchiveScreen(
                         }
                     )
                 }
+
+                is ArchiveUiAction.OnViewCustomerDetails -> onNavigateToCustomerDetails(action.customerId)
 
                 else -> viewModel.handleAction(action)
             }
@@ -135,6 +224,9 @@ private fun ArchiveScreenContent(
             newValue != SheetValue.Hidden || !isAddReservationBottomSheetVisible
         }
     )
+    val totalEarnings = remember(reservations) {
+        reservations.sumOf { it.tourismRidePrice - it.travelRidePrice }
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -174,19 +266,54 @@ private fun ArchiveScreenContent(
                                 .format(reservations.size)
                         )
                     }
+                    append(" | ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(stringResource(R.string.total_earnings) + ":")
+                    }
+                    append(" ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                        append(
+                            NumberFormat.getCurrencyInstance(Locale.getDefault())
+                                .apply {
+                                    maximumFractionDigits = 0
+                                }.format(
+                                    totalEarnings
+                                )
+
+                        )
+                    }
                 },
                 modifier = Modifier.padding(vertical = 16.dp)
             )
             ReservationsList(
                 reservations = reservations,
-                isEditProfileEnabled = false,
+                isEditProfileEnabled = true,
+                onNavigateToProfile = {
+                    onAction(ArchiveUiAction.OnViewCustomerDetails(it))
+                },
                 onArchiveReservation = { reservationId ->
                     onAction(ArchiveUiAction.UnarchiveReservation(reservationId))
                 },
                 isHeaderVisible = false,
                 isAddEnabled = false,
-                isSendActionsVisible = false,
-                isEditable = false,
+                isSendActionsVisible = true,
+                onSendConfirmationToCustomer = {
+                    onAction(ArchiveUiAction.SendConfirmationToClient(it))
+                },
+                onSendThanksMessageToCustomer =  {
+                    onAction(ArchiveUiAction.SendThanksMessageToCustomer(it))
+                },
+                onSendInfoToTravelCompany = {
+                    onAction(ArchiveUiAction.SendReservationInfoToTravelCompany(it))
+                },
+                onSendDriverInfoToClient = {
+                    onAction(ArchiveUiAction.SendDriverInfoToClient(it))
+                },
+                isEditable = true,
+                onEditReservation = { reservation ->
+                    selectedReservation = reservation
+                    isAddReservationBottomSheetVisible = true
+                },
                 onDeleteReservation = { reservation ->
                     onAction(ArchiveUiAction.DeleteReservation(reservation))
                 },
