@@ -129,7 +129,7 @@
     <string name="whatsapp_is_not_installed">واتساب غير مثبت</string>
     <string name="collected_price">سعر التحصيل</string>
     <string name="selling_price">سعر البيع</string>
-    <string name="confirmation_message">أ/ %1$s\nتم تأكيد حركة نقل لكم \nتاريخ: \n%2$s\nنوع السيارة: %3$s\nمن: %4$s\nإلى: %5$s\nالسعر: %6$s\n*المـسافرون لخدمات النقل،،،*</string>
+    <string name="confirmation_message">أ/ %1$s\nتم تأكيد حركة نقل لكم \nتاريخ: \n%2$sنوع السيارة: %3$s\nمن: %4$s\nإلى: %5$s\nالسعر: %6$s\n*المـسافرون لخدمات النقل،،،*</string>
     <string name="reservation_details_message">أ/ %1$s\nتاريخ ووقت حركة النقل\n%2$s\nنوع السيارة: %3$s\nكابتن/ %4$s\nجواله/ %5$s\nرحلة موفقة بإذن الله\n*المسافرون لخدمات النقل،،،*</string>
     <string name="transportation_details">الضيف: %1$s\nجوال: %2$s\nالتاريخ: %3$s\nنوع السيارة: %5$d %4$s\nمن: %6$s\nإلى: %7$s\nسعر المشوار: %8$s\nمبلغ التحصيل: %9$s%10$s\n*%11$s*</string>
     <string name="flight_number_placeholder">رقم الرحلة: %1$s\n</string>
