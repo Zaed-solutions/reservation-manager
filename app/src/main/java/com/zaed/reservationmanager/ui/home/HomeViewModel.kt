@@ -224,8 +224,48 @@ class HomeViewModel(
                 action.report,
                 action.onSuccess
             )
+            is HomeUiAction.ChangeReservationToExistingCustomer -> updateReservationCustomer(action.reservation, action.customer, action.onSuccess, action.onFailure)
+            is HomeUiAction.ChangeReservationToNewCustomer -> createCustomerAndUpdateReservationCustomer(action.reservation, action.customer, action.onSuccess, action.onFailure)
 
             else -> Unit
+        }
+    }
+
+    private fun createCustomerAndUpdateReservationCustomer(
+        reservation: Reservation,
+        customer: Customer,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+        viewModelScope.launch (Dispatchers.IO){
+            customerRepo.createCustomer(customer).collect { result ->
+                result.onSuccess {
+                    updateReservationCustomer(reservation, customer, onSuccess, onFailure)
+                }.onFailure {
+                    launch {
+                        onFailure()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateReservationCustomer(
+        reservation: Reservation,
+        customer: Customer,
+        onSuccess: () -> Unit,
+        onFailure: () -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            reservationRepo.changeReservationCustomer(reservation, customer).onSuccess{
+                launch {
+                    onSuccess()
+                }
+            }.onFailure{
+                launch {
+                    onFailure()
+                }
+            }
         }
     }
 

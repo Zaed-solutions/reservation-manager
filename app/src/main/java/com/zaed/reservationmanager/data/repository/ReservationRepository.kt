@@ -1,6 +1,7 @@
 package com.zaed.reservationmanager.data.repository
 
 import com.zaed.reservationmanager.data.model.CompanyHistory
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.ui.home.component.Report
 import kotlinx.coroutines.flow.Flow
@@ -18,5 +19,6 @@ interface ReservationRepository {
     fun getArchivedReservations(): Flow<Result<List<Reservation>>>
     fun fetchReportReservations(report: Report): Flow<Result<List<Reservation>>>
     fun fetchCompanyOpenAccount(report: Report): Flow<Result<List<CompanyHistory>>>
+    suspend fun changeReservationCustomer(reservation: Reservation, customer: Customer): Result<Unit>
 
 }

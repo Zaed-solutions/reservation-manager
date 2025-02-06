@@ -19,7 +19,9 @@ sealed interface HomeUiAction {
     data class OnConfirmationSentToClient(val reservationId: String) : HomeUiAction
     data class OnInfoSentToTravelCompany(val reservationId: String) : HomeUiAction
     data class OnDeleteReservation(val reservation: Reservation) : HomeUiAction
-    data class OnDeleteCustomer(val customerId: String, val onShowMessage: (Boolean) -> Unit ) : HomeUiAction
+    data class OnDeleteCustomer(val customerId: String, val onShowMessage: (Boolean) -> Unit) :
+        HomeUiAction
+
     data class UpdateSearchQuery(val query: String) : HomeUiAction
     data class UpdateTimeFilter(val timeFilter: TimeFilter) : HomeUiAction
     data class UpdateCountryFilter(val countryFilter: String) : HomeUiAction
@@ -35,12 +37,37 @@ sealed interface HomeUiAction {
     data class ThanksMessageSent(val reservationId: String) : HomeUiAction
     data class FetchEmployees(val companyId: String) : HomeUiAction
     data class FetchDrivers(val companyId: String) : HomeUiAction
-    data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
-    data class AddReservation(val reservation: Reservation, val onSuccess: () -> Unit) : HomeUiAction
-    data class AddCustomers (val customers: List<Customer>) : HomeUiAction
-    data class FetchReservationsForReport(val report: Report, val onSuccess: (List<Reservation>) -> Unit) : HomeUiAction
+    data class UpdateReservation(val reservation: Reservation, val onSuccess: () -> Unit) :
+        HomeUiAction
+
+    data class AddReservation(val reservation: Reservation, val onSuccess: () -> Unit) :
+        HomeUiAction
+
+    data class AddCustomers(val customers: List<Customer>) : HomeUiAction
+    data class FetchReservationsForReport(
+        val report: Report,
+        val onSuccess: (List<Reservation>) -> Unit
+    ) : HomeUiAction
+
     data class ShareFile(val file: File, val type: String) : HomeUiAction
     data class OpenFile(val file: File, val type: String) : HomeUiAction
-    data class SaveToContacts (val customer: Customer) : HomeUiAction
-    data class FetchCompaniesHistory (val report: Report, val onSuccess:(List<CompanyHistory>)->Unit) : HomeUiAction
+    data class SaveToContacts(val customer: Customer) : HomeUiAction
+    data class FetchCompaniesHistory(
+        val report: Report,
+        val onSuccess: (List<CompanyHistory>) -> Unit
+    ) : HomeUiAction
+
+    data class ChangeReservationToExistingCustomer(
+        val reservation: Reservation,
+        val customer: Customer,
+        val onSuccess: () -> Unit,
+        val onFailure: () -> Unit
+    ) : HomeUiAction
+
+    data class ChangeReservationToNewCustomer(
+        val reservation: Reservation,
+        val customer: Customer,
+        val onSuccess: () -> Unit,
+        val onFailure: () -> Unit
+    ) : HomeUiAction
 }

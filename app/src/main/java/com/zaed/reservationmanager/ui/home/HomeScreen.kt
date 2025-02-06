@@ -84,6 +84,7 @@ import com.zaed.reservationmanager.ui.company.display.components.ConfirmDeleteDi
 import com.zaed.reservationmanager.ui.components.FabItem
 import com.zaed.reservationmanager.ui.components.MultiFloatingActionButton
 import com.zaed.reservationmanager.ui.home.component.AddReservationBottomSheetContent
+import com.zaed.reservationmanager.ui.home.component.ChangeCustomerBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.CreateReportBottomSheetContent
 import com.zaed.reservationmanager.ui.home.component.CustomerListWithTitle
 import com.zaed.reservationmanager.ui.home.component.DateFixedPickerModal
@@ -127,7 +128,8 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     HomeScreenContent(
         reservations = state.displayedReservations,
-        customers = state.displayedCustomers,
+        customers = state.customers,
+        displayCustomers = state.displayedCustomers,
         searchQuery = state.searchQuery,
         selectedCountry = state.selectedCountry,
         selectedTimeFilter = state.timeFilter,
@@ -407,6 +409,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     reservations: List<Reservation> = emptyList(),
     customers: List<Customer> = emptyList(),
+    displayCustomers: List<Customer> = emptyList(),
     searchQuery: String = "",
     selectedCountry: String = "",
     selectedTimeFilter: TimeFilter = TimeFilter.All,
@@ -428,6 +431,9 @@ fun HomeScreenContent(
     }
     val pagerState = rememberPagerState(pageCount = { 2 })
     var isAddReservationBottomSheetVisible by remember {
+        mutableStateOf(false)
+    }
+    var isChangeCustomerSheetVisible by remember{
         mutableStateOf(false)
     }
     var selectedReservation by remember {
@@ -698,12 +704,12 @@ fun HomeScreenContent(
                                 text = stringResource(
                                     R.string.customers_count_is_customers,
                                     NumberFormat.getInstance(Locale.getDefault())
-                                        .format(customers.size)
+                                        .format(displayCustomers.size)
                                 ),
                                 modifier = Modifier.padding(start = 8.dp, top = 8.dp)
                             )
                             CustomerListWithTitle(
-                                customers = customers,
+                                customers = displayCustomers,
                                 onViewCustomerDetailsClicked = { customerId ->
                                     onAction(
                                         HomeUiAction.OnViewCustomerDetails(customerId)
@@ -893,10 +899,85 @@ fun HomeScreenContent(
                                 },
                                 onViewRelatedReservations = { reservationNumber ->
                                     onAction(HomeUiAction.UpdateSearchQuery("#$reservationNumber"))
+                                },
+                                isChangeCustomerEnabled = true,
+                                onChangeCustomer = { reservation ->
+                                    selectedReservation = reservation
+                                    isCustomer = false
+                                    isChangeCustomerSheetVisible = true
                                 }
                             )
                         }
                     }
+                }
+            }
+            AnimatedVisibility(isChangeCustomerSheetVisible){
+                ModalBottomSheet(
+                    sheetState = bottomSheetState,
+                    onDismissRequest = {
+                        isChangeCustomerSheetVisible = false
+                    },
+                ) {
+                    ChangeCustomerBottomSheetContent(
+                        countries = countries,
+                        customers = customers,
+                        onCustomerSelected = { customer ->
+                            onAction(
+                                HomeUiAction.ChangeReservationToExistingCustomer(
+                                    reservation = selectedReservation,
+                                    customer = customer,
+                                    onSuccess = {
+                                        snackbarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.customer_changed_successfully),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isChangeCustomerSheetVisible = false
+                                            }
+                                        )
+                                    },
+                                    onFailure = {
+                                        snackbarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.an_error_occurred_while_changing_customer),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isChangeCustomerSheetVisible = false
+                                            }
+                                        )
+                                    }
+                                )
+                            )
+                        },
+                        onAddNewCustomer = { customer ->
+                            onAction(
+                                HomeUiAction.ChangeReservationToNewCustomer(
+                                    reservation = selectedReservation,
+                                    customer = customer,
+                                    onSuccess = {
+                                        snackbarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.customer_changed_successfully),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isChangeCustomerSheetVisible = false
+                                            }
+                                        )
+                                    },
+                                    onFailure = {
+                                        snackbarHostState.showSnackbarWithDuration(
+                                            message = context.getString(R.string.an_error_occurred_while_changing_customer),
+                                            durationMillis = 1500L,
+                                            scope = scope,
+                                            onFinished = {
+                                                isChangeCustomerSheetVisible = false
+                                            }
+                                        )
+                                    }
+                                )
+                            )
+                        }
+                    )
                 }
             }
             AnimatedVisibility(isAddReservationBottomSheetVisible) {

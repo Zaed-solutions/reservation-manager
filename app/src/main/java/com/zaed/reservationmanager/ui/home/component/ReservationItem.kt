@@ -80,7 +80,9 @@ fun ReservationItem(
     isProfileEnabled: Boolean = true,
     onAddSecondaryReservation: () -> Unit = {},
     isViewRelatedEnabled: Boolean = false,
-    onViewRelatedReservation: () -> Unit = {}
+    onViewRelatedReservation: () -> Unit = {},
+    isChangeCustomerEnabled: Boolean = false,
+    onChangeCustomer: () -> Unit = {},
 ) {
     var isExpanded by remember {
         mutableStateOf(false)
@@ -420,6 +422,17 @@ fun ReservationItem(
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.clickable {
                                 onViewRelatedReservation()
+                            }
+                        )
+                    }
+
+                    if(isChangeCustomerEnabled){
+                        Text(
+                            text = stringResource(R.string.change_customer),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.clickable {
+                                onChangeCustomer()
                             }
                         )
                     }

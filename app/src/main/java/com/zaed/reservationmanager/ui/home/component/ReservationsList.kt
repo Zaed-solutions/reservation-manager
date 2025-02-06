@@ -55,6 +55,8 @@ fun ReservationsList(
     onAddSecondaryReservation: (mainReservation: Reservation) -> Unit = {},
     onViewRelatedReservations:(reservationNumber: Long) -> Unit = {},
     isViewRelatedEnabled: Boolean = false,
+    isChangeCustomerEnabled: Boolean = false,
+    onChangeCustomer: (reservation: Reservation) -> Unit = {}
     ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -144,7 +146,11 @@ fun ReservationsList(
                                 onViewRelatedReservation = {
                                     onViewRelatedReservations(reservation.reservationNumber)
                                 },
-                                isViewRelatedEnabled = isViewRelatedEnabled
+                                isViewRelatedEnabled = isViewRelatedEnabled,
+                                isChangeCustomerEnabled = isChangeCustomerEnabled,
+                                onChangeCustomer = {
+                                    onChangeCustomer(reservation)
+                                }
                             )
                         }
                     }

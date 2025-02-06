@@ -6,10 +6,12 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.toObjects
 import com.zaed.reservationmanager.data.model.Company
 import com.zaed.reservationmanager.data.model.CompanyHistory
 import com.zaed.reservationmanager.data.model.CompanyPayment
 import com.zaed.reservationmanager.data.model.CompanyType
+import com.zaed.reservationmanager.data.model.Customer
 import com.zaed.reservationmanager.data.model.Reservation
 import com.zaed.reservationmanager.data.model.convertToCompanyHistoryList
 import com.zaed.reservationmanager.ui.home.component.Report
@@ -530,4 +532,30 @@ class ReservationRemoteDataSourceImpl(
             }
             awaitClose { }
         }
+
+    override suspend fun changeReservationCustomer(
+        reservation: Reservation,
+        customer: Customer
+    ): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+            val reservations = firestore.collection(RESERVATION_COLLECTION).whereEqualTo("reservationNumber", reservation.reservationNumber).get().await().toObjects<Reservation>()
+            reservations.forEach {
+                batch.update(
+                    firestore.collection(RESERVATION_COLLECTION).document(it.id),
+                    mapOf(
+                        "clientId" to customer.id,
+                        "clientName" to customer.name,
+                        "clientPhone" to customer.phoneNumber1,
+                        "clientCountry" to customer.residenceCountry
+                    )
+                )
+            }
+            batch.commit().await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            crashlytics.recordException(e)
+            Result.failure(e)
+        }
+    }
 }
