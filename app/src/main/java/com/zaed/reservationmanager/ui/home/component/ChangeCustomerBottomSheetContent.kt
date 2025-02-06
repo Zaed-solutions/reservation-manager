@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -169,40 +172,41 @@ private fun SelectExistingCustomerSection(
             singleLine = true,
             shape = MaterialTheme.shapes.large
         )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 0.dp, max = 500.dp)
+        LazyColumn (
+            modifier = Modifier.fillMaxWidth()
+                .heightIn(min = 0.dp, max = 500.dp),
+            contentPadding = PaddingValues(vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            filteredCustomers.forEach { customer ->
-                Surface (
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        onCustomerSelected(customer)
-                    },
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    color = Color.Transparent
-                ){
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = customer.name.takeIf { it.length <= 15 }
-                                ?: "${customer.name.take(15)}...",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = customer.phoneNumber1.takeIf { it.length <= 15 }
-                                ?: "${customer.phoneNumber1.take(15)}...",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.End
-                        )
-                    }
-                }
-            }
+          items(filteredCustomers){ customer ->
+              Surface (
+                  modifier = Modifier.fillMaxWidth().animateItem(),
+                  onClick = {
+                      onCustomerSelected(customer)
+                  },
+                  contentColor = MaterialTheme.colorScheme.onSurface,
+                  color = Color.Transparent
+              ){
+                  Row(
+                      modifier = Modifier.fillMaxWidth().padding(16.dp),
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.SpaceBetween
+                  ) {
+                      Text(
+                          text = customer.name.takeIf { it.length <= 15 }
+                              ?: "${customer.name.take(15)}...",
+                          style = MaterialTheme.typography.titleMedium,
+                          modifier = Modifier.weight(1f)
+                      )
+                      Text(
+                          text = customer.phoneNumber1.takeIf { it.length <= 15 }
+                              ?: "${customer.phoneNumber1.take(15)}...",
+                          style = MaterialTheme.typography.bodyLarge,
+                          textAlign = TextAlign.End
+                      )
+                  }
+              }
+          }
         }
     }
 }
@@ -221,7 +225,7 @@ private fun AddNewCustomerSection(
         mutableStateOf<ClientUIError>(ClientUIError.NONE)
     }
     Column (
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())
     ){
         TitledTextField2(
             title = stringResource(R.string.client_name),

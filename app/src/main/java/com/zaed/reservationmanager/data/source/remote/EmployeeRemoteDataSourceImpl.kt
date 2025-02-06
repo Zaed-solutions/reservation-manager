@@ -98,27 +98,33 @@ class EmployeeRemoteDataSourceImpl(
                             Filter.equalTo("tourismEmployeeId", employee.id)
                         )
                     ).get().await()
-                val phoneNumber1Filter = Filter.or(
+                val phoneNumber1Filter = Filter.and(
                     Filter.inArray(
                         "phoneNumber1",
-                        listOf(employee.phoneNumber1)
+                        listOf(employee.phoneNumber1, employee.phoneNumber2)
                     ),
-                    Filter.inArray(
-                        "phoneNumber2",
-                        listOf(employee.phoneNumber1)
+                    Filter.notEqualTo(
+                        "id",
+                        employee.id
                     )
                 )
-                val phoneNumber2Filter = Filter.or(
-                    Filter.inArray(
-                        "phoneNumber1",
-                        listOf(employee.phoneNumber2)
-                    ),
+                val phoneNumber2Filter = Filter.and(
                     Filter.inArray(
                         "phoneNumber2",
-                        listOf(employee.phoneNumber2)
+                        listOf(employee.phoneNumber1, employee.phoneNumber2)
+                    ),
+                    Filter.notEqualTo(
+                        "id",
+                        employee.id
                     )
                 )
-                val employeeNameFilter = Filter.equalTo("name", employee.name)
+                val employeeNameFilter = Filter.and(
+                    Filter.equalTo("name", employee.name),
+                    Filter.notEqualTo(
+                        "id",
+                        employee.id
+                    )
+                )
 
                 val phoneNumber1Result = firestore
                     .collection(EMPLOYEE_COLLECTION)
